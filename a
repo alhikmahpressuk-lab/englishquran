@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The English Qur’an — A. K. Khan</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f7f7f7;
+  color: #111;
+}
+
+header {
+  background: #111;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.surah-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.surah-btn {
+  padding: 10px;
+  background: white;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  text-align: center;
+}
+
+.surah-btn:hover {
+  background: #eee;
+}
+
+.ayah {
+  background: white;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.arabic {
+  font-size: 24px;
+  text-align: right;
+  direction: rtl;
+}
+
+.english {
+  margin-top: 10px;
+}
+
+.back {
+  margin: 20px 0;
+  cursor: pointer;
+  color: blue;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>The English Qur’an</h1>
+  <p>Translation by A. K. Khan</p>
+</header>
+
+<div class="container">
+
+<div id="home">
+  <h2>Select a Surah</h2>
+  <div class="surah-list" id="surahList"></div>
+</div>
+
+<div id="reader" style="display:none;">
+  <div class="back" onclick="goHome()">← Back</div>
+  <h2 id="surahTitle"></h2>
+  <div id="verses"></div>
+</div>
+
+</div>
+
+<script>
+
+/* =========================
+   BASIC DATA (DEMO)
+   ========================= */
+
+/* IMPORTANT:
+Replace this with FULL manuscript JSON later
+*/
+
+const surahs = [
+  {
+    number: 1,
+    name: "Al-Fatiha",
+    verses: [
+      {n:1, en:"In the name of Allah, the Most Merciful, the Always Merciful."},
+      {n:2, en:"All praise belongs to Allah, the Lord of all worlds."},
+      {n:3, en:"The Most Merciful, the Always Merciful."},
+      {n:4, en:"Master of the Day of Judgement."},
+      {n:5, en:"You alone we worship, and You alone we ask for help."},
+      {n:6, en:"Guide us to the straight path."},
+      {n:7, en:"The path of those You have blessed, not those who earned anger nor those who went astray."}
+    ]
+  },
+  {
+    number: 2,
+    name: "Al-Baqarah",
+    verses: [
+      {n:1, en:"Alif Lam Meem."},
+      {n:2, en:"This is the Book, no doubt in it, a guidance for those mindful of Allah."}
+    ]
+  }
+];
+
+/* =========================
+   LOAD SURAH LIST
+   ========================= */
+
+const list = document.getElementById("surahList");
+
+surahs.forEach(s => {
+  const btn = document.createElement("div");
+  btn.className = "surah-btn";
+  btn.innerText = s.number + ". " + s.name;
+  btn.onclick = () => openSurah(s.number);
+  list.appendChild(btn);
+});
+
+/* =========================
+   OPEN SURAH
+   ========================= */
+
+function openSurah(num) {
+  const surah = surahs.find(s => s.number === num);
+
+  document.getElementById("home").style.display = "none";
+  document.getElementById("reader").style.display = "block";
+
+  document.getElementById("surahTitle").innerText =
+    "Surah " + surah.number + " — " + surah.name;
+
+  const versesDiv = document.getElementById("verses");
+  versesDiv.innerHTML = "";
+
+  /* LOAD ARABIC FROM API */
+  fetch(`https://api.alquran.cloud/v1/surah/${num}`)
+    .then(res => res.json())
+    .then(data => {
+
+      surah.verses.forEach((v, i) => {
+        const arabic = data.data.ayahs[i]?.text || "";
+
+        const div = document.createElement("div");
+        div.className = "ayah";
+
+        div.innerHTML = `
+          <div class="arabic">${arabic}</div>
+          <div class="english"><b>${v.n}</b>. ${v.en}</div>
+        `;
+
+        versesDiv.appendChild(div);
+      });
+
+    });
+}
+
+/* =========================
+   BACK
+   ========================= */
+
+function goHome() {
+  document.getElementById("reader").style.display = "none";
+  document.getElementById("home").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
