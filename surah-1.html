@@ -1,183 +1,623 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Surah 1 · Al-Fātiḥah</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surah 1 | Al-Fātiḥah | The English Qur’an</title>
+  <meta name="description" content="Surah 1, Al-Fātiḥah, from The English Qur’an translated by Dr A K Khan." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri+Quran&display=swap');
 
-<style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --text: #182128;
+      --muted: #66727d;
+      --line: #e3e8ec;
+      --accent: #1e6b5c;
+      --accent-deep: #154d42;
+      --accent-soft: #e8f3f0;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --max: 980px;
+    }
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f7f8fa;
-  color: #222;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-}
+    html {
+      scroll-behaviour: smooth;
+    }
 
-h1 {
-  margin-bottom: 5px;
-}
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
 
-.subtitle {
-  color: grey;
-  margin-bottom: 20px;
-}
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-.toggle {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: rgba(247, 248, 250, 0.92);
+      border-bottom: 1px solid rgba(227, 232, 236, 0.95);
+    }
 
-.button {
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  background: white;
-}
+    .topbar-inner,
+    .container,
+    .footer-inner {
+      width: min(var(--max), calc(100% - 28px));
+      margin: 0 auto;
+    }
 
-.button.active {
-  background: #1e6b5c;
-  color: white;
-  border-color: #1e6b5c;
-}
+    .topbar-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
-.section {
-  display: none;
-}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
 
-.section.active {
-  display: block;
-}
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
 
-.verse {
-  margin-bottom: 30px;
-}
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
 
-.arabic {
-  font-size: clamp(1.9rem, 2.5vw, 2.6rem);
-  direction: rtl;
-  text-align: right;
-  margin-bottom: 10px;
-}
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
 
-.english {
-  font-size: 1rem;
-}
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-.overview p {
-  line-height: 1.6;
-  margin-bottom: 15px;
-}
+    .nav a {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.94rem;
+      color: var(--muted);
+      transition: 0.2s ease;
+    }
 
-.overview h3 {
-  margin-top: 25px;
-}
+    .nav a:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
 
-ul {
-  padding-left: 20px;
-}
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
 
-</style>
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      color: #fff;
+    }
 
+    .hero {
+      padding: 34px 0 18px;
+    }
+
+    .hero-card,
+    .content-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -110px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(30,107,92,0.13) 0%, rgba(30,107,92,0) 72%);
+      pointer-events: none;
+    }
+
+    .crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy p {
+      margin: 14px 0 0;
+      color: #32404b;
+      font-size: 1rem;
+      max-width: 58ch;
+    }
+
+    .hero-copy .translator {
+      color: var(--muted);
+      margin-top: 18px;
+    }
+
+    .hero-copy .translator strong {
+      color: var(--text);
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+    }
+
+    .meta-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .meta-value.ar {
+      direction: rtl;
+      text-align: right;
+      font-family: "Amiri Quran", serif;
+      font-size: 1.4rem;
+      line-height: 1.7;
+    }
+
+    .section {
+      padding: 12px 0 36px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .tab-button:hover {
+      border-color: rgba(30, 107, 92, 0.35);
+      background: var(--surface-soft);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .content-card {
+      padding: 18px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .verse {
+      padding: 24px 16px;
+      border-radius: 18px;
+    }
+
+    .verse + .verse {
+      border-top: 1px solid var(--line);
+    }
+
+    .arabic-wrap {
+      text-align: right;
+      direction: rtl;
+      margin-bottom: 18px;
+    }
+
+    .arabic-ayah {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.9rem, 4vw, 2.6rem);
+      line-height: 2;
+      color: #0f1720;
+      word-spacing: 0.08em;
+    }
+
+    .english {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .english-number {
+      min-width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-size: 0.96rem;
+    }
+
+    .english-text {
+      font-size: 1rem;
+      color: #23303a;
+    }
+
+    .overview {
+      padding: 8px 4px;
+    }
+
+    .overview h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .overview p {
+      margin: 0 0 16px;
+      font-size: 1.05rem;
+      color: #24313a;
+      line-height: 1.8;
+    }
+
+    .overview ul {
+      margin: 0 0 22px;
+      padding-left: 22px;
+    }
+
+    .overview li {
+      margin-bottom: 10px;
+      font-size: 1.03rem;
+      color: #24313a;
+    }
+
+    .footer {
+      padding: 0 0 34px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 14px 0;
+      }
+
+      .hero-card,
+      .content-card {
+        border-radius: 18px;
+      }
+
+      .hero-card {
+        padding: 22px;
+      }
+
+      .content-card {
+        padding: 12px;
+      }
+
+      .verse {
+        padding: 20px 10px;
+      }
+
+      .english-number {
+        min-width: 34px;
+        height: 34px;
+        border-radius: 10px;
+      }
+
+      .overview p,
+      .overview li {
+        font-size: 1rem;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">١</div>
+        <div class="brand-text">
+          <h1>The English Qur’an</h1>
+          <p>Translated by Dr A K Khan</p>
+        </div>
+      </div>
 
-<div class="container">
+      <nav class="nav">
+        <a href="index.html">All Surahs</a>
+        <a class="cta" href="#content">Surah 1</a>
+      </nav>
+    </div>
+  </header>
 
-<h1>Surah Al-Fātiḥah</h1>
-<p class="subtitle">The Opening</p>
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="crumb">Surah 1</div>
 
-<div class="toggle">
-  <div class="button active" onclick="showSection('read')">Read</div>
-  <div class="button" onclick="showSection('overview')">Overview</div>
-</div>
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <h2>Al-Fātiḥah</h2>
+              <p>The Opening</p>
+              <p class="translator">From <strong>The English Qur’an</strong>, translated by <strong>Dr A K Khan</strong></p>
+            </div>
 
-<div id="read" class="section active">
+            <div class="hero-meta">
+              <div class="meta-box">
+                <div class="meta-label">Arabic name</div>
+                <div class="meta-value ar" lang="ar">الفاتحة</div>
+              </div>
 
-<div class="verse">
-<div class="arabic">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ﴿١﴾</div>
-<div class="english"><b>1.</b> In the name of Allah, the Most-Merciful, the Ever-Merciful.</div>
-</div>
+              <div class="meta-box">
+                <div class="meta-label">Verses</div>
+                <div class="meta-value">7</div>
+              </div>
 
-<div class="verse">
-<div class="arabic">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ ﴿٢﴾</div>
-<div class="english"><b>2.</b> All praise belongs to Allah, the Lord of all worlds.</div>
-</div>
+              <div class="meta-box">
+                <div class="meta-label">Revelation</div>
+                <div class="meta-value">Makki</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<div class="verse">
-<div class="arabic">ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ﴿٣﴾</div>
-<div class="english"><b>3.</b> The Most-Merciful, the Ever-Merciful.</div>
-</div>
+    <section class="section" id="content">
+      <div class="container">
+        <div class="controls">
+          <button class="tab-button active" type="button" data-tab="read">Read</button>
+          <button class="tab-button" type="button" data-tab="overview">Overview</button>
+        </div>
 
-<div class="verse">
-<div class="arabic">مَٰلِكِ يَوْمِ ٱلدِّينِ ﴿٤﴾</div>
-<div class="english"><b>4.</b> Master of the Day of Judgement.</div>
-</div>
+        <div class="content-card">
+          <div class="tab-panel active" id="read">
 
-<div class="verse">
-<div class="arabic">إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٥﴾</div>
-<div class="english"><b>5.</b> You alone we worship, and You alone we ask for help.</div>
-</div>
+            <article class="verse" id="ayah-1">
+              <div class="arabic-wrap">
+                <div class="arabic-ayah" lang="ar">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ۝١</div>
+              </div>
+              <div class="english">
+                <div class="english-number">1.</div>
+                <div class="english-text">In the name of Allah, the Most-Merciful, the Ever-Merciful.</div>
+              </div>
+            </article>
 
-<div class="verse">
-<div class="arabic">ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ ﴿٦﴾</div>
-<div class="english"><b>6.</b> Guide us to the straight path.</div>
-</div>
+            <article class="verse" id="ayah-2">
+              <div class="arabic-wrap">
+                <div class="arabic-ayah" lang="ar">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ ۝٢</div>
+              </div>
+              <div class="english">
+                <div class="english-number">2.</div>
+                <div class="english-text">All praise belongs to Allah, Lord of all worlds.</div>
+              </div>
+            </article>
 
-<div class="verse">
-<div class="arabic">صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ ﴿٧﴾</div>
-<div class="english"><b>7.</b> The path of those You have blessed, not those who earned anger nor those who went astray.</div>
-</div>
+            <article class="verse" id="ayah-3">
+              <div class="arabic-wrap">
+                <div class="arabic-ayah" lang="ar">ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ۝٣</div>
+              </div>
+              <div class="english">
+                <div class="english-number">3.</div>
+                <div class="english-text">The Most-Merciful, the Ever-Merciful.</div>
+              </div>
+            </article>
 
-</div>
+            <article class="verse" id="ayah-4">
+              <div class="arabic-wrap">
+                <div class="arabic-ayah" lang="ar">مَٰلِكِ يَوْمِ ٱلدِّينِ ۝٤</div>
+              </div>
+              <div class="english">
+                <div class="english-number">4.</div>
+                <div class="english-text">Master of the Day of Judgement.</div>
+              </div>
+            </article>
 
-<div id="overview" class="section overview">
+            <article class="verse" id="ayah-5">
+              <div class="arabic-wrap">
+                <div class="arabic-ayah" lang="ar">إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝٥</div>
+              </div>
+              <div class="english">
+                <div class="english-number">5.</div>
+                <div class="english-text">You alone we worship, and You alone we ask for help.</div>
+              </div>
+            </article>
 
-<p>Surah Al-Fātiḥah opens the Qur’an and lays down its foundation in a clear and direct way. Though short, it brings together the core of the message, belief, worship, accountability, and guidance. It begins with praise of Allah, recognising Him as the Lord of all creation, full of mercy and complete authority. This sets the tone of faith with gratitude, humility, and awareness of who Allah is.</p>
+            <article class="verse" id="ayah-6">
+              <div class="arabic-wrap">
+                <div class="arabic-ayah" lang="ar">ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ ۝٦</div>
+              </div>
+              <div class="english">
+                <div class="english-number">6.</div>
+                <div class="english-text">Guide us to the straight path,</div>
+              </div>
+            </article>
 
-<p>The Surah then turns to the reality of the Day of Judgement, reminding us that life has purpose and that every action returns to Allah. Mercy and accountability stand together, shaping a balanced and conscious way of living. At its centre is a clear declaration, we worship Allah alone and rely on Him alone, followed by a sincere request for guidance to the straight path.</p>
+            <article class="verse" id="ayah-7">
+              <div class="arabic-wrap">
+                <div class="arabic-ayah" lang="ar">صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ ۝٧</div>
+              </div>
+              <div class="english">
+                <div class="english-number">7.</div>
+                <div class="english-text">the path of those upon whom You have bestowed favour, not of those who have incurred anger, nor of those who have gone astray.</div>
+              </div>
+            </article>
 
-<p>It ends by drawing a clear line between the path of guidance and the paths that lead away from it. In just seven verses, this Surah acts as the opening, the summary, and the compass of the entire Qur’an.</p>
+          </div>
 
-<h3>Key Themes</h3>
+          <div class="tab-panel" id="overview">
+            <div class="overview">
+              <h3>Overview</h3>
+              <p>Surah Al-Fātiḥah opens the Qur’an and lays down its foundation in a clear and direct way. Though short, it brings together the core of the message, belief, worship, accountability, and guidance. It begins with praise of Allah, recognising Him as the Lord of all creation, full of mercy and complete authority. This sets the tone of faith with gratitude, humility, and awareness of who Allah is.</p>
+              <p>The Surah then turns to the reality of the Day of Judgement, reminding us that life has purpose and that every action returns to Allah. Mercy and accountability stand together, shaping a balanced and conscious way of living. At its centre is a clear declaration, we worship Allah alone and rely on Him alone, followed by a sincere request for guidance to the straight path.</p>
+              <p>It ends by drawing a clear line between the path of guidance and the paths that lead away from it. In just seven verses, this Surah acts as the opening, the summary, and the compass of the entire Qur’an.</p>
 
-<ul>
-<li>Praise and recognition of Allah</li>
-<li>Mercy and complete authority of the Lord</li>
-<li>Accountability and the Day of Judgement</li>
-<li>Worship and reliance on Allah alone</li>
-<li>Seeking guidance to the straight path</li>
-</ul>
+              <h3>Key Themes</h3>
+              <ul>
+                <li>Praise and recognition of Allah</li>
+                <li>Mercy and complete authority of the Lord</li>
+                <li>Accountability and the Day of Judgement</li>
+                <li>Worship and reliance on Allah alone</li>
+                <li>Seeking guidance to the straight path</li>
+              </ul>
 
-<h3>Central Message</h3>
+              <h3>Central Message</h3>
+              <p>True guidance begins with recognising Allah, turning to Him alone, and asking to be kept firmly on the straight path.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-<p>True guidance begins with recognising Allah, turning to Him alone, and asking to be kept firmly on the straight path.</p>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>Surah 1 | Al-Fātiḥah</div>
+      <div class="footer-links">
+        <a href="index.html">Back to homepage</a>
+      </div>
+    </div>
+  </footer>
 
-</div>
+  <script>
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanels = document.querySelectorAll('.tab-panel');
 
-</div>
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = button.dataset.tab;
 
-<script>
+        tabButtons.forEach((btn) => btn.classList.remove('active'));
+        tabPanels.forEach((panel) => panel.classList.remove('active'));
 
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.button').forEach(b => b.classList.remove('active'));
-
-  document.getElementById(id).classList.add('active');
-
-  event.target.classList.add('active');
-}
-
-</script>
-
+        button.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
