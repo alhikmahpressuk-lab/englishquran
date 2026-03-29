@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surah 2 | Al-Baqarah | The English Qur’an</title>
+  <meta name="description" content="Surah 2, Al-Baqarah, from The English Qur’an translated by Dr A K Khan." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri+Quran&display=swap');
+
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --text: #182128;
+      --muted: #66727d;
+      --line: #e3e8ec;
+      --accent: #1e6b5c;
+      --accent-deep: #154d42;
+      --accent-soft: #e8f3f0;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --max: 980px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: "Inter", Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: inherit; text-decoration: none; }
+
+    .topbar { position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); background: rgba(247, 248, 250, 0.92); border-bottom: 1px solid rgba(227, 232, 236, 0.95); }
+    .topbar-inner, .container, .footer-inner { width: min(var(--max), calc(100% - 28px)); margin: 0 auto; }
+    .topbar-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .brand-mark { width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; display: grid; place-items: center; font-size: 1.2rem; font-weight: 700; box-shadow: var(--shadow); flex-shrink: 0; }
+    .brand-text h1 { margin: 0; font-size: 1.05rem; line-height: 1.1; letter-spacing: -0.02em; }
+    .brand-text p { margin: 4px 0 0; color: var(--muted); font-size: 0.92rem; }
+    .nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .nav a { padding: 10px 14px; border-radius: 999px; font-size: 0.94rem; color: var(--muted); transition: 0.2s ease; }
+    .nav a:hover { background: var(--surface); color: var(--text); }
+    .nav .cta { background: var(--accent); color: #fff; font-weight: 600; }
+    .nav .cta:hover { background: var(--accent-deep); color: #fff; }
+
+    .hero { padding: 34px 0 18px; }
+    .hero-card, .content-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .hero-card { padding: 30px; overflow: hidden; position: relative; }
+    .hero-card::after { content: ""; position: absolute; right: -80px; bottom: -110px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(30,107,92,0.13) 0%, rgba(30,107,92,0) 72%); pointer-events: none; }
+    .crumb { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
+    .hero-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 22px; align-items: start; }
+    .hero-copy h2 { margin: 0; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1.04; letter-spacing: -0.045em; }
+    .hero-copy p { margin: 14px 0 0; color: #32404b; font-size: 1rem; max-width: 58ch; }
+    .hero-copy .translator { color: var(--muted); margin-top: 18px; }
+    .hero-copy .translator strong { color: var(--text); }
+    .hero-meta { display: grid; gap: 14px; }
+    .meta-box { background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px; }
+    .meta-label { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+    .meta-value { font-size: 1.02rem; font-weight: 600; color: var(--text); }
+    .meta-value.ar { direction: rtl; text-align: right; font-family: "Amiri Quran", serif; font-size: 1.2rem; line-height: 1.8; }
+
+    .section { padding: 12px 0 36px; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tab-button { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--text); min-height: 46px; padding: 0 18px; border-radius: 999px; font: inherit; font-weight: 600; cursor: pointer; transition: 0.2s ease; }
+    .tab-button:hover { border-color: rgba(30, 107, 92, 0.35); background: var(--surface-soft); }
+    .tab-button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .content-card { padding: 18px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .state-message { padding: 22px 18px; border-radius: 16px; background: var(--surface-soft); border: 1px solid var(--line); color: #32404b; font-size: 0.98rem; }
+    .state-message.error { background: #fff4f4; border-color: #f0d2d2; color: #8a2d2d; display: none; }
+
+    .verse { padding: 24px 16px; border-radius: 18px; }
+    .verse + .verse { border-top: 1px solid var(--line); }
+    .arabic-wrap { text-align: right; direction: rtl; margin-bottom: 18px; }
+    .arabic-ayah { font-family: "Amiri Quran", "Amiri", serif; font-size: clamp(1.45rem, 2.2vw, 1.9rem); line-height: 2.15; color: #111827; word-spacing: 0.04em; letter-spacing: 0; }
+    .english { display: flex; align-items: flex-start; gap: 14px; }
+    .english-number { min-width: 38px; height: 38px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-deep); display: grid; place-items: center; font-weight: 700; flex-shrink: 0; margin-top: 2px; font-size: 0.96rem; }
+    .english-text { font-size: 1rem; color: #23303a; }
+
+    .overview { padding: 8px 4px; }
+    .overview h3 { margin: 0 0 14px; font-size: 1.2rem; letter-spacing: -0.02em; }
+    .overview p { margin: 0 0 16px; font-size: 1.05rem; color: #24313a; line-height: 1.8; }
+    .overview ul { margin: 0 0 22px; padding-left: 22px; }
+    .overview li { margin-bottom: 10px; font-size: 1.03rem; color: #24313a; }
+
+    .footer { padding: 0 0 34px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 0.94rem; }
+    .footer-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .footer-links a { padding: 10px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+
+    @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 680px) {
+      .topbar-inner { flex-direction: column; align-items: flex-start; justify-content: center; padding: 14px 0; }
+      .hero-card, .content-card { border-radius: 18px; }
+      .hero-card { padding: 22px; }
+      .content-card { padding: 12px; }
+      .verse { padding: 20px 10px; }
+      .english-number { min-width: 34px; height: 34px; border-radius: 10px; }
+      .overview p, .overview li { font-size: 1rem; }
+      .arabic-ayah { font-size: 1.38rem; line-height: 2.05; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">٢</div>
+        <div class="brand-text">
+          <h1>The English Qur’an</h1>
+          <p>Translated by Dr A K Khan</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="index.html">All Surahs</a>
+        <a class="cta" href="#content">Surah 2</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="crumb">Surah 2</div>
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <h2>Al-Baqarah</h2>
+              <p>The Cow</p>
+              <p class="translator">From <strong>The English Qur’an</strong>, translated by <strong>Dr A K Khan</strong></p>
+            </div>
+            <div class="hero-meta">
+              <div class="meta-box">
+                <div class="meta-label">Arabic name</div>
+                <div class="meta-value ar" lang="ar">البقرة</div>
+              </div>
+              <div class="meta-box">
+                <div class="meta-label">Verses</div>
+                <div class="meta-value">286</div>
+              </div>
+              <div class="meta-box">
+                <div class="meta-label">Revelation</div>
+                <div class="meta-value">Madani</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="content">
+      <div class="container">
+        <div class="controls">
+          <button class="tab-button active" type="button" data-tab="read">Read</button>
+          <button class="tab-button" type="button" data-tab="overview">Overview</button>
+        </div>
+
+        <div class="content-card">
+          <div class="tab-panel active" id="read">
+            <div id="loadingState" class="state-message">Loading Surah 2 in Arabic and English...</div>
+            <div id="errorState" class="state-message error">The verses could not be loaded. Please refresh the page and try again.</div>
+            <div id="versesContainer"></div>
+          </div>
+
+          <div class="tab-panel" id="overview">
+            <div class="overview">
+              <h3>Overview</h3>
+              <p>Surah Al-Baqarah is the longest chapter of the Qur’an and sets out a complete guide for belief, life, and community. Revealed in Madinah, it speaks to a growing Muslim society and shows how faith is to be lived in practice. It opens by establishing the Qur’an as certain and reliable guidance for those who are aware of Allah, making clear the difference between sincere believers, those who reject, and those who live in hypocrisy. It also presents a direct challenge to those who doubt this revelation, calling them to produce anything like it, while affirming that this message has been given to Prophet Muhammad ﷺ, the servant of Allah, as true guidance.</p>
+
+              <p>The Surah then goes back to the very beginning, to the creation of Ādam (Adam), marking the start of the human race and the role of human beings on earth. It highlights the refusal of Iblīs (Shayṭān), who rejected Allah’s command out of arrogance, setting the pattern of opposition, temptation, and misguidance that continues throughout human history. From this starting point, the Surah establishes the ongoing reality of guidance versus deviation, and the need for human beings to choose their path.</p>
+
+              <p>It then moves into detailed accounts of Banī Isrāʾīl, where the story of Mūsā (Moses) is central. Through him, they were rescued from the oppression and tyranny of Firʿawn (Pharaoh) by parting the sea and saving them from destruction. They were guided, and given clear signs, yet they repeatedly questioned, resisted, and broke their covenant. Their demands, hesitation, and disobedience are shown openly, including the incident of the cow, revealing a pattern of reluctance to fully submit. These accounts serve as clear lessons about obedience, gratitude, and the consequences of turning away after knowing the truth.</p>
+
+              <p>The Surah also refers to other prophets connected to this history, including Dāwūd (David), who was given authority and wisdom, and Sulaymān (Solomon), whose kingdom reflected knowledge and power granted by Allah. Ibrāhīm (Abraham) is presented as a central model of pure faith, complete submission, and unwavering trust, establishing the foundations of worship. His legacy is directly linked to the identity of the Muslim community, especially through the Kaʿbah and the change in direction of prayer.</p>
+
+              <p>A large part of the Surah sets out a complete way of living. It establishes acts of worship such as prayer, fasting, charity, and pilgrimage, and lays down laws that shape daily life, including marriage, divorce, family responsibilities, financial dealings, charity, and fairness in trade. Justice, honesty, and responsibility are emphasised throughout, alongside the importance of fulfilling trusts and avoiding oppression. The Surah also prepares believers for tests, hardship, and opposition, calling them to patience, strength, and reliance on Allah.</p>
+
+              <p>It concludes with a powerful reminder that Allah does not burden any soul beyond its capacity, followed by a sincere supplication filled with humility, seeking forgiveness, help, and mercy. As a whole, Surah Al-Baqarah moves the believer from understanding into action, shaping a complete life built on faith, responsibility, and trust in Allah.</p>
+
+              <h3>Key Themes</h3>
+              <ul>
+                <li>The Qur’an as certain guidance and a direct challenge to doubt</li>
+                <li>The role of Prophet Muhammad ﷺ as the servant receiving revelation</li>
+                <li>The creation of Ādam (Adam) and the beginning of human life</li>
+                <li>Iblīs (Shayṭān), arrogance, and the path of misguidance</li>
+                <li>The difference between belief, rejection, and hypocrisy</li>
+                <li>Mūsā (Moses) and Banī Isrāʾīl, guidance, struggle, and failure</li>
+                <li>Ibrāhīm (Abraham) and pure submission and leadership</li>
+                <li>Dāwūd (David) and Sulaymān (Solomon), authority and wisdom</li>
+                <li>Worship including prayer, fasting, charity, and pilgrimage</li>
+                <li>Law, justice, family life, and financial conduct</li>
+                <li>Identity, direction, and the building of a community</li>
+                <li>Patience, testing, and reliance on Allah</li>
+              </ul>
+
+              <h3>Central Message</h3>
+              <p>Guidance has been made clear from the very beginning, and every person must choose between following it or turning away.</p>
+              <p>The struggle between truth and misguidance is shown through Iblīs (Shayṭān) and through the example of past nations with Mūsā (Moses).</p>
+              <p>True faith is built on complete submission, as shown by Ibrāhīm (Abraham), and lived through worship, justice, and responsibility.</p>
+              <p>Success lies in holding firmly to the guidance brought to Prophet Muhammad ﷺ, remaining patient, sincere, and constant upon the straight path.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>Surah 2 | Al-Baqarah</div>
+      <div class="footer-links">
+        <a href="index.html">Back to homepage</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+  const englishVerses = [
+    "Alif Lām Mīm.",
+    "This is the Book, there is no doubt in it, a guidance for those who are mindful,",
+    "those who believe in the unseen, uphold the prayer, and give from what We have provided them,",
+    "and those who believe in what has been sent down to you and what was sent down before you, and who are certain of the Hereafter.",
+    "They are upon guidance from their Lord, and they are the ones who will succeed.",
+    "As for those who disbelieve, it makes no difference to them whether you warn them or do not warn them, they will not believe.",
+    "Allah has sealed their hearts and their hearing, and over their sight is a covering, and for them is a great punishment.",
+    "Among the people are those who say, “We believe in Allah and the Last Day,” yet they are not believers.",
+    "They seek to deceive Allah and those who believe, but they deceive only themselves, though they do not realise it.",
+    "In their hearts is a disease, so Allah has increased their disease, and for them is a painful punishment because they used to lie.",
+    "When it is said to them, “Do not cause corruption on the earth,” they say, “We are only setting things right.”",
+    "Indeed, they are the ones causing corruption, but they do not realise it.",
+    "When it is said to them, “Believe as the people have believed,” they say, “Should we believe as the foolish have believed?” Indeed, they are the foolish ones, but they do not know it.",
+    "When they meet those who believe, they say, “We believe.” But when they are alone with their devils, they say, “We are with you, we were only mocking.”",
+    "Allah mocks them and allows them to wander blindly in their rebellion.",
+    "They are the ones who have traded guidance for misguidance, so their trade has gained nothing, and they are not guided.",
+    "Their example is like one who kindled a fire, and when it lit up what was around him, Allah took away their light and left them in darkness, unable to see,",
+    "deaf, mute, and blind, so they do not return.",
+    "Or like a rainstorm from the sky, within it darkness, thunder, and lightning. They put their fingers in their ears against the thunderclaps, fearing death, while Allah surrounds the disbelievers.",
+    "The lightning nearly snatches away their sight. Whenever it lights the way for them, they walk in it, and when darkness falls upon them, they stand still. If Allah willed, He could take away their hearing and their sight. Indeed, Allah has power over everything.",
+    "O people, worship Allah, who created you and those before you, so that you may become mindful.",
+    "He is the One who made the earth a resting place for you, and the sky a canopy, and sent down water from the sky, bringing forth fruits as provision for you. So do not set up equals to Allah while you know.",
+    "If you are in doubt about what We have sent down to Our servant, then produce a surah like it, and call your witnesses besides Allah, if you are truthful.",
+    "But if you do not, and you will never be able to, then guard yourselves against the Fire whose fuel is people and stones, prepared for those who disbelieve.",
+    "And give good news to those who believe and do good deeds, that for them are gardens beneath which rivers flow. Every time they are given provision from them, they say, “This is what we were given before,” yet it is given to them in resemblance. And for them are purified spouses, and they will remain there forever.",
+    "Allah is not ashamed to set forth an example, even of a mosquito or something smaller than it. Those who believe know it is the truth from their Lord, while those who disbelieve say, “What does Allah intend by this example?” By it, He lets many go astray, and by it He guides many, but He leads astray only the rebellious,",
+    "those who break the covenant of Allah after it has been firmly established, cut what Allah has commanded to be joined, and cause corruption on the earth. They are the ones who are the losers.",
+    "How can you disbelieve in Allah when you were lifeless and He gave you life, then He will cause you to die, then He will give you life again, and then to Him you will be returned?",
+    "He is the One who created for you all that is on the earth, then turned to the sky and fashioned them into seven heavens. And He has full knowledge of everything.",
+    "When your Lord said to the angels, “I am placing a successor on the earth,” they said, “Will You place in it one who will cause corruption in it and shed blood, while we glorify You with praise and declare Your holiness?” He said, “I know what you do not know.”",
+    "Allah taught Ādam the names of everything. Then He presented them to the angels and said, “Tell Me the names of these, if you are truthful.”",
+    "They said, “Glory be to You. We have no knowledge except what You have taught us. Indeed, You alone are the All-Knowing, the All-Wise.”",
+    "He said, “O Ādam, inform them of their names.” And when he informed them of their names, He said, “Did I not tell you that I know the unseen of the heavens and the earth, and that I know what you reveal and what you conceal?”",
+    "When We said to the angels, “Prostrate before Ādam,” they all prostrated, except Iblīs. He refused, acted arrogantly, and became among those who disbelieve.",
+    "And We said, “O Ādam, dwell with your wife in the garden, and eat freely from it wherever you wish, but do not approach this tree, lest you become among the wrongdoers.”",
+    "But Shayṭān caused them to slip from it and brought them out of what they were in. And We said, “Descend, as enemies to one another. And for you on the earth is a dwelling place and provision for a time.”",
+    "Then Ādam received words from his Lord, and He accepted his repentance. Indeed, He is the One who constantly accepts repentance, the Ever-Merciful.",
+    "We said, “Descend from it, all of you. Then when guidance comes to you from Me, whoever follows My guidance will have no fear, nor will they grieve.",
+    "And those who disbelieve and deny Our signs, they are the companions of the Fire. They will remain in it forever.”",
+    "O Children of Isrā’īl, remember My favour which I bestowed upon you, and fulfil My covenant so that I may fulfil your covenant, and fear Me alone.",
+    "Believe in what I have sent down, confirming what is with you, and do not be the first to reject it. Do not trade My signs for a small price, and be mindful of Me alone.",
+    "Do not mix truth with falsehood, nor conceal the truth while you know it.",
+    "Uphold the prayer, and give zakah, and bow with those who bow.",
+    "Do you command people to righteousness while you forget yourselves, even though you recite the Book? Will you not then use reason?",
+    "Seek help through patience and prayer. Indeed, it is difficult, except for the humbly devoted,",
+    "those who are certain that they will meet their Lord, and that to Him they will return.",
+    "O Children of Isrā’īl, remember My favour which I bestowed upon you, and that I favoured you over the worlds.",
+    "Guard yourselves against a Day when no soul will avail another in any way, no intercession will be accepted from it, no compensation will be taken from it, and they will not be helped.",
+    "And remember when We saved you from the people of Firʿawn inflicting upon you the worst punishment, slaughtering your sons and sparing your women. In that was a great trial from your Lord.",
+    "And remember when We parted the sea for you, saved you, and drowned the people of Firʿawn while you were looking on.",
+    "And remember when We appointed forty nights for Mūsā, then you took the calf for worship after him, and you were wrongdoers.",
+    "Then We pardoned you after that, so that you might be grateful.",
+    "And remember when We gave Mūsā the Book and the criterion, so that you might be guided.",
+    "And remember when Mūsā said to his people, “O my people, you have wronged yourselves by taking the calf for worship. So turn in repentance to your Creator and put to death your own selves. That is better for you in the sight of your Creator.” Then He accepted your repentance. He is the One who constantly accepts repentance, the Ever-Merciful.",
+    "And remember when you said, “O Mūsā, we will never believe you until we see Allah openly.” So the thunderbolt seized you while you were looking on.",
+    "Then We raised you up after your death, so that you might be grateful.",
+    "And We shaded you with clouds, and sent down upon you manna and quails, “Eat from the good things We have provided for you.” They did not wrong Us, but they were wronging themselves.",
+    "And remember when We said, “Enter this town and eat freely from it wherever you wish, and enter the gate humbly, saying, ‘Remove our sins,’ and We will forgive your sins and increase those who do good.”",
+    "But those who did wrong changed the words to something other than what had been said to them, so We sent down upon those who did wrong a punishment from the sky because they were rebellious.",
+    "And remember when Mūsā sought water for his people, so We said, “Strike the stone with your staff.” Then twelve springs gushed forth from it, and each people knew their place of drinking. “Eat and drink from the provision of Allah, and do not roam the earth spreading corruption.”",
+    "And remember when you said, “O Mūsā, we cannot endure one kind of food, so call upon your Lord for us to bring forth for us from what the earth produces, its herbs, cucumbers, garlic, lentils, and onions.” He said, “Would you exchange what is better for what is lower? Go down to a town, and you will have what you ask for.” And humiliation and poverty were laid upon them, and they returned with anger from Allah. That was because they used to reject the signs of Allah and kill the prophets without right. That was because they disobeyed and kept transgressing.",
+    "Indeed, those who believe, and those who are Jews, and the Christians, and the Sabians, whoever believes in Allah and the Last Day and does good, they will have their reward with their Lord, and no fear will be upon them, nor will they grieve.",
+    "And remember when We took your covenant and raised the mountain above you, “Hold firmly to what We have given you and remember what is in it, so that you may become mindful.”",
+    "Then you turned away after that, and if not for the grace of Allah upon you and His mercy, you would have been among the losers.",
+    "And you certainly know those among you who transgressed on the Sabbath, so We said to them, “Be apes, despised.”",
+    "And We made it a lesson for those present and those who came after, and a warning for the mindful.",
+    "And remember when Mūsā said to his people, “Allah commands you to slaughter a cow.” They said, “Do you take us in mockery?” He said, “I seek refuge with Allah from being among the ignorant.”",
+    "They said, “Call upon your Lord for us to make clear to us what it is.” He said, “He says, ‘It is a cow neither old nor young, but in between that. So do what you are commanded.’”",
+    "They said, “Call upon your Lord for us to make clear to us its colour.” He said, “He says, ‘It is a bright yellow cow, pleasing in its colour to those who look at it.’”",
+    "They said, “Call upon your Lord for us to make clear to us what it is, the cows all appear alike to us, and if Allah wills, we will surely be guided.”",
+    "He said, “He says, ‘It is a cow neither trained to plough the land nor to water the fields, sound and without blemish.’” They said, “Now you have brought the truth.” Then they slaughtered it, though they almost did not do so.",
+    "And remember when you killed a person and disputed about it, while Allah was bringing to light what you were concealing.",
+    "So We said, “Strike him with part of it.” Thus Allah brings the dead to life and shows you His signs, so that you may use reason.",
+    "Then your hearts hardened after that, so they were like stones or even harder. Indeed, among stones are those from which rivers burst forth, and among them are those that split open and water comes out, and among them are those that fall down in awe of Allah. And Allah is not unaware of what you do.",
+    "Do you then hope that they will believe for you, while a group among them used to hear the words of Allah and then distort it after they had understood it, knowingly?",
+    "When they meet those who believe, they say, “We believe.” But when they are alone with one another, they say, “Do you tell them what Allah has revealed to you so that they may use it as an argument against you before your Lord? Will you not then use reason?”",
+    "Do they not know that Allah knows what they conceal and what they reveal?",
+    "And among them are unlettered people who know the Book only through wishful thinking, and they do nothing but assume.",
+    "So woe to those who write the Book with their own hands, then say, “This is from Allah,” so that they may trade it for a small price. So woe to them for what their hands have written, and woe to them for what they earn.",
+    "And they say, “The Fire will never touch us except for a few days.” Say, “Have you taken a covenant with Allah? Then Allah will never break His covenant. Or do you say about Allah what you do not know?”",
+    "No, whoever commits evil and is surrounded by their wrongdoing, they are the companions of the Fire. They will remain in it forever.",
+    "But those who believe and do good deeds, they are the companions of Paradise. They will remain in it forever.",
+    "And remember when We took a covenant from the Children of Isrā’īl, “Worship none but Allah, be good to parents, relatives, orphans, and the needy, speak to people kindly, uphold the prayer, and give zakah.” Then you turned away, except for a few of you, and you were turning away.",
+    "And remember when We took your covenant, “Do not shed one another’s blood, nor drive one another out of your homes.” Then you acknowledged it while you were witnessing.",
+    "Then you are the ones who kill one another and expel a group of your own people from their homes, supporting one another against them in sin and hostility. And if they come to you as captives, you ransom them, while their expulsion was forbidden to you. Do you then believe in part of the Book and disbelieve in part? So what is the reward of those who do that among you except disgrace in this worldly life, and on the Day of Resurrection they will be returned to the severest punishment. And Allah is not unaware of what you do.",
+    "They are the ones who have traded the Hereafter for the worldly life, so the punishment will not be lightened for them, nor will they be helped.",
+    "And We gave Mūsā the Book and followed him up with messengers. And We gave ʿĪsā, son of Maryam, clear signs and supported him with the Pure Spirit. Is it that every time a messenger came to you with what your souls did not desire, you grew arrogant, so some you denied and some you killed?",
+    "And they said, “Our hearts are covered.” No, Allah has cursed them for their disbelief, so little is what they believe.",
+    "And when there came to them a Book from Allah, confirming what was with them, even though before that they used to seek victory over those who disbelieved, when there came to them what they recognised, they disbelieved in it. So the curse of Allah is upon those who disbelieve.",
+    "Miserable is what they sold themselves for, that they disbelieve in what Allah has sent down, out of envy that Allah should send down His grace upon whom He wills among His servants. So they returned with anger upon anger, and for the disbelievers is a humiliating punishment.",
+    "When it is said to them, “Believe in what Allah has sent down,” they say, “We believe in what was sent down to us,” and they disbelieve in what came after it, even though it is the truth confirming what is with them. Say, “Why then did you kill the prophets of Allah before that, if you were believers?”",
+    "And Mūsā came to you with clear signs, then you took the calf for worship after him, and you were wrongdoers.",
+    "And remember when We took your covenant and raised the mountain above you, “Hold firmly to what We have given you and listen.” They said, “We hear and we disobey.” And their hearts were soaked with love of the calf because of their disbelief. Say, “How miserable is what your belief commands you, if you are believers.”",
+    "Say, “If the home of the Hereafter with Allah is for you alone, excluding all other people, then wish for death, if you are truthful.”",
+    "But they will never wish for it, because of what their hands have sent ahead. And Allah knows the wrongdoers well.",
+    "You will surely find them the most eager of people for life, even more than those who associate others with Allah. Each one of them wishes to live a thousand years, but being granted long life will not save them from the punishment. And Allah sees well what they do.",
+    "Say, “Whoever is an enemy to Jibrīl, it is he who brought it down upon your heart by permission of Allah, confirming what came before it, and as guidance and good news for the believers.”",
+    "Whoever is an enemy to Allah, His angels, His messengers, Jibrīl, and Mīkāl, then Allah is an enemy to those who disbelieve.",
+    "We have certainly sent down to you clear signs, and none reject them except the rebellious.",
+    "Is it not that every time they made a covenant, a group of them threw it aside? Rather, most of them do not believe.",
+    "When a messenger from Allah came to them, confirming what was with them, a group of those who were given the Book threw the Book of Allah behind their backs, as if they did not know.",
+    "They followed what the devils recited during the reign of Sulaymān. Sulaymān did not disbelieve, but the devils disbelieved, teaching people magic and what was sent down to the two angels in Babylon, Hārūt and Mārūt. Yet those two did not teach anyone without saying, “We are only a test, so do not disbelieve.” From them people learned what causes division between a man and his wife, but they could not harm anyone except by permission of Allah. They learned what harms them and does not benefit them. They knew well that whoever trades in it will have no share in the Hereafter. Miserable is what they sold themselves for, if only they knew.",
+    "If they had believed and been mindful of Allah, the reward from Allah would have been better, if only they knew.",
+    "O you who believe, do not say, “Attend to us,” but say, “Look towards us,” and listen carefully. For those who disbelieve is a painful punishment.",
+    "Those who disbelieve among the People of the Book, and those who associate others with Allah, do not wish that any good should be sent down to you from your Lord. But Allah chooses for His mercy whom He wills. And Allah is the Possessor of great grace.",
+    "Whatever sign We abrogate or cause to be forgotten, We bring one better than it or like it. Do you not know that Allah has power over everything?",
+    "Do you not know that to Allah belongs the dominion of the heavens and the earth, and that besides Allah you have no protector and no helper?",
+    "Or do you wish to question your messenger as Mūsā was questioned before? Whoever trades belief for disbelief has surely strayed from the straight path.",
+    "Many among the People of the Book wish they could turn you back to disbelief after you have believed, out of envy from themselves, after the truth has become clear to them. So pardon and overlook until Allah brings His command. Indeed, Allah has power over everything.",
+    "Uphold the prayer and give zakah, and whatever good you put forward for yourselves, you will find it with Allah. Indeed, Allah sees all that you do.",
+    "They say, “No one will enter Paradise unless they are Jews or Christians.” These are their wishes. Say, “Bring your proof, if you are truthful.”",
+    "No, whoever submits themselves fully to Allah and does good, their reward is with their Lord. No fear will be upon them, nor will they grieve.",
+    "The Jews say, “The Christians have nothing to stand on,” and the Christians say, “The Jews have nothing to stand on,” even though they recite the Book. Likewise, those without knowledge say similar things. Allah will judge between them on the Day of Resurrection concerning what they used to differ over.",
+    "And who is more unjust than one who prevents the places of worship of Allah from being mentioned in His name and strives to ruin them? It is not for such people to enter them except in fear. For them is disgrace in this world, and for them in the Hereafter is a great punishment.",
+    "And to Allah belongs the east and the west, so wherever you turn, there is the direction of Allah. Indeed, Allah is All-Vast, All-Knowing.",
+    "They say, “Allah has taken a son.” Glory be to Him. Rather, to Him belongs whatever is in the heavens and the earth. All are humbly devoted to Him.",
+    "He is the Originator of the heavens and the earth. When He decides a matter, He only says to it, “Be,” and it is.",
+    "Those without knowledge say, “Why does Allah not speak to us, or why does a sign not come to us?” Those before them said the same. Their hearts are alike. We have made the signs clear for people who are certain.",
+    "We have sent you with the truth, as a bearer of good news and a warner. You will not be questioned about the companions of the Fire.",
+    "The Jews and the Christians will never be pleased with you until you follow their way. Say, “The guidance of Allah is the guidance.” If you were to follow their desires after the knowledge that has come to you, you would have no protector or helper against Allah.",
+    "Those to whom We have given the Book recite it as it deserves to be recited. They are the ones who believe in it. And whoever disbelieve in it, they are the ones who are the losers.",
+    "O Children of Isrā’īl, remember My favour which I bestowed upon you, and that I favoured you over the worlds.",
+    "Guard yourselves against a Day when no soul will avail another in any way, no compensation will be accepted from it, no intercession will benefit it, and they will not be helped.",
+    "And remember when Ibrāhīm was tested by his Lord with commands, and he fulfilled them. He said, “I am making you a leader for the people.” He said, “And from my descendants?” He said, “My covenant does not include the wrongdoers.”",
+    "And We made the House a place of return and security for the people, and “Take the standing place of Ibrāhīm as a place of prayer.” And We entrusted Ibrāhīm and Ismāʿīl, “Purify My House for those who circle it, those who stay devoted, and those who bow and prostrate.”",
+    "And remember when Ibrāhīm said, “My Lord, make this a secure land and provide its people with fruits, whoever among them believes in Allah and the Last Day.” He said, “And whoever rejects, I will allow him enjoyment for short while, then I will drive him to the punishment of the Fire. Miserable is the destination.”",
+    "And remember when Ibrāhīm and Ismāʿīl were raising the foundations of the House, “Our Lord, accept this from us. Indeed, You alone are the All-Hearing, the All-Knowing.",
+    "Our Lord, make us both devoted to You, and from our descendants a community devoted to You. Show us our ways of worship and accept our repentance. Indeed, You are the One who constantly accepts repentance, the Ever-Merciful.",
+    "Our Lord, send among them a messenger from themselves, who will recite to them Your signs, teach them the Book and wisdom, and purify them. Indeed, You alone are the All-Mighty, the All-Wise.”",
+    "And who turns away from the way of Ibrāhīm except one who makes a fool of himself? We chose him in this world, and in the Hereafter he will surely be among the righteous.",
+    "When his Lord said to him, “Submit,” he said, “I submit to the Lord of all worlds.”",
+    "And Ibrāhīm instructed his sons with it, and so did Yaʿqūb, “My sons, Allah has chosen this way for you, so do not die except in a state of submission.”",
+    "Or were you witnesses when death came to Yaʿqūb, when he said to his sons, “What will you worship after me?” They said, “We will worship your God and the God of your fathers, Ibrāhīm, Ismāʿīl, and Isḥāq, one God, and to Him we submit.”",
+    "That was a community that has passed on. For them is what they earned, and for you is what you earn. And you will not be questioned about what they used to do.",
+    "They say, “Be Jews or Christians and you will be guided.” Say, “Rather, the way of Ibrāhīm, one devoted purely to Allah, and he was not among those who associate others with Allah.”",
+    "Say, “We believe in Allah, and in what has been sent down to us, and in what was sent down to Ibrāhīm, Ismāʿīl, Isḥāq, Yaʿqūb, and the tribes, and in what was given to Mūsā and ʿĪsā, and in what was given to the prophets from their Lord. We make no distinction between any of them, and to Him we submit.”",
+    "If they believe in what you believe in, then they are rightly guided. But if they turn away, then they are only in opposition. Allah will be sufficient for you against them. And He is the All-Hearing, the All-Knowing.",
+    "The colouring of Allah, and whose colouring is better than Allah’s? And Him alone we worship.",
+    "Say, “Do you argue with us about Allah, while He is our Lord and your Lord? For us are our deeds, and for you are your deeds, and to Him we are devoted.”",
+    "Or do you say that Ibrāhīm, Ismāʿīl, Isḥāq, Yaʿqūb, and the tribes were Jews or Christians? Say, “Do you know better, or does Allah?” And who is more unjust than one who conceals a testimony they have from Allah? And Allah is not unaware of what you do.",
+    "That was a community that has passed on. For them is what they earned, and for you is what you earn. And you will not be questioned about what they used to do.",
+    "The foolish among the people will say, “What has turned them away from the direction of prayer they used to face?” Say, “To Allah belong the east and the west. He guides whom He wills to a straight path.”",
+    "And so We have made you a balanced community, so that you may be witnesses over humanity, and the messenger may be a witness over you. We appointed the direction you used to face only to make clear who follows the messenger from those who turn back on their heels. It was difficult, except for those whom Allah guided. And Allah would never let your faith be lost. Indeed, Allah is Most-Gentle and Ever-Merciful towards people.",
+    "We have certainly seen the turning of your face toward the sky, so We will surely turn you to a direction of prayer that pleases you. So turn your face toward the Sacred Mosque. And wherever you are, turn your faces toward it. Those who were given the Book know that this is the truth from their Lord. And Allah is not unaware of what they do.",
+    "Even if you were to bring every sign to those who were given the Book, they would not follow your direction of prayer, nor would you follow their direction, nor would they follow one another’s direction. And if you were to follow their desires after the knowledge that has come to you, then you would surely be among the wrongdoers.",
+    "Those to whom We gave the Book recognise it as they recognise their own sons. Yet a group of them knowingly conceal the truth.",
+    "The truth is from your Lord, so do not be among those who doubt.",
+    "For everyone there is a direction they turn toward, so compete in doing good. Wherever you may be, Allah will bring you all together. Indeed, Allah has power over everything.",
+    "And from wherever you set out, turn your face toward the Sacred Mosque. Indeed, it is the truth from your Lord. And Allah is not unaware of what you do.",
+    "And from wherever you set out, turn your face toward the Sacred Mosque. And wherever you are, turn your faces toward it, so that people will have no argument against you, except those among them who do wrong. Do not fear them, but fear Me, so that I may complete My favour upon you, and so that you may be guided.",
+    "Just as We sent among you a messenger from yourselves, reciting Our signs to you, purifying you, and teaching you the Book and wisdom, and teaching you what you did not know.",
+    "So remember Me, and I will remember you. Be grateful to Me, and do not be ungrateful.",
+    "O you who believe, seek help through patience and prayer. Indeed, Allah is with those who are patient.",
+    "And do not say of those who are killed in the way of Allah, “They are dead.” Rather, they are alive, but you do not perceive it.",
+    "And We will surely test you with something of fear, hunger, loss of wealth, lives, and fruits. But give good news to the patient,",
+    "those who, when calamity strikes them, say, “We belong to Allah, and to Him we will return.”",
+    "Those are the ones upon whom are blessings from their Lord and mercy. And they are the ones who are rightly guided.",
+    "Indeed, Ṣafā and Marwah are among the symbols of Allah. So whoever performs pilgrimage to the House or performs the visit, there is no blame upon them for walking between them. And whoever does good willingly, then indeed, Allah is Ever-Appreciative, All-Knowing.",
+    "Indeed, those who conceal what We have sent down of clear proofs and guidance, after We made it clear for the people in the Book, Allah curses them, and those who curse also curse them,",
+    "except for those who repent, correct themselves, make things clear, then I will turn to them in forgiveness. And I am the One who constantly accepts repentance, the Ever-Merciful.",
+    "Indeed, those who disbelieve and die while they are disbelievers, upon them is the curse of Allah, the angels, and all people together.",
+    "They will remain in it forever. The punishment will not be lightened for them, nor will they be given respite.",
+    "And your god is one God. There is no god except Him, the Most-Merciful, the Ever-Merciful.",
+    "Indeed, in the creation of the heavens and the earth, the alternation of night and day, the ships that sail the sea for the benefit of people, the water Allah sends down from the sky bringing the earth to life after its death, the spreading of every kind of creature upon it, the directing of the winds, and the clouds controlled between the sky and the earth, are signs for people who use reason.",
+    "And among people are those who take others as equals besides Allah, loving them as they should love Allah. But those who believe are stronger in love for Allah. If only those who do wrong could see, when they see the punishment, that all power belongs to Allah, and that Allah is severe in punishment.",
+    "When those who were followed will disown those who followed them, and they will see the punishment, and all bonds between them will be cut.",
+    "And those who followed will say, “If only we had another return, then we would disown them as they disowned us.” Thus Allah will show them their deeds as regrets upon them. They will never come out of the Fire.",
+    "O people, eat from what is lawful and good on the earth, and do not follow the footsteps of Shayṭān. Indeed, he is a clear enemy to you.",
+    "He only commands you to evil and indecency, and that you say about Allah what you do not know.",
+    "And when it is said to them, “Follow what Allah has sent down,” they say, “Rather, we follow what we found our fathers upon.” Even if their fathers understood nothing and were not guided?",
+    "The example of those who disbelieve is like one who shouts at what hears nothing except calls and cries. Deaf, mute, and blind, so they do not understand.",
+    "O you who believe, eat from the good things We have provided you and give thanks to Allah, if it is Him you truly worship.",
+    "He has only forbidden for you carrion, blood, the flesh of swine, and what has been dedicated to other than Allah. But whoever is forced by necessity, neither seeking it nor going beyond the limit, then there is no sin upon them. Indeed, Allah is Most-Forgiving, Ever-Merciful.",
+    "Indeed, those who conceal what Allah has sent down of the Book and trade it for a small price, they consume nothing into their bellies except the Fire. Allah will not speak to them on the Day of Resurrection, nor will He purify them, and for them is a painful punishment.",
+    "They are the ones who have traded guidance for misguidance, and forgiveness for punishment. How patient they are in facing the Fire.",
+    "That is because Allah has sent down the Book in truth, and indeed those who differ concerning the Book are in far-reaching opposition.",
+    "Righteousness is not that you turn your faces towards the east or the west, but righteousness is of one who believes in Allah, the Last Day, the angels, the Book, and the prophets, and gives wealth, despite love for it, to relatives, orphans, the needy, the traveller, those who ask, and for freeing slaves, and upholds the prayer, and gives zakah, and those who fulfil their promise when they make one, and those who are patient in hardship, adversity, and in times of struggle. Those are the ones who have been truthful, and they are the ones who are mindful.",
+    "O you who believe, prescribed for you is equal retaliation in cases of killing: the free for the free, the slave for the slave, and the female for the female. But whoever is pardoned in anything by his brother, then there should be a fair follow-up and payment to him with excellence. That is a relief and mercy from your Lord. But whoever transgresses after that will have a painful punishment.",
+    "And in equal retaliation there is life for you, O people of understanding, so that you may become mindful.",
+    "Prescribed for you, when death approaches one of you if he leaves wealth, is a bequest for parents and close relatives in fairness, a duty upon the mindful.",
+    "Then whoever changes it after hearing it, the sin is only upon those who change it. Indeed, Allah is All-Hearing, All-Knowing.",
+    "But whoever fears from the one making the bequest any error or sin, and reconciles between them, there is no sin upon him. Indeed, Allah is Most-Forgiving, Ever-Merciful.",
+    "O you who believe, fasting is prescribed for you as it was prescribed for those before you, so that you may become mindful,",
+    "for a limited number of days. But whoever among you is ill or on a journey, then an equal number of other days. And for those who are able to fast only with difficulty, a ransom is feeding a needy person. And whoever volunteers extra good, it is better for them. But to fast is better for you, if you only knew.",
+    "The month of Ramadan is the one in which the Qur’an was sent down, as guidance for people, and as clear proofs of guidance and distinction. So whoever among you witnesses the month, let them fast it. And whoever is ill or on a journey, then an equal number of other days. Allah intends ease for you and does not intend hardship for you, so that you may complete the number and glorify Allah for what He has guided you to, and so that you may be grateful.",
+    "And when My servants ask you about Me, then indeed I am near. I respond to the call of the caller when they call upon Me. So let them respond to Me and believe in Me, so that they may be rightly guided.",
+    "It has been made lawful for you, on the nights of fasting, to be intimate with your spouses. They are a covering for you, and you are a covering for them. Allah knows that you were betraying yourselves, so He turned to you and pardoned you. So now be with them and seek what Allah has written for you, and eat and drink until the white thread of dawn becomes clear to you from the black thread of night. Then complete the fast until the night. And do not be intimate with them while you are in seclusion in the mosques. These are the limits set by Allah, so do not approach them. Thus Allah makes His signs clear to people, so that they may become mindful.",
+    "And do not consume one another’s wealth unjustly, nor present it to the authorities so that you may knowingly consume a portion of people’s wealth sinfully.",
+    "They ask you about the new moons. Say, “They are measures of time for people and for pilgrimage.” Righteousness is not that you enter houses from their backs, but righteousness is one who is mindful. So enter houses from their doors, and be mindful of Allah, so that you may succeed.",
+    "And fight in the way of Allah those who fight you, but do not transgress. Indeed, Allah does not love those who transgress.",
+    "And kill them wherever you encounter them, and drive them out from where they drove you out. Persecution is worse than killing. And do not fight them at the Sacred Mosque unless they fight you there. But if they fight you, then kill them. Such is the recompense of those who disbelieve.",
+    "But if they stop, then indeed, Allah is Most-Forgiving, Ever-Merciful.",
+    "And fight them until there is no persecution and the religion is for Allah alone. But if they stop, then there is no hostility except against the wrongdoers.",
+    "The sacred month for the sacred month, and for violations there is equal retaliation. So whoever transgresses against you, then transgress against them in the same way they transgressed against you. And be mindful of Allah, and know that Allah is with the mindful.",
+    "And spend in the way of Allah, and do not throw yourselves into destruction by your own hands. And do good. Indeed, Allah loves those who do good.",
+    "And complete the pilgrimage and the visit for Allah. But if you are prevented, then offer what can be obtained of sacrificial animals. And do not shave your heads until the offering reaches its place. And whoever among you is ill or has an ailment of the head, then a ransom of fasting, charity, or sacrifice. When you are secure, then whoever benefits from the visit until the pilgrimage, then what can be obtained of sacrificial animals. And whoever cannot find one, then fasting three days during the pilgrimage and seven when you return, making ten complete. That is for those whose family are not present at the Sacred Mosque. And be mindful of Allah, and know that Allah is severe in punishment.",
+    "The pilgrimage is in well-known months. So whoever undertakes the pilgrimage in them, then there is no sexual conduct, no wrongdoing, and no arguing during the pilgrimage. And whatever good you do, Allah knows it. And take provision, but the best provision is mindfulness. And be mindful of Me, O people of understanding.",
+    "There is no blame upon you for seeking bounty from your Lord. Then when you depart from ʿArafāt, remember Allah at the Sacred Monument. And remember Him as He has guided you, even though before that you were among those who went astray.",
+    "Then depart from where the people depart from, and seek forgiveness from Allah. Indeed, Allah is Most-Forgiving, Ever-Merciful.",
+    "Then when you have completed your rites, remember Allah as you remember your fathers, or with stronger remembrance. Among people are those who say, “Our Lord, give us in this world,” and they have no share in the Hereafter.",
+    "And among them are those who say, “Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.”",
+    "For them is a share of what they have earned. And Allah is swift in reckoning.",
+    "And remember Allah during the appointed days. Then whoever hastens in two days, there is no sin upon them, and whoever delays, there is no sin upon them, for one who is mindful. And be mindful of Allah, and know that to Him you will be gathered.",
+    "And among people is one whose speech about worldly life impresses you, and he calls Allah to witness over what is in his heart, while he is the most quarrelsome of opponents.",
+    "And when he turns away, he strives throughout the land to cause corruption in it and destroy crops and lives. And Allah does not love corruption.",
+    "And when it is said to him, “Be mindful of Allah,” pride takes hold of him in sin. So Hell is sufficient for him, and how miserable is the resting place.",
+    "And among people is one who sells himself seeking the pleasure of Allah. And Allah is Most-Gentle towards His servants.",
+    "O you who believe, enter into submission completely, and do not follow the footsteps of Shayṭān. Indeed, he is a clear enemy to you.",
+    "But if you slip after clear proofs have come to you, then know that Allah is All-Mighty, All-Wise.",
+    "Do they wait for anything other than that Allah should come to them in shades of clouds, along with the angels, and the matter be decided? And to Allah all matters are returned.",
+    "Ask the Children of Isrā’īl how many clear signs We gave them. And whoever changes the blessing of Allah after it has come to them, then indeed, Allah is severe in punishment.",
+    "The worldly life has been made appealing to those who disbelieve, and they mock those who believe. But those who are mindful of Allah will be above them on the Day of Resurrection. And Allah provides for whom He wills without measure.",
+    "Humanity was one community, then Allah sent prophets as bearers of good news and warners, and sent down with them the Book in truth, to judge between people concerning what they differed over. And none differed over it except those who were given it, after clear proofs had come to them, out of envy among themselves. So Allah guided those who believed to the truth they differed over, by His permission. And Allah guides whom He wills to a straight path.",
+    "Or did you think you would enter Paradise while such trials had not yet come to you as came to those who passed before you? They were touched by hardship and suffering, and were shaken, until the messenger and those who believed with him said, “When is the help of Allah?” Indeed, the help of Allah is near.",
+    "They ask you what they should spend. Say, “Whatever good you spend is for parents, relatives, orphans, the needy, and the traveller. And whatever good you do, Allah knows it.”",
+    "Fighting has been prescribed for you, though it is disliked by you. But it may be that you dislike something while it is good for you, and that you love something while it is bad for you. Allah knows, and you do not know.",
+    "They ask you about fighting in the sacred month. Say, “Fighting in it is serious, but blocking the way of Allah, disbelieving in Him, barring access to the Sacred Mosque, and driving its people out of it are more serious in the sight of Allah. Persecution is worse than killing.” They will continue to fight you until they turn you away from your religion, if they can. And whoever among you turns away from their religion and dies in a state of disbelief, their deeds will come to nothing in this world and the Hereafter. They are the companions of the Fire. They will remain in it forever.",
+    "Indeed, those who believe, those who migrated, and those who strive in the way of Allah, they hope for the mercy of Allah. And Allah is Most-Forgiving, Ever-Merciful.",
+    "They ask you about intoxicants and gambling. Say, “In them is great sin and some benefit for people, but their sin is greater than their benefit.” And they ask you what they should spend. Say, “What is beyond your needs.” Thus Allah makes His signs clear to you, so that you may reflect,",
+    "about this world and the Hereafter. And they ask you about orphans. Say, “Setting matters right for them is best. And if you mix with them, they are your brothers.” And Allah knows the one who causes corruption from the one who sets things right. And if Allah had willed, He could have made things difficult for you. Indeed, Allah is All-Mighty, All-Wise.",
+    "And do not marry women who associate others with Allah until they believe. A believing bondwoman is better than a woman who associates others with Allah, even if she pleases you. And do not marry men who associate others with Allah until they believe. A believing bondman is better than a man who associates others with Allah, even if he pleases you. They call towards the Fire, while Allah calls towards Paradise and forgiveness by His permission. And He makes His signs clear to people, so that they may remember.",
+    "And they ask you about menstruation. Say, “It is a discomfort, so keep away from women during menstruation, and do not approach them until they are purified. Then when they are purified, approach them from where Allah has commanded you.” Indeed, Allah loves those who turn in repentance, and He loves those who keep themselves pure.",
+    "Your wives are a place of cultivation for you, so approach your place of cultivation as you wish, and send something ahead for yourselves. And be mindful of Allah, and know that you will meet Him. And give good news to the believers.",
+    "And do not make Allah a means in your oaths to prevent yourselves from doing good, being mindful, and reconciling between people. And Allah is All-Hearing, All-Knowing.",
+    "Allah does not hold you accountable for unintentional oaths, but He holds you accountable for what your hearts commit. And Allah is Most-Forgiving, Most-Forbearing.",
+    "For those who swear abstinence from their wives, there is a waiting period of four months. Then if they return, indeed Allah is Most-Forgiving, Ever-Merciful.",
+    "But if they decide upon divorce, then indeed Allah is All-Hearing, All-Knowing.",
+    "Divorced women shall wait by themselves for three menstrual periods. And it is not lawful for them to conceal what Allah has created in their wombs, if they believe in Allah and the Last Day. And their husbands have a greater right to take them back during that period, if they desire reconciliation. And for them are rights similar to what is upon them, according to what is fair. But men have a degree over them. And Allah is All-Mighty, All-Wise.",
+    "Divorce is twice. Then either retain with fairness or release with kindness. And it is not lawful for you to take back anything of what you have given them, unless both fear that they cannot keep within the limits of Allah. But if you fear that they cannot keep within the limits of Allah, then there is no blame upon them for what she gives up to secure her release. These are the limits of Allah, so do not transgress them. And whoever transgresses the limits of Allah, they are the wrongdoers.",
+    "Then if he divorces her, she is not lawful for him after that until she marries another husband. Then if he divorces her, there is no blame upon them to return to one another, if they believe that they can keep within the limits of Allah. These are the limits of Allah, which He makes clear for people who know.",
+    "When you divorce women and they reach the end of their waiting period, then either retain them with fairness or release them with fairness. Do not retain them to cause harm, so that you transgress. Whoever does that has wronged himself. And do not take the signs of Allah in mockery. Remember the favour of Allah upon you and what He has sent down to you of the Book and wisdom, instructing you by it. And be mindful of Allah, and know that Allah has full knowledge of everything.",
+    "When you divorce women and they reach the end of their waiting period, do not prevent them from marrying their husbands if they agree among themselves in a fair manner. This is an admonition for those among you who believe in Allah and the Last Day. That is purer and better for you. And Allah knows, while you do not know.",
+    "Mothers shall breastfeed their children for two complete years, for those who wish to complete the nursing. The father is responsible for their provision and clothing according to what is fair. No soul is burdened beyond its capacity. Neither mother nor father should be harmed because of their child. And upon the heir is the same duty. But if both desire weaning through mutual consent and consultation, there is no blame upon them. And if you wish to have your children breastfed by another, there is no blame upon you, provided you give what is due in a fair manner. And be mindful of Allah, and know that Allah sees all that you do.",
+    "And those among you who die and leave behind wives, they shall wait by themselves for four months and ten days. Then when they reach the end of their waiting period, there is no blame upon you for what they do with themselves in a fair manner. And Allah is fully aware of what you do.",
+    "And there is no blame upon you for hinting at a proposal to women, or for concealing it within yourselves. Allah knows that you will remember them. But do not make secret promises to them, except to speak honourable words. And do not resolve the bond of marriage until the prescribed term has reached its end. And know that Allah knows what is within yourselves, so beware of Him. And know that Allah is Most-Forgiving, Most-Forbearing.",
+    "There is no blame upon you if you divorce women before you have touched them or fixed a dowry for them. But provide for them, the wealthy according to his means and the one of limited means according to his means, a provision in fairness, a duty upon those who do good.",
+    "And if you divorce them before you have touched them, but after you have fixed a dowry, then half of what you fixed is due, unless they forgo it, or the one in whose hand is the marriage tie forgives. And to forgive is nearer to mindfulness. And do not forget generosity between yourselves. Indeed, Allah sees all that you do.",
+    "Guard strictly the prayers, especially the middle prayer, and stand before Allah in devoted obedience.",
+    "And if you fear danger, then pray on foot or riding. But when you are safe, remember Allah as He has taught you what you did not know.",
+    "And those among you who die and leave behind wives should make a bequest for their wives, provision for a year without expulsion. But if they leave, there is no blame upon you for what they do with themselves in a fair manner. And Allah is All-Mighty, All-Wise.",
+    "And for divorced women there is provision according to what is fair, a duty upon the mindful.",
+    "Thus Allah makes His signs clear to you, so that you may use reason.",
+    "Have you not seen those who left their homes in thousands, fearing death? Allah said to them, “Die,” then He brought them back to life. Indeed, Allah is full of bounty towards people, but most people are not grateful.",
+    "And fight in the way of Allah, and know that Allah is All-Hearing, All-Knowing.",
+    "Who is it that will lend Allah a good loan, so He may multiply it for them many times over? And Allah withholds and gives freely, and to Him you will be returned.",
+    "Have you not seen the leaders of the Children of Isrā’īl after Mūsā, when they said to a prophet of theirs, “Appoint for us a king so that we may fight in the way of Allah.” He said, “Is it possible that if fighting is prescribed for you, you will not fight?” They said, “Why should we not fight in the way of Allah, when we have been driven out of our homes and from our children?” But when fighting was prescribed for them, they turned away, except for a few of them. And Allah knows the wrongdoers.",
+    "Their prophet said to them, “Allah has appointed Ṭālūt as king over you.” They said, “How can he have kingship over us while we are more entitled to kingship than him, and he has not been given abundance of wealth?” He said, “Allah has chosen him over you and increased him abundantly in knowledge and body. And Allah gives His kingship to whom He wills. And Allah is All-Vast, All-Knowing.”",
+    "And their prophet said to them, “The sign of his kingship is that the Ark will come to you, in it is reassurance from your Lord and a remnant of what the family of Mūsā and the family of Hārūn left behind, carried by the angels. Indeed, in that is a sign for you, if you are believers.”",
+    "And when Ṭālūt set out with the forces, he said, “Allah will test you with a river. Whoever drinks from it is not from me, and whoever does not taste it is from me, except for one who scoops a handful with his hand.” But they drank from it, except for a few of them. Then when he crossed it, he and those who believed with him, they said, “We have no strength today against Jālūt and his forces.” Those who were certain that they would meet Allah said, “How many a small group has overcome a large group by permission of Allah.” And Allah is with the patient.",
+    "And when they went out against Jālūt and his forces, they said, “Our Lord, pour patience upon us, make our steps firm, and give us victory over the disbelieving people.”",
+    "So they defeated them by permission of Allah. And Dāwūd killed Jālūt, and Allah gave him kingship and wisdom, and taught him from what He willed. And if Allah did not repel some people by means of others, the earth would surely be corrupted. But Allah is full of bounty towards all worlds.",
+    "These are the signs of Allah which We recite to you in truth. And indeed, you are among the messengers.",
+    "Those messengers, We favoured some of them over others. Among them are those to whom Allah spoke, and He raised some of them in rank. And We gave ʿĪsā, son of Maryam, clear signs, and supported him with the Pure Spirit. And if Allah had willed, those who came after them would not have fought one another after clear proofs had come to them. But they differed, so among them were those who believed and among them were those who disbelieved. And if Allah had willed, they would not have fought. But Allah does what He intends.",
+    "O you who believe, spend from what We have provided you before a Day comes when there will be no bargaining, no friendship, and no intercession. And those who disbelieve, they are the wrongdoers.",
+    "Allah, there is no god except Him, the Ever-Living, the Sustainer of all. Neither drowsiness nor sleep overtakes Him. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what is behind them. They do not encompass anything of His knowledge except what He wills. His seat extends over the heavens and the earth, and preserving them does not tire Him. And He is the Most-High, the Most-Great.",
+    "There is no compulsion in religion. Right guidance has become distinct from error. So whoever rejects false powers and believes in Allah has grasped the firmest handhold that will never break. And Allah is All-Hearing, All-Knowing.",
+    "Allah is the protector of those who believe. He brings them out from darkness into light. And those who disbelieve, their protectors are false powers. They bring them out from light into darkness. Those are the companions of the Fire. They will remain in it forever.",
+    "Have you not seen the one who argued with Ibrāhīm about his Lord, because Allah had given him kingship? When Ibrāhīm said, “My Lord is the One who gives life and causes death,” he said, “I give life and cause death.” Ibrāhīm said, “Allah brings the sun from the east, so bring it from the west.” So the one who disbelieved was confounded. And Allah does not guide wrongdoing people.",
+    "Or like the one who passed by a town that had fallen in ruins. He said, “How will Allah bring this back to life after its death?” So Allah caused him to die for a hundred years, then brought him back to life. He said, “How long have you remained?” He said, “I have remained a day or part of a day.” He said, “No, you have remained a hundred years. Look at your food and drink, they have not spoiled. And look at your donkey. And We will make you a sign for people. And look at the bones, how We raise them and then clothe them with flesh.” When it became clear to him, he said, “I know that Allah has power over everything.”",
+    "And remember when Ibrāhīm said, “My Lord, show me how You give life to the dead.” He said, “Do you not believe?” He said, “Yes, but so that my heart may be reassured.” He said, “Then take four birds and draw them close to you, then place a part of them on each hill. Then call them, and they will come to you swiftly. And know that Allah is All-Mighty, All-Wise.”",
+    "The example of those who spend their wealth in the way of Allah is like a grain that grows seven ears, in each ear a hundred grains. And Allah multiplies for whom He wills. And Allah is All-Vast, All-Knowing.",
+    "Those who spend their wealth in the way of Allah, then do not follow what they spent with reminders of generosity or harm, for them is their reward with their Lord. No fear will be upon them, nor will they grieve.",
+    "A kind word and forgiveness are better than charity followed by harm. And Allah is Free of need, Forbearing.",
+    "O you who believe, do not nullify your charities with reminders of generosity or harm, like one who spends his wealth to be seen by people and does not believe in Allah and the Last Day. His example is like a smooth stone upon which is dust, then a heavy rain falls upon it, leaving it bare. They gain nothing from what they earned. And Allah does not guide the disbelieving people.",
+    "And the example of those who spend their wealth seeking the pleasure of Allah and to strengthen their own souls is like a garden on a hill. A heavy rain falls upon it, and it yields its produce twofold. And if a heavy rain does not fall upon it, then a light rain is enough. And Allah sees all that you do.",
+    "Would any one of you wish to have a garden of palm trees and grapevines beneath which rivers flow, with every kind of fruit, then old age comes to him and he has weak offspring, and a fiery whirlwind strikes it and it is burned? Thus Allah makes the signs clear to you, so that you may reflect.",
+    "O you who believe, spend from the good things you have earned and from what We have brought forth for you from the earth, and do not aim for what is bad from it to spend, while you yourselves would not take it except with your eyes closed. And know that Allah is Free of need, All-Praiseworthy.",
+    "Shayṭān threatens you with poverty and commands you to indecency, while Allah promises you forgiveness and bounty from Him. And Allah is All-Vast, All-Knowing.",
+    "He grants wisdom to whom He wills. And whoever is granted wisdom has certainly been given great good. But none remember except people of understanding.",
+    "And whatever you spend of any spending or vow of any vow, then indeed Allah knows it. And the wrongdoers will have no helpers.",
+    "If you give charity openly, it is good. But if you conceal it and give it to the needy, that is better for you, and it will remove some of your wrongs. And Allah is fully aware of what you do.",
+    "You are not responsible for guiding them. Rather, Allah guides whom He wills. And whatever good you spend is for your own benefit. You do not spend except seeking the face of Allah. And whatever good you spend will be repaid to you in full, and you will not be wronged.",
+    "For the poor who are restrained in the way of Allah, unable to move about in the land. The ignorant think them wealthy because of their restraint. You recognise them by their signs. They do not ask people persistently. And whatever good you spend, indeed Allah knows it.",
+    "Those who spend their wealth by night and by day, secretly and openly, for them is their reward with their Lord. No fear will be upon them, nor will they grieve.",
+    "Those who consume usury will not stand except as one stands whom Shayṭān has struck with madness. That is because they say, “Trade is only like usury,” while Allah has permitted trade and forbidden usury. So whoever receives an admonition from their Lord and stops, then what has passed is theirs, and their affair rests with Allah. But whoever returns, those are the companions of the Fire. They will remain in it forever.",
+    "Allah erases usury and causes charities to grow. And Allah does not love every persistent disbeliever and sinner.",
+    "Indeed, those who believe, do good deeds, uphold the prayer, and give zakah, for them is their reward with their Lord. No fear will be upon them, nor will they grieve.",
+    "O you who believe, be mindful of Allah and give up what remains of usury, if you are believers.",
+    "But if you do not, then know of a declaration of war from Allah and His Messenger. But if you repent, then you may have your principal. You will not be wrong, nor will you be wronged.",
+    "And if one is in hardship, then grant them time until ease. But to give charity is better for you, if you only knew.",
+    "Be mindful of a Day when you will be returned to Allah. Then every soul will be repaid in full for what it earned, and they will not be wronged.",
+    "O you who believe, when you contract a debt for a fixed term, write it down. Let a scribe write it between you with fairness. Let no scribe refuse to write as Allah has taught him. So let him write, and let the one who owes the debt dictate, and let him be mindful of Allah, his Lord, and not diminish anything from it. If the one who owes the debt is of limited understanding, weak, or unable to dictate, then let his guardian dictate with fairness. And bring two witnesses from among your men. And if two men are not available, then one man and two women from those you accept as witnesses, so that if one of them forgets, the other may remind her. And the witnesses should not refuse when they are called. And do not be weary to write it down, whether small or large, for its term. That is more just in the sight of Allah, stronger as evidence, and more likely to prevent doubt among you, except when it is an immediate transaction which you conduct among yourselves. Then there is no blame upon you if you do not write it down. And bring witnesses when you trade with one another, and let no harm be done to scribe or witness. If you do so, then it is wrongdoing in you. And be mindful of Allah. And Allah teaches you. And Allah has full knowledge of everything.",
+    "And if you are on a journey and cannot find a scribe, then a pledged security may be taken. But if one of you entrusts another, then let the one who is entrusted fulfil his trust, and let him be mindful of Allah, his Lord. And do not conceal testimony, for whoever conceals it, their heart is sinful. And Allah knows all that you do.",
+    "To Allah belongs whatever is in the heavens and whatever is on the earth. Whether you reveal what is within yourselves or conceal it, Allah will call you to account for it. Then He forgives whom He wills and punishes whom He wills. And Allah has power over everything.",
+    "The messenger believes in what has been sent down to him from his Lord, and so do the believers. All believe in Allah, His angels, His Books, and His messengers. “We make no distinction between any of His messengers.” And they say, “We hear and we obey. Grant us Your forgiveness, our Lord, and to You is the return.”",
+    "Allah does not burden a soul beyond its capacity. For it is what it has earned, and against it is what it has earned. “Our Lord, do not take us to account if we forget or make a mistake. Our Lord, do not place upon us a burden like that which You placed upon those before us. Our Lord, do not burden us with what We have no strength to bear. Pardon us, forgive us, and have mercy on us. You are our Protector, so give us victory over the disbelieving people.”"
+  ];
+
+  const versesContainer = document.getElementById('versesContainer');
+  const loadingState = document.getElementById('loadingState');
+  const errorState = document.getElementById('errorState');
+
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+
+  tabButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const target = button.dataset.tab;
+      tabButtons.forEach((btn) => btn.classList.remove('active'));
+      tabPanels.forEach((panel) => panel.classList.remove('active'));
+      button.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function toArabicDigits(num) {
+    return String(num).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+  }
+
+  async function fetchArabicPages() {
+    const perPage = 50;
+    const totalPages = 6;
+    const requests = [];
+
+    for (let page = 1; page <= totalPages; page++) {
+      const url = `https://api.quran.com/api/v4/verses/by_chapter/2?fields=text_uthmani&per_page=${perPage}&page=${page}`;
+      requests.push(
+        fetch(url).then((response) => {
+          if (!response.ok) {
+            throw new Error(`Request failed on page ${page}`);
+          }
+          return response.json();
+        })
+      );
+    }
+
+    const responses = await Promise.all(requests);
+
+    const verses = responses.flatMap((payload) => {
+      if (Array.isArray(payload.verses)) return payload.verses;
+      if (payload.data && Array.isArray(payload.data.verses)) return payload.data.verses;
+      return [];
+    });
+
+    return verses
+      .filter((verse) => verse.verse_number && verse.text_uthmani)
+      .sort((a, b) => a.verse_number - b.verse_number)
+      .map((verse) => ({
+        number: verse.verse_number,
+        arabic: verse.text_uthmani
+      }));
+  }
+
+  function renderVerses(arabicVerses) {
+    const html = arabicVerses.map((verse, index) => {
+      const english = englishVerses[index] || '';
+      return `
+        <article class="verse" id="ayah-${verse.number}">
+          <div class="arabic-wrap">
+            <div class="arabic-ayah" lang="ar">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
+          </div>
+          <div class="english">
+            <div class="english-number">${verse.number}.</div>
+            <div class="english-text">${escapeHtml(english)}</div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    versesContainer.innerHTML = html;
+  }
+
+  async function loadSurah() {
+    try {
+      const arabicVerses = await fetchArabicPages();
+
+      if (arabicVerses.length !== englishVerses.length) {
+        throw new Error(`Verse count mismatch: Arabic ${arabicVerses.length}, English ${englishVerses.length}`);
+      }
+
+      renderVerses(arabicVerses);
+      loadingState.style.display = 'none';
+      errorState.style.display = 'none';
+    } catch (error) {
+      console.error(error);
+      loadingState.style.display = 'none';
+      errorState.style.display = 'block';
+    }
+  }
+
+  loadSurah();
+</script>
+</body>
+</html>
