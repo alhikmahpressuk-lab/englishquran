@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surah 1 · Al-Fātiḥah | The English Qur’an</title>
+  <meta
+    name="description"
+    content="Surah 1, Al-Fātiḥah, from The English Qur’an translated by Dr A K Khan."
+  />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri+Quran&display=swap');
+
+    :root {
+      --bg: #f6f8f9;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --text: #172026;
+      --muted: #66727d;
+      --line: #e2e8ec;
+      --accent: #1e6b5c;
+      --accent-deep: #154d42;
+      --accent-soft: #e8f3f0;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --max: 980px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behaviour: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: rgba(246, 248, 249, 0.9);
+      border-bottom: 1px solid rgba(226, 232, 236, 0.9);
+    }
+
+    .topbar-inner,
+    .container,
+    .footer-inner {
+      width: min(var(--max), calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav a {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.94rem;
+      color: var(--muted);
+      transition: 0.2s ease;
+    }
+
+    .nav a:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      color: #fff;
+    }
+
+    .hero {
+      padding: 34px 0 20px;
+    }
+
+    .hero-card,
+    .verses-card,
+    .note-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -110px;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(30,107,92,0.13) 0%, rgba(30,107,92,0) 70%);
+      pointer-events: none;
+    }
+
+    .crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy p {
+      margin: 16px 0 0;
+      color: #33414d;
+      font-size: 1.02rem;
+      max-width: 60ch;
+    }
+
+    .hero-copy .translator {
+      color: var(--muted);
+      margin-top: 18px;
+      font-size: 0.98rem;
+    }
+
+    .hero-copy .translator strong {
+      color: var(--text);
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+    }
+
+    .meta-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .section {
+      padding: 12px 0 34px;
+    }
+
+    .verses-card {
+      padding: 18px;
+    }
+
+    .verse {
+      padding: 24px 18px;
+      border-radius: 18px;
+      transition: 0.18s ease;
+    }
+
+    .verse + .verse {
+      border-top: 1px solid var(--line);
+    }
+
+    .verse:hover {
+      background: #fbfcfc;
+    }
+
+    .arabic-wrap {
+      text-align: right;
+      direction: rtl;
+      margin-bottom: 18px;
+    }
+
+    .arabic-ayah {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(2rem, 4vw, 2.9rem);
+      line-height: 2.05;
+      color: #0f1720;
+      word-spacing: 0.1em;
+    }
+
+    .ayah-end {
+      display: inline-block;
+      margin-inline-start: 10px;
+      color: var(--accent-deep);
+      font-size: 0.92em;
+      vertical-align: middle;
+    }
+
+    .english {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .english-number {
+      min-width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .english-text {
+      font-size: 1.03rem;
+      color: #23303a;
+    }
+
+    .note-card {
+      margin-top: 18px;
+      padding: 20px 22px;
+    }
+
+    .note-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .footer {
+      padding: 6px 0 34px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 14px 0;
+      }
+
+      .nav {
+        width: 100%;
+      }
+
+      .nav a {
+        width: auto;
+      }
+
+      .hero-card,
+      .verses-card,
+      .note-card {
+        border-radius: 18px;
+      }
+
+      .hero-card {
+        padding: 22px;
+      }
+
+      .verses-card {
+        padding: 10px;
+      }
+
+      .verse {
+        padding: 20px 12px;
+      }
+
+      .english {
+        gap: 12px;
+      }
+
+      .english-number {
+        min-width: 34px;
+        height: 34px;
+        border-radius: 10px;
+      }
+
+      .arabic-ayah {
+        line-height: 1.95;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">١</div>
+        <div class="brand-text">
+          <h1>The English Qur’an</h1>
+          <p>Translated by Dr A K Khan</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html">All Surahs</a>
+        <a class="cta" href="#verses">Read Surah 1</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="crumb">Surah 1</div>
+
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <h2>Al-Fātiḥah</h2>
+              <p>
+                The Opening
+              </p>
+              <p class="translator">
+                From <strong>The English Qur’an</strong>, translated by <strong>Dr A K Khan</strong>
+              </p>
+            </div>
+
+            <div class="hero-meta">
+              <div class="meta-box">
+                <div class="meta-label">Arabic name</div>
+                <div class="meta-value" dir="rtl" lang="ar">الفاتحة</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label">Verses</div>
+                <div class="meta-value">7</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label">Revelation</div>
+                <div class="meta-value">Makki</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="verses">
+      <div class="container">
+        <div class="verses-card">
+
+          <article class="verse" id="ayah-1">
+            <div class="arabic-wrap">
+              <div class="arabic-ayah" lang="ar">
+                بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                <span class="ayah-end">۝١</span>
+              </div>
+            </div>
+            <div class="english">
+              <div class="english-number">1.</div>
+              <div class="english-text">
+                In the name of Allah, the Most-Merciful, the Ever-Merciful.
+              </div>
+            </div>
+          </article>
+
+          <article class="verse" id="ayah-2">
+            <div class="arabic-wrap">
+              <div class="arabic-ayah" lang="ar">
+                ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ
+                <span class="ayah-end">۝٢</span>
+              </div>
+            </div>
+            <div class="english">
+              <div class="english-number">2.</div>
+              <div class="english-text">
+                All praise belongs to Allah, Lord of all worlds.
+              </div>
+            </div>
+          </article>
+
+          <article class="verse" id="ayah-3">
+            <div class="arabic-wrap">
+              <div class="arabic-ayah" lang="ar">
+                ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                <span class="ayah-end">۝٣</span>
+              </div>
+            </div>
+            <div class="english">
+              <div class="english-number">3.</div>
+              <div class="english-text">
+                The Most-Merciful, the Ever-Merciful.
+              </div>
+            </div>
+          </article>
+
+          <article class="verse" id="ayah-4">
+            <div class="arabic-wrap">
+              <div class="arabic-ayah" lang="ar">
+                مَٰلِكِ يَوْمِ ٱلدِّينِ
+                <span class="ayah-end">۝٤</span>
+              </div>
+            </div>
+            <div class="english">
+              <div class="english-number">4.</div>
+              <div class="english-text">
+                Master of the Day of Judgement.
+              </div>
+            </div>
+          </article>
+
+          <article class="verse" id="ayah-5">
+            <div class="arabic-wrap">
+              <div class="arabic-ayah" lang="ar">
+                إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ
+                <span class="ayah-end">۝٥</span>
+              </div>
+            </div>
+            <div class="english">
+              <div class="english-number">5.</div>
+              <div class="english-text">
+                You alone we worship, and You alone we ask for help.
+              </div>
+            </div>
+          </article>
+
+          <article class="verse" id="ayah-6">
+            <div class="arabic-wrap">
+              <div class="arabic-ayah" lang="ar">
+                ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ
+                <span class="ayah-end">۝٦</span>
+              </div>
+            </div>
+            <div class="english">
+              <div class="english-number">6.</div>
+              <div class="english-text">
+                Guide us to the straight path,
+              </div>
+            </div>
+          </article>
+
+          <article class="verse" id="ayah-7">
+            <div class="arabic-wrap">
+              <div class="arabic-ayah" lang="ar">
+                صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ
+                <span class="ayah-end">۝٧</span>
+              </div>
+            </div>
+            <div class="english">
+              <div class="english-number">7.</div>
+              <div class="english-text">
+                the path of those upon whom You have bestowed favour, not of those who have incurred anger, nor of those who have gone astray.
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="note-card">
+          <p>
+            Arabic is shown before each English verse, with Arabic ayah markers and clean English numbering, following your locked website format.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>Surah 1 · Al-Fātiḥah</div>
+      <div class="footer-links">
+        <a href="index.html">Back to homepage</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
