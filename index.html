@@ -35,18 +35,6 @@
       --accent: #2a8b77;
       --accent-soft: #18342d;
       --accent-deep: #86dac7;
-      --
-
-    html[data-theme="dark"] {
-      --bg: #0f1519;
-      --surface: #121b20;
-      --surface-soft: #18242b;
-      --text: #eef4f6;
-      --muted: #a6b5bd;
-      --line: #27343c;
-      --accent: #2a8b77;
-      --accent-soft: #18342d;
-      --accent-deep: #86dac7;
       --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
       color-scheme: dark;
     }
@@ -100,6 +88,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 18px;
+      padding: 12px 0;
     }
 
     .brand {
@@ -139,9 +128,9 @@
     .nav {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 10px;
       flex-wrap: wrap;
-      justify-content: flex-end;
     }
 
     .nav a,
@@ -708,6 +697,18 @@
       }
     }
 
+    @media (max-width: 860px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
     @media (max-width: 820px) {
       .hero-grid,
       .search-grid,
@@ -717,16 +718,6 @@
       .about-grid,
       .book-grid {
         grid-template-columns: 1fr;
-      }
-
-      .topbar-inner {
-        display: block;
-        padding: 16px 0;
-      }
-
-      .nav {
-        margin-top: 14px;
-        justify-content: flex-start;
       }
 
       .hero {
@@ -760,11 +751,20 @@
         font-size: 2rem;
       }
 
+      .nav {
+        gap: 8px;
+      }
+
+      .nav a,
+      .theme-toggle {
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 0.88rem;
+      }
+
       .button,
       .mini-button,
-      .book-link,
-      .theme-toggle,
-      .nav a {
+      .book-link {
         width: 100%;
       }
 
@@ -834,7 +834,7 @@
 
             <div class="info-block">
               <h3>Choose a verse quickly</h3>
-              <p>Select any surah from the main list, then choose the verse number from the linked verses box.</p>
+              <p>Select any surah from the main list, then choose the verse number from the verses box.</p>
             </div>
 
             <div class="info-block">
@@ -1214,8 +1214,7 @@
       themeToggle.textContent = theme === "light" ? "Dark" : "Light";
       try {
         localStorage.setItem("quranIndexTheme", theme);
-      } catch (error) {
-      }
+      } catch (error) {}
     }
 
     function bindThemeToggle() {
