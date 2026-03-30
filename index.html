@@ -31,7 +31,7 @@
     }
 
     html {
-      scroll-behaviour: smooth;
+      scroll-behavior: smooth;
     }
 
     body {
@@ -161,7 +161,9 @@
     .hero-card,
     .info-card,
     .search-panel,
-    .surah-section {
+    .surah-section,
+    .book-section,
+    .about-section {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -326,7 +328,55 @@
     .section-head p {
       margin: 6px 0 0;
       color: var(--muted);
-      max-width: 62ch;
+      max-width: 72ch;
+    }
+
+    .book-section,
+    .about-section {
+      padding: 26px;
+      margin-bottom: 24px;
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .book-copy h4 {
+      margin: 0 0 10px;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+    }
+
+    .book-copy p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .book-links {
+      display: grid;
+      gap: 12px;
+    }
+
+    .book-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 16px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .book-link:hover {
+      background: var(--accent-soft);
+      border-color: rgba(30, 107, 92, 0.28);
+      color: var(--accent-deep);
     }
 
     .search-panel {
@@ -370,7 +420,7 @@
 
     .surah-section {
       padding: 26px;
-      margin: 20px 0 70px;
+      margin: 20px 0 28px;
     }
 
     .results-bar {
@@ -402,7 +452,7 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
-      min-height: 148px;
+      min-height: 162px;
     }
 
     .surah-card:hover {
@@ -467,18 +517,16 @@
       color: #4a5966;
     }
 
-    .about-strip {
+    .about-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
-      margin: 12px 0 60px;
     }
 
     .about-card {
-      background: var(--surface);
+      background: var(--surface-soft);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
       padding: 24px;
     }
 
@@ -497,6 +545,7 @@
       border-top: 1px solid var(--line);
       background: var(--surface);
       padding: 26px 0 40px;
+      margin-top: 28px;
     }
 
     .footer-inner {
@@ -541,9 +590,10 @@
 
     @media (max-width: 1080px) {
       .hero-grid,
-      .about-strip,
+      .book-grid,
       .search-grid,
-      .surah-grid {
+      .surah-grid,
+      .about-grid {
         grid-template-columns: 1fr 1fr;
       }
 
@@ -564,9 +614,10 @@
 
       .topbar-inner,
       .hero-grid,
-      .about-strip,
+      .book-grid,
       .search-grid,
-      .surah-grid {
+      .surah-grid,
+      .about-grid {
         grid-template-columns: 1fr;
       }
 
@@ -587,7 +638,8 @@
       .info-card,
       .search-panel,
       .surah-section,
-      .about-card {
+      .book-section,
+      .about-section {
         padding: 22px;
       }
     }
@@ -627,7 +679,7 @@
       <nav class="nav">
         <a href="#surahs">Surahs</a>
         <a href="#about">About</a>
-        <a class="cta" href="#surahs">Start Reading</a>
+        <a class="cta" href="surah-1.html">Start Reading</a>
       </nav>
     </div>
   </header>
@@ -647,8 +699,8 @@
             </p>
 
             <div class="hero-actions">
-              <a class="button button-primary" href="#surahs">Browse All 114 Surahs</a>
-              <a class="button button-secondary" href="surah-1.html">Open Surah 1</a>
+              <a class="button button-primary" href="surah-1.html">Start Reading</a>
+              <a class="button button-secondary" href="#surahs">Browse All 114 Surahs</a>
             </div>
 
             <ul class="hero-points">
@@ -684,13 +736,42 @@
       </div>
     </section>
 
+    <section class="section">
+      <div class="container">
+        <div class="book-section">
+          <div class="section-head">
+            <div>
+              <h3>Get the Book</h3>
+              <p>
+                Available globally in print through trusted platforms.
+              </p>
+            </div>
+          </div>
+
+          <div class="book-grid">
+            <div class="book-copy">
+              <h4>The English Qur’an in print</h4>
+              <p>
+                Access the printed edition through the available global platforms below.
+              </p>
+            </div>
+
+            <div class="book-links">
+              <a class="book-link" href="https://amzn.eu/d/0dRT7lMW" target="_blank" rel="noopener noreferrer">Amazon</a>
+              <a class="book-link" href="https://shop.ingramspark.com/b/084?params=xzqr7rCaEWWzms7j5zNG5JFyoRQ0VFb3vLMBreZw2qr" target="_blank" rel="noopener noreferrer">IngramSpark</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="surahs">
       <div class="container">
         <div class="section-head">
           <div>
             <h3>Browse the Surahs</h3>
             <p>
-              Select any surah from the structured list below. You can search by surah number, Arabic name or transliterated name.
+              Select any surah from the structured list below. You can search by surah number, Arabic name, transliterated name, or meaning.
             </p>
           </div>
         </div>
@@ -702,7 +783,7 @@
               <input
                 id="searchInput"
                 type="text"
-                placeholder="Try: Al-Fatihah, 2, Ya-Sin, Al-Kahf"
+                placeholder="Try: Al-Fātiḥah, 2, Yā Sīn, The Cave"
               />
             </div>
 
@@ -719,7 +800,7 @@
               <label for="sortFilter">Sort by</label>
               <select id="sortFilter">
                 <option value="number">Surah number</option>
-                <option value="name">English name</option>
+                <option value="name">Surah name</option>
                 <option value="verses">Verse count</option>
               </select>
             </div>
@@ -738,36 +819,47 @@
       </div>
     </section>
 
-    <section class="container" id="about">
-      <div class="section-head">
-        <div>
-          <h3>About this website</h3>
-          <p>
-            This website is being built as a modern and thoughtful home for The English Qur’an, bringing together beautiful presentation, clear navigation and faithful verse-by-verse access.
-          </p>
-        </div>
-      </div>
+    <section class="section" id="about">
+      <div class="container">
+        <div class="about-section">
+          <div class="section-head">
+            <div>
+              <h3>About this translation</h3>
+              <p>
+                This website follows the manuscript of The English Qur’an and presents the translation within a clear and disciplined reading environment.
+              </p>
+            </div>
+          </div>
 
-      <div class="about-strip">
-        <div class="about-card">
-          <h4>Readable for today</h4>
-          <p>
-            The aim is to make the Qur’an easy to approach, easy to navigate and easy to continue reading, while keeping the presentation dignified and serious.
-          </p>
-        </div>
+          <div class="about-grid">
+            <div class="about-card">
+              <h4>The importance of this translation</h4>
+              <p>
+                This translation was produced in response to a pressing need, to present the Qur’an in English that is faithful, precise, intellectually honest, and still natural and readable for the modern reader. It serves readers who seek guidance but struggle with archaic language, younger generations raised in English speaking settings, and thoughtful non Muslims who wish to approach the Qur’an without unnecessary barriers.
+              </p>
+            </div>
 
-        <div class="about-card">
-          <h4>Arabic and English together</h4>
-          <p>
-            Every surah page is intended to place the Arabic verse before the English verse, with numbering in both Arabic and English for consistency.
-          </p>
-        </div>
+            <div class="about-card">
+              <h4>Translation method and conventions</h4>
+              <p>
+                The method is simple and disciplined, to let the Qur’an speak without commentary, embellishment, or distancing language. Wherever possible, the translation remains close to the Arabic wording. Where English requires adjustment, it does so carefully and transparently. The aim is faithful communication, clarity, and direct engagement with the Qur’anic voice.
+              </p>
+            </div>
 
-        <div class="about-card">
-          <h4>Professional and uncluttered</h4>
-          <p>
-            The design is clean and restrained, giving the reader a calm experience that feels modern, organised and worthy of the Qur’an.
-          </p>
+            <div class="about-card">
+              <h4>About the translator</h4>
+              <p>
+                A. K. Khan is a UK based Islamic educator, author, and researcher whose work is devoted to restoring direct and intelligible engagement with the Qur’an for modern English readers. His background combines early Qur’anic study, advanced English academic training, and sustained study of classical Arabic, allowing him to approach Qur’anic translation with clarity, discipline, and fidelity to meaning.
+              </p>
+            </div>
+
+            <div class="about-card">
+              <h4>Mission and vision</h4>
+              <p>
+                The mission of this work is service, service to the reader, service to understanding, and service to the Qur’an itself by conveying its message clearly without unnecessary intrusion. This website also stands within a wider vision, by Allah’s permission, to expand this work into every language so that more people across the world may approach the Qur’an with clarity, seriousness, and trust.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -778,6 +870,7 @@
       <p>The English Qur’an, translated by Dr A K Khan.</p>
       <div class="footer-links">
         <a href="#surahs">Browse Surahs</a>
+        <a href="#about">About</a>
         <a href="surah-1.html">Read Surah 1</a>
       </div>
     </div>
@@ -785,120 +878,120 @@
 
   <script>
     const surahs = [
-      { number: 1, english: "Al-Fatihah", arabic: "الفاتحة", verses: 7, type: "Makki" },
-      { number: 2, english: "Al-Baqarah", arabic: "البقرة", verses: 286, type: "Madani" },
-      { number: 3, english: "Ali 'Imran", arabic: "آل عمران", verses: 200, type: "Madani" },
-      { number: 4, english: "An-Nisa", arabic: "النساء", verses: 176, type: "Madani" },
-      { number: 5, english: "Al-Ma'idah", arabic: "المائدة", verses: 120, type: "Madani" },
-      { number: 6, english: "Al-An'am", arabic: "الأنعام", verses: 165, type: "Makki" },
-      { number: 7, english: "Al-A'raf", arabic: "الأعراف", verses: 206, type: "Makki" },
-      { number: 8, english: "Al-Anfal", arabic: "الأنفال", verses: 75, type: "Madani" },
-      { number: 9, english: "At-Tawbah", arabic: "التوبة", verses: 129, type: "Madani" },
-      { number: 10, english: "Yunus", arabic: "يونس", verses: 109, type: "Makki" },
-      { number: 11, english: "Hud", arabic: "هود", verses: 123, type: "Makki" },
-      { number: 12, english: "Yusuf", arabic: "يوسف", verses: 111, type: "Makki" },
-      { number: 13, english: "Ar-Ra'd", arabic: "الرعد", verses: 43, type: "Madani" },
-      { number: 14, english: "Ibrahim", arabic: "إبراهيم", verses: 52, type: "Makki" },
-      { number: 15, english: "Al-Hijr", arabic: "الحجر", verses: 99, type: "Makki" },
-      { number: 16, english: "An-Nahl", arabic: "النحل", verses: 128, type: "Makki" },
-      { number: 17, english: "Al-Isra", arabic: "الإسراء", verses: 111, type: "Makki" },
-      { number: 18, english: "Al-Kahf", arabic: "الكهف", verses: 110, type: "Makki" },
-      { number: 19, english: "Maryam", arabic: "مريم", verses: 98, type: "Makki" },
-      { number: 20, english: "Ta-Ha", arabic: "طه", verses: 135, type: "Makki" },
-      { number: 21, english: "Al-Anbiya", arabic: "الأنبياء", verses: 112, type: "Makki" },
-      { number: 22, english: "Al-Hajj", arabic: "الحج", verses: 78, type: "Madani" },
-      { number: 23, english: "Al-Mu'minun", arabic: "المؤمنون", verses: 118, type: "Makki" },
-      { number: 24, english: "An-Nur", arabic: "النور", verses: 64, type: "Madani" },
-      { number: 25, english: "Al-Furqan", arabic: "الفرقان", verses: 77, type: "Makki" },
-      { number: 26, english: "Ash-Shu'ara", arabic: "الشعراء", verses: 227, type: "Makki" },
-      { number: 27, english: "An-Naml", arabic: "النمل", verses: 93, type: "Makki" },
-      { number: 28, english: "Al-Qasas", arabic: "القصص", verses: 88, type: "Makki" },
-      { number: 29, english: "Al-'Ankabut", arabic: "العنكبوت", verses: 69, type: "Makki" },
-      { number: 30, english: "Ar-Rum", arabic: "الروم", verses: 60, type: "Makki" },
-      { number: 31, english: "Luqman", arabic: "لقمان", verses: 34, type: "Makki" },
-      { number: 32, english: "As-Sajdah", arabic: "السجدة", verses: 30, type: "Makki" },
-      { number: 33, english: "Al-Ahzab", arabic: "الأحزاب", verses: 73, type: "Madani" },
-      { number: 34, english: "Saba", arabic: "سبأ", verses: 54, type: "Makki" },
-      { number: 35, english: "Fatir", arabic: "فاطر", verses: 45, type: "Makki" },
-      { number: 36, english: "Ya-Sin", arabic: "يس", verses: 83, type: "Makki" },
-      { number: 37, english: "As-Saffat", arabic: "الصافات", verses: 182, type: "Makki" },
-      { number: 38, english: "Sad", arabic: "ص", verses: 88, type: "Makki" },
-      { number: 39, english: "Az-Zumar", arabic: "الزمر", verses: 75, type: "Makki" },
-      { number: 40, english: "Ghafir", arabic: "غافر", verses: 85, type: "Makki" },
-      { number: 41, english: "Fussilat", arabic: "فصلت", verses: 54, type: "Makki" },
-      { number: 42, english: "Ash-Shura", arabic: "الشورى", verses: 53, type: "Makki" },
-      { number: 43, english: "Az-Zukhruf", arabic: "الزخرف", verses: 89, type: "Makki" },
-      { number: 44, english: "Ad-Dukhan", arabic: "الدخان", verses: 59, type: "Makki" },
-      { number: 45, english: "Al-Jathiyah", arabic: "الجاثية", verses: 37, type: "Makki" },
-      { number: 46, english: "Al-Ahqaf", arabic: "الأحقاف", verses: 35, type: "Makki" },
-      { number: 47, english: "Muhammad", arabic: "محمد", verses: 38, type: "Madani" },
-      { number: 48, english: "Al-Fath", arabic: "الفتح", verses: 29, type: "Madani" },
-      { number: 49, english: "Al-Hujurat", arabic: "الحجرات", verses: 18, type: "Madani" },
-      { number: 50, english: "Qaf", arabic: "ق", verses: 45, type: "Makki" },
-      { number: 51, english: "Adh-Dhariyat", arabic: "الذاريات", verses: 60, type: "Makki" },
-      { number: 52, english: "At-Tur", arabic: "الطور", verses: 49, type: "Makki" },
-      { number: 53, english: "An-Najm", arabic: "النجم", verses: 62, type: "Makki" },
-      { number: 54, english: "Al-Qamar", arabic: "القمر", verses: 55, type: "Makki" },
-      { number: 55, english: "Ar-Rahman", arabic: "الرحمن", verses: 78, type: "Madani" },
-      { number: 56, english: "Al-Waqi'ah", arabic: "الواقعة", verses: 96, type: "Makki" },
-      { number: 57, english: "Al-Hadid", arabic: "الحديد", verses: 29, type: "Madani" },
-      { number: 58, english: "Al-Mujadilah", arabic: "المجادلة", verses: 22, type: "Madani" },
-      { number: 59, english: "Al-Hashr", arabic: "الحشر", verses: 24, type: "Madani" },
-      { number: 60, english: "Al-Mumtahanah", arabic: "الممتحنة", verses: 13, type: "Madani" },
-      { number: 61, english: "As-Saff", arabic: "الصف", verses: 14, type: "Madani" },
-      { number: 62, english: "Al-Jumu'ah", arabic: "الجمعة", verses: 11, type: "Madani" },
-      { number: 63, english: "Al-Munafiqun", arabic: "المنافقون", verses: 11, type: "Madani" },
-      { number: 64, english: "At-Taghabun", arabic: "التغابن", verses: 18, type: "Madani" },
-      { number: 65, english: "At-Talaq", arabic: "الطلاق", verses: 12, type: "Madani" },
-      { number: 66, english: "At-Tahrim", arabic: "التحريم", verses: 12, type: "Madani" },
-      { number: 67, english: "Al-Mulk", arabic: "الملك", verses: 30, type: "Makki" },
-      { number: 68, english: "Al-Qalam", arabic: "القلم", verses: 52, type: "Makki" },
-      { number: 69, english: "Al-Haqqah", arabic: "الحاقة", verses: 52, type: "Makki" },
-      { number: 70, english: "Al-Ma'arij", arabic: "المعارج", verses: 44, type: "Makki" },
-      { number: 71, english: "Nuh", arabic: "نوح", verses: 28, type: "Makki" },
-      { number: 72, english: "Al-Jinn", arabic: "الجن", verses: 28, type: "Makki" },
-      { number: 73, english: "Al-Muzzammil", arabic: "المزمل", verses: 20, type: "Makki" },
-      { number: 74, english: "Al-Muddaththir", arabic: "المدثر", verses: 56, type: "Makki" },
-      { number: 75, english: "Al-Qiyamah", arabic: "القيامة", verses: 40, type: "Makki" },
-      { number: 76, english: "Al-Insan", arabic: "الإنسان", verses: 31, type: "Madani" },
-      { number: 77, english: "Al-Mursalat", arabic: "المرسلات", verses: 50, type: "Makki" },
-      { number: 78, english: "An-Naba", arabic: "النبأ", verses: 40, type: "Makki" },
-      { number: 79, english: "An-Nazi'at", arabic: "النازعات", verses: 46, type: "Makki" },
-      { number: 80, english: "'Abasa", arabic: "عبس", verses: 42, type: "Makki" },
-      { number: 81, english: "At-Takwir", arabic: "التكوير", verses: 29, type: "Makki" },
-      { number: 82, english: "Al-Infitar", arabic: "الإنفطار", verses: 19, type: "Makki" },
-      { number: 83, english: "Al-Mutaffifin", arabic: "المطففين", verses: 36, type: "Makki" },
-      { number: 84, english: "Al-Inshiqaq", arabic: "الإنشقاق", verses: 25, type: "Makki" },
-      { number: 85, english: "Al-Buruj", arabic: "البروج", verses: 22, type: "Makki" },
-      { number: 86, english: "At-Tariq", arabic: "الطارق", verses: 17, type: "Makki" },
-      { number: 87, english: "Al-A'la", arabic: "الأعلى", verses: 19, type: "Makki" },
-      { number: 88, english: "Al-Ghashiyah", arabic: "الغاشية", verses: 26, type: "Makki" },
-      { number: 89, english: "Al-Fajr", arabic: "الفجر", verses: 30, type: "Makki" },
-      { number: 90, english: "Al-Balad", arabic: "البلد", verses: 20, type: "Makki" },
-      { number: 91, english: "Ash-Shams", arabic: "الشمس", verses: 15, type: "Makki" },
-      { number: 92, english: "Al-Layl", arabic: "الليل", verses: 21, type: "Makki" },
-      { number: 93, english: "Ad-Duha", arabic: "الضحى", verses: 11, type: "Makki" },
-      { number: 94, english: "Ash-Sharh", arabic: "الشرح", verses: 8, type: "Makki" },
-      { number: 95, english: "At-Tin", arabic: "التين", verses: 8, type: "Makki" },
-      { number: 96, english: "Al-'Alaq", arabic: "العلق", verses: 19, type: "Makki" },
-      { number: 97, english: "Al-Qadr", arabic: "القدر", verses: 5, type: "Makki" },
-      { number: 98, english: "Al-Bayyinah", arabic: "البينة", verses: 8, type: "Madani" },
-      { number: 99, english: "Az-Zalzalah", arabic: "الزلزلة", verses: 8, type: "Madani" },
-      { number: 100, english: "Al-'Adiyat", arabic: "العاديات", verses: 11, type: "Makki" },
-      { number: 101, english: "Al-Qari'ah", arabic: "القارعة", verses: 11, type: "Makki" },
-      { number: 102, english: "At-Takathur", arabic: "التكاثر", verses: 8, type: "Makki" },
-      { number: 103, english: "Al-'Asr", arabic: "العصر", verses: 3, type: "Makki" },
-      { number: 104, english: "Al-Humazah", arabic: "الهمزة", verses: 9, type: "Makki" },
-      { number: 105, english: "Al-Fil", arabic: "الفيل", verses: 5, type: "Makki" },
-      { number: 106, english: "Quraysh", arabic: "قريش", verses: 4, type: "Makki" },
-      { number: 107, english: "Al-Ma'un", arabic: "الماعون", verses: 7, type: "Makki" },
-      { number: 108, english: "Al-Kawthar", arabic: "الكوثر", verses: 3, type: "Makki" },
-      { number: 109, english: "Al-Kafirun", arabic: "الكافرون", verses: 6, type: "Makki" },
-      { number: 110, english: "An-Nasr", arabic: "النصر", verses: 3, type: "Madani" },
-      { number: 111, english: "Al-Masad", arabic: "المسد", verses: 5, type: "Makki" },
-      { number: 112, english: "Al-Ikhlas", arabic: "الإخلاص", verses: 4, type: "Makki" },
-      { number: 113, english: "Al-Falaq", arabic: "الفلق", verses: 5, type: "Makki" },
-      { number: 114, english: "An-Nas", arabic: "الناس", verses: 6, type: "Makki" }
+      { number: 1, english: "Al-Fātiḥah", meaning: "The Opening", arabic: "الفاتحة", verses: 7, type: "Makki" },
+      { number: 2, english: "Al-Baqarah", meaning: "The Cow", arabic: "البقرة", verses: 286, type: "Madani" },
+      { number: 3, english: "Āl ʿImrān", meaning: "The Family of ʿImrān", arabic: "آل عمران", verses: 200, type: "Madani" },
+      { number: 4, english: "An-Nisāʾ", meaning: "The Women", arabic: "النساء", verses: 176, type: "Madani" },
+      { number: 5, english: "Al-Māʾidah", meaning: "The Table Spread", arabic: "المائدة", verses: 120, type: "Madani" },
+      { number: 6, english: "Al-Anʿām", meaning: "The Cattle", arabic: "الأنعام", verses: 165, type: "Makki" },
+      { number: 7, english: "Al-Aʿrāf", meaning: "The Heights", arabic: "الأعراف", verses: 206, type: "Makki" },
+      { number: 8, english: "Al-Anfāl", meaning: "The Spoils of War", arabic: "الأنفال", verses: 75, type: "Madani" },
+      { number: 9, english: "At-Tawbah", meaning: "Repentance", arabic: "التوبة", verses: 129, type: "Madani" },
+      { number: 10, english: "Yūnus", meaning: "Jonah", arabic: "يونس", verses: 109, type: "Makki" },
+      { number: 11, english: "Hūd", meaning: "Hud", arabic: "هود", verses: 123, type: "Makki" },
+      { number: 12, english: "Yūsuf", meaning: "Joseph", arabic: "يوسف", verses: 111, type: "Makki" },
+      { number: 13, english: "Ar-Raʿd", meaning: "Thunder", arabic: "الرعد", verses: 43, type: "Madani" },
+      { number: 14, english: "Ibrāhīm", meaning: "Abraham", arabic: "إبراهيم", verses: 52, type: "Makki" },
+      { number: 15, english: "Al-Ḥijr", meaning: "The Rocky Tract", arabic: "الحجر", verses: 99, type: "Makki" },
+      { number: 16, english: "An-Naḥl", meaning: "The Bee", arabic: "النحل", verses: 128, type: "Makki" },
+      { number: 17, english: "Al-Isrāʾ", meaning: "The Night Journey", arabic: "الإسراء", verses: 111, type: "Makki" },
+      { number: 18, english: "Al-Kahf", meaning: "The Cave", arabic: "الكهف", verses: 110, type: "Makki" },
+      { number: 19, english: "Maryam", meaning: "Mary", arabic: "مريم", verses: 98, type: "Makki" },
+      { number: 20, english: "Ṭā Hā", meaning: "Ṭā Hā", arabic: "طه", verses: 135, type: "Makki" },
+      { number: 21, english: "Al-Anbiyāʾ", meaning: "The Prophets", arabic: "الأنبياء", verses: 112, type: "Makki" },
+      { number: 22, english: "Al-Ḥajj", meaning: "The Pilgrimage", arabic: "الحج", verses: 78, type: "Madani" },
+      { number: 23, english: "Al-Muʾminūn", meaning: "The Believers", arabic: "المؤمنون", verses: 118, type: "Makki" },
+      { number: 24, english: "An-Nūr", meaning: "The Light", arabic: "النور", verses: 64, type: "Madani" },
+      { number: 25, english: "Al-Furqān", meaning: "The Criterion", arabic: "الفرقان", verses: 77, type: "Makki" },
+      { number: 26, english: "Ash-Shuʿarāʾ", meaning: "The Poets", arabic: "الشعراء", verses: 227, type: "Makki" },
+      { number: 27, english: "An-Naml", meaning: "The Ant", arabic: "النمل", verses: 93, type: "Makki" },
+      { number: 28, english: "Al-Qaṣaṣ", meaning: "The Stories", arabic: "القصص", verses: 88, type: "Makki" },
+      { number: 29, english: "Al-ʿAnkabūt", meaning: "The Spider", arabic: "العنكبوت", verses: 69, type: "Makki" },
+      { number: 30, english: "Ar-Rūm", meaning: "The Romans", arabic: "الروم", verses: 60, type: "Makki" },
+      { number: 31, english: "Luqmān", meaning: "Luqman", arabic: "لقمان", verses: 34, type: "Makki" },
+      { number: 32, english: "As-Sajdah", meaning: "The Prostration", arabic: "السجدة", verses: 30, type: "Makki" },
+      { number: 33, english: "Al-Aḥzāb", meaning: "The Confederates", arabic: "الأحزاب", verses: 73, type: "Madani" },
+      { number: 34, english: "Sabaʾ", meaning: "Sheba", arabic: "سبأ", verses: 54, type: "Makki" },
+      { number: 35, english: "Fāṭir", meaning: "Originator", arabic: "فاطر", verses: 45, type: "Makki" },
+      { number: 36, english: "Yā Sīn", meaning: "Yā Sīn", arabic: "يس", verses: 83, type: "Makki" },
+      { number: 37, english: "Aṣ-Ṣāffāt", meaning: "Those Lined Up", arabic: "الصافات", verses: 182, type: "Makki" },
+      { number: 38, english: "Ṣād", meaning: "Ṣād", arabic: "ص", verses: 88, type: "Makki" },
+      { number: 39, english: "Az-Zumar", meaning: "The Groups", arabic: "الزمر", verses: 75, type: "Makki" },
+      { number: 40, english: "Ghāfir", meaning: "The Forgiver", arabic: "غافر", verses: 85, type: "Makki" },
+      { number: 41, english: "Fuṣṣilat", meaning: "Explained in Detail", arabic: "فصلت", verses: 54, type: "Makki" },
+      { number: 42, english: "Ash-Shūrā", meaning: "Consultation", arabic: "الشورى", verses: 53, type: "Makki" },
+      { number: 43, english: "Az-Zukhruf", meaning: "Ornaments of Gold", arabic: "الزخرف", verses: 89, type: "Makki" },
+      { number: 44, english: "Ad-Dukhān", meaning: "The Smoke", arabic: "الدخان", verses: 59, type: "Makki" },
+      { number: 45, english: "Al-Jāthiyah", meaning: "The Kneeling", arabic: "الجاثية", verses: 37, type: "Makki" },
+      { number: 46, english: "Al-Aḥqāf", meaning: "The Sand Dunes", arabic: "الأحقاف", verses: 35, type: "Makki" },
+      { number: 47, english: "Muhammad", meaning: "Muhammad", arabic: "محمد", verses: 38, type: "Madani" },
+      { number: 48, english: "Al-Fatḥ", meaning: "The Victory", arabic: "الفتح", verses: 29, type: "Madani" },
+      { number: 49, english: "Al-Ḥujurāt", meaning: "The Chambers", arabic: "الحجرات", verses: 18, type: "Madani" },
+      { number: 50, english: "Qāf", meaning: "Qāf", arabic: "ق", verses: 45, type: "Makki" },
+      { number: 51, english: "Adh-Dhāriyāt", meaning: "Those That Scatter", arabic: "الذاريات", verses: 60, type: "Makki" },
+      { number: 52, english: "Aṭ-Ṭūr", meaning: "The Mount", arabic: "الطور", verses: 49, type: "Makki" },
+      { number: 53, english: "An-Najm", meaning: "The Star", arabic: "النجم", verses: 62, type: "Makki" },
+      { number: 54, english: "Al-Qamar", meaning: "The Moon", arabic: "القمر", verses: 55, type: "Makki" },
+      { number: 55, english: "Ar-Raḥmān", meaning: "The Most Merciful", arabic: "الرحمن", verses: 78, type: "Madani" },
+      { number: 56, english: "Al-Wāqiʿah", meaning: "The Inevitable Event", arabic: "الواقعة", verses: 96, type: "Makki" },
+      { number: 57, english: "Al-Ḥadīd", meaning: "Iron", arabic: "الحديد", verses: 29, type: "Madani" },
+      { number: 58, english: "Al-Mujādilah", meaning: "The Woman Who Pleaded", arabic: "المجادلة", verses: 22, type: "Madani" },
+      { number: 59, english: "Al-Ḥashr", meaning: "The Gathering", arabic: "الحشر", verses: 24, type: "Madani" },
+      { number: 60, english: "Al-Mumtaḥanah", meaning: "The Woman to Be Examined", arabic: "الممتحنة", verses: 13, type: "Madani" },
+      { number: 61, english: "Aṣ-Ṣaff", meaning: "The Row", arabic: "الصف", verses: 14, type: "Madani" },
+      { number: 62, english: "Al-Jumuʿah", meaning: "Friday", arabic: "الجمعة", verses: 11, type: "Madani" },
+      { number: 63, english: "Al-Munāfiqūn", meaning: "The Hypocrites", arabic: "المنافقون", verses: 11, type: "Madani" },
+      { number: 64, english: "At-Taghābun", meaning: "Mutual Loss and Gain", arabic: "التغابن", verses: 18, type: "Madani" },
+      { number: 65, english: "Aṭ-Ṭalāq", meaning: "Divorce", arabic: "الطلاق", verses: 12, type: "Madani" },
+      { number: 66, english: "At-Taḥrīm", meaning: "Prohibition", arabic: "التحريم", verses: 12, type: "Madani" },
+      { number: 67, english: "Al-Mulk", meaning: "Sovereignty", arabic: "الملك", verses: 30, type: "Makki" },
+      { number: 68, english: "Al-Qalam", meaning: "The Pen", arabic: "القلم", verses: 52, type: "Makki" },
+      { number: 69, english: "Al-Ḥāqqah", meaning: "The Inevitable Reality", arabic: "الحاقة", verses: 52, type: "Makki" },
+      { number: 70, english: "Al-Maʿārij", meaning: "The Ways of Ascent", arabic: "المعارج", verses: 44, type: "Makki" },
+      { number: 71, english: "Nūḥ", meaning: "Noah", arabic: "نوح", verses: 28, type: "Makki" },
+      { number: 72, english: "Al-Jinn", meaning: "The Jinn", arabic: "الجن", verses: 28, type: "Makki" },
+      { number: 73, english: "Al-Muzzammil", meaning: "The One Wrapped Up", arabic: "المزمل", verses: 20, type: "Makki" },
+      { number: 74, english: "Al-Muddaththir", meaning: "The One Covered Up", arabic: "المدثر", verses: 56, type: "Makki" },
+      { number: 75, english: "Al-Qiyāmah", meaning: "The Resurrection", arabic: "القيامة", verses: 40, type: "Makki" },
+      { number: 76, english: "Al-Insān", meaning: "The Human Being", arabic: "الإنسان", verses: 31, type: "Madani" },
+      { number: 77, english: "Al-Mursalāt", meaning: "Those Sent Forth", arabic: "المرسلات", verses: 50, type: "Makki" },
+      { number: 78, english: "An-Nabaʾ", meaning: "The Great News", arabic: "النبأ", verses: 40, type: "Makki" },
+      { number: 79, english: "An-Nāziʿāt", meaning: "Those Who Pull Out", arabic: "النازعات", verses: 46, type: "Makki" },
+      { number: 80, english: "ʿAbasa", meaning: "He Frowned", arabic: "عبس", verses: 42, type: "Makki" },
+      { number: 81, english: "At-Takwīr", meaning: "The Folding Up", arabic: "التكوير", verses: 29, type: "Makki" },
+      { number: 82, english: "Al-Infiṭār", meaning: "The Splitting Open", arabic: "الإنفطار", verses: 19, type: "Makki" },
+      { number: 83, english: "Al-Muṭaffifīn", meaning: "Those Who Give Less", arabic: "المطففين", verses: 36, type: "Makki" },
+      { number: 84, english: "Al-Inshiqāq", meaning: "The Tearing Apart", arabic: "الإنشقاق", verses: 25, type: "Makki" },
+      { number: 85, english: "Al-Burūj", meaning: "The Constellations", arabic: "البروج", verses: 22, type: "Makki" },
+      { number: 86, english: "Aṭ-Ṭāriq", meaning: "The Night Visitor", arabic: "الطارق", verses: 17, type: "Makki" },
+      { number: 87, english: "Al-Aʿlā", meaning: "The Most High", arabic: "الأعلى", verses: 19, type: "Makki" },
+      { number: 88, english: "Al-Ghāshiyah", meaning: "The Overwhelming Event", arabic: "الغاشية", verses: 26, type: "Makki" },
+      { number: 89, english: "Al-Fajr", meaning: "The Dawn", arabic: "الفجر", verses: 30, type: "Makki" },
+      { number: 90, english: "Al-Balad", meaning: "The City", arabic: "البلد", verses: 20, type: "Makki" },
+      { number: 91, english: "Ash-Shams", meaning: "The Sun", arabic: "الشمس", verses: 15, type: "Makki" },
+      { number: 92, english: "Al-Layl", meaning: "The Night", arabic: "الليل", verses: 21, type: "Makki" },
+      { number: 93, english: "Aḍ-Ḍuḥā", meaning: "The Morning Brightness", arabic: "الضحى", verses: 11, type: "Makki" },
+      { number: 94, english: "Ash-Sharḥ", meaning: "The Expansion", arabic: "الشرح", verses: 8, type: "Makki" },
+      { number: 95, english: "At-Tīn", meaning: "The Fig", arabic: "التين", verses: 8, type: "Makki" },
+      { number: 96, english: "Al-ʿAlaq", meaning: "The Clinging Substance", arabic: "العلق", verses: 19, type: "Makki" },
+      { number: 97, english: "Al-Qadr", meaning: "The Decree", arabic: "القدر", verses: 5, type: "Makki" },
+      { number: 98, english: "Al-Bayyinah", meaning: "The Clear Proof", arabic: "البينة", verses: 8, type: "Madani" },
+      { number: 99, english: "Az-Zalzalah", meaning: "The Earthquake", arabic: "الزلزلة", verses: 8, type: "Madani" },
+      { number: 100, english: "Al-ʿĀdiyāt", meaning: "The Charging Horses", arabic: "العاديات", verses: 11, type: "Makki" },
+      { number: 101, english: "Al-Qāriʿah", meaning: "The Striking Calamity", arabic: "القارعة", verses: 11, type: "Makki" },
+      { number: 102, english: "At-Takāthur", meaning: "Rivalry in Worldly Increase", arabic: "التكاثر", verses: 8, type: "Makki" },
+      { number: 103, english: "Al-ʿAṣr", meaning: "Time", arabic: "العصر", verses: 3, type: "Makki" },
+      { number: 104, english: "Al-Humazah", meaning: "The Slanderer", arabic: "الهمزة", verses: 9, type: "Makki" },
+      { number: 105, english: "Al-Fīl", meaning: "The Elephant", arabic: "الفيل", verses: 5, type: "Makki" },
+      { number: 106, english: "Quraysh", meaning: "Quraysh", arabic: "قريش", verses: 4, type: "Makki" },
+      { number: 107, english: "Al-Māʿūn", meaning: "Small Kindnesses", arabic: "الماعون", verses: 7, type: "Makki" },
+      { number: 108, english: "Al-Kawthar", meaning: "Abundant Good", arabic: "الكوثر", verses: 3, type: "Makki" },
+      { number: 109, english: "Al-Kāfirūn", meaning: "The Disbelievers", arabic: "الكافرون", verses: 6, type: "Makki" },
+      { number: 110, english: "An-Naṣr", meaning: "Divine Help", arabic: "النصر", verses: 3, type: "Madani" },
+      { number: 111, english: "Al-Masad", meaning: "Palm Fibre", arabic: "المسد", verses: 5, type: "Makki" },
+      { number: 112, english: "Al-Ikhlāṣ", meaning: "Sincerity", arabic: "الإخلاص", verses: 4, type: "Makki" },
+      { number: 113, english: "Al-Falaq", meaning: "Daybreak", arabic: "الفلق", verses: 5, type: "Makki" },
+      { number: 114, english: "An-Nās", meaning: "Mankind", arabic: "الناس", verses: 6, type: "Makki" }
     ];
 
     const searchInput = document.getElementById("searchInput");
@@ -922,6 +1015,7 @@
         items = items.filter((surah) =>
           surah.number.toString().includes(query) ||
           surah.english.toLowerCase().includes(query) ||
+          surah.meaning.toLowerCase().includes(query) ||
           surah.arabic.includes(query)
         );
       }
@@ -952,11 +1046,11 @@
         <a class="surah-card" href="${getSurahLink(surah.number)}">
           <div class="surah-top">
             <div class="surah-number">${surah.number}</div>
-            <div class="surah-arabic">${surah.arabic}</div>
+            <div class="surah-arabic" lang="ar">${surah.arabic}</div>
           </div>
           <div class="surah-main">
-            <h4>${surah.english}</h4>
-            <p>Surah ${surah.number}</p>
+            <h4>Surah ${surah.number} · ${surah.english}</h4>
+            <p>${surah.meaning}</p>
           </div>
           <div class="surah-meta">
             <span class="tag">${surah.type}</span>
