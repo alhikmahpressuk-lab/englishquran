@@ -44,7 +44,6 @@
     }
 
     html {
-      scroll-behaviour: smooth;
       scroll-behavior: smooth;
     }
 
@@ -428,6 +427,33 @@
       border-top: 1px solid var(--line);
     }
 
+    .bismillah-block {
+      padding: 24px 16px 28px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .bismillah-arabic {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+      line-height: 2;
+      direction: rtl;
+      color: #111827;
+      margin-bottom: 14px;
+    }
+
+    html[data-theme="dark"] .bismillah-arabic {
+      color: #f8fbfd;
+    }
+
+    .bismillah-english {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
     .arabic-wrap {
       text-align: right;
       direction: rtl;
@@ -607,6 +633,10 @@
         padding: 20px 10px;
       }
 
+      .bismillah-block {
+        padding: 20px 12px 24px;
+      }
+
       .english-number {
         min-width: 34px;
         height: 34px;
@@ -621,6 +651,11 @@
       .arabic-ayah {
         font-size: 1.38rem;
         line-height: 2.02;
+      }
+
+      .bismillah-arabic {
+        font-size: 1.65rem;
+        line-height: 1.95;
       }
 
       .mode-options {
@@ -746,7 +781,7 @@
               <h3>Key Themes</h3>
               <ul>
                 <li>The Qur’an as certain guidance and a direct challenge to doubt</li>
-                <li>The role of Muhammad as the servant receiving revelation</li>
+                <li>The role of Muhammad ﷺ as the servant receiving revelation</li>
                 <li>The creation of Ādam (Adam) and the beginning of human life</li>
                 <li>Iblīs (Shayṭān), arrogance, and the path of misguidance</li>
                 <li>The difference between belief, rejection, and hypocrisy</li>
@@ -763,7 +798,7 @@
               <p>Guidance has been made clear from the very beginning, and every person must choose between following it or turning away.</p>
               <p>The struggle between truth and misguidance is shown through Iblīs (Shayṭān) and through the example of past nations with Mūsā (Moses).</p>
               <p>True faith is built on complete submission, as shown by Ibrāhīm (Abraham), and lived through worship, justice, and responsibility.</p>
-              <p>Success lies in holding firmly to the guidance brought to Muhammad, remaining patient, sincere, and constant upon the straight path.</p>
+              <p>Success lies in holding firmly to the guidance brought to Muhammad ﷺ, remaining patient, sincere, and constant upon the straight path.</p>
             </div>
           </div>
 
@@ -1093,6 +1128,9 @@
     let currentMode = "bilingual";
     let transliterationAvailable = false;
 
+    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+    const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
+
     function escapeHtml(text) {
       return String(text)
         .replace(/&/g, "&amp;")
@@ -1108,7 +1146,7 @@
 
     function buildVerseSelector() {
       let options = "";
-      for (let i = 1; i <= 286; i++) {
+      for (let i = 1; i <= 286; i += 1) {
         options += `<option value="${i}">Verse ${i}</option>`;
       }
       verseSelect.innerHTML = options;
@@ -1163,11 +1201,43 @@
     }
 
     function jumpToVerse(verseNumber) {
-      const target = document.getElementById(`ayah-${verseNumber}`);
+      const safeVerseNumber = Number(verseNumber);
+      const target = document.getElementById(`ayah-${safeVerseNumber}`);
       if (!target) return;
+
       setActiveTab("read");
+      verseSelect.value = String(safeVerseNumber);
+
       target.scrollIntoView({ behavior: "smooth", block: "start" });
-      window.location.hash = `ayah-${verseNumber}`;
+      history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
+    }
+
+    function handleInitialVerseJump() {
+      const params = new URLSearchParams(window.location.search);
+      const ayahParam = params.get("ayah");
+      const hash = window.location.hash;
+
+      let verseNumber = null;
+
+      if (ayahParam && /^\d+$/.test(ayahParam)) {
+        verseNumber = Number(ayahParam);
+      } else if (hash && /^#ayah-\d+$/.test(hash)) {
+        verseNumber = Number(hash.replace("#ayah-", ""));
+      }
+
+      if (!verseNumber) return;
+      if (verseNumber < 1 || verseNumber > 286) return;
+
+      setActiveTab("read");
+      verseSelect.value = String(verseNumber);
+
+      requestAnimationFrame(() => {
+        const target = document.getElementById(`ayah-${verseNumber}`);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
+        }
+      });
     }
 
     function applyTheme(theme) {
@@ -1198,6 +1268,12 @@
       jumpToVerse(verseSelect.value);
     });
 
+    verseSelect.addEventListener("change", () => {
+      if (verseSelect.value) {
+        jumpToVerse(verseSelect.value);
+      }
+    });
+
     themeToggle.addEventListener("click", () => {
       const isDark = document.documentElement.getAttribute("data-theme") === "dark";
       applyTheme(isDark ? "light" : "dark");
@@ -1208,7 +1284,7 @@
       const totalPages = 6;
       const requests = [];
 
-      for (let page = 1; page <= totalPages; page++) {
+      for (let page = 1; page <= totalPages; page += 1) {
         const url = `https://api.quran.com/api/v4/verses/by_chapter/2?words=true&word_fields=text_uthmani,transliteration&fields=text_uthmani&per_page=${perPage}&page=${page}`;
         requests.push(
           fetch(url).then((response) => {
@@ -1251,7 +1327,14 @@
     }
 
     function renderVerses(verseData) {
-      const html = verseData.map((verse, index) => {
+      const bismillahBlock = `
+        <section class="bismillah-block" id="bismillah">
+          <div class="bismillah-arabic" lang="ar">${escapeHtml(bismillahArabic)}</div>
+          <div class="bismillah-english">${escapeHtml(bismillahEnglish)}</div>
+        </section>
+      `;
+
+      const versesHtml = verseData.map((verse, index) => {
         const english = englishVerses[index] || "";
         const transliterationBlock = verse.transliteration
           ? `<div class="transliteration-wrap">${escapeHtml(verse.transliteration)}</div>`
@@ -1271,7 +1354,7 @@
         `;
       }).join("");
 
-      versesContainer.innerHTML = html;
+      versesContainer.innerHTML = bismillahBlock + versesHtml;
     }
 
     async function loadSurah() {
@@ -1289,6 +1372,8 @@
 
         loadingState.style.display = "none";
         errorState.style.display = "none";
+
+        handleInitialVerseJump();
       } catch (error) {
         console.error(error);
         loadingState.style.display = "none";
