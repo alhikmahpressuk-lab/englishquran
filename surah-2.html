@@ -1173,10 +1173,10 @@
     function applyTheme(theme) {
       if (theme === "dark") {
         document.documentElement.setAttribute("data-theme", "dark");
-        themeToggle.textContent = "Light mode";
+        themeToggle.textContent = "Light";
       } else {
         document.documentElement.removeAttribute("data-theme");
-        themeToggle.textContent = "Dark mode";
+        themeToggle.textContent = "Dark";
       }
       localStorage.setItem("site-theme", theme);
     }
