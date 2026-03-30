@@ -44,7 +44,7 @@
     }
 
     html {
-      scroll-behavior: smooth;
+      scroll-behaviour: smooth;
     }
 
     body {
@@ -104,7 +104,7 @@
       background: linear-gradient(135deg, var(--accent), var(--accent-deep));
       color: #fff;
       display: grid;
-      place-items: center;
+      place-items: centre;
       font-size: 24px;
       font-weight: 700;
       box-shadow: var(--shadow);
@@ -126,34 +126,27 @@
 
     .nav {
       display: flex;
-      align-items: center;
+      align-items: centre;
       gap: 10px;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
 
-    .theme-switch {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-right: 6px;
-    }
-
-    .theme-button {
-      min-height: 34px;
-      padding: 0 12px;
+    .theme-toggle {
+      min-height: 38px;
+      padding: 0 14px;
       border-radius: 999px;
       border: 1px solid var(--line);
       background: var(--surface);
       color: var(--muted);
-      font-size: 0.84rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
+      margin-right: 6px;
     }
 
-    .theme-button:hover,
-    .theme-button.active {
+    .theme-toggle:hover {
       background: var(--accent-soft);
       color: var(--accent-deep);
       border-color: rgba(30, 107, 92, 0.32);
@@ -227,7 +220,7 @@
 
     .eyebrow {
       display: inline-flex;
-      align-items: center;
+      align-items: centre;
       gap: 8px;
       margin-bottom: 16px;
       padding: 8px 14px;
@@ -273,8 +266,8 @@
 
     .button {
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      align-items: centre;
+      justify-content: centre;
       gap: 10px;
       min-height: 50px;
       padding: 0 18px;
@@ -327,7 +320,7 @@
       display: flex;
       flex-direction: column;
       gap: 18px;
-      justify-content: center;
+      justify-content: centre;
     }
 
     .info-block {
@@ -419,7 +412,7 @@
 
     .search-grid {
       display: grid;
-      grid-template-columns: 1.55fr 0.85fr 0.85fr 0.85fr;
+      grid-template-columns: 1.55fr 0.95fr 0.85fr 0.85fr;
       gap: 14px;
     }
 
@@ -445,10 +438,14 @@
     }
 
     .field input:focus,
-    .field select:focus,
-    .verse-jump input:focus {
+    .field select:focus {
       border-color: rgba(30, 107, 92, 0.55);
       box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
+    }
+
+    .field select:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
     }
 
     .search-help {
@@ -459,7 +456,7 @@
 
     .results-bar {
       display: flex;
-      align-items: center;
+      align-items: centre;
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 18px;
@@ -515,7 +512,7 @@
       background: var(--accent-soft);
       color: var(--accent-deep);
       display: grid;
-      place-items: center;
+      place-items: centre;
       font-weight: 700;
       flex-shrink: 0;
     }
@@ -589,8 +586,8 @@
     .mini-button,
     .book-link {
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      align-items: centre;
+      justify-content: centre;
       min-height: 42px;
       padding: 0 14px;
       border-radius: 999px;
@@ -609,72 +606,11 @@
       color: var(--accent-deep);
     }
 
-    .verse-panel {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--line);
-    }
-
-    .verse-panel-title,
-    .verse-jump-label {
-      margin: 0 0 10px;
-      font-size: 0.93rem;
-      color: var(--muted);
-    }
-
-    .verse-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      max-height: 220px;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .verse-link {
-      min-width: 42px;
-      min-height: 38px;
-      padding: 0 10px;
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      color: color-mix(in srgb, var(--text) 78%, white 22%);
-      font-size: 0.9rem;
-      transition: 0.2s ease;
-    }
-
-    .verse-link:hover {
-      background: var(--accent-soft);
-      border-color: rgba(30, 107, 92, 0.28);
-      color: var(--accent-deep);
-    }
-
-    .verse-jump {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .verse-jump input {
-      width: 120px;
-      min-height: 42px;
-      padding: 0 12px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      outline: none;
-    }
-
     .book-grid {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
       gap: 18px;
-      align-items: center;
+      align-items: centre;
     }
 
     .footer {
@@ -688,7 +624,7 @@
       width: min(var(--max), calc(100% - 32px));
       margin: 0 auto;
       display: flex;
-      align-items: center;
+      align-items: centre;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
@@ -724,7 +660,7 @@
       padding: 28px;
       border: 1px dashed var(--line);
       border-radius: 18px;
-      text-align: center;
+      text-align: centre;
       color: var(--muted);
       background: var(--surface-soft);
     }
@@ -766,10 +702,6 @@
         margin-top: 14px;
       }
 
-      .theme-switch {
-        margin-bottom: 8px;
-      }
-
       .hero {
         padding-top: 30px;
       }
@@ -803,28 +735,16 @@
 
       .button,
       .mini-button,
-      .book-link {
+      .book-link,
+      .theme-toggle {
         width: 100%;
-      }
-
-      .theme-switch {
-        width: 100%;
-      }
-
-      .theme-button {
-        flex: 1;
       }
 
       .surah-actions,
       .juz-actions,
-      .book-links,
-      .verse-jump {
+      .book-links {
         flex-direction: column;
         align-items: stretch;
-      }
-
-      .verse-jump input {
-        width: 100%;
       }
     }
   </style>
@@ -841,10 +761,7 @@
       </div>
 
       <nav class="nav">
-        <div class="theme-switch" aria-label="Appearance mode">
-          <button class="theme-button active" type="button" id="lightModeButton">Light</button>
-          <button class="theme-button" type="button" id="darkModeButton">Dark</button>
-        </div>
+        <button class="theme-toggle" type="button" id="themeToggle">Dark</button>
         <a href="#surahs">Surahs</a>
         <a href="#juz">Juz</a>
         <a href="#about">About</a>
@@ -884,12 +801,12 @@
           <aside class="info-card">
             <div class="info-block">
               <h3>Go straight to a surah</h3>
-              <p>Every surah is listed with its original English name, Arabic title, revelation type, verse count, and direct reading link.</p>
+              <p>Every surah is listed with its original English name, Arabic title, verse count, and direct reading link.</p>
             </div>
 
             <div class="info-block">
-              <h3>Go straight to a verse</h3>
-              <p>Short surahs show direct verse connectors, while longer surahs use a clean verse jump field for faster access.</p>
+              <h3>Choose a verse quickly</h3>
+              <p>Select any surah from the main list, then choose the verse number from the linked verses box.</p>
             </div>
 
             <div class="info-block">
@@ -941,22 +858,16 @@
             </div>
 
             <div class="field">
-              <label for="typeFilter">Revelation type</label>
-              <select id="typeFilter">
-                <option value="all">All surahs</option>
-                <option value="Makki">Makki</option>
-                <option value="Madani">Madani</option>
+              <label for="surahFilter">Surahs</label>
+              <select id="surahFilter">
+                <option value="all">List all 114 surahs</option>
               </select>
             </div>
 
             <div class="field">
-              <label for="sortFilter">Sort by</label>
-              <select id="sortFilter">
-                <option value="number">Surah number</option>
-                <option value="name">Alphabetical</option>
-                <option value="type">Revelation type</option>
-                <option value="verses">Verse count</option>
-                <option value="juz-start">Juz start order</option>
+              <label for="verseFilter">Verses</label>
+              <select id="verseFilter" disabled>
+                <option value="all">Select surah first</option>
               </select>
             </div>
 
@@ -968,7 +879,7 @@
             </div>
           </div>
 
-          <p class="search-help">No diacritic typing is needed. Enter opens direct results such as 19:16, 36:58, Al Baqarah 255, or Juz 5.</p>
+          <p class="search-help">No diacritic typing is needed. Enter can open a direct result such as 19:16, 36:58, Al Baqarah 255, or Juz 5.</p>
 
           <div class="quick-nav">
             <button class="pill active" type="button" data-filter="all">All</button>
@@ -1069,7 +980,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-copy">
-        <p>Copyright: 2013 - 2026 - Al-Hikmah Publishing</p>
+        <p>Copyright: 2013 to 2026, Al-Hikmah Publishing</p>
         <p>The English Qur’an, translated by Dr A K Khan.</p>
       </div>
       <div class="footer-links">
@@ -1232,19 +1143,19 @@
       { juz: 30, start: { surah: 78, verse: 1 }, end: { surah: 114, verse: 6 } }
     ];
 
-    const juzStartSurahNumbers = new Set(juzData.map((item) => item.start.surah));
+    const juzStartSurahNumbers = new Set(juzData.map(item => item.start.surah));
 
     const searchInput = document.getElementById("searchInput");
-    const typeFilter = document.getElementById("typeFilter");
-    const sortFilter = document.getElementById("sortFilter");
+    const surahFilter = document.getElementById("surahFilter");
+    const verseFilter = document.getElementById("verseFilter");
     const juzFilter = document.getElementById("juzFilter");
     const surahGrid = document.getElementById("surahGrid");
     const juzGrid = document.getElementById("juzGrid");
     const resultsCount = document.getElementById("resultsCount");
     const emptyState = document.getElementById("emptyState");
     const filterPills = document.querySelectorAll(".pill");
-    const lightModeButton = document.getElementById("lightModeButton");
-    const darkModeButton = document.getElementById("darkModeButton");
+    const themeToggle = document.getElementById("themeToggle");
+
     let activeQuickFilter = "all";
 
     function getSurahLink(number) {
@@ -1272,17 +1183,19 @@
 
     function applyTheme(theme) {
       document.documentElement.setAttribute("data-theme", theme);
-      lightModeButton.classList.toggle("active", theme === "light");
-      darkModeButton.classList.toggle("active", theme === "dark");
+      themeToggle.textContent = theme === "light" ? "Dark" : "Light";
       try {
         localStorage.setItem("quranIndexTheme", theme);
       } catch (error) {
       }
     }
 
-    function bindThemeButtons() {
-      lightModeButton.addEventListener("click", () => applyTheme("light"));
-      darkModeButton.addEventListener("click", () => applyTheme("dark"));
+    function bindThemeToggle() {
+      themeToggle.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme") || "light";
+        applyTheme(current === "light" ? "dark" : "light");
+      });
+
       try {
         applyTheme(localStorage.getItem("quranIndexTheme") || "light");
       } catch (error) {
@@ -1361,15 +1274,9 @@
     }
 
     function getJuzContainingSurah(surahNumber) {
-      return juzData.filter((item) => item.start.surah <= surahNumber && item.end.surah >= surahNumber).map((item) => item.juz);
-    }
-
-    function buildVerseLinks(surah) {
-      const links = [];
-      for (let verse = 1; verse <= surah.verses; verse += 1) {
-        links.push(`<a class="verse-link" href="${getVerseLink(surah.number, verse)}" aria-label="Surah ${surah.number} verse ${verse}">${verse}</a>`);
-      }
-      return links.join("");
+      return juzData
+        .filter((item) => item.start.surah <= surahNumber && item.end.surah >= surahNumber)
+        .map((item) => item.juz);
     }
 
     function getSurahMatchesQuery(surah, rawQuery) {
@@ -1402,10 +1309,12 @@
       if (selectedJuz === "all") {
         return items;
       }
+
       const juzItem = juzData.find((item) => item.juz === Number(selectedJuz));
       if (!juzItem) {
         return items;
       }
+
       return items.filter((surah) => surah.number >= juzItem.start.surah && surah.number <= juzItem.end.surah);
     }
 
@@ -1425,42 +1334,74 @@
       return items;
     }
 
-    function sortItems(items, selectedSort) {
-      if (selectedSort === "name") {
-        items.sort((a, b) => normaliseText(a.english).localeCompare(normaliseText(b.english)));
-      } else if (selectedSort === "type") {
-        items.sort((a, b) => a.type.localeCompare(b.type) || a.number - b.number);
-      } else if (selectedSort === "verses") {
-        items.sort((a, b) => a.verses - b.verses || a.number - b.number);
-      } else if (selectedSort === "juz-start") {
-        items.sort((a, b) => {
-          const aStarts = juzStartSurahNumbers.has(a.number) ? 0 : 1;
-          const bStarts = juzStartSurahNumbers.has(b.number) ? 0 : 1;
-          return aStarts - bStarts || a.number - b.number;
-        });
-      } else {
-        items.sort((a, b) => a.number - b.number);
+    function populateSurahFilter() {
+      surahs.forEach((surah) => {
+        const option = document.createElement("option");
+        option.value = surah.number;
+        option.textContent = `${surah.number}. ${surah.english}`;
+        surahFilter.appendChild(option);
+      });
+    }
+
+    function populateVerseFilter(surahNumber) {
+      verseFilter.innerHTML = "";
+
+      if (!surahNumber || surahNumber === "all") {
+        verseFilter.disabled = true;
+        const option = document.createElement("option");
+        option.value = "all";
+        option.textContent = "Select surah first";
+        verseFilter.appendChild(option);
+        return;
       }
+
+      const surah = getSurah(Number(surahNumber));
+      if (!surah) {
+        return;
+      }
+
+      verseFilter.disabled = false;
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "all";
+      defaultOption.textContent = `All ${surah.verses} verses`;
+      verseFilter.appendChild(defaultOption);
+
+      for (let verse = 1; verse <= surah.verses; verse += 1) {
+        const option = document.createElement("option");
+        option.value = verse;
+        option.textContent = `Verse ${verse}`;
+        verseFilter.appendChild(option);
+      }
+    }
+
+    function populateJuzFilter() {
+      juzData.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.juz;
+        option.textContent = `Juz ${item.juz}`;
+        juzFilter.appendChild(option);
+      });
     }
 
     function renderSurahs() {
       let items = [...surahs];
       const query = searchInput.value.trim();
-      const selectedType = typeFilter.value;
-      const selectedSort = sortFilter.value;
+      const selectedSurah = surahFilter.value;
+      const selectedVerse = verseFilter.value;
       const selectedJuz = juzFilter.value;
 
       if (query) {
         items = items.filter((surah) => getSurahMatchesQuery(surah, query));
       }
 
-      if (selectedType !== "all") {
-        items = items.filter((surah) => surah.type === selectedType);
+      if (selectedSurah !== "all") {
+        items = items.filter((surah) => surah.number === Number(selectedSurah));
       }
 
       items = filterByJuz(items, selectedJuz);
       items = applyQuickFilter(items);
-      sortItems(items, selectedSort);
+      items.sort((a, b) => a.number - b.number);
 
       resultsCount.textContent = `${items.length} surah${items.length === 1 ? "" : "s"}`;
 
@@ -1473,7 +1414,6 @@
       emptyState.style.display = "none";
 
       surahGrid.innerHTML = items.map((surah) => {
-        const shortSurah = surah.verses <= 30;
         const juzList = getJuzContainingSurah(surah.number);
 
         return `
@@ -1493,27 +1433,16 @@
             </div>
             <div class="surah-actions">
               <button class="mini-button surah-open-button" type="button" data-surah-open="${surah.number}">Read Surah</button>
-              ${shortSurah ? `<a class="mini-button" href="#surah-${surah.number}-verses">Verse List</a>` : `<button class="mini-button verse-go-button" type="button" data-surah="${surah.number}">Go to Verse</button>`}
-            </div>
-            <div class="verse-panel" ${shortSurah ? `id="surah-${surah.number}-verses"` : ""}>
-              ${shortSurah ? `
-                <p class="verse-panel-title">Open any verse directly</p>
-                <div class="verse-list">
-                  ${buildVerseLinks(surah)}
-                </div>
-              ` : `
-                <p class="verse-jump-label">Go to any verse directly</p>
-                <div class="verse-jump">
-                  <input type="number" min="1" max="${surah.verses}" placeholder="1 - ${surah.verses}" data-verse-input="${surah.number}" />
-                  <button class="mini-button verse-jump-button" type="button" data-surah="${surah.number}" data-max="${surah.verses}">Go</button>
-                </div>
-              `}
             </div>
           </div>
         `;
       }).join("");
 
       bindRenderedInteractions();
+
+      if (selectedSurah !== "all" && selectedVerse !== "all") {
+        openVerse(Number(selectedSurah), Number(selectedVerse));
+      }
     }
 
     function renderJuz() {
@@ -1544,7 +1473,9 @@
         link.addEventListener("click", (event) => {
           event.preventDefault();
           juzFilter.value = link.getAttribute("data-juz-open");
-          document.getElementById("surahs").scrollIntoView({ behavior: "smooth" });
+          surahFilter.value = "all";
+          populateVerseFilter("all");
+          document.getElementById("surahs").scrollIntoView({ behaviour: "smooth" });
           renderSurahs();
         });
       });
@@ -1562,41 +1493,6 @@
       document.querySelectorAll(".surah-open-button").forEach((button) => {
         button.addEventListener("click", () => {
           openSurah(Number(button.getAttribute("data-surah-open")));
-        });
-      });
-
-      document.querySelectorAll(".verse-go-button").forEach((button) => {
-        button.addEventListener("click", () => {
-          const surahNumber = button.getAttribute("data-surah");
-          const input = document.querySelector(`[data-verse-input="${surahNumber}"]`);
-          if (input) {
-            input.focus();
-          }
-        });
-      });
-
-      document.querySelectorAll(".verse-jump-button").forEach((button) => {
-        button.addEventListener("click", () => {
-          const surahNumber = Number(button.getAttribute("data-surah"));
-          const max = Number(button.getAttribute("data-max"));
-          const input = document.querySelector(`[data-verse-input="${surahNumber}"]`);
-          const verseNumber = Number(input.value);
-          if (verseNumber >= 1 && verseNumber <= max) {
-            openVerse(surahNumber, verseNumber);
-          }
-        });
-      });
-
-      document.querySelectorAll("[data-verse-input]").forEach((input) => {
-        input.addEventListener("keydown", (event) => {
-          if (event.key === "Enter") {
-            const surahNumber = Number(input.getAttribute("data-verse-input"));
-            const max = Number(input.getAttribute("max"));
-            const verseNumber = Number(input.value);
-            if (verseNumber >= 1 && verseNumber <= max) {
-              openVerse(surahNumber, verseNumber);
-            }
-          }
         });
       });
     }
@@ -1641,15 +1537,6 @@
       }
     }
 
-    function populateJuzFilter() {
-      juzData.forEach((item) => {
-        const option = document.createElement("option");
-        option.value = item.juz;
-        option.textContent = `Juz ${item.juz}`;
-        juzFilter.appendChild(option);
-      });
-    }
-
     function bindQuickFilters() {
       filterPills.forEach((pill) => {
         pill.addEventListener("click", () => {
@@ -1662,18 +1549,33 @@
     }
 
     searchInput.addEventListener("input", renderSurahs);
-    typeFilter.addEventListener("change", renderSurahs);
-    sortFilter.addEventListener("change", renderSurahs);
+
+    surahFilter.addEventListener("change", () => {
+      populateVerseFilter(surahFilter.value);
+      renderSurahs();
+    });
+
+    verseFilter.addEventListener("change", () => {
+      if (surahFilter.value !== "all" && verseFilter.value !== "all") {
+        openVerse(Number(surahFilter.value), Number(verseFilter.value));
+        return;
+      }
+      renderSurahs();
+    });
+
     juzFilter.addEventListener("change", renderSurahs);
+
     searchInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         openDirectMatch();
       }
     });
 
+    populateSurahFilter();
+    populateVerseFilter("all");
     populateJuzFilter();
     bindQuickFilters();
-    bindThemeButtons();
+    bindThemeToggle();
     renderSurahs();
     renderJuz();
   </script>
