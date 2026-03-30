@@ -25,11 +25,26 @@
       --max: 980px;
     }
 
+    html[data-theme="dark"] {
+      --bg: #0f1418;
+      --surface: #182128;
+      --surface-soft: #1f2a33;
+      --surface-deep: #22303a;
+      --text: #f3f7fa;
+      --muted: #a8b5bf;
+      --line: #2d3a44;
+      --accent: #38a189;
+      --accent-deep: #2c7a67;
+      --accent-soft: rgba(56, 161, 137, 0.16);
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
     * {
       box-sizing: border-box;
     }
 
     html {
+      scroll-behaviour: smooth;
       scroll-behavior: smooth;
     }
 
@@ -39,6 +54,7 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.65;
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
     a {
@@ -56,8 +72,8 @@
       top: 0;
       z-index: 100;
       backdrop-filter: blur(12px);
-      background: rgba(247, 248, 250, 0.92);
-      border-bottom: 1px solid rgba(227, 232, 236, 0.95);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 95%, transparent);
     }
 
     .topbar-inner,
@@ -116,28 +132,36 @@
       flex-wrap: wrap;
     }
 
-    .nav a {
+    .nav a,
+    .theme-toggle {
       padding: 10px 14px;
       border-radius: 999px;
       font-size: 0.94rem;
       color: var(--muted);
       transition: 0.2s ease;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
     }
 
-    .nav a:hover {
+    .nav a:hover,
+    .theme-toggle:hover {
       background: var(--surface);
       color: var(--text);
+      border-color: var(--line);
     }
 
     .nav .cta {
       background: var(--accent);
       color: #fff;
       font-weight: 600;
+      border-color: var(--accent);
     }
 
     .nav .cta:hover {
       background: var(--accent-deep);
       color: #fff;
+      border-color: var(--accent-deep);
     }
 
     .hero {
@@ -150,6 +174,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      transition: background 0.2s ease, border-color 0.2s ease;
     }
 
     .hero-card {
@@ -167,6 +192,10 @@
       height: 250px;
       background: radial-gradient(circle, rgba(30,107,92,0.13) 0%, rgba(30,107,92,0) 72%);
       pointer-events: none;
+    }
+
+    html[data-theme="dark"] .hero-card::after {
+      background: radial-gradient(circle, rgba(56,161,137,0.18) 0%, rgba(56,161,137,0) 72%);
     }
 
     .crumb {
@@ -198,13 +227,13 @@
 
     .hero-copy .meaning {
       margin: 14px 0 0;
-      color: #32404b;
+      color: color-mix(in srgb, var(--text) 78%, white);
       font-size: 1rem;
     }
 
     .hero-copy .summary {
       margin: 18px 0 0;
-      color: #32404b;
+      color: color-mix(in srgb, var(--text) 80%, white);
       font-size: 1rem;
       max-width: 58ch;
       line-height: 1.8;
@@ -220,6 +249,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
       padding: 18px;
+      transition: background 0.2s ease, border-color 0.2s ease;
     }
 
     .meta-label {
@@ -269,7 +299,7 @@
     }
 
     .tab-button:hover {
-      border-color: rgba(30, 107, 92, 0.35);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
       background: var(--surface-soft);
     }
 
@@ -312,7 +342,7 @@
 
     .subpanel p {
       margin: 0 0 14px;
-      color: #32404b;
+      color: color-mix(in srgb, var(--text) 80%, white);
     }
 
     .mode-options {
@@ -335,8 +365,8 @@
     }
 
     .mode-button:hover {
-      background: #fff;
-      border-color: rgba(30, 107, 92, 0.35);
+      background: var(--surface-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
     }
 
     .mode-button.active {
@@ -361,7 +391,7 @@
       min-height: 46px;
       border-radius: 14px;
       border: 1px solid var(--line);
-      background: #fff;
+      background: var(--surface);
       color: var(--text);
       padding: 0 14px;
       outline: none;
@@ -377,6 +407,7 @@
       color: #fff;
       font-weight: 600;
       cursor: pointer;
+      transition: 0.2s ease;
     }
 
     .jump-button:hover {
@@ -412,13 +443,17 @@
       letter-spacing: 0;
     }
 
+    html[data-theme="dark"] .arabic-ayah {
+      color: #f8fbfd;
+    }
+
     .transliteration-wrap {
       margin: 0 0 16px;
       padding: 14px 16px;
       border-radius: 14px;
       background: var(--surface-soft);
       border: 1px solid var(--line);
-      color: #32404b;
+      color: color-mix(in srgb, var(--text) 78%, white);
       font-size: 0.98rem;
       line-height: 1.8;
       font-style: italic;
@@ -446,7 +481,7 @@
 
     .english-text {
       font-size: 1rem;
-      color: #23303a;
+      color: color-mix(in srgb, var(--text) 88%, white);
     }
 
     .overview {
@@ -462,7 +497,7 @@
     .overview p {
       margin: 0 0 16px;
       font-size: 1.05rem;
-      color: #24313a;
+      color: color-mix(in srgb, var(--text) 88%, white);
       line-height: 1.8;
     }
 
@@ -474,7 +509,7 @@
     .overview li {
       margin-bottom: 10px;
       font-size: 1.03rem;
-      color: #24313a;
+      color: color-mix(in srgb, var(--text) 88%, white);
     }
 
     .loading-state,
@@ -484,7 +519,7 @@
       border-radius: 18px;
       background: var(--surface-soft);
       border: 1px solid var(--line);
-      color: #32404b;
+      color: color-mix(in srgb, var(--text) 82%, white);
       font-size: 1rem;
     }
 
@@ -522,6 +557,7 @@
       border-radius: 999px;
       background: var(--surface);
       border: 1px solid var(--line);
+      transition: 0.2s ease;
     }
 
     .footer-links a:hover {
@@ -591,7 +627,8 @@
         flex-direction: column;
       }
 
-      .mode-button {
+      .mode-button,
+      .theme-toggle {
         width: 100%;
       }
     }
@@ -611,6 +648,7 @@
       <nav class="nav">
         <a href="index.html">All Surahs</a>
         <a class="cta" href="#content">Read Surah 2</a>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode">Dark mode</button>
       </nav>
     </div>
   </header>
@@ -1050,6 +1088,7 @@
     const modeButtons = document.querySelectorAll(".mode-button");
     const verseSelect = document.getElementById("verseSelect");
     const jumpButton = document.getElementById("jumpButton");
+    const themeToggle = document.getElementById("themeToggle");
 
     let currentMode = "bilingual";
     let transliterationAvailable = false;
@@ -1131,6 +1170,17 @@
       window.location.hash = `ayah-${verseNumber}`;
     }
 
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        themeToggle.textContent = "Light mode";
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        themeToggle.textContent = "Dark mode";
+      }
+      localStorage.setItem("site-theme", theme);
+    }
+
     tabButtons.forEach((button) => {
       button.addEventListener("click", () => {
         setActiveTab(button.dataset.tab);
@@ -1146,6 +1196,11 @@
 
     jumpButton.addEventListener("click", () => {
       jumpToVerse(verseSelect.value);
+    });
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      applyTheme(isDark ? "light" : "dark");
     });
 
     async function fetchArabicAndTransliteration() {
@@ -1240,6 +1295,9 @@
         errorState.style.display = "block";
       }
     }
+
+    const savedTheme = localStorage.getItem("site-theme");
+    applyTheme(savedTheme === "dark" ? "dark" : "light");
 
     buildVerseSelector();
     setActiveTab("read");
