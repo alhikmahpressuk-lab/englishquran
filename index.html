@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,12 +25,25 @@
       --max: 1240px;
     }
 
+    html[data-theme="dark"] {
+      --bg: #0f1519;
+      --surface: #121b20;
+      --surface-soft: #18242b;
+      --text: #eef4f6;
+      --muted: #a6b5bd;
+      --line: #27343c;
+      --accent: #2a8b77;
+      --accent-soft: #18342d;
+      --accent-deep: #86dac7;
+      --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+      color-scheme: dark;
+    }
+
     * {
       box-sizing: border-box;
     }
 
     html {
-      scroll-behaviour: smooth;
       scroll-behavior: smooth;
     }
 
@@ -63,8 +76,8 @@
       top: 0;
       z-index: 100;
       backdrop-filter: blur(12px);
-      background: rgba(246, 248, 249, 0.88);
-      border-bottom: 1px solid rgba(226, 232, 236, 0.9);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
     }
 
     .topbar-inner {
@@ -117,6 +130,33 @@
       gap: 10px;
       flex-wrap: wrap;
       justify-content: flex-end;
+    }
+
+    .theme-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 6px;
+    }
+
+    .theme-button {
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .theme-button:hover,
+    .theme-button.active {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: rgba(30, 107, 92, 0.32);
     }
 
     .nav a {
@@ -209,7 +249,7 @@
     .hero-card .subtitle {
       margin: 18px 0 0;
       font-size: 1.15rem;
-      color: #32404b;
+      color: color-mix(in srgb, var(--text) 82%, white 18%);
       max-width: 62ch;
     }
 
@@ -261,7 +301,7 @@
     }
 
     .button-secondary:hover {
-      background: #ebf0f2;
+      background: color-mix(in srgb, var(--surface-soft) 85%, var(--accent-soft) 15%);
     }
 
     .hero-points {
@@ -279,7 +319,7 @@
       border-radius: var(--radius-sm);
       padding: 14px;
       font-size: 0.94rem;
-      color: #33414d;
+      color: color-mix(in srgb, var(--text) 84%, white 16%);
     }
 
     .info-card {
@@ -360,7 +400,7 @@
     .quick-card:hover {
       transform: translateY(-2px);
       border-color: rgba(30, 107, 92, 0.36);
-      background: #f5faf8;
+      background: color-mix(in srgb, var(--surface-soft) 82%, var(--accent-soft) 18%);
     }
 
     .quick-card strong {
@@ -388,7 +428,7 @@
       margin-bottom: 8px;
       font-size: 0.9rem;
       font-weight: 600;
-      color: #33414d;
+      color: color-mix(in srgb, var(--text) 85%, white 15%);
     }
 
     .field input,
@@ -398,14 +438,15 @@
       padding: 0 14px;
       border-radius: 14px;
       border: 1px solid var(--line);
-      background: #fff;
+      background: var(--surface);
       color: var(--text);
       outline: none;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .field input:focus,
-    .field select:focus {
+    .field select:focus,
+    .verse-jump input:focus {
       border-color: rgba(30, 107, 92, 0.55);
       box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
     }
@@ -508,7 +549,6 @@
 
     .surah-meta,
     .juz-meta,
-    .filter-pills,
     .quick-nav {
       display: flex;
       flex-wrap: wrap;
@@ -519,10 +559,10 @@
     .pill {
       padding: 7px 10px;
       border-radius: 999px;
-      background: #fff;
+      background: var(--surface);
       border: 1px solid var(--line);
       font-size: 0.84rem;
-      color: #4a5966;
+      color: color-mix(in srgb, var(--muted) 92%, var(--text) 8%);
     }
 
     .pill {
@@ -555,7 +595,7 @@
       padding: 0 14px;
       border-radius: 999px;
       border: 1px solid var(--line);
-      background: #fff;
+      background: var(--surface);
       color: var(--text);
       font-weight: 600;
       cursor: pointer;
@@ -599,9 +639,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #fff;
+      background: var(--surface);
       border: 1px solid var(--line);
-      color: #40505c;
+      color: color-mix(in srgb, var(--text) 78%, white 22%);
       font-size: 0.9rem;
       transition: 0.2s ease;
     }
@@ -625,14 +665,9 @@
       padding: 0 12px;
       border-radius: 12px;
       border: 1px solid var(--line);
-      background: #fff;
+      background: var(--surface);
       color: var(--text);
       outline: none;
-    }
-
-    .verse-jump input:focus {
-      border-color: rgba(30, 107, 92, 0.55);
-      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
     }
 
     .book-grid {
@@ -681,7 +716,7 @@
       border-radius: 999px;
       background: var(--surface-soft);
       border: 1px solid var(--line);
-      color: #455460;
+      color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
       font-size: 0.92rem;
     }
 
@@ -689,7 +724,6 @@
       padding: 28px;
       border: 1px dashed var(--line);
       border-radius: 18px;
-      text-align: centre;
       text-align: center;
       color: var(--muted);
       background: var(--surface-soft);
@@ -732,6 +766,10 @@
         margin-top: 14px;
       }
 
+      .theme-switch {
+        margin-bottom: 8px;
+      }
+
       .hero {
         padding-top: 30px;
       }
@@ -769,6 +807,14 @@
         width: 100%;
       }
 
+      .theme-switch {
+        width: 100%;
+      }
+
+      .theme-button {
+        flex: 1;
+      }
+
       .surah-actions,
       .juz-actions,
       .book-links,
@@ -795,6 +841,10 @@
       </div>
 
       <nav class="nav">
+        <div class="theme-switch" aria-label="Appearance mode">
+          <button class="theme-button active" type="button" id="lightModeButton">Light</button>
+          <button class="theme-button" type="button" id="darkModeButton">Dark</button>
+        </div>
         <a href="#surahs">Surahs</a>
         <a href="#juz">Juz</a>
         <a href="#about">About</a>
@@ -918,7 +968,7 @@
             </div>
           </div>
 
-          <p class="search-help">No diacritic typing is needed. Enter can open a direct result such as 19:16, 36:58, Al Baqarah 255, or Juz 5.</p>
+          <p class="search-help">No diacritic typing is needed. Enter opens direct results such as 19:16, 36:58, Al Baqarah 255, or Juz 5.</p>
 
           <div class="quick-nav">
             <button class="pill active" type="button" data-filter="all">All</button>
@@ -1193,6 +1243,8 @@
     const resultsCount = document.getElementById("resultsCount");
     const emptyState = document.getElementById("emptyState");
     const filterPills = document.querySelectorAll(".pill");
+    const lightModeButton = document.getElementById("lightModeButton");
+    const darkModeButton = document.getElementById("darkModeButton");
     let activeQuickFilter = "all";
 
     function getSurahLink(number) {
@@ -1200,20 +1252,11 @@
     }
 
     function getVerseLink(number, verse) {
-      return `surah-${number}.html#ayah-${verse}`;
-    }
-
-    function getJuzLink(juz) {
-      return `juz-${juz}.html`;
+      return `surah-${number}.html?ayah=${verse}#ayah-${verse}`;
     }
 
     function getSurah(number) {
       return surahs.find((surah) => surah.number === number);
-    }
-
-    function getSurahLabel(number) {
-      const surah = getSurah(number);
-      return surah ? `${surah.english} ${number}` : `Surah ${number}`;
     }
 
     function normaliseText(value) {
@@ -1222,9 +1265,41 @@
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[ʿʾʻ’‘]/g, "")
-        .replace(/[^a-z0-9:\s-]/g, "")
+        .replace(/[^a-z0-9:\s-]/g, " ")
         .replace(/\s+/g, " ")
         .trim();
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      lightModeButton.classList.toggle("active", theme === "light");
+      darkModeButton.classList.toggle("active", theme === "dark");
+      try {
+        localStorage.setItem("quranIndexTheme", theme);
+      } catch (error) {
+      }
+    }
+
+    function bindThemeButtons() {
+      lightModeButton.addEventListener("click", () => applyTheme("light"));
+      darkModeButton.addEventListener("click", () => applyTheme("dark"));
+      try {
+        applyTheme(localStorage.getItem("quranIndexTheme") || "light");
+      } catch (error) {
+        applyTheme("light");
+      }
+    }
+
+    function openSurah(number) {
+      window.location.assign(getSurahLink(number));
+    }
+
+    function openVerse(number, verse) {
+      const safeVerse = Number(verse);
+      if (!safeVerse || safeVerse < 1) {
+        return;
+      }
+      window.location.assign(getVerseLink(number, safeVerse));
     }
 
     function parseVerseReference(rawValue) {
@@ -1254,7 +1329,14 @@
         const matchedSurah = surahs.find((surah) => {
           const english = normaliseText(surah.english);
           const meaning = normaliseText(surah.meaning);
-          return english === surahPart || english.includes(surahPart) || meaning === surahPart || meaning.includes(surahPart);
+          const combined = `${english} ${surah.number}`;
+          return (
+            english === surahPart ||
+            english.includes(surahPart) ||
+            meaning === surahPart ||
+            meaning.includes(surahPart) ||
+            combined === surahPart
+          );
         });
 
         if (matchedSurah && verseNumber >= 1 && verseNumber <= matchedSurah.verses) {
@@ -1267,7 +1349,7 @@
 
     function parseJuzReference(rawValue) {
       const query = normaliseText(rawValue);
-      const match = query.match(/^juz\s*(\d{1,2})$/) || query.match(/^part\s*(\d{1,2})$/) || query.match(/^(\d{1,2})$/);
+      const match = query.match(/^juz\s*(\d{1,2})$/) || query.match(/^part\s*(\d{1,2})$/);
       if (!match) {
         return null;
       }
@@ -1280,14 +1362,6 @@
 
     function getJuzContainingSurah(surahNumber) {
       return juzData.filter((item) => item.start.surah <= surahNumber && item.end.surah >= surahNumber).map((item) => item.juz);
-    }
-
-    function getJuzForQuery(query) {
-      const juzNumber = parseJuzReference(query);
-      if (juzNumber) {
-        return juzNumber;
-      }
-      return null;
     }
 
     function buildVerseLinks(surah) {
@@ -1309,13 +1383,14 @@
         return surah.number === verseReference.surahNumber;
       }
 
-      const juzReference = getJuzForQuery(rawQuery);
+      const juzReference = parseJuzReference(rawQuery);
       if (juzReference) {
         const juzItem = juzData.find((item) => item.juz === juzReference);
         return surah.number >= juzItem.start.surah && surah.number <= juzItem.end.surah;
       }
 
       return (
+        surah.number.toString() === query ||
         surah.number.toString().includes(query) ||
         normaliseText(surah.english).includes(query) ||
         normaliseText(surah.meaning).includes(query) ||
@@ -1417,7 +1492,7 @@
               <span class="tag">Juz ${juzList.join(", ")}</span>
             </div>
             <div class="surah-actions">
-              <a class="mini-button" href="${getSurahLink(surah.number)}">Read Surah</a>
+              <button class="mini-button surah-open-button" type="button" data-surah-open="${surah.number}">Read Surah</button>
               ${shortSurah ? `<a class="mini-button" href="#surah-${surah.number}-verses">Verse List</a>` : `<button class="mini-button verse-go-button" type="button" data-surah="${surah.number}">Go to Verse</button>`}
             </div>
             <div class="verse-panel" ${shortSurah ? `id="surah-${surah.number}-verses"` : ""}>
@@ -1438,7 +1513,7 @@
         `;
       }).join("");
 
-      bindVerseJumpButtons();
+      bindRenderedInteractions();
     }
 
     function renderJuz() {
@@ -1458,7 +1533,7 @@
               <span class="tag">Ends: ${endSurah.english} ${item.end.surah}:${item.end.verse}</span>
             </div>
             <div class="juz-actions">
-              <a class="mini-button" href="${getVerseLink(item.start.surah, item.start.verse)}">Open Juz</a>
+              <button class="mini-button juz-open-button" type="button" data-juz-start-surah="${item.start.surah}" data-juz-start-verse="${item.start.verse}">Open Juz</button>
               <a class="mini-button" href="#surahs" data-juz-open="${item.juz}">View Surahs</a>
             </div>
           </div>
@@ -1473,9 +1548,23 @@
           renderSurahs();
         });
       });
+
+      document.querySelectorAll(".juz-open-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          const surahNumber = Number(button.getAttribute("data-juz-start-surah"));
+          const verseNumber = Number(button.getAttribute("data-juz-start-verse"));
+          openVerse(surahNumber, verseNumber);
+        });
+      });
     }
 
-    function bindVerseJumpButtons() {
+    function bindRenderedInteractions() {
+      document.querySelectorAll(".surah-open-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          openSurah(Number(button.getAttribute("data-surah-open")));
+        });
+      });
+
       document.querySelectorAll(".verse-go-button").forEach((button) => {
         button.addEventListener("click", () => {
           const surahNumber = button.getAttribute("data-surah");
@@ -1493,7 +1582,20 @@
           const input = document.querySelector(`[data-verse-input="${surahNumber}"]`);
           const verseNumber = Number(input.value);
           if (verseNumber >= 1 && verseNumber <= max) {
-            window.location.href = getVerseLink(surahNumber, verseNumber);
+            openVerse(surahNumber, verseNumber);
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-verse-input]").forEach((input) => {
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            const surahNumber = Number(input.getAttribute("data-verse-input"));
+            const max = Number(input.getAttribute("max"));
+            const verseNumber = Number(input.value);
+            if (verseNumber >= 1 && verseNumber <= max) {
+              openVerse(surahNumber, verseNumber);
+            }
           }
         });
       });
@@ -1502,14 +1604,17 @@
     function openDirectMatch() {
       const verseReference = parseVerseReference(searchInput.value);
       if (verseReference) {
-        window.location.href = getVerseLink(verseReference.surahNumber, verseReference.verseNumber);
+        openVerse(verseReference.surahNumber, verseReference.verseNumber);
         return;
       }
 
-      const juzReference = getJuzForQuery(searchInput.value);
-      if (juzReference && normaliseText(searchInput.value).includes("juz")) {
-        document.getElementById("juz").scrollIntoView({ behavior: "smooth" });
-        return;
+      const juzReference = parseJuzReference(searchInput.value);
+      if (juzReference) {
+        const juzItem = juzData.find((item) => item.juz === juzReference);
+        if (juzItem) {
+          openVerse(juzItem.start.surah, juzItem.start.verse);
+          return;
+        }
       }
 
       const query = normaliseText(searchInput.value);
@@ -1518,11 +1623,21 @@
       }
 
       const matchedSurah = surahs.find((surah) => {
-        return surah.number.toString() === query || normaliseText(surah.english) === query || normaliseText(surah.meaning) === query;
+        return (
+          surah.number.toString() === query ||
+          normaliseText(surah.english) === query ||
+          normaliseText(surah.meaning) === query
+        );
       });
 
       if (matchedSurah) {
-        window.location.href = getSurahLink(matchedSurah.number);
+        openSurah(matchedSurah.number);
+        return;
+      }
+
+      const firstVisibleButton = document.querySelector(".surah-open-button");
+      if (firstVisibleButton) {
+        openSurah(Number(firstVisibleButton.getAttribute("data-surah-open")));
       }
     }
 
@@ -1558,6 +1673,7 @@
 
     populateJuzFilter();
     bindQuickFilters();
+    bindThemeButtons();
     renderSurahs();
     renderJuz();
   </script>
