@@ -189,12 +189,12 @@
       bottom: -110px;
       width: 250px;
       height: 250px;
-      background: radial-gradient(circle, rgba(30,107,92,0.13) 0%, rgba(30,107,92,0) 72%);
+      background: radial-gradient(circle, rgba(30, 107, 92, 0.13) 0%, rgba(30, 107, 92, 0) 72%);
       pointer-events: none;
     }
 
     html[data-theme="dark"] .hero-card::after {
-      background: radial-gradient(circle, rgba(56,161,137,0.18) 0%, rgba(56,161,137,0) 72%);
+      background: radial-gradient(circle, rgba(56, 161, 137, 0.18) 0%, rgba(56, 161, 137, 0) 72%);
     }
 
     .crumb {
@@ -426,33 +426,6 @@
       border-top: 1px solid var(--line);
     }
 
-    .bismillah-block {
-      padding: 24px 16px 28px;
-      border-radius: 18px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      margin-bottom: 8px;
-      text-align: center;
-    }
-
-    .bismillah-arabic {
-      font-family: "Amiri Quran", "Amiri", serif;
-      font-size: clamp(1.7rem, 2.6vw, 2.3rem);
-      line-height: 2;
-      direction: rtl;
-      color: #111827;
-      margin-bottom: 14px;
-    }
-
-    html[data-theme="dark"] .bismillah-arabic {
-      color: #f8fbfd;
-    }
-
-    .bismillah-english {
-      font-size: 1rem;
-      color: color-mix(in srgb, var(--text) 88%, white);
-    }
-
     .arabic-wrap {
       text-align: right;
       direction: rtl;
@@ -632,10 +605,6 @@
         padding: 20px 10px;
       }
 
-      .bismillah-block {
-        padding: 20px 12px 24px;
-      }
-
       .english-number {
         min-width: 34px;
         height: 34px;
@@ -650,11 +619,6 @@
       .arabic-ayah {
         font-size: 1.42rem;
         line-height: 2.05;
-      }
-
-      .bismillah-arabic {
-        font-size: 1.65rem;
-        line-height: 1.95;
       }
 
       .mode-options {
@@ -804,13 +768,13 @@
 
   <script>
     const englishVerses = [
+      "In the name of Allah, the Most-Merciful, the Ever-Merciful.",
       "All praise belongs to Allah, Lord of all worlds,",
       "the Most-Merciful, the Ever-Merciful,",
       "Master of the Day of Judgement.",
       "You alone we worship, and You alone we ask for help.",
       "Guide us to the straight path,",
-      "the path of those You have favoured, not of those who have earned anger,",
-      "nor of those who went astray."
+      "the path of those You have favoured, not of those who have earned anger, nor of those who went astray."
     ];
 
     const versesContainer = document.getElementById("versesContainer");
@@ -830,9 +794,6 @@
 
     let currentMode = "bilingual";
     let transliterationAvailable = false;
-
-    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
-    const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
     function escapeHtml(text) {
       return String(text)
@@ -1020,13 +981,6 @@
     }
 
     function renderVerses(verseData) {
-      const bismillahBlock = `
-        <section class="bismillah-block" id="bismillah">
-          <div class="bismillah-arabic" lang="ar">${escapeHtml(bismillahArabic)}</div>
-          <div class="bismillah-english">${escapeHtml(bismillahEnglish)}</div>
-        </section>
-      `;
-
       const versesHtml = verseData.map((verse, index) => {
         const english = englishVerses[index] || "";
         const transliterationBlock = verse.transliteration
@@ -1047,7 +1001,7 @@
         `;
       }).join("");
 
-      versesContainer.innerHTML = bismillahBlock + versesHtml;
+      versesContainer.innerHTML = versesHtml;
     }
 
     async function loadSurah() {
