@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+  />
+  <meta name="google" content="notranslate" />
+  <meta name="translate" content="no" />
   <title>Surah 2 | Al-Baqarah | The English Qur’an</title>
   <meta name="description" content="Surah 2, Al-Baqarah, from The English Qur’an." />
   <style>
@@ -45,6 +50,7 @@
 
     html {
       scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
@@ -54,6 +60,10 @@
       color: var(--text);
       line-height: 1.65;
       transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    body.notranslate {
+      translate: no;
     }
 
     a {
@@ -129,10 +139,12 @@
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .nav a,
-    .theme-toggle {
+    .theme-toggle,
+    .bookmark-toggle {
       padding: 10px 14px;
       border-radius: 999px;
       font-size: 0.94rem;
@@ -141,10 +153,16 @@
       border: 1px solid transparent;
       background: transparent;
       cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
     }
 
     .nav a:hover,
-    .theme-toggle:hover {
+    .theme-toggle:hover,
+    .bookmark-toggle:hover {
       background: var(--surface);
       color: var(--text);
       border-color: var(--line);
@@ -161,6 +179,17 @@
       background: var(--accent-deep);
       color: #fff;
       border-color: var(--accent-deep);
+    }
+
+    .bookmark-toggle.active {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      font-weight: 700;
+    }
+
+    html[data-theme="dark"] .bookmark-toggle.active {
+      color: #d8fff4;
     }
 
     .hero {
@@ -413,6 +442,25 @@
       background: var(--accent-deep);
     }
 
+    .bookmark-state,
+    .loading-state,
+    .error-state,
+    .note-state {
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 82%, white);
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-state,
+    .error-state,
+    .note-state {
+      display: none;
+    }
+
     .verse {
       padding: 24px 16px;
       border-radius: 18px;
@@ -421,6 +469,11 @@
 
     .verse:target {
       background: var(--surface-deep);
+    }
+
+    .verse.bookmark-target {
+      background: var(--surface-deep);
+      outline: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
     }
 
     .verse + .verse {
@@ -438,7 +491,7 @@
 
     .bismillah-arabic {
       font-family: "Amiri Quran", "Amiri", serif;
-      font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+      font-size: clamp(1.9rem, 2.8vw, 2.6rem);
       line-height: 2;
       direction: rtl;
       color: #111827;
@@ -462,8 +515,8 @@
 
     .arabic-ayah {
       font-family: "Amiri Quran", "Amiri", serif;
-      font-size: clamp(1.45rem, 2.05vw, 1.82rem);
-      line-height: 2.1;
+      font-size: clamp(1.9rem, 2.5vw, 2.6rem);
+      line-height: 2.15;
       color: #111827;
       word-spacing: 0.04em;
       letter-spacing: 0;
@@ -538,26 +591,6 @@
       color: color-mix(in srgb, var(--text) 88%, white);
     }
 
-    .loading-state,
-    .error-state,
-    .note-state {
-      padding: 22px 16px;
-      border-radius: 18px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      color: color-mix(in srgb, var(--text) 82%, white);
-      font-size: 1rem;
-    }
-
-    .error-state {
-      display: none;
-    }
-
-    .note-state {
-      display: none;
-      margin-bottom: 16px;
-    }
-
     .footer {
       padding: 0 0 34px;
     }
@@ -608,14 +641,21 @@
       }
     }
 
-    @media (max-width: 680px) {
+    @media (max-width: 760px) {
       .topbar-inner {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         justify-content: center;
         padding: 14px 0;
       }
 
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
       .hero-card,
       .content-card {
         border-radius: 18px;
@@ -649,12 +689,12 @@
       }
 
       .arabic-ayah {
-        font-size: 1.38rem;
-        line-height: 2.02;
+        font-size: 1.9rem;
+        line-height: 2.05;
       }
 
       .bismillah-arabic {
-        font-size: 1.65rem;
+        font-size: 1.9rem;
         line-height: 1.95;
       }
 
@@ -662,14 +702,42 @@
         flex-direction: column;
       }
 
-      .mode-button,
-      .theme-toggle {
+      .mode-button {
+        width: 100%;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-toggle {
+        min-height: 42px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .nav {
+        gap: 8px;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-toggle {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .verse-selector-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .verse-selector-row select,
+      .jump-button {
         width: 100%;
       }
     }
   </style>
 </head>
-<body>
+<body class="notranslate">
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand">
@@ -680,10 +748,11 @@
         </div>
       </div>
 
-      <nav class="nav">
+      <nav class="nav" aria-label="Primary">
         <a href="index.html">All Surahs</a>
         <a class="cta" href="#content">Read Surah 2</a>
-        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode">Dark mode</button>
+        <button class="bookmark-toggle" type="button" id="bookmarkToggle" aria-label="Save bookmark for this surah">Bookmark</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode">Dark</button>
       </nav>
     </div>
   </header>
@@ -756,6 +825,7 @@
           </div>
 
           <div class="tab-panel active" id="read">
+            <div class="bookmark-state" id="bookmarkState"></div>
             <div class="loading-state" id="loadingState">Loading Surah Al-Baqarah...</div>
             <div class="error-state" id="errorState">The surah could not be loaded. Please refresh the page and try again.</div>
             <div class="note-state" id="noteState">Transliteration could not be loaded, so the page has switched back to Arabic + English.</div>
@@ -1114,6 +1184,7 @@
     const loadingState = document.getElementById("loadingState");
     const errorState = document.getElementById("errorState");
     const noteState = document.getElementById("noteState");
+    const bookmarkState = document.getElementById("bookmarkState");
 
     const tabButtons = document.querySelectorAll(".tab-button");
     const tabPanels = document.querySelectorAll(".tab-panel");
@@ -1124,12 +1195,16 @@
     const verseSelect = document.getElementById("verseSelect");
     const jumpButton = document.getElementById("jumpButton");
     const themeToggle = document.getElementById("themeToggle");
+    const bookmarkToggle = document.getElementById("bookmarkToggle");
+
+    const surahNumber = 2;
+    const totalVerses = 286;
+    const bookmarkStorageKey = `teq-bookmark-surah-${surahNumber}`;
+    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+    const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
     let currentMode = "bilingual";
     let transliterationAvailable = false;
-
-    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
-    const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
     function escapeHtml(text) {
       return String(text)
@@ -1146,7 +1221,7 @@
 
     function buildVerseSelector() {
       let options = "";
-      for (let i = 1; i <= 286; i += 1) {
+      for (let i = 1; i <= totalVerses; i += 1) {
         options += `<option value="${i}">Verse ${i}</option>`;
       }
       verseSelect.innerHTML = options;
@@ -1200,16 +1275,119 @@
       return "bilingual";
     }
 
-    function jumpToVerse(verseNumber) {
+    function getSavedBookmark() {
+      try {
+        const raw = localStorage.getItem(bookmarkStorageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || parsed.surah !== surahNumber) return null;
+        if (typeof parsed.ayah !== "number") return null;
+        if (parsed.ayah < 1 || parsed.ayah > totalVerses) return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function updateBookmarkButton() {
+      const saved = getSavedBookmark();
+      if (saved) {
+        bookmarkToggle.classList.add("active");
+        bookmarkToggle.textContent = `Bookmarked ${saved.ayah}`;
+        bookmarkToggle.setAttribute("aria-label", `Bookmark saved at verse ${saved.ayah}. Click to return to bookmark.`);
+      } else {
+        bookmarkToggle.classList.remove("active");
+        bookmarkToggle.textContent = "Bookmark";
+        bookmarkToggle.setAttribute("aria-label", "Save bookmark for this surah");
+      }
+    }
+
+    function showBookmarkMessage(message) {
+      bookmarkState.textContent = message;
+      bookmarkState.style.display = "block";
+      window.clearTimeout(showBookmarkMessage.timer);
+      showBookmarkMessage.timer = window.setTimeout(() => {
+        bookmarkState.style.display = "none";
+      }, 2600);
+    }
+
+    function clearBookmarkHighlight() {
+      document.querySelectorAll(".verse.bookmark-target").forEach((el) => {
+        el.classList.remove("bookmark-target");
+      });
+    }
+
+    function highlightVerse(ayahNumber) {
+      clearBookmarkHighlight();
+      const target = document.getElementById(`ayah-${ayahNumber}`);
+      if (target) {
+        target.classList.add("bookmark-target");
+      }
+    }
+
+    function getNearestVisibleVerseNumber() {
+      const verseElements = Array.from(document.querySelectorAll(".verse"));
+      if (!verseElements.length) return 1;
+
+      const threshold = 160;
+      let bestVerse = 1;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      verseElements.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const distance = Math.abs(rect.top - threshold);
+        if (rect.bottom > 90 && distance < bestDistance) {
+          bestDistance = distance;
+          const id = el.id || "";
+          const match = id.match(/^ayah-(\d+)$/);
+          if (match) {
+            bestVerse = Number(match[1]);
+          }
+        }
+      });
+
+      return bestVerse;
+    }
+
+    function saveCurrentBookmark() {
+      const ayah = getNearestVisibleVerseNumber();
+      const payload = {
+        surah: surahNumber,
+        ayah,
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem(bookmarkStorageKey, JSON.stringify(payload));
+      updateBookmarkButton();
+      showBookmarkMessage(`Bookmark saved at verse ${ayah}.`);
+      highlightVerse(ayah);
+      history.replaceState(null, "", `?ayah=${ayah}#ayah-${ayah}`);
+    }
+
+    function goToSavedBookmark() {
+      const saved = getSavedBookmark();
+      if (!saved) {
+        saveCurrentBookmark();
+        return;
+      }
+      jumpToVerse(saved.ayah, true);
+      showBookmarkMessage(`Returned to bookmarked verse ${saved.ayah}.`);
+    }
+
+    function jumpToVerse(verseNumber, fromBookmark = false) {
       const safeVerseNumber = Number(verseNumber);
       const target = document.getElementById(`ayah-${safeVerseNumber}`);
       if (!target) return;
 
       setActiveTab("read");
       verseSelect.value = String(safeVerseNumber);
+      highlightVerse(safeVerseNumber);
 
       target.scrollIntoView({ behavior: "smooth", block: "start" });
       history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
+
+      if (fromBookmark) {
+        target.focus?.();
+      }
     }
 
     function handleInitialVerseJump() {
@@ -1225,8 +1403,9 @@
         verseNumber = Number(hash.replace("#ayah-", ""));
       }
 
-      if (!verseNumber) return;
-      if (verseNumber < 1 || verseNumber > 286) return;
+      if (!verseNumber || verseNumber < 1 || verseNumber > totalVerses) {
+        return;
+      }
 
       setActiveTab("read");
       verseSelect.value = String(verseNumber);
@@ -1234,6 +1413,7 @@
       requestAnimationFrame(() => {
         const target = document.getElementById(`ayah-${verseNumber}`);
         if (target) {
+          highlightVerse(verseNumber);
           target.scrollIntoView({ behavior: "smooth", block: "start" });
           history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
         }
@@ -1277,6 +1457,10 @@
     themeToggle.addEventListener("click", () => {
       const isDark = document.documentElement.getAttribute("data-theme") === "dark";
       applyTheme(isDark ? "light" : "dark");
+    });
+
+    bookmarkToggle.addEventListener("click", () => {
+      goToSavedBookmark();
     });
 
     async function fetchArabicAndTransliteration() {
@@ -1341,7 +1525,7 @@
           : `<div class="transliteration-wrap">Transliteration not available for this verse.</div>`;
 
         return `
-          <article class="verse" id="ayah-${verse.number}">
+          <article class="verse" id="ayah-${verse.number}" tabindex="-1">
             <div class="arabic-wrap">
               <div class="arabic-ayah" lang="ar">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
             </div>
@@ -1369,6 +1553,7 @@
         renderVerses(verseData);
         buildVerseSelector();
         applyMode("bilingual");
+        updateBookmarkButton();
 
         loadingState.style.display = "none";
         errorState.style.display = "none";
@@ -1386,6 +1571,7 @@
 
     buildVerseSelector();
     setActiveTab("read");
+    updateBookmarkButton();
     loadSurah();
   </script>
 </body>
