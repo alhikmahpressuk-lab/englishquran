@@ -53,7 +53,7 @@
     }
 
     html {
-      scroll-behaviour: smooth;
+      scroll-behavior: smooth;
       -webkit-text-size-adjust: 100%;
     }
 
@@ -311,142 +311,6 @@
       padding: 12px 0 36px;
     }
 
-    .controls {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .tab-button {
-      appearance: none;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      min-height: 46px;
-      padding: 0 18px;
-      border-radius: 999px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .tab-button:hover {
-      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-      background: var(--surface-soft);
-    }
-
-    .tab-button.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .content-card {
-      padding: 18px;
-    }
-
-    .tab-panel {
-      display: none;
-    }
-
-    .tab-panel.active {
-      display: block;
-    }
-
-    .subpanel {
-      display: none;
-      margin-bottom: 16px;
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--surface-soft);
-    }
-
-    .subpanel.active {
-      display: block;
-    }
-
-    .subpanel h3 {
-      margin: 0 0 12px;
-      font-size: 1.1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .subpanel p {
-      margin: 0 0 14px;
-      color: color-mix(in srgb, var(--text) 80%, white);
-    }
-
-    .mode-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .mode-button {
-      appearance: none;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      min-height: 44px;
-      padding: 0 16px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.2s ease;
-    }
-
-    .mode-button:hover {
-      background: var(--surface-deep);
-      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-    }
-
-    .mode-button.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    .verse-selector-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .verse-selector-row label {
-      font-weight: 600;
-    }
-
-    .verse-selector-row select {
-      min-width: 180px;
-      min-height: 46px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      padding: 0 14px;
-      outline: none;
-    }
-
-    .jump-button {
-      appearance: none;
-      border: none;
-      min-height: 46px;
-      padding: 0 18px;
-      border-radius: 999px;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .jump-button:hover {
-      background: var(--accent-deep);
-    }
-
     .bookmark-panel {
       display: none;
       margin-bottom: 16px;
@@ -642,6 +506,142 @@
       color: var(--danger);
     }
 
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .tab-button:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: var(--surface-soft);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .content-card {
+      padding: 18px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .subpanel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-soft);
+    }
+
+    .subpanel.active {
+      display: block;
+    }
+
+    .subpanel h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subpanel p {
+      margin: 0 0 14px;
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .mode-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mode-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .mode-button:hover {
+      background: var(--surface-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+
+    .mode-button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .verse-selector-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .verse-selector-row label {
+      font-weight: 600;
+    }
+
+    .verse-selector-row select {
+      min-width: 180px;
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+    }
+
+    .jump-button {
+      appearance: none;
+      border: none;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .jump-button:hover {
+      background: var(--accent-deep);
+    }
+
     .bookmark-state,
     .loading-state,
     .error-state,
@@ -665,47 +665,10 @@
       padding: 24px 16px;
       border-radius: 18px;
       scroll-margin-top: 110px;
-      position: relative;
-    }
-
-    .verse:target {
-      background: var(--surface-deep);
-    }
-
-    .verse.current-reading {
-      background: var(--surface-deep);
-      outline: 1px solid color-mix(in srgb, var(--accent) 25%, var(--line));
     }
 
     .verse + .verse {
       border-top: 1px solid var(--line);
-    }
-
-    .verse-top {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      margin-bottom: 8px;
-    }
-
-    .save-verse-bookmark {
-      appearance: none;
-      border: 1px solid var(--line);
-      background: var(--surface-soft);
-      color: var(--muted);
-      min-height: 34px;
-      padding: 0 12px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.86rem;
-      transition: 0.2s ease;
-    }
-
-    .save-verse-bookmark:hover {
-      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-      color: var(--text);
-      background: var(--surface);
     }
 
     .bismillah-block {
@@ -714,7 +677,7 @@
       background: var(--surface-soft);
       border: 1px solid var(--line);
       margin-bottom: 8px;
-      text-align: centre;
+      text-align: center;
     }
 
     .bismillah-arabic {
@@ -779,7 +742,7 @@
       background: var(--accent-soft);
       color: var(--accent-deep);
       display: grid;
-      place-items: centre;
+      place-items: center;
       font-weight: 700;
       flex-shrink: 0;
       margin-top: 2px;
@@ -997,7 +960,7 @@
       <nav class="nav" aria-label="Primary">
         <a href="index.html">All Surahs</a>
         <a class="cta" href="#content">Read Surah 2</a>
-        <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks">Bookmarks</button>
+        <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks" aria-expanded="false">Bookmarks</button>
         <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode">Dark</button>
       </nav>
     </div>
@@ -1045,7 +1008,7 @@
           <div class="bookmark-header">
             <div>
               <h3>Bookmarks</h3>
-              <p>Resume from your last read verse, or jump to any saved verse bookmark.</p>
+              <p>Your reading position is remembered automatically.</p>
             </div>
             <button class="bookmark-close" type="button" id="bookmarkClose">Close</button>
           </div>
@@ -1056,22 +1019,14 @@
               <div class="bookmark-card-value" id="lastReadText">No verse tracked yet.</div>
               <div class="bookmark-card-row">
                 <button class="bookmark-action" type="button" id="goLastRead">Go to last read</button>
-                <button class="bookmark-remove" type="button" id="clearLastRead">Clear last read</button>
-              </div>
-            </div>
-
-            <div class="bookmark-card">
-              <div class="bookmark-card-label">Save current verse</div>
-              <div class="bookmark-card-value" id="currentVerseText">Current verse: 1</div>
-              <div class="bookmark-card-row">
-                <button class="bookmark-action" type="button" id="saveCurrentVerseBookmark">Save bookmark here</button>
+                <button class="bookmark-remove" type="button" id="clearHistory">Clear bookmark history</button>
               </div>
             </div>
           </div>
 
           <div class="bookmark-list-wrap">
-            <h4 class="bookmark-list-title">Saved verse bookmarks</h4>
-            <div class="bookmark-empty" id="bookmarkEmpty">No verse bookmarks saved yet.</div>
+            <h4 class="bookmark-list-title">Recently visited verses</h4>
+            <div class="bookmark-empty" id="bookmarkEmpty">No reading history yet.</div>
             <div class="bookmark-list" id="bookmarkList"></div>
           </div>
         </div>
@@ -1482,16 +1437,16 @@
     const bookmarkClose = document.getElementById("bookmarkClose");
     const lastReadText = document.getElementById("lastReadText");
     const goLastRead = document.getElementById("goLastRead");
-    const clearLastRead = document.getElementById("clearLastRead");
-    const currentVerseText = document.getElementById("currentVerseText");
-    const saveCurrentVerseBookmark = document.getElementById("saveCurrentVerseBookmark");
+    const clearHistory = document.getElementById("clearHistory");
     const bookmarkList = document.getElementById("bookmarkList");
     const bookmarkEmpty = document.getElementById("bookmarkEmpty");
 
     const surahNumber = 2;
     const totalVerses = 286;
     const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
-    const bookmarksStorageKey = `teq-surah-${surahNumber}-bookmarks`;
+    const historyStorageKey = `teq-surah-${surahNumber}-history`;
+    const historyLimit = 25;
+
     const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
@@ -1540,7 +1495,7 @@
 
       if (mode === "bilingual") {
         versesContainer.classList.add("hidden-transliteration");
-        return "bilingual";
+        return;
       }
 
       if (mode === "transliteration") {
@@ -1551,32 +1506,22 @@
             button.classList.toggle("active", button.dataset.mode === "bilingual");
           });
           currentMode = "bilingual";
-          return "bilingual";
+          return;
         }
-        return "transliteration";
+        return;
       }
 
       if (mode === "arabic-only") {
         versesContainer.classList.add("hidden-english", "hidden-transliteration");
-        return "arabic-only";
+        return;
       }
 
       if (mode === "english-only") {
         versesContainer.classList.add("hidden-arabic", "hidden-transliteration");
-        return "english-only";
+        return;
       }
 
       versesContainer.classList.add("hidden-transliteration");
-      return "bilingual";
-    }
-
-    function showBookmarkMessage(message) {
-      bookmarkState.textContent = message;
-      bookmarkState.style.display = "block";
-      clearTimeout(showBookmarkMessage.timer);
-      showBookmarkMessage.timer = setTimeout(() => {
-        bookmarkState.style.display = "none";
-      }, 2600);
     }
 
     function formatSavedTime(isoValue) {
@@ -1592,6 +1537,15 @@
       });
     }
 
+    function showBookmarkMessage(message) {
+      bookmarkState.textContent = message;
+      bookmarkState.style.display = "block";
+      clearTimeout(showBookmarkMessage.timer);
+      showBookmarkMessage.timer = setTimeout(() => {
+        bookmarkState.style.display = "none";
+      }, 2400);
+    }
+
     function getLastRead() {
       try {
         const raw = localStorage.getItem(lastReadStorageKey);
@@ -1605,14 +1559,21 @@
       }
     }
 
-    function saveLastRead(ayahNumber) {
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(historyStorageKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && typeof item.ayah === "number" && item.ayah >= 1 && item.ayah <= totalVerses);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLastReadAndHistory(ayahNumber) {
       const safeVerse = Number(ayahNumber);
       if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
-
-      const current = getLastRead();
-      if (current && current.ayah === safeVerse) {
-        return;
-      }
 
       localStorage.setItem(
         lastReadStorageKey,
@@ -1622,143 +1583,96 @@
         })
       );
 
-      updateLastReadUI();
-    }
-
-    function clearLastReadData() {
-      localStorage.removeItem(lastReadStorageKey);
-      updateLastReadUI();
-      showBookmarkMessage("Last read verse cleared.");
-    }
-
-    function getSavedBookmarks() {
-      try {
-        const raw = localStorage.getItem(bookmarksStorageKey);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed
-          .filter((item) => item && typeof item.ayah === "number" && item.ayah >= 1 && item.ayah <= totalVerses)
-          .sort((a, b) => a.ayah - b.ayah);
-      } catch {
-        return [];
-      }
-    }
-
-    function storeBookmarks(items) {
-      localStorage.setItem(bookmarksStorageKey, JSON.stringify(items));
-      renderBookmarksList();
-    }
-
-    function saveVerseBookmark(ayahNumber) {
-      const safeVerse = Number(ayahNumber);
-      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
-
-      const existing = getSavedBookmarks();
-      const found = existing.find((item) => item.ayah === safeVerse);
-
-      if (found) {
-        showBookmarkMessage(`Verse ${safeVerse} is already saved.`);
-        return;
-      }
-
-      existing.push({
+      const history = getHistory().filter((item) => item.ayah !== safeVerse);
+      history.unshift({
         ayah: safeVerse,
         savedAt: new Date().toISOString()
       });
 
-      storeBookmarks(existing);
-      showBookmarkMessage(`Verse ${safeVerse} bookmarked.`);
+      localStorage.setItem(
+        historyStorageKey,
+        JSON.stringify(history.slice(0, historyLimit))
+      );
+
+      updateBookmarkUI();
     }
 
-    function removeVerseBookmark(ayahNumber) {
-      const safeVerse = Number(ayahNumber);
-      const filtered = getSavedBookmarks().filter((item) => item.ayah !== safeVerse);
-      storeBookmarks(filtered);
-      showBookmarkMessage(`Bookmark for verse ${safeVerse} removed.`);
+    function clearBookmarkHistory() {
+      localStorage.removeItem(lastReadStorageKey);
+      localStorage.removeItem(historyStorageKey);
+      updateBookmarkUI();
+      showBookmarkMessage("Bookmark history cleared.");
     }
 
-    function clearReadingHighlight() {
-      document.querySelectorAll(".verse.current-reading").forEach((el) => {
-        el.classList.remove("current-reading");
-      });
-    }
+    function updateBookmarkUI() {
+      const lastRead = getLastRead();
+      const history = getHistory();
 
-    function highlightReadingVerse(ayahNumber) {
-      clearReadingHighlight();
-      const target = document.getElementById(`ayah-${ayahNumber}`);
-      if (target) {
-        target.classList.add("current-reading");
-      }
-    }
-
-    function updateCurrentVerseUI() {
-      currentVerseText.textContent = `Current verse: ${currentVisibleVerse}`;
-      verseSelect.value = String(currentVisibleVerse);
-    }
-
-    function updateLastReadUI() {
-      const saved = getLastRead();
-
-      if (saved) {
-        lastReadText.textContent = `Verse ${saved.ayah}${saved.savedAt ? `, saved ${formatSavedTime(saved.savedAt)}` : ""}`;
+      if (lastRead) {
+        lastReadText.textContent = `Verse ${lastRead.ayah}${lastRead.savedAt ? `, saved ${formatSavedTime(lastRead.savedAt)}` : ""}`;
         goLastRead.disabled = false;
-        clearLastRead.disabled = false;
         bookmarkOpen.classList.add("has-last");
-        bookmarkOpen.textContent = `Bookmarks · ${saved.ayah}`;
+        bookmarkOpen.textContent = `Bookmarks · ${lastRead.ayah}`;
       } else {
         lastReadText.textContent = "No verse tracked yet.";
         goLastRead.disabled = true;
-        clearLastRead.disabled = true;
         bookmarkOpen.classList.remove("has-last");
         bookmarkOpen.textContent = "Bookmarks";
       }
-    }
-
-    function renderBookmarksList() {
-      const items = getSavedBookmarks();
 
       bookmarkList.innerHTML = "";
 
-      if (!items.length) {
+      if (!history.length) {
         bookmarkEmpty.style.display = "block";
-        return;
+      } else {
+        bookmarkEmpty.style.display = "none";
+
+        history.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "bookmark-item";
+
+          row.innerHTML = `
+            <div class="bookmark-item-left">
+              <div class="bookmark-item-title">Verse ${item.ayah}</div>
+              <div class="bookmark-item-meta">${item.savedAt ? `Visited ${escapeHtml(formatSavedTime(item.savedAt))}` : ""}</div>
+            </div>
+            <div class="bookmark-item-actions">
+              <button class="bookmark-mini" type="button" data-go-history="${item.ayah}">Go to verse</button>
+              <button class="bookmark-mini-remove" type="button" data-remove-history="${item.ayah}">Remove</button>
+            </div>
+          `;
+
+          bookmarkList.appendChild(row);
+        });
+
+        bookmarkList.querySelectorAll("[data-go-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-go-history"));
+            jumpToVerse(ayah);
+            closeBookmarkPanel();
+          });
+        });
+
+        bookmarkList.querySelectorAll("[data-remove-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-remove-history"));
+            const filtered = getHistory().filter((item) => item.ayah !== ayah);
+            localStorage.setItem(historyStorageKey, JSON.stringify(filtered));
+
+            const lastRead = getLastRead();
+            if (lastRead && lastRead.ayah === ayah) {
+              if (filtered.length) {
+                localStorage.setItem(lastReadStorageKey, JSON.stringify(filtered[0]));
+              } else {
+                localStorage.removeItem(lastReadStorageKey);
+              }
+            }
+
+            updateBookmarkUI();
+            showBookmarkMessage(`Verse ${ayah} removed from bookmark history.`);
+          });
+        });
       }
-
-      bookmarkEmpty.style.display = "none";
-
-      items.forEach((item) => {
-        const row = document.createElement("div");
-        row.className = "bookmark-item";
-
-        row.innerHTML = `
-          <div class="bookmark-item-left">
-            <div class="bookmark-item-title">Verse ${item.ayah}</div>
-            <div class="bookmark-item-meta">${item.savedAt ? `Saved ${escapeHtml(formatSavedTime(item.savedAt))}` : ""}</div>
-          </div>
-          <div class="bookmark-item-actions">
-            <button class="bookmark-mini" type="button" data-go-bookmark="${item.ayah}">Go to verse</button>
-            <button class="bookmark-mini-remove" type="button" data-remove-bookmark="${item.ayah}">Remove</button>
-          </div>
-        `;
-
-        bookmarkList.appendChild(row);
-      });
-
-      bookmarkList.querySelectorAll("[data-go-bookmark]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const ayah = Number(button.getAttribute("data-go-bookmark"));
-          jumpToVerse(ayah);
-          closeBookmarkPanel();
-        });
-      });
-
-      bookmarkList.querySelectorAll("[data-remove-bookmark]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const ayah = Number(button.getAttribute("data-remove-bookmark"));
-          removeVerseBookmark(ayah);
-        });
-      });
     }
 
     function openBookmarkPanel() {
@@ -1781,13 +1695,12 @@
       if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
 
       currentVisibleVerse = safeVerse;
-      updateCurrentVerseUI();
-      highlightReadingVerse(safeVerse);
+      verseSelect.value = String(safeVerse);
 
       if (persist) {
         clearTimeout(readingSaveTimer);
         readingSaveTimer = setTimeout(() => {
-          saveLastRead(safeVerse);
+          saveLastReadAndHistory(safeVerse);
         }, 180);
       }
     }
@@ -1800,7 +1713,7 @@
       setActiveTab("read");
       setCurrentVisibleVerse(safeVerseNumber, true);
 
-      target.scrollIntoView({ behaviour: "smooth", block: "start" });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
       history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
     }
 
@@ -1831,7 +1744,7 @@
         const target = document.getElementById(`ayah-${verseNumber}`);
         if (target) {
           setCurrentVisibleVerse(verseNumber, false);
-          target.scrollIntoView({ behaviour: "smooth", block: "start" });
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
           history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
         }
       });
@@ -1923,12 +1836,8 @@
       closeBookmarkPanel();
     });
 
-    clearLastRead.addEventListener("click", () => {
-      clearLastReadData();
-    });
-
-    saveCurrentVerseBookmark.addEventListener("click", () => {
-      saveVerseBookmark(currentVisibleVerse);
+    clearHistory.addEventListener("click", () => {
+      clearBookmarkHistory();
     });
 
     async function fetchArabicAndTransliteration() {
@@ -1994,9 +1903,6 @@
 
         return `
           <article class="verse" id="ayah-${verse.number}" tabindex="-1">
-            <div class="verse-top">
-              <button class="save-verse-bookmark" type="button" data-save-ayah="${verse.number}">Save verse ${verse.number}</button>
-            </div>
             <div class="arabic-wrap">
               <div class="arabic-ayah" lang="ar">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
             </div>
@@ -2010,13 +1916,6 @@
       }).join("");
 
       versesContainer.innerHTML = bismillahBlock + versesHtml;
-
-      versesContainer.querySelectorAll("[data-save-ayah]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const ayah = Number(button.getAttribute("data-save-ayah"));
-          saveVerseBookmark(ayah);
-        });
-      });
     }
 
     async function loadSurah() {
@@ -2031,8 +1930,7 @@
         renderVerses(verseData);
         buildVerseSelector();
         applyMode("bilingual");
-        renderBookmarksList();
-        updateLastReadUI();
+        updateBookmarkUI();
 
         loadingState.style.display = "none";
         errorState.style.display = "none";
@@ -2051,9 +1949,7 @@
 
     buildVerseSelector();
     setActiveTab("read");
-    renderBookmarksList();
-    updateLastReadUI();
-    updateCurrentVerseUI();
+    updateBookmarkUI();
     loadSurah();
   </script>
 </body>
