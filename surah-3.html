@@ -1,1 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surah 3 | Āl ʿImrān | The English Qur’an</title>
+  <meta name="description" content="Surah 3, Āl ʿImrān, from The English Qur’an." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri+Quran&display=swap');
 
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --surface-deep: #edf4f2;
+      --text: #182128;
+      --muted: #66727d;
+      --line: #e3e8ec;
+      --accent: #1e6b5c;
+      --accent-deep: #154d42;
+      --accent-soft: #e8f3f0;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --max: 980px;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f1418;
+      --surface: #182128;
+      --surface-soft: #1f2a33;
+      --surface-deep: #22303a;
+      --text: #f3f7fa;
+      --muted: #a8b5bf;
+      --line: #2d3a44;
+      --accent: #38a189;
+      --accent-deep: #2c7a67;
+      --accent-soft: rgba(56, 161, 137, 0.16);
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 95%, transparent);
+    }
+
+    .topbar-inner,
+    .container,
+    .footer-inner {
+      width: min(var(--max), calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav a,
+    .theme-toggle {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.94rem;
+      color: var(--muted);
+      transition: 0.2s ease;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .nav a:hover,
+    .theme-toggle:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      border-color: var(--accent);
+    }
+
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      color: #fff;
+      border-color: var(--accent-deep);
+    }
+
+    .hero {
+      padding: 34px 0 18px;
+    }
+
+    .hero-card,
+    .content-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .hero-card {
+      padding: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -110px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(30,107,92,0.13) 0%, rgba(30,107,92,0) 72%);
+      pointer-events: none;
+    }
+
+    html[data-theme="dark"] .hero-card::after {
+      background: radial-gradient(circle, rgba(56,161,137,0.18) 0%, rgba(56,161,137,0) 72%);
+    }
+
+    .crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy .meaning {
+      margin: 14px 0 0;
+      color: color-mix(in srgb, var(--text) 78%, white);
+      font-size: 1rem;
+    }
+
+    .hero-copy .summary {
+      margin: 18px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 1rem;
+      max-width: 58ch;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .meta-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .meta-value.ar {
+      direction: rtl;
+      text-align: right;
+      font-family: "Amiri Quran", serif;
+      font-size: 1.2rem;
+      line-height: 1.8;
+    }
+
+    .section {
+      padding: 12px 0 36px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .tab-button:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: var(--surface-soft);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .content-card {
+      padding: 18px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .subpanel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-soft);
+    }
+
+    .subpanel.active {
+      display: block;
+    }
+
+    .subpanel h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subpanel p {
+      margin: 0 0 14px;
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .mode-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mode-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .mode-button:hover {
+      background: var(--surface-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+
+    .mode-button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .verse-selector-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .verse-selector-row label {
+      font-weight: 600;
+    }
+
+    .verse-selector-row select {
+      min-width: 180px;
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+    }
+
+    .jump-button {
+      appearance: none;
+      border: none;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .jump-button:hover {
+      background: var(--accent-deep);
+    }
+
+    .verse {
+      padding: 24px 16px;
+      border-radius: 18px;
+      scroll-margin-top: 110px;
+    }
+
+    .verse:target {
+      background: var(--surface-deep);
+    }
+
+    .verse + .verse {
+      border-top: 1px solid var(--line);
+    }
+
+    .bismillah-block {
+      padding: 24px 16px 28px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .bismillah-arabic {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+      line-height: 2;
+      direction: rtl;
+      color: #111827;
+      margin-bottom: 14px;
+    }
+
+    html[data-theme="dark"] .bismillah-arabic {
+      color: #f8fbfd;
+    }
+
+    .bismillah-english {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    .arabic-wrap {
+      text-align: right;
+      direction: rtl;
+      margin-bottom: 18px;
+    }
+
+    .arabic-ayah {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.45rem, 2.05vw, 1.82rem);
+      line-height: 2.1;
+      color: #111827;
+      word-spacing: 0.04em;
+      letter-spacing: 0;
+    }
+
+    html[data-theme="dark"] .arabic-ayah {
+      color: #f8fbfd;
+    }
+
+    .transliteration-wrap {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 78%, white);
+      font-size: 0.98rem;
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    .english {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .english-number {
+      min-width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-size: 0.96rem;
+    }
+
+    .english-text {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    .overview {
+      padding: 8px 4px;
+    }
+
+    .overview h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .overview p {
+      margin: 0 0 16px;
+      font-size: 1.05rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      line-height: 1.8;
+    }
+
+    .overview ul {
+      margin: 0 0 22px;
+      padding-left: 22px;
+    }
+
+    .overview li {
+      margin-bottom: 10px;
+      font-size: 1.03rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    .loading-state,
+    .error-state,
+    .note-state {
+      padding: 22px 16px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 82%, white);
+      font-size: 1rem;
+    }
+
+    .error-state {
+      display: none;
+    }
+
+    .note-state {
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .footer {
+      padding: 0 0 34px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      background: var(--surface-soft);
+    }
+
+    .hidden-arabic .arabic-wrap {
+      display: none;
+    }
+
+    .hidden-english .english {
+      display: none;
+    }
+
+    .hidden-transliteration .transliteration-wrap {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 14px 0;
+      }
+
+      .hero-card,
+      .content-card {
+        border-radius: 18px;
+      }
+
+      .hero-card {
+        padding: 22px;
+      }
+
+      .content-card {
+        padding: 12px;
+      }
+
+      .verse {
+        padding: 20px 10px;
+      }
+
+      .bismillah-block {
+        padding: 20px 12px 24px;
+      }
+
+      .english-number {
+        min-width: 34px;
+        height: 34px;
+        border-radius: 10px;
+      }
+
+      .overview p,
+      .overview li {
+        font-size: 1rem;
+      }
+
+      .arabic-ayah {
+        font-size: 1.38rem;
+        line-height: 2.02;
+      }
+
+      .bismillah-arabic {
+        font-size: 1.65rem;
+        line-height: 1.95;
+      }
+
+      .mode-options {
+        flex-direction: column;
+      }
+
+      .mode-button,
+      .theme-toggle {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">٣</div>
+        <div class="brand-text">
+          <h1>The English Qur’an</h1>
+          <p>Surah 3 · Āl ʿImrān</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html">All Surahs</a>
+        <a class="cta" href="#content">Read Surah 3</a>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode">Dark mode</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="crumb">Surah 3 · Āl ʿImrān</div>
+
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <h2>Āl ʿImrān</h2>
+              <p class="meaning">The Family of Imran</p>
+              <p class="summary">
+                A surah of clarity, steadfastness, and firm belief, strengthening the believers through truth, devotion, unity, and patience under pressure.
+              </p>
+            </div>
+
+            <div class="hero-meta">
+              <div class="meta-box">
+                <div class="meta-label">Arabic name</div>
+                <div class="meta-value ar" lang="ar">آل عمران</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label">Verses</div>
+                <div class="meta-value">200</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label">Revelation</div>
+                <div class="meta-value">Madani</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="content">
+      <div class="container">
+        <div class="controls">
+          <button class="tab-button active" type="button" data-tab="read">Read</button>
+          <button class="tab-button" type="button" data-tab="overview">Overview</button>
+          <button class="tab-button" type="button" data-tab="mode">Mode</button>
+          <button class="tab-button" type="button" data-tab="verse">Verse</button>
+        </div>
+
+        <div class="content-card">
+          <div class="subpanel" id="modePanel">
+            <h3>Reading Mode</h3>
+            <p>Select how the verses are displayed.</p>
+            <div class="mode-options">
+              <button class="mode-button active" type="button" data-mode="bilingual">Arabic + English</button>
+              <button class="mode-button" type="button" data-mode="transliteration">Transliteration</button>
+              <button class="mode-button" type="button" data-mode="arabic-only">Arabic Only</button>
+              <button class="mode-button" type="button" data-mode="english-only">English Only</button>
+            </div>
+          </div>
+
+          <div class="subpanel" id="versePanel">
+            <h3>Jump to Verse</h3>
+            <p>Select any ayah in Surah Āl ʿImrān and jump straight to it.</p>
+            <div class="verse-selector-row">
+              <label for="verseSelect">Verse</label>
+              <select id="verseSelect" aria-label="Select verse number"></select>
+              <button class="jump-button" type="button" id="jumpButton">Go to verse</button>
+            </div>
+          </div>
+
+          <div class="tab-panel active" id="read">
+            <div class="loading-state" id="loadingState">Loading Surah Āl ʿImrān...</div>
+            <div class="error-state" id="errorState">The surah could not be loaded. Please refresh the page and try again.</div>
+            <div class="note-state" id="noteState">Transliteration could not be loaded, so the page has switched back to Arabic + English.</div>
+            <div id="versesContainer"></div>
+          </div>
+
+          <div class="tab-panel" id="overview">
+            <div class="overview">
+              <h3>Overview</h3>
+
+              <p>Surah Āl ʿImrān builds on the foundations laid earlier and focuses on strengthening belief, clarity, and firmness under pressure. Revealed in Madinah, it addresses a community facing both internal challenges and external opposition, guiding them to remain steady upon truth. It opens by affirming Allah’s absolute oneness, His full authority, and the Qur’an as truth sent down to His servant Prophet Muhammad ﷺ, confirming what came before it and acting as a clear standard between truth and falsehood. It makes clear that guidance is not simply about knowledge, but about sincerity, humility, and a heart willing to accept the truth.</p>
+
+              <p>A central part of the Surah clarifies belief, especially in response to theological confusion and debate. It presents the family of ʿImrān as a model of devotion and purity. The story of Maryam shows sincerity, trust, and dedication, while ʿĪsā (Jesus) is presented clearly as a servant of Allah, created by His command, not to be raised beyond his true position. These passages restore clarity, correct misunderstandings, and reinforce pure belief in Allah alone. The Surah also refers to Zakariyyā (Zechariah) and Yaḥyā (John), showing a line of devotion, prayer, and divine response.</p>
+
+              <p>The Surah then turns to the reality of conflict and testing, especially through the events of the Battle of Uḥud. It shows how victory and setback are both part of a greater test, where obedience, discipline, and unity bring strength, while disobedience and division lead to loss. Believers are taught to remain patient, not to lose heart, and to understand that outcomes are in the control of Allah. The role of the messenger is reinforced, reminding that Prophet Muhammad ﷺ is to be followed with trust and obedience, especially in times of difficulty.</p>
+
+              <p>Throughout the Surah, there is a continuous call to hold firmly to the truth, to remain united, and not to be shaken by opposition. It warns against turning back after guidance has become clear and calls believers to stay connected to Allah through remembrance, patience, and reliance. It also highlights the temporary nature of worldly life and the lasting reality of the Hereafter, encouraging a long-term view rooted in accountability and purpose.</p>
+
+              <p>The Surah concludes with a powerful call to remain firm, patient, and united, holding tightly to faith and not allowing weakness or division to take hold. It strengthens the believer from within, preparing them to stand upon truth with clarity, resilience, and full trust in Allah.</p>
+
+              <h3>Key Themes</h3>
+              <ul>
+                <li>The oneness of Allah and the truth of revelation</li>
+                <li>The Qur’an as a clear and decisive guide</li>
+                <li>The role of Prophet Muhammad ﷺ as the messenger to be followed</li>
+                <li>The family of ʿImrān, Maryam, and ʿĪsā (Jesus) and clarity of belief</li>
+                <li>Zakariyyā (Zechariah) and Yaḥyā (John), devotion and answered prayer</li>
+                <li>Correction of false beliefs and theological confusion</li>
+                <li>The Battle of Uḥud, lessons in obedience and unity</li>
+                <li>Patience, resilience, and steadfastness in trials</li>
+                <li>Unity of the believers and holding firmly to truth</li>
+                <li>Awareness of the Hereafter and accountability</li>
+              </ul>
+
+              <h3>Central Message</h3>
+              <p>True belief must be clear, pure, and free from confusion, rooted in recognising Allah alone.</p>
+              <p>Believers are tested through both ease and hardship, and must remain firm, patient, and united.</p>
+              <p>The examples of Maryam and ʿĪsā (Jesus) restore clarity and show sincere devotion to Allah.</p>
+              <p>Success lies in holding firmly to guidance, following the messenger, and remaining steady under pressure.</p>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="mode"></div>
+          <div class="tab-panel" id="verse"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>Surah 3 | Āl ʿImrān</div>
+      <div class="footer-links">
+        <a href="surah-2.html">Previous Surah · Al-Baqarah</a>
+        <a href="index.html">Homepage</a>
+        <a href="surah-4.html">Next Surah · An-Nisāʾ</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const englishVerses = [
+      "Alif Lām Mīm.",
+      "Allah, there is no god except Him, the Ever-Living, the Sustainer of all.",
+      "He sent down the Book to you in truth, confirming what came before it. And He sent down the Tawrāh and the Injīl.",
+      "before, as guidance for people. And He sent down the Criterion. Indeed, those who disbelieve the signs of Allah will have a severe punishment. And Allah is All-Mighty, Owner of retribution.",
+      "Indeed, nothing is hidden from Allah, on the earth or in the heavens.",
+      "He is the One who forms you in the wombs as He wills. There is no god except Him, the All-Mighty, the All-Wise.",
+      "He is the One who sent down to you the Book. In it are verses that are clear and decisive, they are the foundation of the Book, and others that are open to interpretation. As for those in whose hearts is deviation, they follow what is open to interpretation, seeking discord and seeking its interpretation. But none knows its true interpretation except Allah. And those firmly grounded in knowledge say, “We believe in it. All of it is from our Lord.” And none take heed except people of understanding.",
+      "“Our Lord, do not let our hearts deviate after You have guided us, and grant us mercy from Yourself. Indeed, You are the Bestower.”",
+      "“Our Lord, You will surely gather the people for a Day about which there is no doubt. Indeed, Allah does not fail in His promise.”",
+      "Indeed, those who disbelieve, neither their wealth nor their children will benefit them in any way against Allah. Those are the fuel of the Fire.",
+      "Like the way of the people of Firʿawn and those before them, they rejected Our signs, so Allah seized them for their sins. And Allah is severe in punishment.",
+      "Say to those who disbelieve, “You will be overcome and gathered to Hell, and how miserable is the resting place.”",
+      "There was certainly a sign for you in the two groups that met in battle. One group was fighting in the way of Allah, and the other disbelieving. They saw them as twice their number with their own eyes. And Allah supports with His help whom He wills. Indeed, in that is a lesson for people of insight.",
+      "Love of desires has been made attractive to people, women, children, hoarded gold and silver, fine horses, livestock, and cultivated land. That is the enjoyment of the worldly life, but with Allah is the best return.",
+      "Say, “Shall I tell you of what is better than that? For those who are mindful, with their Lord are gardens beneath which rivers flow, remaining in them forever, purified spouses, and the pleasure of Allah.” And Allah sees His servants well.",
+      "Those who say, “Our Lord, we have believed, so forgive us our sins and protect us from the punishment of the Fire,”",
+      "the patient, the truthful, the devoted, those who spend, and those who seek forgiveness before dawn.",
+      "Allah bears witness that there is no god except Him, and so do the angels and those of knowledge, standing firmly for justice. There is no god except Him, the All-Mighty, the All-Wise.",
+      "Indeed, the religion with Allah is Islām. And those who were given the Book did not differ except after knowledge had come to them, out of envy among themselves. And whoever rejects the signs of Allah, then indeed Allah is swift in reckoning.",
+      "But if they argue with you, then say, “I have submitted myself to Allah, and so have those who follow me.” And say to those who were given the Book and to the unlettered, “Have you submitted?” If they submit, then they are rightly guided. But if they turn away, then your duty is only to convey. And Allah sees the servants well.",
+      "Indeed, those who disbelieve the signs of Allah, kill the prophets without right, and kill those among people who command justice, give them news of a painful punishment.",
+      "Those are the ones whose deeds have come to nothing in this world and the Hereafter. And for them there will be no helpers.",
+      "Have you not seen those who were given a portion of the Book? They are called to the Book of Allah so that it may judge between them, yet a group of them turn away, deliberately refusing.",
+      "That is because they say, “The Fire will not touch us except for a limited number of days.” And what they used to invent has deceived them in their religion.",
+      "So how will it be when We gather them for a Day about which there is no doubt, and every soul is repaid in full for what it earned, and they will not be wronged?",
+      "Say, “O Allah, Owner of all dominion, You give dominion to whom You will and take dominion away from whom You will. You honour whom You will and humble whom You will. In Your hand is all good. Indeed, You have power over everything.",
+      "You cause the night to enter the day and cause the day to enter the night. You bring the living out of the dead and bring the dead out of the living. And You provide for whom You will without measure.”",
+      "Let not the believers take those who disbelieve as protectors instead of the believers. And whoever does that has nothing with Allah, except if you guard yourselves against them with caution. And Allah warns you of Himself, and to Allah is the return.",
+      "Say, “Whether you conceal what is in your hearts or reveal it, Allah knows it. He knows what is in the heavens and what is on the earth. And Allah has power over everything.”",
+      "On the Day when every soul will find what it has done of good brought forth, and what it has done of evil, it will wish that there were a great distance between it and that. And Allah warns you of Himself. And Allah is Most-Gentle towards His servants.",
+      "Say, “If you love Allah, then follow me, and Allah will love you and forgive your sins. And Allah is Most-Forgiving, Ever-Merciful.”",
+      "Say, “Obey Allah and the messenger.” But if they turn away, then indeed Allah does not love those who disbelieve.",
+      "Indeed, Allah chose Ādam, Nūḥ, the family of Ibrāhīm, and the family of ʿImrān over all worlds,",
+      "descendants, one from another. And Allah is All-Hearing, All-Knowing.",
+      "When the wife of ʿImrān said, “My Lord, I have vowed to You what is in my womb, devoted entirely to You, so accept this from me. Indeed, You are the All-Hearing, the All-Knowing.”",
+      "When she gave birth to her, she said, “My Lord, I have given birth to a female,” and Allah knew best what she gave birth to, “and the male is not like the female. I have named her Maryam, and I seek refuge for her and her offspring in You from Shayṭān, the expelled.”",
+      "So her Lord accepted her with gracious acceptance, caused her to grow in a good manner, and placed her in the care of Zakariyyā. Every time Zakariyyā entered upon her in the place of devotion, he found provision with her. He said, “O Maryam, where has this come from?” She said, “It is from Allah. Indeed, Allah provides for whom He wills without measure.”",
+      "There Zakariyyā called upon his Lord. He said, “My Lord, grant me from Yourself good offspring. Indeed, You are the Hearer of supplication.”",
+      "Then the angels called to him while he was standing in prayer in the place of devotion, “Allah gives you good news of Yaḥyā, confirming a word from Allah, honourable, chaste, and a prophet among the righteous.”",
+      "He said, “My Lord, how can I have a son when old age has reached me and my wife is barren?” He said, “So it will be. Allah does what He wills.”",
+      "He said, “My Lord, give me a sign.” He said, “Your sign is that you will not speak to people for three days except by gesture. Remember your Lord much, and glorify Him in the evening and the morning.”",
+      "And when the angels said, “O Maryam, Allah has chosen you, purified you, and chosen you above the women of all worlds.",
+      "O Maryam, be devoted to your Lord, prostrate, and bow with those who bow.”",
+      "That is from the news of the unseen which We reveal to you. You were not with them when they cast their pens to decide which of them would care for Maryam, nor were you with them when they disputed.",
+      "When the angels said, “O Maryam, Allah gives you good news of a Word from Him, whose name is ʿĪsā, son of Maryam, honoured in this world and the Hereafter, and among those brought near.",
+      "He will speak to people in the cradle and in maturity, and he will be among the righteous.”",
+      "She said, “My Lord, how can I have a child when no man has touched me?” He said, “So it will be. Allah creates what He wills. When He decides a matter, He only says to it, ‘Be,’ and it is.”",
+      "And He will teach him the Book, wisdom, the Tawrāh, and the Injīl,",
+      "and make him a messenger to the Children of Isrā’īl, saying, “I have come to you with a sign from your Lord. I create for you from clay the form of a bird, then I breathe into it and it becomes a bird by permission of Allah. I heal the blind and the leper, and I bring the dead to life by permission of Allah. And I inform you of what you eat and what you store in your homes. Indeed, in that is a sign for you, if you are believers.",
+      "And confirming what came before me of the Tawrāh, and making lawful for you some of what was forbidden to you. And I have come to you with a sign from your Lord, so be mindful of Allah and obey me.”",
+      "“Indeed, Allah is my Lord and your Lord, so worship Him. This is a straight path.”",
+      "When ʿĪsā sensed disbelief from them, he said, “Who are my helpers towards Allah?” The helpers said, “We are the helpers of Allah. We believe in Allah, and bear witness that we are devoted in submission.",
+      "Our Lord, we believe in what You have sent down and we follow the messenger, so write us among the witnesses.”",
+      "And they planned, and Allah planned. And Allah is the best of planners.",
+      "When Allah said, “O ʿĪsā, I will take you and raise you to Myself, and purify you from those who disbelieve, and place those who follow you above those who disbelieve until the Day of Resurrection. Then to Me is your return, and I will judge between you concerning what you used to differ over.",
+      "As for those who disbelieve, I will punish them with a severe punishment in this world and the Hereafter, and they will have no helpers.”",
+      "And as for those who believe and do good deeds, He will give them their full reward. And Allah does not love the wrongdoers.",
+      "This is what We recite to you of the signs and the wise reminder.",
+      "Indeed, the likeness of ʿĪsā with Allah is like the likeness of Ādam. He created him from dust, then He said to him, “Be,” and he was.",
+      "The truth is from your Lord, so do not be among those who doubt.",
+      "So whoever argues with you about it after knowledge has come to you, say, “Come, let us call our sons and your sons, our women and your women, ourselves and yourselves, then let us pray earnestly and place the curse of Allah upon the liars.”",
+      "Indeed, this is the true account. And there is no god except Allah. And indeed, Allah is the All-Mighty, the All-Wise.",
+      "But if they turn away, then indeed Allah knows the corrupters well.",
+      "Say, “O People of the Book, come to a word that is just between us and you, that we worship none but Allah, associate nothing with Him, and that none of us take others as lords besides Allah.” But if they turn away, then say, “Bear witness that we are devoted in submission.”",
+      "O People of the Book, why do you argue about Ibrāhīm when the Tawrāh and the Injīl were not sent down except after him? Will you not then use reason?",
+      "Here you are, those who argued about what you had knowledge of, but why do you argue about what you have no knowledge of? And Allah knows, while you do not know.",
+      "Ibrāhīm was neither a Jew nor a Christian, but one devoted purely to Allah, in submission, and he was not among those who associate others with Allah.",
+      "Indeed, the people most entitled to Ibrāhīm are those who followed him, and this messenger, and those who believe. And Allah is the protector of the believers.",
+      "A group among the People of the Book wish they could mislead you, but they mislead none except themselves, while they do not realise.",
+      "O People of the Book, why do you reject the signs of Allah while you bear witness?",
+      "O People of the Book, why do you mix truth with falsehood and conceal the truth while you know?",
+      "And a group among the People of the Book said, “Believe in what has been sent down to those who believe at the beginning of the day, and reject it at its end, so that they may turn back.",
+      "And do not believe anyone except one who follows your way.” Say, “Indeed, guidance is the guidance of Allah.” Do you fear that someone will be given the like of what you were given, or that they will argue with you before your Lord? Say, “All bounty is in the hand of Allah. He gives it to whom He wills.” And Allah is All-Vast, All-Knowing.",
+      "He selects for His mercy whom He wills. And Allah is Possessor of great bounty.",
+      "And among the People of the Book is one who, if you entrust him with a great amount, he will return it to you. And among them is one who, if you entrust him with a single coin, he will not return it to you unless you keep pressing him. That is because they say, “There is no blame upon us concerning the unlettered.” And they say lies about Allah while they know.",
+      "No, whoever fulfils their pledge and is mindful, then indeed Allah loves the mindful.",
+      "Indeed, those who trade the covenant of Allah and their oaths for a small price, they will have no share in the Hereafter. Allah will not speak to them, nor look at them on the Day of Resurrection, nor purify them. And for them is a painful punishment.",
+      "And among them is a group who twist their tongues with the Book, so that you may think it is from the Book, while it is not from the Book. And they say, “It is from Allah,” while it is not from Allah. And they speak lies about Allah while they know.",
+      "It is not for a human to whom Allah has given the Book, wisdom, and prophethood to then say to people, “Be servants to me instead of Allah.” Rather, “Be devoted to the Lord because of what you teach of the Book and because of what you study.”",
+      "Nor would he command you to take the angels and the prophets as lords. Would he command you to disbelief after you have submitted?",
+      "And remember when Allah took a covenant from the prophets, “Whatever I give you of the Book and wisdom, then a messenger comes to you confirming what is with you, you must believe in him and support him.” He said, “Do you affirm and accept My covenant on that basis?” They said, “We affirm.” He said, “Then bear witness, and I am with you among the witnesses.”",
+      "Then whoever turns away after that, those are the rebellious.",
+      "Do they seek a religion other than the religion of Allah, while to Him submits whoever is in the heavens and the earth, willingly or unwillingly, and to Him they will be returned?",
+      "Say, “We believe in Allah, and in what has been sent down to us, and in what was sent down to Ibrāhīm, Ismāʿīl, Isḥāq, Yaʿqūb, and the tribes, and in what was given to Mūsā and ʿĪsā, and in what was given to the prophets from their Lord. We make no distinction between any of them, and to Him we submit.”",
+      "And whoever seeks a religion other than Islām, it will never be accepted from him, and in the Hereafter he will be among the losers.",
+      "How will Allah guide a people who disbelieved after their belief, after they had borne witness that the messenger is true and clear proofs had come to them? And Allah does not guide wrongdoing people.",
+      "Those, their recompense is that upon them is the curse of Allah, the angels, and all people together.",
+      "They will remain in it forever. The punishment will not be lightened for them, nor will they be given respite,",
+      "except for those who repent after that and correct themselves. Indeed, Allah is Most-Forgiving, Ever-Merciful.",
+      "Indeed, those who disbelieve after having believed, then increase in disbelief, their repentance will never be accepted. And those are the ones who have gone far astray.",
+      "Indeed, those who disbelieve and die while they are disbelievers, never will the earth full of gold be accepted from any of them, even if they were to offer it as ransom. For them is a painful punishment, and they will have no helpers.",
+      "You will never attain true goodness until you spend from what you love. And whatever you spend, indeed Allah knows it well.",
+      "All food was lawful for the Children of Isrāʾīl except what Isrāʾīl made unlawful for himself before the Tawrāh was sent down. Say, “Bring the Tawrāh and recite it, if you are truthful.”",
+      "Then whoever invents a lie against Allah after that, those are the wrongdoers.",
+      "Say, “Allah has spoken the truth. So follow the way of Ibrāhīm, one devoted purely to Allah, and he was not among those who associate others with Allah.”",
+      "Indeed, the first House established for people was the one at Bakkah, blessed and a guidance for all worlds.",
+      "In it are clear signs, the standing place of Ibrāhīm. And whoever enters it is secure. And pilgrimage to the House is a duty owed to Allah by people who are able to find a way to it. And whoever disbelieves, then indeed Allah is Free of need of all worlds.",
+      "Say, “O People of the Book, why do you reject the signs of Allah, while Allah is a witness over what you do?”",
+      "Say, “O People of the Book, why do you turn those who believe away from the way of Allah, seeking to distort it, while you are witnesses? And Allah is not unaware of what you do.”",
+      "O you who believe, if you obey a group among those who were given the Book, they will turn you back to disbelief after your belief.",
+      "How could you disbelieve while the signs of Allah are recited to you and His messenger is among you? And whoever holds firmly to Allah has surely been guided to a straight path.",
+      "O you who believe, be mindful of Allah as He deserves to be minded, and do not die except in a state of submission.",
+      "And hold firmly, all of you together, to the rope of Allah, and do not become divided. And remember the favour of Allah upon you, when you were enemies and He joined your hearts together, so by His favour you became brothers. And you were on the edge of a pit of Fire, and He saved you from it. Thus Allah makes His signs clear to you, so that you may be guided.",
+      "And let there arise from among you a community that calls to what is good, commands what is right, and forbids what is wrong. And those are the ones who are successful.",
+      "And do not be like those who became divided and differed after clear proofs had come to them. And for those there is a great punishment.",
+      "On the Day when some faces will turn white and some faces will turn black. As for those whose faces turn black, “Did you disbelieve after your belief? Then taste the punishment for what you used to disbelieve.”",
+      "But as for those whose faces turn white, they will be in the mercy of Allah, remaining in it forever.",
+      "These are the signs of Allah which We recite to you in truth. And Allah does not intend injustice for the worlds.",
+      "To Allah belongs whatever is in the heavens and whatever is on the earth. And to Allah all matters are returned.",
+      "You are the best community brought forth for humanity. You command what is right, forbid what is wrong, and believe in Allah. If the People of the Book had believed, it would have been better for them. Among them are believers, but most of them are rebellious.",
+      "They will not harm you except with minor annoyance. And if they fight you, they will turn their backs, then they will not be helped.",
+      "Humiliation has been placed upon them wherever they are found, except with a bond from Allah and a bond from people. And they have returned with anger from Allah, and poverty has been laid upon them. That is because they rejected the signs of Allah and killed the prophets without right. That is because they disobeyed and kept transgressing.",
+      "They are not all the same. Among the People of the Book is a community standing upright,",
+      "reciting the signs of Allah during the hours of the night, and they prostrate.",
+      "They believe in Allah and the Last Day, command what is right, forbid what is wrong, and hasten to good deeds. And those are among the righteous.",
+      "And whatever good they do will never be denied to them. And Allah knows the mindful well.",
+      "Indeed, those who disbelieve, neither their wealth nor their children will benefit them in any way against Allah. Those are the companions of the Fire. They will remain in it forever.",
+      "The example of what they spend in this worldly life is like a wind containing icy cold that strikes the harvest of a people who wronged themselves and destroys it. Allah did not wrong them, but they were wronging themselves.",
+      "O you who believe, do not take as close confidants those outside your ranks. They will spare no effort to cause you harm. They wish for your hardship. Hatred has already appeared from their mouths, and what their hearts conceal is greater. We have made the signs clear to you, if you use reason.",
+      "Here you are, you love them, but they do not love you, while you believe in the Book, all of it. When they meet you, they say, “We believe,” but when they are alone, they bite their fingertips at you in rage. Say, “Die in your rage.” Indeed, Allah knows what is within the hearts.",
+      "If good touches you, it distresses them. And if harm touches you, they rejoice in it. But if you are patient and mindful, their plotting will not harm you in any way. Indeed, Allah encompasses what they do.",
+      "And remember when you set out early from your household to assign the believers to their positions for battle. And Allah is All-Hearing, All-Knowing.",
+      "When two groups among you were about to lose heart, while Allah was their protector. And upon Allah let the believers rely.",
+      "And Allah had already given you victory at Badr, while you were weak. So be mindful of Allah, so that you may be grateful.",
+      "When you said to the believers, “Is it not enough for you that your Lord should support you with three thousand angels sent down?”",
+      "Yes, if you are patient and mindful, and they come upon you suddenly, your Lord will support you with five thousand marked angels.",
+      "And Allah did not make it except as good news for you, and so that your hearts may be reassured by it. And victory is only from Allah, the All-Mighty, the All-Wise,",
+      "so that He may cut off a portion of those who disbelieve or suppress them, so that they turn back disappointed.",
+      "You have no part in the decision, whether He turns to them in mercy or punishes them, for they are wrongdoers.",
+      "And to Allah belongs whatever is in the heavens and whatever is on the earth. He forgives whom He wills and punishes whom He wills. And Allah is Most-Forgiving, Ever-Merciful.",
+      "O you who believe, do not consume usury, doubled and multiplied, and be mindful of Allah, so that you may succeed.",
+      "And guard yourselves against the Fire which has been prepared for those who disbelieve.",
+      "And obey Allah and the messenger, so that you may be shown mercy.",
+      "And hasten towards forgiveness from your Lord and a Garden as wide as the heavens and the earth, prepared for the mindful,",
+      "those who spend in ease and hardship, restrain anger, and pardon people. And Allah loves those who do good.",
+      "And those who, when they commit an indecency or wrong themselves, remember Allah and seek forgiveness for their sins, and who can forgive sins except Allah? And they do not persist knowingly in what they have done.",
+      "Those, their reward is forgiveness from their Lord and gardens beneath which rivers flow, remaining in them forever. And how excellent is the reward of those who act.",
+      "Many ways of life have passed on before you. So travel through the land and see how was the end of those who denied.",
+      "This is a clear statement for people, and guidance and instruction for the mindful.",
+      "Do not weaken or grieve, for you will be superior if you are believers.",
+      "If a wound has touched you, a similar wound has touched the people. And these days We alternate among people, so that Allah may know those who believe and take witnesses from among you. And Allah does not love the wrongdoers.",
+      "And so that Allah may purify those who believe and erase those who disbelieve.",
+      "Or did you think that you would enter the Garden while Allah had not yet made evident those among you who strive, and made evident the patient?",
+      "You had certainly wished for death before you met it, but now you have seen it while you were looking on.",
+      "And Muhammad is only a messenger. Messengers have passed on before him. So if he were to die or be killed, would you turn back on your heels? And whoever turns back on their heels will never harm Allah in any way. And Allah will reward the grateful.",
+      "And no soul can die except by permission of Allah, at an appointed time. And whoever desires the reward of this world, We give him from it. And whoever desires the reward of the Hereafter, We give him from it. And We will reward the grateful.",
+      "And how many a prophet fought, with many devoted followers with him. They did not weaken because of what struck them in the way of Allah, nor did they falter or submit. And Allah loves the patient.",
+      "And their words were nothing but that they said, “Our Lord, forgive us our sins and our excesses in our affairs, make our steps firm, and give us victory over the disbelieving people.”",
+      "So Allah gave them the reward of this world and the excellent reward of the Hereafter. And Allah loves those who do good.",
+      "O you who believe, if you obey those who disbelieve, they will turn you back on your heels, and you will return as losers.",
+      "Rather, Allah is your protector, and He is the best of helpers.",
+      "We will cast fear into the hearts of those who disbelieve, because they associated others with Allah for which He sent down no authority. Their refuge will be the Fire, and how miserable is the resting place of the wrongdoers.",
+      "Allah had already fulfilled His promise to you when you were striking them down by His permission, until you lost courage, disputed about the command, and disobeyed after He had shown you what you love. Among you are those who desire this world, and among you are those who desire the Hereafter. Then He turned you away from them in order to test you, but He has already pardoned you. And Allah is full of bounty towards the believers.",
+      "When you were climbing without looking back at anyone, while the messenger was calling you from behind, He repaid you with distress upon distress, so that you would not grieve over what escaped you nor over what struck you. And Allah is fully aware of what you do.",
+      "Then after distress, He sent down upon you security, a drowsiness that overtook a group of you. Another group was worried about themselves, thinking wrongly about Allah, the thought of ignorance. They said, “Do we have any part in the matter?” Say, “The matter belongs entirely to Allah.” They conceal within themselves what they do not reveal to you. They say, “If we had any part in the matter, we would not have been killed here.” Say, “Even if you had remained in your homes, those for whom killing was decreed would have gone out to their places of death.” And so Allah may test what is in your breasts and purify what is in your hearts. And Allah knows what is within the hearts.",
+      "Indeed, those of you who turned back on the day the two groups met, Shayṭān caused them to slip because of some of what they had earned. But Allah has pardoned them. Indeed, Allah is Most-Forgiving, Most-Forbearing.",
+      "O you who believe, do not be like those who disbelieve and say about their brothers, when they travel through the land or go out to fight, “If they had been with us, they would not have died or been killed,” so that Allah may make it a regret in their hearts. And Allah gives life and causes death. And Allah sees all that you do.",
+      "And if you are killed in the way of Allah or die, then forgiveness from Allah and mercy are better than what they accumulate.",
+      "And whether you die or are killed, it is to Allah that you will be gathered.",
+      "It is by mercy from Allah that you were gentle with them. And if you had been harsh and hard-hearted, they would have dispersed from around you. So pardon them, seek forgiveness for them, and consult them in the matter. Then when you decide, place your trust in Allah. Indeed, Allah loves those who place their trust in Him.",
+      "If Allah supports you, none can overcome you. And if He forsakes you, who is there who can support you after Him? And upon Allah let the believers rely.",
+      "It is not for a prophet to act dishonestly. And whoever acts dishonestly will come with what they took on the Day of Resurrection. Then every soul will be repaid in full for what it earned, and they will not be wronged.",
+      "Is one who follows the pleasure of Allah like one who brings upon himself anger from Allah, whose refuge is Hell, and how miserable is the destination?",
+      "They are in degrees with Allah. And Allah sees all that they do.",
+      "Allah has certainly shown favour to the believers when He sent among them a messenger from themselves, reciting His signs to them, purifying them, and teaching them the Book and wisdom, even though before that they were in clear error.",
+      "When a disaster struck you, though you had struck twice as much, you said, “From where is this?” Say, “It is from yourselves.” Indeed, Allah has power over everything.",
+      "And what struck you on the day the two groups met was by permission of Allah, so that He might make evident the believers,",
+      "and make evident those who were hypocritical. And it was said to them, “Come, fight in the way of Allah, or defend.” They said, “If we knew how to fight, we would follow you.” They were nearer to disbelief that day than to belief. They say with their mouths what is not in their hearts. And Allah knows best what they conceal.",
+      "Those who said about their brothers, while they sat back, “If they had obeyed us, they would not have been killed.” Say, “Then avert death from yourselves, if you are truthful.”",
+      "Do not think that those who were killed in the way of Allah are dead. Rather, they are alive with their Lord, provided for,",
+      "rejoicing in what Allah has given them of His bounty, and rejoicing for those who have not yet joined them, from behind them, that there will be no fear upon them, nor will they grieve.",
+      "They rejoice in a blessing from Allah and favour, and that Allah does not allow the reward of the believers to be lost.",
+      "Those who responded to Allah and the messenger after the wound had touched them. For those who did good and were mindful among them is a great reward.",
+      "Those to whom people said, “The people have gathered against you, so fear them,” but it only increased them in faith, and they said, “Allah is sufficient for us, and He is the best disposer of affairs.”",
+      "So they returned with a favour from Allah and bounty, no harm having touched them. They followed the pleasure of Allah. And Allah is Possessor of great bounty.",
+      "It is only Shayṭān who frightens his allies. So do not fear them, but fear Me, if you are believers.",
+      "And do not let those who rush into disbelief grieve you. They will never harm Allah in any way. Allah intends not to give them any share in the Hereafter, and for them is a great punishment.",
+      "Indeed, those who have purchased disbelief in exchange for belief will never harm Allah in any way, and for them is a painful punishment.",
+      "And do not let those who disbelieve think that Our granting them respite is good for them. We only grant them respite so that they may increase in sin. And for them is a humiliating punishment.",
+      "Allah would never leave the believers in the state you are in until He separates the bad from the good. And Allah would never reveal the unseen to you, but Allah chooses of His messengers whom He wills. So believe in Allah and His messengers. And if you believe and are mindful, then for you is a great reward.",
+      "And let not those who withhold what Allah has given them of His bounty think that it is good for them. Rather, it is bad for them. What they withheld will be hung around their necks on the Day of Resurrection. And to Allah belongs the inheritance of the heavens and the earth. And Allah is fully aware of what you do.",
+      "Allah has certainly heard the statement of those who said, “Allah is poor, and we are rich.” We will record what they said and their killing of the prophets without right, and We will say, “Taste the punishment of the burning Fire.”",
+      "That is because of what your hands have sent ahead, and because Allah is never unjust to the servants.",
+      "Those who said, “Allah has instructed us not to believe in any messenger until he brings us an offering consumed by fire.” Say, “Messengers before me came to you with clear proofs and with what you mentioned, so why did you kill them, if you are truthful?”",
+      "Then if they deny you, messengers before you were also denied, who came with clear proofs, scriptures, and the enlightening Book.",
+      "Every soul will taste death. And you will only be given your full rewards on the Day of Resurrection. So whoever is kept away from the Fire and admitted into the Garden has indeed succeeded. And the life of this world is nothing but the enjoyment of delusion.",
+      "You will surely be tested in your wealth and yourselves, and you will surely hear much harm from those who were given the Book before you and from those who associate others with Allah. But if you are patient and mindful, then that is from the matters of firm resolve.",
+      "And remember when Allah took a covenant from those who were given the Book, “You must make it clear to people and not conceal it.” But they threw it behind their backs and traded it for a small price. Miserable is what they purchased.",
+      "Do not think that those who rejoice in what they have done and love to be praised for what they did not do will escape the punishment. For them is a painful punishment.",
+      "And to Allah belongs the dominion of the heavens and the earth. And Allah has power over everything.",
+      "Indeed, in the creation of the heavens and the earth, and the alternation of night and day, are signs for people of understanding,",
+      "Those who remember Allah while standing, sitting, and lying on their sides, and who reflect on the creation of the heavens and the earth, saying, “Our Lord, You did not create this without purpose. Glory be to You, so protect us from the punishment of the Fire.”",
+      "“Our Lord, whoever You admit into the Fire, You have surely disgraced him. And for the wrongdoers there are no helpers.”",
+      "“Our Lord, we have heard a caller calling to faith, saying, ‘Believe in your Lord,’ and we have believed. Our Lord, forgive us our sins, wipe away our wrongs, and cause us to die among the virtuous.”",
+      "“Our Lord, grant us what You promised us through Your messengers, and do not disgrace us on the Day of Resurrection. Indeed, You do not break Your promise.”",
+      "So their Lord responded to them, “I will never allow the work of any worker among you to be lost, male or female. You are from one another. So those who migrated, were driven out of their homes, were harmed in My way, fought, and were killed, I will surely remove their wrongs from them and admit them into gardens beneath which rivers flow, as a reward from Allah.” And with Allah is the best reward.",
+      "Do not let the movement of those who disbelieve through the land deceive you.",
+      "It is only a brief enjoyment, then their refuge is Hell, and how miserable is the resting place.",
+      "But those who are mindful of their Lord, for them are gardens beneath which rivers flow, remaining in them forever, as a hospitality from Allah. And what is with Allah is best for the righteous.",
+      "And among the People of the Book are those who believe in Allah and in what has been sent down to you and what was sent down to them, humbling themselves before Allah. They do not trade the signs of Allah for a small price. For them is their reward with their Lord. Indeed, Allah is swift in reckoning.",
+      "O you who believe, be patient, urge one another to patience, remain steadfast, and be mindful of Allah, so that you may succeed."
+    ];
+
+    const versesContainer = document.getElementById("versesContainer");
+    const loadingState = document.getElementById("loadingState");
+    const errorState = document.getElementById("errorState");
+    const noteState = document.getElementById("noteState");
+
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+
+    const modePanel = document.getElementById("modePanel");
+    const versePanel = document.getElementById("versePanel");
+    const modeButtons = document.querySelectorAll(".mode-button");
+    const verseSelect = document.getElementById("verseSelect");
+    const jumpButton = document.getElementById("jumpButton");
+    const themeToggle = document.getElementById("themeToggle");
+
+    let currentMode = "bilingual";
+    let transliterationAvailable = false;
+
+    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+    const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function toArabicDigits(num) {
+      return String(num).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+    }
+
+    function buildVerseSelector() {
+      let options = "";
+      for (let i = 1; i <= 200; i += 1) {
+        options += `<option value="${i}">Verse ${i}</option>`;
+      }
+      verseSelect.innerHTML = options;
+    }
+
+    function setActiveTab(target) {
+      tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === target));
+      tabPanels.forEach((panel) => panel.classList.toggle("active", panel.id === target));
+      modePanel.classList.toggle("active", target === "mode");
+      versePanel.classList.toggle("active", target === "verse");
+    }
+
+    function applyMode(mode) {
+      currentMode = mode;
+      modeButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === mode);
+      });
+
+      versesContainer.classList.remove("hidden-arabic", "hidden-english", "hidden-transliteration");
+      noteState.style.display = "none";
+
+      if (mode === "bilingual") {
+        versesContainer.classList.add("hidden-transliteration");
+        return "bilingual";
+      }
+
+      if (mode === "transliteration") {
+        if (!transliterationAvailable) {
+          noteState.style.display = "block";
+          versesContainer.classList.add("hidden-transliteration");
+          modeButtons.forEach((button) => {
+            button.classList.toggle("active", button.dataset.mode === "bilingual");
+          });
+          currentMode = "bilingual";
+          return "bilingual";
+        }
+        return "transliteration";
+      }
+
+      if (mode === "arabic-only") {
+        versesContainer.classList.add("hidden-english", "hidden-transliteration");
+        return "arabic-only";
+      }
+
+      if (mode === "english-only") {
+        versesContainer.classList.add("hidden-arabic", "hidden-transliteration");
+        return "english-only";
+      }
+
+      versesContainer.classList.add("hidden-transliteration");
+      return "bilingual";
+    }
+
+    function jumpToVerse(verseNumber) {
+      const safeVerseNumber = Number(verseNumber);
+      const target = document.getElementById(`ayah-${safeVerseNumber}`);
+      if (!target) return;
+
+      setActiveTab("read");
+      verseSelect.value = String(safeVerseNumber);
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
+    }
+
+    function handleInitialVerseJump() {
+      const params = new URLSearchParams(window.location.search);
+      const ayahParam = params.get("ayah");
+      const hash = window.location.hash;
+
+      let verseNumber = null;
+
+      if (ayahParam && /^\d+$/.test(ayahParam)) {
+        verseNumber = Number(ayahParam);
+      } else if (hash && /^#ayah-\d+$/.test(hash)) {
+        verseNumber = Number(hash.replace("#ayah-", ""));
+      }
+
+      if (!verseNumber) return;
+      if (verseNumber < 1 || verseNumber > 200) return;
+
+      setActiveTab("read");
+      verseSelect.value = String(verseNumber);
+
+      requestAnimationFrame(() => {
+        const target = document.getElementById(`ayah-${verseNumber}`);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
+        }
+      });
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        themeToggle.textContent = "Light";
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        themeToggle.textContent = "Dark";
+      }
+      localStorage.setItem("site-theme", theme);
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setActiveTab(button.dataset.tab);
+      });
+    });
+
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        applyMode(button.dataset.mode);
+        setActiveTab("read");
+      });
+    });
+
+    jumpButton.addEventListener("click", () => {
+      jumpToVerse(verseSelect.value);
+    });
+
+    verseSelect.addEventListener("change", () => {
+      if (verseSelect.value) {
+        jumpToVerse(verseSelect.value);
+      }
+    });
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      applyTheme(isDark ? "light" : "dark");
+    });
+
+    async function fetchArabicAndTransliteration() {
+      const perPage = 50;
+      const totalPages = 4;
+      const requests = [];
+
+      for (let page = 1; page <= totalPages; page += 1) {
+        const url = `https://api.quran.com/api/v4/verses/by_chapter/3?words=true&word_fields=text_uthmani,transliteration&fields=text_uthmani&per_page=${perPage}&page=${page}`;
+        requests.push(
+          fetch(url).then((response) => {
+            if (!response.ok) {
+              throw new Error(`Request failed on page ${page}`);
+            }
+            return response.json();
+          })
+        );
+      }
+
+      const responses = await Promise.all(requests);
+
+      const verses = responses.flatMap((payload) => {
+        if (Array.isArray(payload.verses)) return payload.verses;
+        if (payload.data && Array.isArray(payload.data.verses)) return payload.data.verses;
+        return [];
+      });
+
+      return verses
+        .filter((verse) => verse.verse_number && verse.text_uthmani)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .map((verse) => {
+          const transliteration = Array.isArray(verse.words)
+            ? verse.words
+                .map((word) => {
+                  if (word.transliteration && word.transliteration.text) return word.transliteration.text;
+                  return "";
+                })
+                .filter(Boolean)
+                .join(" ")
+            : "";
+
+          return {
+            number: verse.verse_number,
+            arabic: verse.text_uthmani,
+            transliteration
+          };
+        });
+    }
+
+    function renderVerses(verseData) {
+      const bismillahBlock = `
+        <section class="bismillah-block" id="bismillah">
+          <div class="bismillah-arabic" lang="ar">${escapeHtml(bismillahArabic)}</div>
+          <div class="bismillah-english">${escapeHtml(bismillahEnglish)}</div>
+        </section>
+      `;
+
+      const versesHtml = verseData.map((verse, index) => {
+        const english = englishVerses[index] || "";
+        const transliterationBlock = verse.transliteration
+          ? `<div class="transliteration-wrap">${escapeHtml(verse.transliteration)}</div>`
+          : `<div class="transliteration-wrap">Transliteration not available for this verse.</div>`;
+
+        return `
+          <article class="verse" id="ayah-${verse.number}">
+            <div class="arabic-wrap">
+              <div class="arabic-ayah" lang="ar">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
+            </div>
+            ${transliterationBlock}
+            <div class="english">
+              <div class="english-number">${verse.number}.</div>
+              <div class="english-text">${escapeHtml(english)}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      versesContainer.innerHTML = bismillahBlock + versesHtml;
+    }
+
+    async function loadSurah() {
+      try {
+        const verseData = await fetchArabicAndTransliteration();
+
+        if (verseData.length !== englishVerses.length) {
+          throw new Error(`Verse count mismatch: Arabic ${verseData.length}, English ${englishVerses.length}`);
+        }
+
+        transliterationAvailable = verseData.some((v) => v.transliteration && v.transliteration.trim());
+        renderVerses(verseData);
+        buildVerseSelector();
+        applyMode("bilingual");
+
+        loadingState.style.display = "none";
+        errorState.style.display = "none";
+
+        handleInitialVerseJump();
+      } catch (error) {
+        console.error(error);
+        loadingState.style.display = "none";
+        errorState.style.display = "block";
+      }
+    }
+
+    const savedTheme = localStorage.getItem("site-theme");
+    applyTheme(savedTheme === "dark" ? "dark" : "light");
+
+    buildVerseSelector();
+    setActiveTab("read");
+    loadSurah();
+  </script>
+</body>
+</html>
