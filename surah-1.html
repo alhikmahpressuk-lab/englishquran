@@ -426,6 +426,33 @@
       border-top: 1px solid var(--line);
     }
 
+    .bismillah-block {
+      padding: 24px 16px 28px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .bismillah-arabic {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+      line-height: 2;
+      direction: rtl;
+      color: #111827;
+      margin-bottom: 14px;
+    }
+
+    html[data-theme="dark"] .bismillah-arabic {
+      color: #f8fbfd;
+    }
+
+    .bismillah-english {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
     .arabic-wrap {
       text-align: right;
       direction: rtl;
@@ -605,6 +632,10 @@
         padding: 20px 10px;
       }
 
+      .bismillah-block {
+        padding: 20px 12px 24px;
+      }
+
       .english-number {
         min-width: 34px;
         height: 34px;
@@ -619,6 +650,11 @@
       .arabic-ayah {
         font-size: 1.42rem;
         line-height: 2.05;
+      }
+
+      .bismillah-arabic {
+        font-size: 1.65rem;
+        line-height: 1.95;
       }
 
       .mode-options {
@@ -646,7 +682,7 @@
       <nav class="nav">
         <a href="index.html">All Surahs</a>
         <a class="cta" href="#content">Read Surah 1</a>
-        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark">Light / Dark</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode">Dark mode</button>
       </nav>
     </div>
   </header>
@@ -768,13 +804,13 @@
 
   <script>
     const englishVerses = [
-      "In the name of Allah, the Most-Merciful, the Ever-Merciful.",
       "All praise belongs to Allah, Lord of all creation,",
       "the Most-Merciful, the Ever-Merciful,",
       "Master of the Day of Judgement.",
       "You alone we worship, and You alone we ask for help.",
       "Guide us to the straight path,",
-      "the path of those You have favoured, not of those who have earned anger, nor of those who went astray."
+      "the path of those You have favoured, not of those who have earned anger,",
+      "nor of those who went astray."
     ];
 
     const versesContainer = document.getElementById("versesContainer");
@@ -795,6 +831,9 @@
     let currentMode = "bilingual";
     let transliterationAvailable = false;
 
+    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+    const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
+
     function escapeHtml(text) {
       return String(text)
         .replace(/&/g, "&amp;")
@@ -810,7 +849,7 @@
 
     function buildVerseSelector() {
       let options = "";
-      for (let i = 1; i <= 7; i++) {
+      for (let i = 1; i <= 7; i += 1) {
         options += `<option value="${i}">Verse ${i}</option>`;
       }
       verseSelect.innerHTML = options;
@@ -865,20 +904,53 @@
     }
 
     function jumpToVerse(verseNumber) {
-      const target = document.getElementById(`ayah-${verseNumber}`);
+      const safeVerseNumber = Number(verseNumber);
+      const target = document.getElementById(`ayah-${safeVerseNumber}`);
       if (!target) return;
+
       setActiveTab("read");
+      verseSelect.value = String(safeVerseNumber);
+
       target.scrollIntoView({ behavior: "smooth", block: "start" });
-      window.location.hash = `ayah-${verseNumber}`;
+      history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
+    }
+
+    function handleInitialVerseJump() {
+      const params = new URLSearchParams(window.location.search);
+      const ayahParam = params.get("ayah");
+      const hash = window.location.hash;
+
+      let verseNumber = null;
+
+      if (ayahParam && /^\d+$/.test(ayahParam)) {
+        verseNumber = Number(ayahParam);
+      } else if (hash && /^#ayah-\d+$/.test(hash)) {
+        verseNumber = Number(hash.replace("#ayah-", ""));
+      }
+
+      if (!verseNumber) return;
+      if (verseNumber < 1 || verseNumber > 7) return;
+
+      setActiveTab("read");
+      verseSelect.value = String(verseNumber);
+
+      requestAnimationFrame(() => {
+        const target = document.getElementById(`ayah-${verseNumber}`);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
+        }
+      });
     }
 
     function applyTheme(theme) {
       if (theme === "dark") {
         document.documentElement.setAttribute("data-theme", "dark");
+        themeToggle.textContent = "Light";
       } else {
         document.documentElement.removeAttribute("data-theme");
+        themeToggle.textContent = "Dark";
       }
-      themeToggle.textContent = "Light / Dark";
       localStorage.setItem("site-theme", theme);
     }
 
@@ -897,6 +969,12 @@
 
     jumpButton.addEventListener("click", () => {
       jumpToVerse(verseSelect.value);
+    });
+
+    verseSelect.addEventListener("change", () => {
+      if (verseSelect.value) {
+        jumpToVerse(verseSelect.value);
+      }
     });
 
     themeToggle.addEventListener("click", () => {
@@ -942,7 +1020,14 @@
     }
 
     function renderVerses(verseData) {
-      const html = verseData.map((verse, index) => {
+      const bismillahBlock = `
+        <section class="bismillah-block" id="bismillah">
+          <div class="bismillah-arabic" lang="ar">${escapeHtml(bismillahArabic)}</div>
+          <div class="bismillah-english">${escapeHtml(bismillahEnglish)}</div>
+        </section>
+      `;
+
+      const versesHtml = verseData.map((verse, index) => {
         const english = englishVerses[index] || "";
         const transliterationBlock = verse.transliteration
           ? `<div class="transliteration-wrap">${escapeHtml(verse.transliteration)}</div>`
@@ -962,7 +1047,7 @@
         `;
       }).join("");
 
-      versesContainer.innerHTML = html;
+      versesContainer.innerHTML = bismillahBlock + versesHtml;
     }
 
     async function loadSurah() {
@@ -980,6 +1065,8 @@
 
         loadingState.style.display = "none";
         errorState.style.display = "none";
+
+        handleInitialVerseJump();
       } catch (error) {
         console.error(error);
         loadingState.style.display = "none";
