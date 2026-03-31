@@ -62,8 +62,13 @@
 
     button,
     input,
-    select {
+    select,
+    textarea {
       font: inherit;
+    }
+
+    textarea {
+      resize: vertical;
     }
 
     .container {
@@ -193,11 +198,13 @@
     .hero-card,
     .info-card,
     .quick-grid,
+    .continue-card,
     .search-panel,
     .surah-section,
     .juz-section,
     .book-section,
-    .about-section {
+    .about-section,
+    .contact-section {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -239,6 +246,15 @@
       line-height: 1.04;
       letter-spacing: -0.045em;
       max-width: 12ch;
+    }
+
+    .tm-mark {
+      font-size: 0.28em;
+      vertical-align: top;
+      position: relative;
+      top: 0.45em;
+      margin-left: 0.08em;
+      letter-spacing: 0;
     }
 
     .hero-card .subtitle {
@@ -370,11 +386,13 @@
     }
 
     .quick-grid,
+    .continue-card,
     .book-section,
     .about-section,
     .search-panel,
     .surah-section,
-    .juz-section {
+    .juz-section,
+    .contact-section {
       padding: 26px;
       margin-bottom: 24px;
     }
@@ -414,10 +432,46 @@
       font-size: 0.95rem;
     }
 
-    .search-grid {
+    .continue-card {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 94%, var(--accent-soft) 6%), var(--surface));
+    }
+
+    .continue-copy h3 {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+    }
+
+    .continue-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    .continue-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .search-grid,
+    .contact-grid {
       display: grid;
-      grid-template-columns: 1.55fr 0.95fr 0.85fr 0.85fr;
       gap: 14px;
+    }
+
+    .search-grid {
+      grid-template-columns: 1.55fr 0.95fr 0.85fr 0.85fr;
+    }
+
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 14px;
     }
 
     .field label {
@@ -429,7 +483,8 @@
     }
 
     .field input,
-    .field select {
+    .field select,
+    .field textarea {
       width: 100%;
       min-height: 52px;
       padding: 0 14px;
@@ -441,8 +496,14 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
+    .field textarea {
+      min-height: 150px;
+      padding: 14px;
+    }
+
     .field input:focus,
-    .field select:focus {
+    .field select:focus,
+    .field textarea:focus {
       border-color: rgba(30, 107, 92, 0.55);
       box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
     }
@@ -452,8 +513,55 @@
       cursor: not-allowed;
     }
 
-    .search-help {
+    .search-help,
+    .contact-help {
       margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .contact-intro {
+      margin-bottom: 18px;
+    }
+
+    .contact-intro h3 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      letter-spacing: -0.03em;
+    }
+
+    .contact-intro p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 72ch;
+    }
+
+    .contact-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .contact-check input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .contact-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .contact-note {
       color: var(--muted);
       font-size: 0.92rem;
     }
@@ -707,6 +815,11 @@
         width: 100%;
         justify-content: flex-start;
       }
+
+      .continue-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
 
     @media (max-width: 820px) {
@@ -716,7 +829,8 @@
       .surah-grid,
       .juz-grid,
       .about-grid,
-      .book-grid {
+      .book-grid,
+      .contact-grid {
         grid-template-columns: 1fr;
       }
 
@@ -727,11 +841,13 @@
       .hero-card,
       .info-card,
       .quick-grid,
+      .continue-card,
       .search-panel,
       .surah-section,
       .juz-section,
       .book-section,
-      .about-section {
+      .about-section,
+      .contact-section {
         padding: 22px;
       }
     }
@@ -770,7 +886,9 @@
 
       .surah-actions,
       .juz-actions,
-      .book-links {
+      .book-links,
+      .continue-actions,
+      .contact-actions {
         flex-direction: column;
         align-items: stretch;
       }
@@ -793,6 +911,7 @@
         <a href="#juz">Juz</a>
         <a href="#about">About</a>
         <a href="#book">Book</a>
+        <a href="#contact">Contact</a>
         <a class="cta" href="surah-1.html">Start Reading</a>
         <button class="theme-toggle" type="button" id="themeToggle">Dark</button>
       </nav>
@@ -805,7 +924,7 @@
         <div class="hero-grid">
           <div class="hero-card">
             <div class="eyebrow">A clear and modern reading experience</div>
-            <h2>The English Qur’an</h2>
+            <h2>The English Qur’an<span class="tm-mark">TM</span></h2>
             <p class="subtitle">
               Read the Qur’an in a clean, calm and accessible format, with the original Arabic placed before each English verse, presented with clarity, dignity and ease for today’s reader.
             </p>
@@ -842,6 +961,21 @@
               <p>Each Juz includes its correct starting point, ending point, and a direct opening route for structured reading.</p>
             </div>
           </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="continueReadingSection" style="display:none;">
+      <div class="container">
+        <div class="continue-card" id="continueReadingCard">
+          <div class="continue-copy">
+            <h3>Continue Reading</h3>
+            <p id="continueReadingText">Resume from your last saved place.</p>
+          </div>
+          <div class="continue-actions">
+            <a class="button button-primary" id="continueReadingLink" href="surah-1.html">Continue</a>
+            <button class="button button-secondary" type="button" id="clearReadingButton">Clear</button>
+          </div>
         </div>
       </div>
     </section>
@@ -1003,18 +1137,76 @@
         </div>
       </div>
     </section>
+
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="contact-section">
+          <div class="contact-intro">
+            <h3>Get in touch</h3>
+            <p>Share a message, a reflection, or connect with the project. You may also choose to receive updates as new information on our Qur’an project becomes available, along with future releases.</p>
+          </div>
+
+          <form action="https://formspree.io/f/mreokljn" method="POST" id="contactForm">
+            <div class="contact-grid">
+              <div class="field">
+                <label for="contactName">Your name</label>
+                <input id="contactName" name="name" type="text" placeholder="Enter your name" required />
+              </div>
+
+              <div class="field">
+                <label for="contactEmail">Your email</label>
+                <input id="contactEmail" name="email" type="email" placeholder="Enter your email address" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="contactPurpose">What is this about?</label>
+              <select id="contactPurpose" name="purpose" required>
+                <option value="" selected disabled>Select an option</option>
+                <option value="General enquiry">General enquiry</option>
+                <option value="Feedback or correction">Feedback or correction</option>
+                <option value="Partnership or collaboration">Partnership or collaboration</option>
+                <option value="Subscription only">Subscription only</option>
+              </select>
+            </div>
+
+            <div class="field" id="messageFieldWrap">
+              <label for="contactMessage">Your message</label>
+              <textarea id="contactMessage" name="message" placeholder="Write your message here…" required></textarea>
+            </div>
+
+            <p class="contact-help" id="messageHelp">Please write your message here.</p>
+
+            <label class="contact-check" for="contactSubscribe">
+              <input id="contactSubscribe" name="subscribe" type="checkbox" value="Yes" />
+              <span>Receive new information, updates, and future releases</span>
+            </label>
+
+            <input type="hidden" name="_subject" value="New website message - The English Qur’an" />
+            <input type="hidden" name="_next" value="thank-you.html" />
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;" />
+
+            <div class="contact-actions">
+              <button class="button button-primary" type="submit">Send message</button>
+              <span class="contact-note">Your message will be sent securely through the website form.</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-copy">
-        <p>Copyright: 2013 to 2026, Al-Hikmah Publishing</p>
-        <p>The English Qur’an, translated by Dr A K Khan.</p>
+        <p>© 2013–2026 Al-Hikmah Publishing</p>
+        <p>The English Qur’an™, translated by Dr A K Khan.</p>
       </div>
       <div class="footer-links">
         <a href="#surahs">Browse Surahs</a>
         <a href="#juz">Browse Juz</a>
         <a href="#about">About</a>
+        <a href="#contact">Contact</a>
         <a href="surah-1.html">Read Surah 1</a>
       </div>
     </div>
@@ -1183,6 +1375,17 @@
     const emptyState = document.getElementById("emptyState");
     const filterPills = document.querySelectorAll(".pill");
     const themeToggle = document.getElementById("themeToggle");
+
+    const continueReadingSection = document.getElementById("continueReadingSection");
+    const continueReadingCard = document.getElementById("continueReadingCard");
+    const continueReadingText = document.getElementById("continueReadingText");
+    const continueReadingLink = document.getElementById("continueReadingLink");
+    const clearReadingButton = document.getElementById("clearReadingButton");
+
+    const contactPurpose = document.getElementById("contactPurpose");
+    const contactMessage = document.getElementById("contactMessage");
+    const messageFieldWrap = document.getElementById("messageFieldWrap");
+    const messageHelp = document.getElementById("messageHelp");
 
     let activeQuickFilter = "all";
 
@@ -1548,6 +1751,85 @@
       });
     }
 
+    function updateContactFormState() {
+      const isSubscriptionOnly = contactPurpose.value === "Subscription only";
+      contactMessage.required = !isSubscriptionOnly;
+      messageFieldWrap.style.opacity = isSubscriptionOnly ? "0.78" : "1";
+      messageHelp.textContent = isSubscriptionOnly
+        ? "A message is optional when you choose Subscription only."
+        : "Please write your message here.";
+    }
+
+    function bindContactFormLogic() {
+      contactPurpose.addEventListener("change", updateContactFormState);
+      updateContactFormState();
+    }
+
+    function readContinueReading() {
+      const candidateKeys = [
+        "quranContinueReading",
+        "quran_continue_reading",
+        "quranLastRead",
+        "quran_last_read"
+      ];
+
+      for (const key of candidateKeys) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.surahNumber && parsed.verseNumber) {
+            return parsed;
+          }
+        } catch (error) {}
+      }
+
+      return null;
+    }
+
+    function renderContinueReading() {
+      const saved = readContinueReading();
+      if (!saved) {
+        continueReadingSection.style.display = "none";
+        continueReadingCard.style.display = "none";
+        return;
+      }
+
+      const surah = getSurah(Number(saved.surahNumber));
+      if (!surah) {
+        continueReadingSection.style.display = "none";
+        continueReadingCard.style.display = "none";
+        return;
+      }
+
+      const verseNumber = Number(saved.verseNumber);
+      const label = saved.surahName || surah.english;
+      continueReadingText.textContent = `Resume from ${label}, verse ${verseNumber}.`;
+      continueReadingLink.href = getVerseLink(surah.number, verseNumber);
+      continueReadingSection.style.display = "block";
+      continueReadingCard.style.display = "flex";
+    }
+
+    function clearContinueReading() {
+      const candidateKeys = [
+        "quranContinueReading",
+        "quran_continue_reading",
+        "quranLastRead",
+        "quran_last_read"
+      ];
+
+      candidateKeys.forEach((key) => {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {}
+      });
+
+      continueReadingSection.style.display = "none";
+      continueReadingCard.style.display = "none";
+    }
+
+    clearReadingButton.addEventListener("click", clearContinueReading);
+
     searchInput.addEventListener("input", renderSurahs);
 
     surahFilter.addEventListener("change", () => {
@@ -1576,6 +1858,8 @@
     populateJuzFilter();
     bindQuickFilters();
     bindThemeToggle();
+    bindContactFormLogic();
+    renderContinueReading();
     renderSurahs();
     renderJuz();
   </script>
