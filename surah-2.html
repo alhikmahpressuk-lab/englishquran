@@ -24,6 +24,8 @@
       --accent: #1e6b5c;
       --accent-deep: #154d42;
       --accent-soft: #e8f3f0;
+      --danger-soft: #fff2f2;
+      --danger: #b42318;
       --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
       --radius: 22px;
       --radius-sm: 16px;
@@ -41,6 +43,8 @@
       --accent: #38a189;
       --accent-deep: #2c7a67;
       --accent-soft: rgba(56, 161, 137, 0.16);
+      --danger-soft: rgba(180, 35, 24, 0.12);
+      --danger: #ff8a80;
       --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
     }
 
@@ -49,7 +53,7 @@
     }
 
     html {
-      scroll-behavior: smooth;
+      scroll-behaviour: smooth;
       -webkit-text-size-adjust: 100%;
     }
 
@@ -144,7 +148,7 @@
 
     .nav a,
     .theme-toggle,
-    .bookmark-toggle {
+    .bookmark-open {
       padding: 10px 14px;
       border-radius: 999px;
       font-size: 0.94rem;
@@ -162,7 +166,7 @@
 
     .nav a:hover,
     .theme-toggle:hover,
-    .bookmark-toggle:hover {
+    .bookmark-open:hover {
       background: var(--surface);
       color: var(--text);
       border-color: var(--line);
@@ -181,14 +185,14 @@
       border-color: var(--accent-deep);
     }
 
-    .bookmark-toggle.active {
+    .bookmark-open.has-last {
       background: var(--accent-soft);
       color: var(--accent-deep);
-      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
       font-weight: 700;
     }
 
-    html[data-theme="dark"] .bookmark-toggle.active {
+    html[data-theme="dark"] .bookmark-open.has-last {
       color: #d8fff4;
     }
 
@@ -197,7 +201,8 @@
     }
 
     .hero-card,
-    .content-card {
+    .content-card,
+    .bookmark-panel {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -442,6 +447,201 @@
       background: var(--accent-deep);
     }
 
+    .bookmark-panel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+    }
+
+    .bookmark-panel.active {
+      display: block;
+    }
+
+    .bookmark-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .bookmark-header h3 {
+      margin: 0;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-header p {
+      margin: 6px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 0.96rem;
+    }
+
+    .bookmark-close {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .bookmark-close:hover {
+      background: var(--surface-soft);
+    }
+
+    .bookmark-summary {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-card-label {
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .bookmark-card-value {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bookmark-card-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-action,
+    .bookmark-remove {
+      appearance: none;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .bookmark-action {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-action:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .bookmark-remove:hover {
+      filter: brightness(0.98);
+    }
+
+    .bookmark-list-wrap {
+      margin-top: 8px;
+    }
+
+    .bookmark-list-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-empty {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .bookmark-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-item-left {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .bookmark-item-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .bookmark-item-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .bookmark-item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-mini,
+    .bookmark-mini-remove {
+      appearance: none;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .bookmark-mini {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-mini:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-mini-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
     .bookmark-state,
     .loading-state,
     .error-state,
@@ -465,19 +665,47 @@
       padding: 24px 16px;
       border-radius: 18px;
       scroll-margin-top: 110px;
+      position: relative;
     }
 
     .verse:target {
       background: var(--surface-deep);
     }
 
-    .verse.bookmark-target {
+    .verse.current-reading {
       background: var(--surface-deep);
-      outline: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      outline: 1px solid color-mix(in srgb, var(--accent) 25%, var(--line));
     }
 
     .verse + .verse {
       border-top: 1px solid var(--line);
+    }
+
+    .verse-top {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+
+    .save-verse-bookmark {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: var(--muted);
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.86rem;
+      transition: 0.2s ease;
+    }
+
+    .save-verse-bookmark:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      color: var(--text);
+      background: var(--surface);
     }
 
     .bismillah-block {
@@ -486,7 +714,7 @@
       background: var(--surface-soft);
       border: 1px solid var(--line);
       margin-bottom: 8px;
-      text-align: center;
+      text-align: centre;
     }
 
     .bismillah-arabic {
@@ -551,7 +779,7 @@
       background: var(--accent-soft);
       color: var(--accent-deep);
       display: grid;
-      place-items: center;
+      place-items: centre;
       font-weight: 700;
       flex-shrink: 0;
       margin-top: 2px;
@@ -657,7 +885,8 @@
 
     @media (max-width: 680px) {
       .hero-card,
-      .content-card {
+      .content-card,
+      .bookmark-panel {
         border-radius: 18px;
       }
 
@@ -665,7 +894,8 @@
         padding: 22px;
       }
 
-      .content-card {
+      .content-card,
+      .bookmark-panel {
         padding: 12px;
       }
 
@@ -708,7 +938,7 @@
 
       .nav a,
       .theme-toggle,
-      .bookmark-toggle {
+      .bookmark-open {
         min-height: 42px;
       }
     }
@@ -720,7 +950,7 @@
 
       .nav a,
       .theme-toggle,
-      .bookmark-toggle {
+      .bookmark-open {
         padding: 10px 12px;
         font-size: 0.9rem;
       }
@@ -731,8 +961,24 @@
       }
 
       .verse-selector-row select,
-      .jump-button {
+      .jump-button,
+      .bookmark-action,
+      .bookmark-remove,
+      .bookmark-close {
         width: 100%;
+      }
+
+      .bookmark-item {
+        align-items: flex-start;
+      }
+
+      .bookmark-item-actions {
+        width: 100%;
+      }
+
+      .bookmark-mini,
+      .bookmark-mini-remove {
+        flex: 1;
       }
     }
   </style>
@@ -751,7 +997,7 @@
       <nav class="nav" aria-label="Primary">
         <a href="index.html">All Surahs</a>
         <a class="cta" href="#content">Read Surah 2</a>
-        <button class="bookmark-toggle" type="button" id="bookmarkToggle" aria-label="Save bookmark for this surah">Bookmark</button>
+        <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks">Bookmarks</button>
         <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode">Dark</button>
       </nav>
     </div>
@@ -795,6 +1041,41 @@
 
     <section class="section" id="content">
       <div class="container">
+        <div class="bookmark-panel" id="bookmarkPanel">
+          <div class="bookmark-header">
+            <div>
+              <h3>Bookmarks</h3>
+              <p>Resume from your last read verse, or jump to any saved verse bookmark.</p>
+            </div>
+            <button class="bookmark-close" type="button" id="bookmarkClose">Close</button>
+          </div>
+
+          <div class="bookmark-summary">
+            <div class="bookmark-card">
+              <div class="bookmark-card-label">Last read verse</div>
+              <div class="bookmark-card-value" id="lastReadText">No verse tracked yet.</div>
+              <div class="bookmark-card-row">
+                <button class="bookmark-action" type="button" id="goLastRead">Go to last read</button>
+                <button class="bookmark-remove" type="button" id="clearLastRead">Clear last read</button>
+              </div>
+            </div>
+
+            <div class="bookmark-card">
+              <div class="bookmark-card-label">Save current verse</div>
+              <div class="bookmark-card-value" id="currentVerseText">Current verse: 1</div>
+              <div class="bookmark-card-row">
+                <button class="bookmark-action" type="button" id="saveCurrentVerseBookmark">Save bookmark here</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="bookmark-list-wrap">
+            <h4 class="bookmark-list-title">Saved verse bookmarks</h4>
+            <div class="bookmark-empty" id="bookmarkEmpty">No verse bookmarks saved yet.</div>
+            <div class="bookmark-list" id="bookmarkList"></div>
+          </div>
+        </div>
+
         <div class="controls">
           <button class="tab-button active" type="button" data-tab="read">Read</button>
           <button class="tab-button" type="button" data-tab="overview">Overview</button>
@@ -1195,16 +1476,30 @@
     const verseSelect = document.getElementById("verseSelect");
     const jumpButton = document.getElementById("jumpButton");
     const themeToggle = document.getElementById("themeToggle");
-    const bookmarkToggle = document.getElementById("bookmarkToggle");
+
+    const bookmarkOpen = document.getElementById("bookmarkOpen");
+    const bookmarkPanel = document.getElementById("bookmarkPanel");
+    const bookmarkClose = document.getElementById("bookmarkClose");
+    const lastReadText = document.getElementById("lastReadText");
+    const goLastRead = document.getElementById("goLastRead");
+    const clearLastRead = document.getElementById("clearLastRead");
+    const currentVerseText = document.getElementById("currentVerseText");
+    const saveCurrentVerseBookmark = document.getElementById("saveCurrentVerseBookmark");
+    const bookmarkList = document.getElementById("bookmarkList");
+    const bookmarkEmpty = document.getElementById("bookmarkEmpty");
 
     const surahNumber = 2;
     const totalVerses = 286;
-    const bookmarkStorageKey = `teq-bookmark-surah-${surahNumber}`;
+    const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
+    const bookmarksStorageKey = `teq-surah-${surahNumber}-bookmarks`;
     const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
     let currentMode = "bilingual";
     let transliterationAvailable = false;
+    let currentVisibleVerse = 1;
+    let readingObserver = null;
+    let readingSaveTimer = null;
 
     function escapeHtml(text) {
       return String(text)
@@ -1275,13 +1570,34 @@
       return "bilingual";
     }
 
-    function getSavedBookmark() {
+    function showBookmarkMessage(message) {
+      bookmarkState.textContent = message;
+      bookmarkState.style.display = "block";
+      clearTimeout(showBookmarkMessage.timer);
+      showBookmarkMessage.timer = setTimeout(() => {
+        bookmarkState.style.display = "none";
+      }, 2600);
+    }
+
+    function formatSavedTime(isoValue) {
+      if (!isoValue) return "";
+      const date = new Date(isoValue);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function getLastRead() {
       try {
-        const raw = localStorage.getItem(bookmarkStorageKey);
+        const raw = localStorage.getItem(lastReadStorageKey);
         if (!raw) return null;
         const parsed = JSON.parse(raw);
-        if (!parsed || parsed.surah !== surahNumber) return null;
-        if (typeof parsed.ayah !== "number") return null;
+        if (!parsed || typeof parsed.ayah !== "number") return null;
         if (parsed.ayah < 1 || parsed.ayah > totalVerses) return null;
         return parsed;
       } catch {
@@ -1289,105 +1605,203 @@
       }
     }
 
-    function updateBookmarkButton() {
-      const saved = getSavedBookmark();
-      if (saved) {
-        bookmarkToggle.classList.add("active");
-        bookmarkToggle.textContent = `Bookmarked ${saved.ayah}`;
-        bookmarkToggle.setAttribute("aria-label", `Bookmark saved at verse ${saved.ayah}. Click to return to bookmark.`);
-      } else {
-        bookmarkToggle.classList.remove("active");
-        bookmarkToggle.textContent = "Bookmark";
-        bookmarkToggle.setAttribute("aria-label", "Save bookmark for this surah");
-      }
-    }
+    function saveLastRead(ayahNumber) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
 
-    function showBookmarkMessage(message) {
-      bookmarkState.textContent = message;
-      bookmarkState.style.display = "block";
-      window.clearTimeout(showBookmarkMessage.timer);
-      showBookmarkMessage.timer = window.setTimeout(() => {
-        bookmarkState.style.display = "none";
-      }, 2600);
-    }
-
-    function clearBookmarkHighlight() {
-      document.querySelectorAll(".verse.bookmark-target").forEach((el) => {
-        el.classList.remove("bookmark-target");
-      });
-    }
-
-    function highlightVerse(ayahNumber) {
-      clearBookmarkHighlight();
-      const target = document.getElementById(`ayah-${ayahNumber}`);
-      if (target) {
-        target.classList.add("bookmark-target");
-      }
-    }
-
-    function getNearestVisibleVerseNumber() {
-      const verseElements = Array.from(document.querySelectorAll(".verse"));
-      if (!verseElements.length) return 1;
-
-      const threshold = 160;
-      let bestVerse = 1;
-      let bestDistance = Number.POSITIVE_INFINITY;
-
-      verseElements.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        const distance = Math.abs(rect.top - threshold);
-        if (rect.bottom > 90 && distance < bestDistance) {
-          bestDistance = distance;
-          const id = el.id || "";
-          const match = id.match(/^ayah-(\d+)$/);
-          if (match) {
-            bestVerse = Number(match[1]);
-          }
-        }
-      });
-
-      return bestVerse;
-    }
-
-    function saveCurrentBookmark() {
-      const ayah = getNearestVisibleVerseNumber();
-      const payload = {
-        surah: surahNumber,
-        ayah,
-        savedAt: new Date().toISOString()
-      };
-      localStorage.setItem(bookmarkStorageKey, JSON.stringify(payload));
-      updateBookmarkButton();
-      showBookmarkMessage(`Bookmark saved at verse ${ayah}.`);
-      highlightVerse(ayah);
-      history.replaceState(null, "", `?ayah=${ayah}#ayah-${ayah}`);
-    }
-
-    function goToSavedBookmark() {
-      const saved = getSavedBookmark();
-      if (!saved) {
-        saveCurrentBookmark();
+      const current = getLastRead();
+      if (current && current.ayah === safeVerse) {
         return;
       }
-      jumpToVerse(saved.ayah, true);
-      showBookmarkMessage(`Returned to bookmarked verse ${saved.ayah}.`);
+
+      localStorage.setItem(
+        lastReadStorageKey,
+        JSON.stringify({
+          ayah: safeVerse,
+          savedAt: new Date().toISOString()
+        })
+      );
+
+      updateLastReadUI();
     }
 
-    function jumpToVerse(verseNumber, fromBookmark = false) {
+    function clearLastReadData() {
+      localStorage.removeItem(lastReadStorageKey);
+      updateLastReadUI();
+      showBookmarkMessage("Last read verse cleared.");
+    }
+
+    function getSavedBookmarks() {
+      try {
+        const raw = localStorage.getItem(bookmarksStorageKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+          .filter((item) => item && typeof item.ayah === "number" && item.ayah >= 1 && item.ayah <= totalVerses)
+          .sort((a, b) => a.ayah - b.ayah);
+      } catch {
+        return [];
+      }
+    }
+
+    function storeBookmarks(items) {
+      localStorage.setItem(bookmarksStorageKey, JSON.stringify(items));
+      renderBookmarksList();
+    }
+
+    function saveVerseBookmark(ayahNumber) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      const existing = getSavedBookmarks();
+      const found = existing.find((item) => item.ayah === safeVerse);
+
+      if (found) {
+        showBookmarkMessage(`Verse ${safeVerse} is already saved.`);
+        return;
+      }
+
+      existing.push({
+        ayah: safeVerse,
+        savedAt: new Date().toISOString()
+      });
+
+      storeBookmarks(existing);
+      showBookmarkMessage(`Verse ${safeVerse} bookmarked.`);
+    }
+
+    function removeVerseBookmark(ayahNumber) {
+      const safeVerse = Number(ayahNumber);
+      const filtered = getSavedBookmarks().filter((item) => item.ayah !== safeVerse);
+      storeBookmarks(filtered);
+      showBookmarkMessage(`Bookmark for verse ${safeVerse} removed.`);
+    }
+
+    function clearReadingHighlight() {
+      document.querySelectorAll(".verse.current-reading").forEach((el) => {
+        el.classList.remove("current-reading");
+      });
+    }
+
+    function highlightReadingVerse(ayahNumber) {
+      clearReadingHighlight();
+      const target = document.getElementById(`ayah-${ayahNumber}`);
+      if (target) {
+        target.classList.add("current-reading");
+      }
+    }
+
+    function updateCurrentVerseUI() {
+      currentVerseText.textContent = `Current verse: ${currentVisibleVerse}`;
+      verseSelect.value = String(currentVisibleVerse);
+    }
+
+    function updateLastReadUI() {
+      const saved = getLastRead();
+
+      if (saved) {
+        lastReadText.textContent = `Verse ${saved.ayah}${saved.savedAt ? `, saved ${formatSavedTime(saved.savedAt)}` : ""}`;
+        goLastRead.disabled = false;
+        clearLastRead.disabled = false;
+        bookmarkOpen.classList.add("has-last");
+        bookmarkOpen.textContent = `Bookmarks · ${saved.ayah}`;
+      } else {
+        lastReadText.textContent = "No verse tracked yet.";
+        goLastRead.disabled = true;
+        clearLastRead.disabled = true;
+        bookmarkOpen.classList.remove("has-last");
+        bookmarkOpen.textContent = "Bookmarks";
+      }
+    }
+
+    function renderBookmarksList() {
+      const items = getSavedBookmarks();
+
+      bookmarkList.innerHTML = "";
+
+      if (!items.length) {
+        bookmarkEmpty.style.display = "block";
+        return;
+      }
+
+      bookmarkEmpty.style.display = "none";
+
+      items.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "bookmark-item";
+
+        row.innerHTML = `
+          <div class="bookmark-item-left">
+            <div class="bookmark-item-title">Verse ${item.ayah}</div>
+            <div class="bookmark-item-meta">${item.savedAt ? `Saved ${escapeHtml(formatSavedTime(item.savedAt))}` : ""}</div>
+          </div>
+          <div class="bookmark-item-actions">
+            <button class="bookmark-mini" type="button" data-go-bookmark="${item.ayah}">Go to verse</button>
+            <button class="bookmark-mini-remove" type="button" data-remove-bookmark="${item.ayah}">Remove</button>
+          </div>
+        `;
+
+        bookmarkList.appendChild(row);
+      });
+
+      bookmarkList.querySelectorAll("[data-go-bookmark]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const ayah = Number(button.getAttribute("data-go-bookmark"));
+          jumpToVerse(ayah);
+          closeBookmarkPanel();
+        });
+      });
+
+      bookmarkList.querySelectorAll("[data-remove-bookmark]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const ayah = Number(button.getAttribute("data-remove-bookmark"));
+          removeVerseBookmark(ayah);
+        });
+      });
+    }
+
+    function openBookmarkPanel() {
+      bookmarkPanel.classList.add("active");
+      bookmarkOpen.setAttribute("aria-expanded", "true");
+    }
+
+    function closeBookmarkPanel() {
+      bookmarkPanel.classList.remove("active");
+      bookmarkOpen.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleBookmarkPanel() {
+      bookmarkPanel.classList.toggle("active");
+      bookmarkOpen.setAttribute("aria-expanded", bookmarkPanel.classList.contains("active") ? "true" : "false");
+    }
+
+    function setCurrentVisibleVerse(ayahNumber, persist = true) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      currentVisibleVerse = safeVerse;
+      updateCurrentVerseUI();
+      highlightReadingVerse(safeVerse);
+
+      if (persist) {
+        clearTimeout(readingSaveTimer);
+        readingSaveTimer = setTimeout(() => {
+          saveLastRead(safeVerse);
+        }, 180);
+      }
+    }
+
+    function jumpToVerse(verseNumber) {
       const safeVerseNumber = Number(verseNumber);
       const target = document.getElementById(`ayah-${safeVerseNumber}`);
       if (!target) return;
 
       setActiveTab("read");
-      verseSelect.value = String(safeVerseNumber);
-      highlightVerse(safeVerseNumber);
+      setCurrentVisibleVerse(safeVerseNumber, true);
 
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      target.scrollIntoView({ behaviour: "smooth", block: "start" });
       history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
-
-      if (fromBookmark) {
-        target.focus?.();
-      }
     }
 
     function handleInitialVerseJump() {
@@ -1401,20 +1815,23 @@
         verseNumber = Number(ayahParam);
       } else if (hash && /^#ayah-\d+$/.test(hash)) {
         verseNumber = Number(hash.replace("#ayah-", ""));
+      } else {
+        const lastRead = getLastRead();
+        if (lastRead) {
+          verseNumber = lastRead.ayah;
+        }
       }
 
       if (!verseNumber || verseNumber < 1 || verseNumber > totalVerses) {
+        setCurrentVisibleVerse(1, false);
         return;
       }
-
-      setActiveTab("read");
-      verseSelect.value = String(verseNumber);
 
       requestAnimationFrame(() => {
         const target = document.getElementById(`ayah-${verseNumber}`);
         if (target) {
-          highlightVerse(verseNumber);
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          setCurrentVisibleVerse(verseNumber, false);
+          target.scrollIntoView({ behaviour: "smooth", block: "start" });
           history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
         }
       });
@@ -1429,6 +1846,38 @@
         themeToggle.textContent = "Dark";
       }
       localStorage.setItem("site-theme", theme);
+    }
+
+    function observeReadingProgress() {
+      const verseElements = document.querySelectorAll(".verse");
+      if (!verseElements.length) return;
+
+      if (readingObserver) {
+        readingObserver.disconnect();
+      }
+
+      readingObserver = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .map((entry) => ({
+              id: Number(entry.target.id.replace("ayah-", "")),
+              ratio: entry.intersectionRatio
+            }))
+            .sort((a, b) => b.ratio - a.ratio || a.id - b.id);
+
+          if (visible.length) {
+            setCurrentVisibleVerse(visible[0].id, true);
+          }
+        },
+        {
+          root: null,
+          threshold: [0.35, 0.5, 0.7],
+          rootMargin: "-12% 0px -55% 0px"
+        }
+      );
+
+      verseElements.forEach((element) => readingObserver.observe(element));
     }
 
     tabButtons.forEach((button) => {
@@ -1459,8 +1908,27 @@
       applyTheme(isDark ? "light" : "dark");
     });
 
-    bookmarkToggle.addEventListener("click", () => {
-      goToSavedBookmark();
+    bookmarkOpen.addEventListener("click", () => {
+      toggleBookmarkPanel();
+    });
+
+    bookmarkClose.addEventListener("click", () => {
+      closeBookmarkPanel();
+    });
+
+    goLastRead.addEventListener("click", () => {
+      const saved = getLastRead();
+      if (!saved) return;
+      jumpToVerse(saved.ayah);
+      closeBookmarkPanel();
+    });
+
+    clearLastRead.addEventListener("click", () => {
+      clearLastReadData();
+    });
+
+    saveCurrentVerseBookmark.addEventListener("click", () => {
+      saveVerseBookmark(currentVisibleVerse);
     });
 
     async function fetchArabicAndTransliteration() {
@@ -1526,6 +1994,9 @@
 
         return `
           <article class="verse" id="ayah-${verse.number}" tabindex="-1">
+            <div class="verse-top">
+              <button class="save-verse-bookmark" type="button" data-save-ayah="${verse.number}">Save verse ${verse.number}</button>
+            </div>
             <div class="arabic-wrap">
               <div class="arabic-ayah" lang="ar">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
             </div>
@@ -1539,6 +2010,13 @@
       }).join("");
 
       versesContainer.innerHTML = bismillahBlock + versesHtml;
+
+      versesContainer.querySelectorAll("[data-save-ayah]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const ayah = Number(button.getAttribute("data-save-ayah"));
+          saveVerseBookmark(ayah);
+        });
+      });
     }
 
     async function loadSurah() {
@@ -1553,11 +2031,13 @@
         renderVerses(verseData);
         buildVerseSelector();
         applyMode("bilingual");
-        updateBookmarkButton();
+        renderBookmarksList();
+        updateLastReadUI();
 
         loadingState.style.display = "none";
         errorState.style.display = "none";
 
+        observeReadingProgress();
         handleInitialVerseJump();
       } catch (error) {
         console.error(error);
@@ -1571,7 +2051,9 @@
 
     buildVerseSelector();
     setActiveTab("read");
-    updateBookmarkButton();
+    renderBookmarksList();
+    updateLastReadUI();
+    updateCurrentVerseUI();
     loadSurah();
   </script>
 </body>
