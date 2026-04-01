@@ -54,7 +54,7 @@
     }
 
     html {
-      scroll-behaviour: smooth;
+      scroll-behavior: smooth;
       -webkit-text-size-adjust: 100%;
     }
 
@@ -107,7 +107,7 @@
 
     .brand {
       display: flex;
-      align-items: centre;
+      align-items: center;
       gap: 14px;
       min-width: 0;
     }
@@ -119,7 +119,7 @@
       background: linear-gradient(135deg, var(--accent), var(--accent-deep));
       color: #fff;
       display: grid;
-      place-items: centre;
+      place-items: center;
       font-size: 1.2rem;
       font-weight: 700;
       box-shadow: var(--shadow);
@@ -141,7 +141,7 @@
 
     .nav {
       display: flex;
-      align-items: centre;
+      align-items: center;
       gap: 10px;
       flex-wrap: wrap;
       justify-content: flex-end;
@@ -160,9 +160,10 @@
       cursor: pointer;
       min-height: 44px;
       display: inline-flex;
-      align-items: centre;
-      justify-content: centre;
+      align-items: center;
+      justify-content: center;
       white-space: nowrap;
+      line-height: 1;
     }
 
     .nav a:hover,
@@ -234,7 +235,7 @@
 
     .crumb {
       display: inline-flex;
-      align-items: centre;
+      align-items: center;
       gap: 8px;
       padding: 8px 14px;
       border-radius: 999px;
@@ -324,7 +325,7 @@
 
     .bookmark-header {
       display: flex;
-      align-items: centre;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
@@ -354,6 +355,10 @@
       cursor: pointer;
       font-weight: 600;
       transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     .bookmark-close:hover {
@@ -402,6 +407,10 @@
       cursor: pointer;
       font-weight: 600;
       transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     .bookmark-action {
@@ -449,7 +458,7 @@
 
     .bookmark-item {
       display: flex;
-      align-items: centre;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
@@ -489,6 +498,10 @@
       cursor: pointer;
       font-weight: 600;
       transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     .bookmark-mini {
@@ -525,6 +538,10 @@
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     .tab-button:hover {
@@ -591,6 +608,10 @@
       cursor: pointer;
       font-weight: 600;
       transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     .mode-button:hover {
@@ -607,7 +628,7 @@
     .verse-selector-row {
       display: flex;
       gap: 12px;
-      align-items: centre;
+      align-items: center;
       flex-wrap: wrap;
     }
 
@@ -637,6 +658,10 @@
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     .jump-button:hover {
@@ -682,7 +707,7 @@
       background: var(--surface-soft);
       border: 1px solid var(--line);
       margin-bottom: 8px;
-      text-align: centre;
+      text-align: center;
     }
 
     .bismillah-arabic {
@@ -716,6 +741,7 @@
       color: #111827;
       word-spacing: 0.04em;
       letter-spacing: 0;
+      display: inline;
     }
 
     html[data-theme="dark"] .arabic-ayah {
@@ -741,22 +767,27 @@
     }
 
     .english-number {
-      min-width: 38px;
-      height: 38px;
-      border-radius: 12px;
+      min-width: 48px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
       background: var(--accent-soft);
       color: var(--accent-deep);
-      display: grid;
-      place-items: centre;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       font-weight: 700;
       flex-shrink: 0;
-      margin-top: 2px;
-      font-size: 0.96rem;
+      margin-top: 0;
+      font-size: 1rem;
+      line-height: 1;
+      text-align: center;
     }
 
     .english-text {
       font-size: 1rem;
       color: color-mix(in srgb, var(--text) 88%, white);
+      padding-top: 2px;
     }
 
     .overview {
@@ -793,7 +824,7 @@
 
     .footer-inner {
       display: flex;
-      align-items: centre;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
@@ -813,6 +844,11 @@
       background: var(--surface);
       border: 1px solid var(--line);
       transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      min-height: 42px;
     }
 
     .footer-links a:hover {
@@ -841,7 +877,7 @@
       .topbar-inner {
         flex-direction: column;
         align-items: stretch;
-        justify-content: centre;
+        justify-content: center;
         padding: 14px 0;
       }
 
@@ -876,9 +912,11 @@
       }
 
       .english-number {
-        min-width: 34px;
-        height: 34px;
-        border-radius: 10px;
+        min-width: 42px;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 0.96rem;
       }
 
       .overview p,
@@ -1076,14 +1114,13 @@
           <div class="tab-panel" id="overview">
             <div class="overview notranslate" translate="no">
               <h3 translate="no">Overview</h3>
-
               <p translate="no">Surah Āl ʿImrān builds on the foundations laid earlier and focuses on strengthening belief, clarity, and firmness under pressure. Revealed in Madinah, it addresses a community facing both internal challenges and external opposition, guiding them to remain steady upon truth. It opens by affirming Allah’s absolute oneness, His full authority, and the Qur’an as truth sent down to His servant Muhammad, confirming what came before it and acting as a clear standard between truth and falsehood. It makes clear that guidance is not simply about knowledge, but about sincerity, humility, and a heart willing to accept the truth.</p>
 
               <p translate="no">A central part of the Surah clarifies belief, especially in response to theological confusion and debate. It presents the family of ʿImrān as a model of devotion and purity. The story of Maryam shows sincerity, trust, and dedication, while ʿĪsā (Jesus) is presented clearly as a servant of Allah, created by His command, not to be raised beyond his true position. These passages restore clarity, correct misunderstandings, and reinforce pure belief in Allah alone. The Surah also refers to Zakariyyā (Zechariah) and Yaḥyā (John), showing a line of devotion, prayer, and divine response.</p>
 
               <p translate="no">The Surah then turns to the reality of conflict and testing, especially through the events of the Battle of Uḥud. It shows how victory and setback are both part of a greater test, where obedience, discipline, and unity bring strength, while disobedience and division lead to loss. Believers are taught to remain patient, not to lose heart, and to understand that outcomes are in the control of Allah. The role of the messenger is reinforced, reminding that Muhammad is to be followed with trust and obedience, especially in times of difficulty.</p>
 
-              <p translate="no">Throughout the Surah, there is a continuous call to hold firmly to the truth, to remain united, and not to be shaken by opposition. It warns against turning back after guidance has become clear and calls believers to stay connected to Allah through remembrance, patience, and reliance. It also highlights the temporary nature of worldly life and the lasting reality of the Hereafter, encouraging a long view rooted in accountability and purpose.</p>
+              <p translate="no">Throughout the Surah, there is a continuous call to hold firmly to the truth, to remain united, and not to be shaken by opposition. It warns against turning back after guidance has become clear and calls believers to stay connected to Allah through remembrance, patience, and reliance. It also highlights the temporary nature of worldly life and the lasting reality of the Hereafter, encouraging a long-term view rooted in accountability and purpose.</p>
 
               <p translate="no">The Surah concludes with a powerful call to remain firm, patient, and united, holding tightly to faith and not allowing weakness or division to take hold. It strengthens the believer from within, preparing them to stand upon truth with clarity, resilience, and full trust in Allah.</p>
 
@@ -1628,7 +1665,7 @@
       setActiveTab("read");
       setCurrentVisibleVerse(safeVerseNumber, true);
 
-      target.scrollIntoView({ behaviour: "smooth", block: "start" });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
       history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
     }
 
@@ -1659,7 +1696,7 @@
         const target = document.getElementById(`ayah-${verseNumber}`);
         if (target) {
           setCurrentVisibleVerse(verseNumber, false);
-          target.scrollIntoView({ behaviour: "smooth", block: "start" });
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
           history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
         }
       });
