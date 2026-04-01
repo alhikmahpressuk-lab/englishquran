@@ -1,8 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no" class="notranslate">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+  />
+  <meta name="google" content="notranslate" />
+  <meta name="translate" content="no" />
+  <meta http-equiv="Content-Language" content="en" />
   <title>Surah 3 | Āl ʿImrān | The English Qur’an</title>
   <meta name="description" content="Surah 3, Āl ʿImrān, from The English Qur’an." />
   <style>
@@ -19,6 +25,8 @@
       --accent: #1e6b5c;
       --accent-deep: #154d42;
       --accent-soft: #e8f3f0;
+      --danger-soft: #fff2f2;
+      --danger: #b42318;
       --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
       --radius: 22px;
       --radius-sm: 16px;
@@ -36,6 +44,8 @@
       --accent: #38a189;
       --accent-deep: #2c7a67;
       --accent-soft: rgba(56, 161, 137, 0.16);
+      --danger-soft: rgba(180, 35, 24, 0.12);
+      --danger: #ff8a80;
       --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
     }
 
@@ -44,7 +54,8 @@
     }
 
     html {
-      scroll-behavior: smooth;
+      scroll-behaviour: smooth;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
@@ -64,6 +75,10 @@
     button,
     select {
       font: inherit;
+    }
+
+    .notranslate {
+      translate: no;
     }
 
     .topbar {
@@ -92,7 +107,7 @@
 
     .brand {
       display: flex;
-      align-items: center;
+      align-items: centre;
       gap: 14px;
       min-width: 0;
     }
@@ -104,7 +119,7 @@
       background: linear-gradient(135deg, var(--accent), var(--accent-deep));
       color: #fff;
       display: grid;
-      place-items: center;
+      place-items: centre;
       font-size: 1.2rem;
       font-weight: 700;
       box-shadow: var(--shadow);
@@ -126,13 +141,15 @@
 
     .nav {
       display: flex;
-      align-items: center;
+      align-items: centre;
       gap: 10px;
       flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .nav a,
-    .theme-toggle {
+    .theme-toggle,
+    .bookmark-open {
       padding: 10px 14px;
       border-radius: 999px;
       font-size: 0.94rem;
@@ -141,10 +158,16 @@
       border: 1px solid transparent;
       background: transparent;
       cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: centre;
+      justify-content: centre;
+      white-space: nowrap;
     }
 
     .nav a:hover,
-    .theme-toggle:hover {
+    .theme-toggle:hover,
+    .bookmark-open:hover {
       background: var(--surface);
       color: var(--text);
       border-color: var(--line);
@@ -163,12 +186,24 @@
       border-color: var(--accent-deep);
     }
 
+    .bookmark-open.has-last {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+      font-weight: 700;
+    }
+
+    html[data-theme="dark"] .bookmark-open.has-last {
+      color: #d8fff4;
+    }
+
     .hero {
       padding: 34px 0 18px;
     }
 
     .hero-card,
-    .content-card {
+    .content-card,
+    .bookmark-panel {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -189,17 +224,17 @@
       bottom: -110px;
       width: 250px;
       height: 250px;
-      background: radial-gradient(circle, rgba(30,107,92,0.13) 0%, rgba(30,107,92,0) 72%);
+      background: radial-gradient(circle, rgba(30, 107, 92, 0.13) 0%, rgba(30, 107, 92, 0) 72%);
       pointer-events: none;
     }
 
     html[data-theme="dark"] .hero-card::after {
-      background: radial-gradient(circle, rgba(56,161,137,0.18) 0%, rgba(56,161,137,0) 72%);
+      background: radial-gradient(circle, rgba(56, 161, 137, 0.18) 0%, rgba(56, 161, 137, 0) 72%);
     }
 
     .crumb {
       display: inline-flex;
-      align-items: center;
+      align-items: centre;
       gap: 8px;
       padding: 8px 14px;
       border-radius: 999px;
@@ -275,6 +310,201 @@
 
     .section {
       padding: 12px 0 36px;
+    }
+
+    .bookmark-panel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+    }
+
+    .bookmark-panel.active {
+      display: block;
+    }
+
+    .bookmark-header {
+      display: flex;
+      align-items: centre;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .bookmark-header h3 {
+      margin: 0;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-header p {
+      margin: 6px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 0.96rem;
+    }
+
+    .bookmark-close {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .bookmark-close:hover {
+      background: var(--surface-soft);
+    }
+
+    .bookmark-summary {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-card-label {
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .bookmark-card-value {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bookmark-card-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-action,
+    .bookmark-remove {
+      appearance: none;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .bookmark-action {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-action:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .bookmark-remove:hover {
+      filter: brightness(0.98);
+    }
+
+    .bookmark-list-wrap {
+      margin-top: 8px;
+    }
+
+    .bookmark-list-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-empty {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .bookmark-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bookmark-item {
+      display: flex;
+      align-items: centre;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-item-left {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .bookmark-item-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .bookmark-item-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .bookmark-item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-mini,
+    .bookmark-mini-remove {
+      appearance: none;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .bookmark-mini {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-mini:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-mini-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
     }
 
     .controls {
@@ -377,7 +607,7 @@
     .verse-selector-row {
       display: flex;
       gap: 12px;
-      align-items: center;
+      align-items: centre;
       flex-wrap: wrap;
     }
 
@@ -413,6 +643,25 @@
       background: var(--accent-deep);
     }
 
+    .bookmark-state,
+    .loading-state,
+    .error-state,
+    .note-state {
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 82%, white);
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-state,
+    .error-state,
+    .note-state {
+      display: none;
+    }
+
     .verse {
       padding: 24px 16px;
       border-radius: 18px;
@@ -433,12 +682,12 @@
       background: var(--surface-soft);
       border: 1px solid var(--line);
       margin-bottom: 8px;
-      text-align: center;
+      text-align: centre;
     }
 
     .bismillah-arabic {
       font-family: "Amiri Quran", "Amiri", serif;
-      font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+      font-size: clamp(1.9rem, 2.8vw, 2.6rem);
       line-height: 2;
       direction: rtl;
       color: #111827;
@@ -462,8 +711,8 @@
 
     .arabic-ayah {
       font-family: "Amiri Quran", "Amiri", serif;
-      font-size: clamp(1.45rem, 2.05vw, 1.82rem);
-      line-height: 2.1;
+      font-size: clamp(1.55rem, 2.15vw, 1.95rem);
+      line-height: 2.15;
       color: #111827;
       word-spacing: 0.04em;
       letter-spacing: 0;
@@ -498,7 +747,7 @@
       background: var(--accent-soft);
       color: var(--accent-deep);
       display: grid;
-      place-items: center;
+      place-items: centre;
       font-weight: 700;
       flex-shrink: 0;
       margin-top: 2px;
@@ -538,33 +787,13 @@
       color: color-mix(in srgb, var(--text) 88%, white);
     }
 
-    .loading-state,
-    .error-state,
-    .note-state {
-      padding: 22px 16px;
-      border-radius: 18px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      color: color-mix(in srgb, var(--text) 82%, white);
-      font-size: 1rem;
-    }
-
-    .error-state {
-      display: none;
-    }
-
-    .note-state {
-      display: none;
-      margin-bottom: 16px;
-    }
-
     .footer {
       padding: 0 0 34px;
     }
 
     .footer-inner {
       display: flex;
-      align-items: center;
+      align-items: centre;
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
@@ -608,16 +837,24 @@
       }
     }
 
-    @media (max-width: 680px) {
+    @media (max-width: 760px) {
       .topbar-inner {
         flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
+        align-items: stretch;
+        justify-content: centre;
         padding: 14px 0;
       }
 
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
       .hero-card,
-      .content-card {
+      .content-card,
+      .bookmark-panel {
         border-radius: 18px;
       }
 
@@ -625,7 +862,8 @@
         padding: 22px;
       }
 
-      .content-card {
+      .content-card,
+      .bookmark-panel {
         padding: 12px;
       }
 
@@ -649,12 +887,12 @@
       }
 
       .arabic-ayah {
-        font-size: 1.38rem;
-        line-height: 2.02;
+        font-size: 1.42rem;
+        line-height: 2.05;
       }
 
       .bismillah-arabic {
-        font-size: 1.65rem;
+        font-size: 1.9rem;
         line-height: 1.95;
       }
 
@@ -662,61 +900,106 @@
         flex-direction: column;
       }
 
-      .mode-button,
-      .theme-toggle {
+      .mode-button {
         width: 100%;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-open {
+        min-height: 42px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .nav {
+        gap: 8px;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-open {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .verse-selector-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .verse-selector-row select,
+      .jump-button,
+      .bookmark-action,
+      .bookmark-remove,
+      .bookmark-close {
+        width: 100%;
+      }
+
+      .bookmark-item {
+        align-items: flex-start;
+      }
+
+      .bookmark-item-actions {
+        width: 100%;
+      }
+
+      .bookmark-mini,
+      .bookmark-mini-remove {
+        flex: 1;
       }
     }
   </style>
 </head>
-<body>
-  <header class="topbar">
+<body translate="no" class="notranslate">
+  <header class="topbar notranslate" translate="no">
     <div class="topbar-inner">
       <div class="brand">
-        <div class="brand-mark">٣</div>
+        <div class="brand-mark" translate="no">٣</div>
         <div class="brand-text">
-          <h1>The English Qur’an</h1>
-          <p>Surah 3 · Āl ʿImrān</p>
+          <h1 translate="no">The English Qur’an</h1>
+          <p translate="no">Surah 3 · Āl ʿImrān</p>
         </div>
       </div>
 
-      <nav class="nav">
-        <a href="index.html">All Surahs</a>
-        <a class="cta" href="#content">Read Surah 3</a>
-        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode">Dark mode</button>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html" translate="no">All Surahs</a>
+        <a class="cta" href="#content" translate="no">Read Surah 3</a>
+        <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks" aria-expanded="false" translate="no">Bookmarks</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode" translate="no">Dark</button>
       </nav>
     </div>
   </header>
 
-  <main>
+  <main translate="no" class="notranslate">
     <section class="hero">
       <div class="container">
         <div class="hero-card">
-          <div class="crumb">Surah 3 · Āl ʿImrān</div>
+          <div class="crumb" translate="no">Surah 3 · Āl ʿImrān</div>
 
           <div class="hero-grid">
             <div class="hero-copy">
-              <h2>Āl ʿImrān</h2>
-              <p class="meaning">The Family of Imran</p>
-              <p class="summary">
+              <h2 translate="no">Āl ʿImrān</h2>
+              <p class="meaning" translate="no">The Family of Imran</p>
+              <p class="summary" translate="no">
                 A surah of clarity, steadfastness, and firm belief, strengthening the believers through truth, devotion, unity, and patience under pressure.
               </p>
             </div>
 
             <div class="hero-meta">
               <div class="meta-box">
-                <div class="meta-label">Arabic name</div>
-                <div class="meta-value ar" lang="ar">آل عمران</div>
+                <div class="meta-label" translate="no">Arabic name</div>
+                <div class="meta-value ar notranslate" lang="ar" translate="no">آل عمران</div>
               </div>
 
               <div class="meta-box">
-                <div class="meta-label">Verses</div>
-                <div class="meta-value">200</div>
+                <div class="meta-label" translate="no">Verses</div>
+                <div class="meta-value" translate="no">200</div>
               </div>
 
               <div class="meta-box">
-                <div class="meta-label">Revelation</div>
-                <div class="meta-value">Madani</div>
+                <div class="meta-label" translate="no">Revelation</div>
+                <div class="meta-value" translate="no">Madani</div>
               </div>
             </div>
           </div>
@@ -724,60 +1007,105 @@
       </div>
     </section>
 
-    <section class="section" id="content">
+    <section class="section notranslate" id="content" translate="no">
       <div class="container">
+        <div class="bookmark-panel" id="bookmarkPanel">
+          <div class="bookmark-header">
+            <div>
+              <h3 translate="no">Bookmarks</h3>
+              <p translate="no">Your reading position is remembered automatically.</p>
+            </div>
+            <button class="bookmark-close" type="button" id="bookmarkClose" translate="no">Close</button>
+          </div>
+
+          <div class="bookmark-summary">
+            <div class="bookmark-card">
+              <div class="bookmark-card-label" translate="no">Last read verse</div>
+              <div class="bookmark-card-value" id="lastReadText" translate="no">No verse tracked yet.</div>
+              <div class="bookmark-card-row">
+                <button class="bookmark-action" type="button" id="goLastRead" translate="no">Go to last read</button>
+                <button class="bookmark-remove" type="button" id="clearHistory" translate="no">Clear bookmark history</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="bookmark-list-wrap">
+            <h4 class="bookmark-list-title" translate="no">Recently visited verses</h4>
+            <div class="bookmark-empty" id="bookmarkEmpty" translate="no">No reading history yet.</div>
+            <div class="bookmark-list" id="bookmarkList"></div>
+          </div>
+        </div>
+
         <div class="controls">
-          <button class="tab-button active" type="button" data-tab="read">Read</button>
-          <button class="tab-button" type="button" data-tab="overview">Overview</button>
-          <button class="tab-button" type="button" data-tab="mode">Mode</button>
-          <button class="tab-button" type="button" data-tab="verse">Verse</button>
+          <button class="tab-button active" type="button" data-tab="read" translate="no">Read</button>
+          <button class="tab-button" type="button" data-tab="overview" translate="no">Overview</button>
+          <button class="tab-button" type="button" data-tab="mode" translate="no">Mode</button>
+          <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
         </div>
 
         <div class="content-card">
           <div class="subpanel" id="modePanel">
-            <h3>Reading Mode</h3>
-            <p>Select how the verses are displayed.</p>
+            <h3 translate="no">Reading Mode</h3>
+            <p translate="no">Select how the verses are displayed.</p>
             <div class="mode-options">
-              <button class="mode-button active" type="button" data-mode="bilingual">Arabic + English</button>
-              <button class="mode-button" type="button" data-mode="transliteration">Transliteration</button>
-              <button class="mode-button" type="button" data-mode="arabic-only">Arabic Only</button>
-              <button class="mode-button" type="button" data-mode="english-only">English Only</button>
+              <button class="mode-button active" type="button" data-mode="bilingual" translate="no">Arabic + English</button>
+              <button class="mode-button" type="button" data-mode="transliteration" translate="no">Transliteration</button>
+              <button class="mode-button" type="button" data-mode="arabic-only" translate="no">Arabic Only</button>
+              <button class="mode-button" type="button" data-mode="english-only" translate="no">English Only</button>
             </div>
           </div>
 
           <div class="subpanel" id="versePanel">
-            <h3>Jump to Verse</h3>
-            <p>Select any ayah in Surah Āl ʿImrān and jump straight to it.</p>
+            <h3 translate="no">Jump to Verse</h3>
+            <p translate="no">Select any ayah in Surah Āl ʿImrān and jump straight to it.</p>
             <div class="verse-selector-row">
-              <label for="verseSelect">Verse</label>
-              <select id="verseSelect" aria-label="Select verse number"></select>
-              <button class="jump-button" type="button" id="jumpButton">Go to verse</button>
+              <label for="verseSelect" translate="no">Verse</label>
+              <select id="verseSelect" aria-label="Select verse number" translate="no"></select>
+              <button class="jump-button" type="button" id="jumpButton" translate="no">Go to verse</button>
             </div>
           </div>
 
           <div class="tab-panel active" id="read">
-            <div class="loading-state" id="loadingState">Loading Surah Āl ʿImrān...</div>
-            <div class="error-state" id="errorState">The surah could not be loaded. Please refresh the page and try again.</div>
-            <div class="note-state" id="noteState">Transliteration could not be loaded, so the page has switched back to Arabic + English.</div>
-            <div id="versesContainer"></div>
+            <div class="bookmark-state" id="bookmarkState" translate="no"></div>
+            <div class="loading-state" id="loadingState" translate="no">Loading Surah Āl ʿImrān...</div>
+            <div class="error-state" id="errorState" translate="no">The surah could not be loaded. Please refresh the page and try again.</div>
+            <div class="note-state" id="noteState" translate="no">Transliteration could not be loaded, so the page has switched back to Arabic + English.</div>
+            <div id="versesContainer" class="notranslate" translate="no"></div>
           </div>
 
           <div class="tab-panel" id="overview">
-            <div class="overview">
-              <h3>Overview</h3>
-              <p>Surah Āl ʿImrān builds on the foundations laid earlier and focuses on strengthening belief, clarity, and firmness under pressure. Revealed in Madinah, it addresses a community facing both internal challenges and external opposition, guiding them to remain steady upon truth. It opens by affirming Allah’s absolute oneness, His full authority, and the Qur’an as truth sent down to His servant Prophet Muhammad ﷺ, confirming what came before it and acting as a clear standard between truth and falsehood. It makes clear that guidance is not simply about knowledge, but about sincerity, humility, and a heart willing to accept the truth.</p>
-              <p>A central part of the Surah clarifies belief, especially in response to theological confusion and debate. It presents the family of ʿImrān as a model of devotion and purity. The story of Maryam shows sincerity, trust, and dedication, while ʿĪsā (Jesus) is presented clearly as a servant of Allah, created by His command, not to be raised beyond his true position. These passages restore clarity, correct misunderstandings, and reinforce pure belief in Allah alone. The Surah also refers to Zakariyyā (Zechariah) and Yaḥyā (John), showing a line of devotion, prayer, and divine response.</p>
-              <p>The Surah then turns to the reality of conflict and testing, especially through the events of the Battle of Uḥud. It shows how victory and setback are both part of a greater test, where obedience, discipline, and unity bring strength, while disobedience and division lead to loss. Believers are taught to remain patient, not to lose heart, and to understand that outcomes are in the control of Allah. The role of the messenger is reinforced, reminding that Prophet Muhammad ﷺ is to be followed with trust and obedience, especially in times of difficulty.</p>
-              <p>Throughout the Surah, there is a continuous call to hold firmly to the truth, to remain united, and not to be shaken by opposition. It warns against turning back after guidance has become clear and calls believers to stay connected to Allah through remembrance, patience, and reliance. It also highlights the temporary nature of worldly life and the lasting reality of the Hereafter, encouraging a long-term view rooted in accountability and purpose.</p>
-              <p>The Surah concludes with a powerful call to remain firm, patient, and united, holding tightly to faith and not allowing weakness or division to take hold. It strengthens the believer from within, preparing them to stand upon truth with clarity, resilience, and full trust in Allah.</p>
+            <div class="overview notranslate" translate="no">
+              <h3 translate="no">Overview</h3>
 
-              <h3>Key Themes</h3>
+              <p translate="no">Surah Āl ʿImrān builds on the foundations laid earlier and focuses on strengthening belief, clarity, and firmness under pressure. Revealed in Madinah, it addresses a community facing both internal challenges and external opposition, guiding them to remain steady upon truth. It opens by affirming Allah’s absolute oneness, His full authority, and the Qur’an as truth sent down to His servant Muhammad, confirming what came before it and acting as a clear standard between truth and falsehood. It makes clear that guidance is not simply about knowledge, but about sincerity, humility, and a heart willing to accept the truth.</p>
+
+              <p translate="no">A central part of the Surah clarifies belief, especially in response to theological confusion and debate. It presents the family of ʿImrān as a model of devotion and purity. The story of Maryam shows sincerity, trust, and dedication, while ʿĪsā (Jesus) is presented clearly as a servant of Allah, created by His command, not to be raised beyond his true position. These passages restore clarity, correct misunderstandings, and reinforce pure belief in Allah alone. The Surah also refers to Zakariyyā (Zechariah) and Yaḥyā (John), showing a line of devotion, prayer, and divine response.</p>
+
+              <p translate="no">The Surah then turns to the reality of conflict and testing, especially through the events of the Battle of Uḥud. It shows how victory and setback are both part of a greater test, where obedience, discipline, and unity bring strength, while disobedience and division lead to loss. Believers are taught to remain patient, not to lose heart, and to understand that outcomes are in the control of Allah. The role of the messenger is reinforced, reminding that Muhammad is to be followed with trust and obedience, especially in times of difficulty.</p>
+
+              <p translate="no">Throughout the Surah, there is a continuous call to hold firmly to the truth, to remain united, and not to be shaken by opposition. It warns against turning back after guidance has become clear and calls believers to stay connected to Allah through remembrance, patience, and reliance. It also highlights the temporary nature of worldly life and the lasting reality of the Hereafter, encouraging a long view rooted in accountability and purpose.</p>
+
+              <p translate="no">The Surah concludes with a powerful call to remain firm, patient, and united, holding tightly to faith and not allowing weakness or division to take hold. It strengthens the believer from within, preparing them to stand upon truth with clarity, resilience, and full trust in Allah.</p>
+
+              <h3 translate="no">Key Themes</h3>
               <ul>
-                <li>The oneness of Allah and the truth of revelation</li><li>The Qur’an as a clear and decisive guide</li><li>The role of Prophet Muhammad ﷺ as the messenger to be followed</li><li>The family of ʿImrān, Maryam, and ʿĪsā (Jesus) and clarity of belief</li><li>Zakariyyā (Zechariah) and Yaḥyā (John), devotion and answered prayer</li><li>Correction of false beliefs and theological confusion</li><li>The Battle of Uḥud, lessons in obedience and unity</li><li>Patience, resilience, and steadfastness in trials</li><li>Unity of the believers and holding firmly to truth</li><li>Awareness of the Hereafter and accountability</li>
+                <li translate="no">The oneness of Allah and the truth of revelation</li>
+                <li translate="no">The Qur’an as a clear and decisive guide</li>
+                <li translate="no">The role of Muhammad as the messenger to be followed</li>
+                <li translate="no">The family of ʿImrān, Maryam, and ʿĪsā (Jesus) and clarity of belief</li>
+                <li translate="no">Zakariyyā (Zechariah) and Yaḥyā (John), devotion and answered prayer</li>
+                <li translate="no">Correction of false beliefs and theological confusion</li>
+                <li translate="no">The Battle of Uḥud, lessons in obedience and unity</li>
+                <li translate="no">Patience, resilience, and steadfastness in trials</li>
+                <li translate="no">Unity of the believers and holding firmly to truth</li>
+                <li translate="no">Awareness of the Hereafter and accountability</li>
               </ul>
 
-              <h3>Central Message</h3>
-              <p>True belief must be clear, pure, and free from confusion, rooted in recognising Allah alone.</p><p>Believers are tested through both ease and hardship, and must remain firm, patient, and united.</p><p>The examples of Maryam and ʿĪsā (Jesus) restore clarity and show sincere devotion to Allah.</p><p>Success lies in holding firmly to guidance, following the messenger, and remaining steady under pressure.</p>
+              <h3 translate="no">Central Message</h3>
+              <p translate="no">True belief must be clear, pure, and free from confusion, rooted in recognising Allah alone.</p>
+              <p translate="no">Believers are tested through both ease and hardship, and must remain firm, patient, and united.</p>
+              <p translate="no">The examples of Maryam and ʿĪsā (Jesus) restore clarity and show sincere devotion to Allah.</p>
+              <p translate="no">Success lies in holding firmly to guidance, following the messenger, and remaining steady under pressure.</p>
             </div>
           </div>
 
@@ -788,13 +1116,13 @@
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="footer notranslate" translate="no">
     <div class="footer-inner">
-      <div>Surah 3 | Āl ʿImrān</div>
+      <div translate="no">Surah 3 | Āl ʿImrān</div>
       <div class="footer-links">
-        <a href="surah-2.html">Previous Surah · Al-Baqarah</a>
-        <a href="index.html">Homepage</a>
-        <a href="surah-4.html">Next Surah · An-Nisāʾ</a>
+        <a href="surah-2.html" translate="no">Previous Surah · Al-Baqarah</a>
+        <a href="index.html" translate="no">Homepage</a>
+        <a href="surah-4.html" translate="no">Next Surah · An-Nisāʾ</a>
       </div>
     </div>
   </footer>
@@ -1001,12 +1329,13 @@
       "But those who are mindful of their Lord, for them are gardens beneath which rivers flow, remaining in them forever, as a hospitality from Allah. And what is with Allah is best for the righteous.",
       "And among the People of the Book are those who believe in Allah and in what has been sent down to you and what was sent down to them, humbling themselves before Allah. They do not trade the signs of Allah for a small price. For them is their reward with their Lord. Indeed, Allah is swift in reckoning.",
       "O you who believe, be patient, urge one another to patience, remain steadfast, and be mindful of Allah, so that you may succeed."
-];
+    ];
 
     const versesContainer = document.getElementById("versesContainer");
     const loadingState = document.getElementById("loadingState");
     const errorState = document.getElementById("errorState");
     const noteState = document.getElementById("noteState");
+    const bookmarkState = document.getElementById("bookmarkState");
 
     const tabButtons = document.querySelectorAll(".tab-button");
     const tabPanels = document.querySelectorAll(".tab-panel");
@@ -1018,11 +1347,29 @@
     const jumpButton = document.getElementById("jumpButton");
     const themeToggle = document.getElementById("themeToggle");
 
-    let currentMode = "bilingual";
-    let transliterationAvailable = false;
+    const bookmarkOpen = document.getElementById("bookmarkOpen");
+    const bookmarkPanel = document.getElementById("bookmarkPanel");
+    const bookmarkClose = document.getElementById("bookmarkClose");
+    const lastReadText = document.getElementById("lastReadText");
+    const goLastRead = document.getElementById("goLastRead");
+    const clearHistory = document.getElementById("clearHistory");
+    const bookmarkList = document.getElementById("bookmarkList");
+    const bookmarkEmpty = document.getElementById("bookmarkEmpty");
+
+    const surahNumber = 3;
+    const totalVerses = 200;
+    const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
+    const historyStorageKey = `teq-surah-${surahNumber}-history`;
+    const historyLimit = 25;
 
     const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
+
+    let currentMode = "bilingual";
+    let transliterationAvailable = false;
+    let currentVisibleVerse = 1;
+    let readingObserver = null;
+    let readingSaveTimer = null;
 
     function escapeHtml(text) {
       return String(text)
@@ -1039,7 +1386,7 @@
 
     function buildVerseSelector() {
       let options = "";
-      for (let i = 1; i <= 200; i += 1) {
+      for (let i = 1; i <= totalVerses; i += 1) {
         options += `<option value="${i}">Verse ${i}</option>`;
       }
       verseSelect.innerHTML = options;
@@ -1063,7 +1410,7 @@
 
       if (mode === "bilingual") {
         versesContainer.classList.add("hidden-transliteration");
-        return "bilingual";
+        return;
       }
 
       if (mode === "transliteration") {
@@ -1074,23 +1421,203 @@
             button.classList.toggle("active", button.dataset.mode === "bilingual");
           });
           currentMode = "bilingual";
-          return "bilingual";
+          return;
         }
-        return "transliteration";
+        return;
       }
 
       if (mode === "arabic-only") {
         versesContainer.classList.add("hidden-english", "hidden-transliteration");
-        return "arabic-only";
+        return;
       }
 
       if (mode === "english-only") {
         versesContainer.classList.add("hidden-arabic", "hidden-transliteration");
-        return "english-only";
+        return;
       }
 
       versesContainer.classList.add("hidden-transliteration");
-      return "bilingual";
+    }
+
+    function formatSavedTime(isoValue) {
+      if (!isoValue) return "";
+      const date = new Date(isoValue);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function showBookmarkMessage(message) {
+      bookmarkState.textContent = message;
+      bookmarkState.style.display = "block";
+      clearTimeout(showBookmarkMessage.timer);
+      showBookmarkMessage.timer = setTimeout(() => {
+        bookmarkState.style.display = "none";
+      }, 2400);
+    }
+
+    function getLastRead() {
+      try {
+        const raw = localStorage.getItem(lastReadStorageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed.ayah !== "number") return null;
+        if (parsed.ayah < 1 || parsed.ayah > totalVerses) return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(historyStorageKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && typeof item.ayah === "number" && item.ayah >= 1 && item.ayah <= totalVerses);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLastReadAndHistory(ayahNumber) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      localStorage.setItem(
+        lastReadStorageKey,
+        JSON.stringify({
+          ayah: safeVerse,
+          savedAt: new Date().toISOString()
+        })
+      );
+
+      const history = getHistory().filter((item) => item.ayah !== safeVerse);
+      history.unshift({
+        ayah: safeVerse,
+        savedAt: new Date().toISOString()
+      });
+
+      localStorage.setItem(
+        historyStorageKey,
+        JSON.stringify(history.slice(0, historyLimit))
+      );
+
+      updateBookmarkUI();
+    }
+
+    function clearBookmarkHistory() {
+      localStorage.removeItem(lastReadStorageKey);
+      localStorage.removeItem(historyStorageKey);
+      updateBookmarkUI();
+      showBookmarkMessage("Bookmark history cleared.");
+    }
+
+    function updateBookmarkUI() {
+      const lastRead = getLastRead();
+      const history = getHistory();
+
+      if (lastRead) {
+        lastReadText.textContent = `Verse ${lastRead.ayah}${lastRead.savedAt ? `, saved ${formatSavedTime(lastRead.savedAt)}` : ""}`;
+        goLastRead.disabled = false;
+        bookmarkOpen.classList.add("has-last");
+        bookmarkOpen.textContent = `Bookmarks · ${lastRead.ayah}`;
+      } else {
+        lastReadText.textContent = "No verse tracked yet.";
+        goLastRead.disabled = true;
+        bookmarkOpen.classList.remove("has-last");
+        bookmarkOpen.textContent = "Bookmarks";
+      }
+
+      bookmarkList.innerHTML = "";
+
+      if (!history.length) {
+        bookmarkEmpty.style.display = "block";
+      } else {
+        bookmarkEmpty.style.display = "none";
+
+        history.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "bookmark-item";
+
+          row.innerHTML = `
+            <div class="bookmark-item-left">
+              <div class="bookmark-item-title">Verse ${item.ayah}</div>
+              <div class="bookmark-item-meta">${item.savedAt ? `Visited ${escapeHtml(formatSavedTime(item.savedAt))}` : ""}</div>
+            </div>
+            <div class="bookmark-item-actions">
+              <button class="bookmark-mini" type="button" data-go-history="${item.ayah}">Go to verse</button>
+              <button class="bookmark-mini-remove" type="button" data-remove-history="${item.ayah}">Remove</button>
+            </div>
+          `;
+
+          bookmarkList.appendChild(row);
+        });
+
+        bookmarkList.querySelectorAll("[data-go-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-go-history"));
+            jumpToVerse(ayah);
+            closeBookmarkPanel();
+          });
+        });
+
+        bookmarkList.querySelectorAll("[data-remove-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-remove-history"));
+            const filtered = getHistory().filter((item) => item.ayah !== ayah);
+            localStorage.setItem(historyStorageKey, JSON.stringify(filtered));
+
+            const lastRead = getLastRead();
+            if (lastRead && lastRead.ayah === ayah) {
+              if (filtered.length) {
+                localStorage.setItem(lastReadStorageKey, JSON.stringify(filtered[0]));
+              } else {
+                localStorage.removeItem(lastReadStorageKey);
+              }
+            }
+
+            updateBookmarkUI();
+            showBookmarkMessage(`Verse ${ayah} removed from bookmark history.`);
+          });
+        });
+      }
+    }
+
+    function openBookmarkPanel() {
+      bookmarkPanel.classList.add("active");
+      bookmarkOpen.setAttribute("aria-expanded", "true");
+    }
+
+    function closeBookmarkPanel() {
+      bookmarkPanel.classList.remove("active");
+      bookmarkOpen.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleBookmarkPanel() {
+      bookmarkPanel.classList.toggle("active");
+      bookmarkOpen.setAttribute("aria-expanded", bookmarkPanel.classList.contains("active") ? "true" : "false");
+    }
+
+    function setCurrentVisibleVerse(ayahNumber, persist = true) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      currentVisibleVerse = safeVerse;
+      verseSelect.value = String(safeVerse);
+
+      if (persist) {
+        clearTimeout(readingSaveTimer);
+        readingSaveTimer = setTimeout(() => {
+          saveLastReadAndHistory(safeVerse);
+        }, 180);
+      }
     }
 
     function jumpToVerse(verseNumber) {
@@ -1099,9 +1626,9 @@
       if (!target) return;
 
       setActiveTab("read");
-      verseSelect.value = String(safeVerseNumber);
+      setCurrentVisibleVerse(safeVerseNumber, true);
 
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      target.scrollIntoView({ behaviour: "smooth", block: "start" });
       history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
     }
 
@@ -1116,18 +1643,23 @@
         verseNumber = Number(ayahParam);
       } else if (hash && /^#ayah-\d+$/.test(hash)) {
         verseNumber = Number(hash.replace("#ayah-", ""));
+      } else {
+        const lastRead = getLastRead();
+        if (lastRead) {
+          verseNumber = lastRead.ayah;
+        }
       }
 
-      if (!verseNumber) return;
-      if (verseNumber < 1 || verseNumber > 200) return;
-
-      setActiveTab("read");
-      verseSelect.value = String(verseNumber);
+      if (!verseNumber || verseNumber < 1 || verseNumber > totalVerses) {
+        setCurrentVisibleVerse(1, false);
+        return;
+      }
 
       requestAnimationFrame(() => {
         const target = document.getElementById(`ayah-${verseNumber}`);
         if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          setCurrentVisibleVerse(verseNumber, false);
+          target.scrollIntoView({ behaviour: "smooth", block: "start" });
           history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
         }
       });
@@ -1142,6 +1674,38 @@
         themeToggle.textContent = "Dark";
       }
       localStorage.setItem("site-theme", theme);
+    }
+
+    function observeReadingProgress() {
+      const verseElements = document.querySelectorAll(".verse");
+      if (!verseElements.length) return;
+
+      if (readingObserver) {
+        readingObserver.disconnect();
+      }
+
+      readingObserver = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .map((entry) => ({
+              id: Number(entry.target.id.replace("ayah-", "")),
+              ratio: entry.intersectionRatio
+            }))
+            .sort((a, b) => b.ratio - a.ratio || a.id - b.id);
+
+          if (visible.length) {
+            setCurrentVisibleVerse(visible[0].id, true);
+          }
+        },
+        {
+          root: null,
+          threshold: [0.35, 0.5, 0.7],
+          rootMargin: "-12% 0px -55% 0px"
+        }
+      );
+
+      verseElements.forEach((element) => readingObserver.observe(element));
     }
 
     tabButtons.forEach((button) => {
@@ -1170,6 +1734,25 @@
     themeToggle.addEventListener("click", () => {
       const isDark = document.documentElement.getAttribute("data-theme") === "dark";
       applyTheme(isDark ? "light" : "dark");
+    });
+
+    bookmarkOpen.addEventListener("click", () => {
+      toggleBookmarkPanel();
+    });
+
+    bookmarkClose.addEventListener("click", () => {
+      closeBookmarkPanel();
+    });
+
+    goLastRead.addEventListener("click", () => {
+      const saved = getLastRead();
+      if (!saved) return;
+      jumpToVerse(saved.ayah);
+      closeBookmarkPanel();
+    });
+
+    clearHistory.addEventListener("click", () => {
+      clearBookmarkHistory();
     });
 
     async function fetchArabicAndTransliteration() {
@@ -1221,27 +1804,27 @@
 
     function renderVerses(verseData) {
       const bismillahBlock = `
-        <section class="bismillah-block" id="bismillah">
-          <div class="bismillah-arabic" lang="ar">${escapeHtml(bismillahArabic)}</div>
-          <div class="bismillah-english">${escapeHtml(bismillahEnglish)}</div>
+        <section class="bismillah-block notranslate" id="bismillah" translate="no">
+          <div class="bismillah-arabic notranslate" lang="ar" translate="no">${escapeHtml(bismillahArabic)}</div>
+          <div class="bismillah-english notranslate" translate="no">${escapeHtml(bismillahEnglish)}</div>
         </section>
       `;
 
       const versesHtml = verseData.map((verse, index) => {
         const english = englishVerses[index] || "";
         const transliterationBlock = verse.transliteration
-          ? `<div class="transliteration-wrap">${escapeHtml(verse.transliteration)}</div>`
-          : `<div class="transliteration-wrap">Transliteration not available for this verse.</div>`;
+          ? `<div class="transliteration-wrap notranslate" translate="no">${escapeHtml(verse.transliteration)}</div>`
+          : `<div class="transliteration-wrap notranslate" translate="no">Transliteration not available for this verse.</div>`;
 
         return `
-          <article class="verse" id="ayah-${verse.number}">
-            <div class="arabic-wrap">
-              <div class="arabic-ayah" lang="ar">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
+          <article class="verse notranslate" id="ayah-${verse.number}" tabindex="-1" translate="no">
+            <div class="arabic-wrap notranslate" translate="no">
+              <div class="arabic-ayah notranslate" lang="ar" translate="no">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
             </div>
             ${transliterationBlock}
-            <div class="english">
-              <div class="english-number">${verse.number}.</div>
-              <div class="english-text">${escapeHtml(english)}</div>
+            <div class="english notranslate" translate="no">
+              <div class="english-number notranslate" translate="no">${verse.number}.</div>
+              <div class="english-text notranslate" translate="no">${escapeHtml(english)}</div>
             </div>
           </article>
         `;
@@ -1262,10 +1845,12 @@
         renderVerses(verseData);
         buildVerseSelector();
         applyMode("bilingual");
+        updateBookmarkUI();
 
         loadingState.style.display = "none";
         errorState.style.display = "none";
 
+        observeReadingProgress();
         handleInitialVerseJump();
       } catch (error) {
         console.error(error);
@@ -1279,6 +1864,7 @@
 
     buildVerseSelector();
     setActiveTab("read");
+    updateBookmarkUI();
     loadSurah();
   </script>
 </body>
