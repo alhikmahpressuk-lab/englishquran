@@ -1,263 +1,687 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy | The English Qur’an™</title>
-  <meta name="description" content="Privacy Policy for The English Qur’an™ by Al-Hikmah Publishing UK." />
-
+  <title>Privacy Policy | The English Qur’an</title>
+  <meta
+    name="description"
+    content="Privacy Policy for The English Qur’an™, published by Al-Hikmah Publishing UK."
+  />
+  <meta name="robots" content="index,follow" />
   <style>
+    :root {
+      --bg: #f6f8f9;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --text: #172026;
+      --muted: #66727d;
+      --line: #e2e8ec;
+      --accent: #1e6b5c;
+      --accent-soft: #e8f3f0;
+      --accent-deep: #154d42;
+      --shadow: 0 10px 30px rgba(16, 24, 40, 0.05);
+      --radius: 18px;
+      --max: 980px;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f1519;
+      --surface: #121b20;
+      --surface-soft: #18242b;
+      --text: #eef4f6;
+      --muted: #a6b5bd;
+      --line: #27343c;
+      --accent: #2a8b77;
+      --accent-soft: #18342d;
+      --accent-deep: #86dac7;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      line-height: 1.7;
-      background: #f7f8fa;
-      color: #182128;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 20px;
-      background: #ffffff;
-    }
-
-    h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      margin-top: 30px;
-      font-size: 20px;
-    }
-
-    p {
-      margin: 10px 0;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin: 6px 0;
-    }
-
-    .meta {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 25px;
-    }
-
-    .footer {
-      margin-top: 40px;
-      font-size: 13px;
-      color: #777;
-      text-align: center;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 14.5px;
     }
 
     a {
-      color: #0a7c66;
+      color: inherit;
       text-decoration: none;
     }
 
-    a:hover {
-      text-decoration: underline;
+    button {
+      font: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
+    }
+
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .nav-wrap {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      padding-bottom: 2px;
+    }
+
+    .nav a,
+    .theme-toggle {
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .nav a:hover,
+    .theme-toggle:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      border-color: var(--accent-deep);
+      color: #fff;
+    }
+
+    .theme-toggle {
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .hero {
+      padding: 34px 0 18px;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero-card,
+    .content-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 28px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .tm-mark {
+      font-size: 0.3em;
+      vertical-align: top;
+      position: relative;
+      top: 0.38em;
+      margin-left: 0.08em;
+    }
+
+    .hero-card p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      max-width: 68ch;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .tag {
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      font-size: 0.82rem;
+      color: color-mix(in srgb, var(--muted) 90%, var(--text) 10%);
+    }
+
+    .content-card {
+      padding: 32px 30px;
+      margin-bottom: 24px;
+    }
+
+    .intro-block {
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .intro-block p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .policy-flow section {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .policy-flow section:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .policy-flow h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .policy-flow p {
+      margin: 0;
+      color: color-mix(in srgb, var(--text) 92%, white 8%);
+      font-size: 0.91rem;
+      line-height: 1.72;
+    }
+
+    .back-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .button-primary:hover {
+      background: var(--accent-deep);
+      border-color: var(--accent-deep);
+    }
+
+    .button-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .button-secondary:hover {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: rgba(30, 107, 92, 0.28);
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      padding: 24px 0 36px;
+      margin-top: 26px;
+    }
+
+    .footer-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      display: grid;
+      gap: 4px;
+    }
+
+    .footer p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
+      font-size: 0.86rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-wrap {
+        width: 100%;
+      }
+
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        font-size: 14px;
+      }
+
+      .container,
+      .topbar-inner,
+      .footer-inner {
+        width: min(var(--max), calc(100% - 20px));
+      }
+
+      .hero-card,
+      .content-card {
+        padding: 22px 18px;
+      }
+
+      .brand {
+        width: 100%;
+      }
+
+      .brand-text h1 {
+        font-size: 0.96rem;
+      }
+
+      .brand-text p {
+        font-size: 0.82rem;
+      }
+
+      .hero-card h2 {
+        font-size: 1.7rem;
+      }
+
+      .nav a,
+      .theme-toggle {
+        min-height: 36px;
+        padding: 0 12px;
+        font-size: 0.84rem;
+      }
+
+      .back-row,
+      .footer-links {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .button {
+        width: 100%;
+      }
     }
   </style>
 </head>
-
 <body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">ق</div>
+        <div class="brand-text">
+          <h1>The English Qur’an</h1>
+          <p>Translated by Dr A K Khan</p>
+        </div>
+      </div>
 
-<div class="container">
+      <div class="nav-wrap">
+        <nav class="nav" aria-label="Primary">
+          <a href="index.html#surahs">Surahs</a>
+          <a href="index.html#juz">Juz</a>
+          <a href="index.html#about">About</a>
+          <a class="cta" href="index.html">Home</a>
+          <button class="theme-toggle" type="button" id="themeToggle">Dark</button>
+        </nav>
+      </div>
+    </div>
+  </header>
 
-<h1>Privacy Policy</h1>
-<p><strong>The English Qur’an™</strong><br>
-Published by Al-Hikmah Publishing UK</p>
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="eyebrow">Legal information</div>
+          <h2>Privacy Policy<span class="tm-mark">TM</span></h2>
+          <p>
+            Privacy Policy for The English Qur’an™, published by Al-Hikmah Publishing UK.
+          </p>
+          <div class="hero-meta">
+            <span class="tag">Effective date: 01/04/2026</span>
+            <span class="tag">Last updated: 01/04/2026</span>
+          </div>
+        </div>
 
-<p class="meta">
-Effective date: 01/04/2026<br>
-Last updated: 01/04/2026
-</p>
+        <div class="content-card">
+          <div class="intro-block">
+            <p>
+              This Privacy Policy explains how personal data may be collected, used, stored, protected, and otherwise processed when you use The English Qur’an™ website and related services.
+            </p>
+          </div>
 
-<h2>1. Introduction</h2>
-<p>This Privacy Policy explains how Al-Hikmah Publishing UK collects, uses, stores, protects, and otherwise processes personal data when you access or use The English Qur’an™ website, any associated web application, digital platform, communications, forms, subscription features, downloadable resources, and related services, together referred to in this Policy as the Service.</p>
-<p>We are committed to handling personal data lawfully, fairly, and transparently.</p>
-<p>By using the Service, you acknowledge that your personal data may be processed in accordance with this Privacy Policy.</p>
+          <div class="policy-flow">
+            <section>
+              <h3>Published by</h3>
+              <p>Al-Hikmah Publishing UK</p>
+            </section>
 
-<h2>2. Who We Are</h2>
-<p>For the purposes of applicable data protection law, the data controller is:</p>
-<p>
-Al-Hikmah Publishing UK<br>
-[Insert registered or correspondence address]<br>
-[Insert email address]<br>
-[Insert company number if applicable]
-</p>
+            <section>
+              <h3>1. Introduction</h3>
+              <p>This Privacy Policy explains how Al-Hikmah Publishing UK collects, uses, stores, protects, and otherwise processes personal data when you access or use The English Qur’an™ website, any associated web application, digital platform, communications, forms, subscription features, downloadable resources, and related services, together referred to in this Policy as the Service. We are committed to handling personal data lawfully, fairly, and transparently. By using the Service, you acknowledge that your personal data may be processed in accordance with this Privacy Policy.</p>
+            </section>
 
-<h2>3. Scope of This Policy</h2>
-<p>This Privacy Policy applies to personal data collected through:</p>
-<ul>
-<li>the website,</li>
-<li>contact forms,</li>
-<li>newsletter or subscription forms,</li>
-<li>feedback forms,</li>
-<li>donation or purchase features if added later,</li>
-<li>account or bookmark features if added later,</li>
-<li>email correspondence,</li>
-<li>usage analytics,</li>
-<li>cookies and similar technologies,</li>
-<li>and any future service features linked to The English Qur’an™.</li>
-</ul>
-<p>This Policy does not apply to third-party websites, platforms, or services that may be linked from the Service and that operate under their own privacy policies.</p>
+            <section>
+              <h3>2. Who We Are</h3>
+              <p>For the purposes of applicable data protection law, the data controller is Al-Hikmah Publishing UK. If needed, this section may later be updated with your correspondence address, email address, and any company details you wish to publish.</p>
+            </section>
 
-<h2>4. The Data We May Collect</h2>
+            <section>
+              <h3>3. Scope of This Policy</h3>
+              <p>This Privacy Policy applies to personal data collected through the website, contact forms, newsletter or subscription forms, feedback forms, donation or purchase features if added later, account or bookmark features if added later, email correspondence, usage analytics, cookies and similar technologies, and any future service features linked to The English Qur’an™. This Policy does not apply to third-party websites, platforms, or services that may be linked from the Service and that operate under their own privacy policies.</p>
+            </section>
 
-<h3>4.1 Identity and contact data</h3>
-<ul>
-<li>your name,</li>
-<li>email address,</li>
-<li>postal address,</li>
-<li>organisation name,</li>
-<li>and any contact details you choose to provide.</li>
-</ul>
+            <section>
+              <h3>4. The Data We May Collect</h3>
+              <p>We may collect identity and contact data such as your name, email address, postal address, organisation name, and any contact details you choose to provide. We may collect correspondence data such as messages you send, support requests, permissions enquiries, feedback, and legal notices. We may collect technical data such as IP address, browser type and version, device type, operating system, time zone setting, pages visited, and timestamps. We may collect usage data such as pages viewed, surahs accessed, navigation patterns, session duration, and clicks. If relevant features are introduced, we may also collect account and preference data such as login details, saved preferences, bookmarks, and reading position, transaction data such as billing details, order details, and payment status, and marketing or communications data such as communication preferences, subscription status, and email engagement.</p>
+            </section>
 
-<h3>4.2 Correspondence data</h3>
-<ul>
-<li>messages you send,</li>
-<li>support requests,</li>
-<li>permissions enquiries,</li>
-<li>feedback,</li>
-<li>legal notices.</li>
-</ul>
+            <section>
+              <h3>5. Special Category Data</h3>
+              <p>We do not intentionally request or require special category personal data. Please do not send sensitive personal data unless it is strictly necessary and lawfully required for a specific purpose.</p>
+            </section>
 
-<h3>4.3 Technical data</h3>
-<ul>
-<li>IP address,</li>
-<li>browser type and version,</li>
-<li>device type,</li>
-<li>operating system,</li>
-<li>time zone setting,</li>
-<li>pages visited,</li>
-<li>timestamps.</li>
-</ul>
+            <section>
+              <h3>6. How We Collect Data</h3>
+              <p>We may collect personal data directly from you, through cookies and similar technologies, from your device and browser when you access the Service, from service providers acting on our behalf, and from lawful third parties where relevant and permitted by law.</p>
+            </section>
 
-<h3>4.4 Usage data</h3>
-<ul>
-<li>pages viewed,</li>
-<li>surahs accessed,</li>
-<li>navigation patterns,</li>
-<li>session duration,</li>
-<li>clicks.</li>
-</ul>
+            <section>
+              <h3>7. Why We Use Your Data</h3>
+              <p>We may use personal data to operate, maintain, and improve the Service, to respond to enquiries, to provide support, to manage permissions requests, to send updates where you have requested them or where otherwise lawful, to maintain security, to enforce our Terms and other policies, and to comply with legal and regulatory obligations.</p>
+            </section>
 
-<h3>4.5 Account and preference data</h3>
-<ul>
-<li>login details,</li>
-<li>saved preferences,</li>
-<li>bookmarks,</li>
-<li>reading position.</li>
-</ul>
+            <section>
+              <h3>8. Lawful Bases for Processing</h3>
+              <p>Where applicable, we rely on lawful bases including legitimate interests, consent, performance of a contract, compliance with legal obligations, and the establishment, exercise, or defence of legal claims.</p>
+            </section>
 
-<h3>4.6 Transaction data</h3>
-<ul>
-<li>billing details,</li>
-<li>order details,</li>
-<li>payment status.</li>
-</ul>
+            <section>
+              <h3>9. Cookies and Similar Technologies</h3>
+              <p>The Service may use cookies and similar technologies to maintain functionality, remember preferences, improve performance, understand how the Service is used, and help protect against misuse or abuse. You may be able to control cookies through your browser settings, although disabling certain cookies may affect how the Service functions.</p>
+            </section>
 
-<h3>4.7 Marketing and communications data</h3>
-<ul>
-<li>communication preferences,</li>
-<li>subscription status,</li>
-<li>email engagement.</li>
-</ul>
+            <section>
+              <h3>10. Analytics</h3>
+              <p>We may use analytics tools to understand usage patterns, improve performance, measure engagement, and develop the Service more effectively. Analytics information may include technical and usage data and may be processed by third-party providers acting on our behalf.</p>
+            </section>
 
-<h2>5. Special Category Data</h2>
-<p>We do not intentionally request or require special category personal data.</p>
+            <section>
+              <h3>11. Contact Forms and Email</h3>
+              <p>If you contact us through forms, email, or other communication methods, we may store and process your communications in order to respond to you, maintain records, manage requests, and protect our legal and operational interests.</p>
+            </section>
 
-<h2>6. How We Collect Data</h2>
-<ul>
-<li>directly from you,</li>
-<li>through cookies,</li>
-<li>from your device,</li>
-<li>from service providers,</li>
-<li>from lawful third parties.</li>
-</ul>
+            <section>
+              <h3>12. Newsletter and Updates</h3>
+              <p>If you subscribe to newsletters or updates, we may use your contact details to send you those communications. You may unsubscribe at any time using the unsubscribe method provided in the communication or by contacting us directly where appropriate.</p>
+            </section>
 
-<h2>7. Why We Use Your Data</h2>
-<ul>
-<li>to operate and improve the Service,</li>
-<li>to respond to enquiries,</li>
-<li>to provide support,</li>
-<li>to manage permissions,</li>
-<li>to send updates,</li>
-<li>to maintain security,</li>
-<li>to enforce Terms,</li>
-<li>to comply with law.</li>
-</ul>
+            <section>
+              <h3>13. Bookmarks and Preferences</h3>
+              <p>If bookmark, account, reading position, or preference features are enabled, we may store relevant information so that your settings and reading experience can be maintained across visits or sessions.</p>
+            </section>
 
-<h2>8. Lawful Bases for Processing</h2>
-<p>We rely on legitimate interests, consent, contract, legal obligation, and legal claims where applicable.</p>
+            <section>
+              <h3>14. Payments</h3>
+              <p>If donation, subscription, purchase, or payment features are added, payments will ordinarily be handled by third-party payment providers. We do not intend to store full payment card details on our own systems unless this becomes necessary and is handled lawfully, securely, and in accordance with applicable rules and standards.</p>
+            </section>
 
-<h2>9. Cookies and Similar Technologies</h2>
-<p>The Service may use cookies to maintain functionality, remember preferences, improve performance, and protect against misuse.</p>
+            <section>
+              <h3>15. Security</h3>
+              <p>We implement reasonable technical and organisational measures designed to protect personal data and the integrity of the Service. However, no website, system, or method of transmission or storage is completely secure, and we cannot guarantee absolute security.</p>
+            </section>
 
-<h2>10. Analytics</h2>
-<p>We may use analytics tools to understand usage and improve the Service.</p>
+            <section>
+              <h3>16. Sharing of Personal Data</h3>
+              <p>We do not sell personal data. Personal data may be shared only where necessary and lawful, including with service providers, hosting providers, analytics providers, email providers, payment processors, professional advisers, regulators, law enforcement, courts, or other authorities where required or permitted by law.</p>
+            </section>
 
-<h2>11. Contact Forms and Email</h2>
-<p>We may store your communications to respond and maintain records.</p>
+            <section>
+              <h3>17. International Transfers</h3>
+              <p>Your personal data may be processed outside the United Kingdom where service providers or infrastructure are located in other jurisdictions. Where this occurs, appropriate safeguards will be used where required by law.</p>
+            </section>
 
-<h2>12. Newsletter and Updates</h2>
-<p>You may unsubscribe at any time.</p>
+            <section>
+              <h3>18. Data Retention</h3>
+              <p>We retain personal data only for as long as reasonably necessary for the purposes for which it was collected, including for legal, regulatory, operational, security, and record-keeping purposes.</p>
+            </section>
 
-<h2>13. Bookmarks and Preferences</h2>
-<p>We may store reading preferences and bookmarks if features are enabled.</p>
+            <section>
+              <h3>19. Data Security</h3>
+              <p>We take reasonable steps to protect personal data against unauthorised access, alteration, disclosure, misuse, and loss. Access to personal data is limited as appropriate to those who need it for legitimate purposes.</p>
+            </section>
 
-<h2>14. Payments</h2>
-<p>Payments are handled by third-party providers.</p>
+            <section>
+              <h3>20. Your Rights</h3>
+              <p>Depending on applicable law and your circumstances, you may have rights in relation to your personal data, including rights to request access, correction, deletion, restriction, objection, portability, or withdrawal of consent where consent is relied upon. These rights are subject to legal limits and exceptions.</p>
+            </section>
 
-<h2>15. Security</h2>
-<p>We implement reasonable measures, but no system is fully secure.</p>
+            <section>
+              <h3>21. Complaints</h3>
+              <p>If you have concerns about how your personal data is handled, you may contact us first so that we have an opportunity to address the issue. You may also have the right to complain to the Information Commissioner’s Office or another competent supervisory authority where applicable.</p>
+            </section>
 
-<h2>16. Sharing of Personal Data</h2>
-<p>We do not sell data. Sharing occurs only where necessary and lawful.</p>
+            <section>
+              <h3>22. Children</h3>
+              <p>We do not knowingly collect personal data from children unlawfully. Where a child uses the Service, any personal data processing should occur in accordance with applicable law and, where required, with parental or guardian involvement.</p>
+            </section>
 
-<h2>17. International Transfers</h2>
-<p>Data may be processed outside the UK with appropriate safeguards.</p>
+            <section>
+              <h3>23. Third-Party Links</h3>
+              <p>The Service may contain links to third-party websites, platforms, retailers, or services. We are not responsible for the privacy practices, content, or operation of those third parties, and you should review their own policies before interacting with them.</p>
+            </section>
 
-<h2>18. Data Retention</h2>
-<p>We retain data only as long as necessary.</p>
+            <section>
+              <h3>24. Changes to This Policy</h3>
+              <p>We may update this Privacy Policy from time to time. Updated versions will be posted on the Service with a revised effective date or last updated date where appropriate. Your continued use of the Service after changes are posted may constitute acceptance of the updated Policy where lawful.</p>
+            </section>
 
-<h2>19. Data Security</h2>
-<p>We take reasonable steps to protect data.</p>
+            <section>
+              <h3>25. Contact Us</h3>
+              <p>If you have questions about this Privacy Policy, data protection matters, or your personal data, you may contact Al-Hikmah Publishing UK through the contact methods provided on the website or associated official publishing channels.</p>
+            </section>
+          </div>
 
-<h2>20. Your Rights</h2>
-<p>You may request access, correction, deletion, or restriction where applicable.</p>
+          <div class="back-row">
+            <a class="button button-primary" href="index.html">Return to Home</a>
+            <a class="button button-secondary" href="terms-and-conditions.html">Terms and Conditions</a>
+            <a class="button button-secondary" href="sitemap.html">Sitemap</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-<h2>21. Complaints</h2>
-<p>You may contact us or the Information Commissioner’s Office.</p>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-copy">
+        <p>© 2015–2026 Al-Hikmah Publishing UK</p>
+        <p>The English Qur’an™, translated by Dr A K Khan.</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#surahs">Browse Surahs</a>
+        <a href="terms-and-conditions.html">Terms and Conditions</a>
+        <a href="sitemap.html">Sitemap</a>
+      </div>
+    </div>
+  </footer>
 
-<h2>22. Children</h2>
-<p>We do not knowingly collect data from children unlawfully.</p>
+  <script>
+    const themeToggle = document.getElementById("themeToggle");
 
-<h2>23. Third-Party Links</h2>
-<p>We are not responsible for third-party privacy practices.</p>
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      themeToggle.textContent = theme === "light" ? "Dark" : "Light";
+      try {
+        localStorage.setItem("quranIndexTheme", theme);
+      } catch (error) {}
+    }
 
-<h2>24. Changes to This Policy</h2>
-<p>We may update this Policy from time to time.</p>
+    themeToggle.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      applyTheme(current === "light" ? "dark" : "light");
+    });
 
-<h2>25. Contact Us</h2>
-<p>
-Al-Hikmah Publishing UK<br>
-
-<div class="footer">
-  © 2026 Al-Hikmah Publishing UK. All rights reserved.
-</div>
-
-</div>
-
+    try {
+      applyTheme(localStorage.getItem("quranIndexTheme") || "light");
+    } catch (error) {
+      applyTheme("light");
+    }
+  </script>
 </body>
 </html>
-
