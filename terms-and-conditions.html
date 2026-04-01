@@ -1,1 +1,947 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms and Conditions | The English Qur’an</title>
+  <meta
+    name="description"
+    content="Terms and Conditions for The English Qur’an™, published by Al-Hikmah Publishing (UK)."
+  />
+  <meta name="robots" content="index,follow" />
+  <style>
+    :root {
+      --bg: #f6f8f9;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --text: #172026;
+      --muted: #66727d;
+      --line: #e2e8ec;
+      --accent: #1e6b5c;
+      --accent-soft: #e8f3f0;
+      --accent-deep: #154d42;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 20px;
+      --radius-sm: 14px;
+      --max: 980px;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f1519;
+      --surface: #121b20;
+      --surface-soft: #18242b;
+      --text: #eef4f6;
+      --muted: #a6b5bd;
+      --line: #27343c;
+      --accent: #2a8b77;
+      --accent-soft: #18342d;
+      --accent-deep: #86dac7;
+      --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behaviour: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
+    }
+
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav a,
+    .theme-toggle {
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nav a:hover,
+    .theme-toggle:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      border-color: var(--accent-deep);
+      color: #fff;
+    }
+
+    .theme-toggle {
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .hero {
+      padding: 42px 0 18px;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero-card,
+    .content-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.06;
+      letter-spacing: -0.04em;
+    }
+
+    .tm-mark {
+      font-size: 0.3em;
+      vertical-align: top;
+      position: relative;
+      top: 0.4em;
+      margin-left: 0.08em;
+    }
+
+    .hero-card p {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 70ch;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      font-size: 0.9rem;
+      color: color-mix(in srgb, var(--muted) 90%, var(--text) 10%);
+    }
+
+    .content-card {
+      padding: 30px;
+      margin-bottom: 26px;
+    }
+
+    .intro-block {
+      margin-bottom: 28px;
+      padding: 18px 20px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .intro-block p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .terms-list {
+      display: grid;
+      gap: 18px;
+    }
+
+    .term-item {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-soft);
+    }
+
+    .term-item h3 {
+      margin: 0 0 12px;
+      font-size: 1.08rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .term-item p {
+      margin: 0;
+      white-space: pre-line;
+      color: color-mix(in srgb, var(--text) 90%, white 10%);
+      font-size: 0.98rem;
+    }
+
+    .back-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      transition: 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .button-primary:hover {
+      background: var(--accent-deep);
+      border-color: var(--accent-deep);
+    }
+
+    .button-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .button-secondary:hover {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: rgba(30, 107, 92, 0.28);
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      padding: 26px 0 40px;
+      margin-top: 28px;
+    }
+
+    .footer-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      display: grid;
+      gap: 4px;
+    }
+
+    .footer p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
+      font-size: 0.92rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .container,
+      .topbar-inner,
+      .footer-inner {
+        width: min(var(--max), calc(100% - 20px));
+      }
+
+      .hero-card,
+      .content-card {
+        padding: 22px;
+      }
+
+      .nav {
+        gap: 8px;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .button {
+        width: 100%;
+      }
+
+      .back-row,
+      .footer-links {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">ق</div>
+        <div class="brand-text">
+          <h1>The English Qur’an</h1>
+          <p>Translated by Dr A K Khan</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html#surahs">Surahs</a>
+        <a href="index.html#juz">Juz</a>
+        <a href="index.html#about">About</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="sitemap.html">Sitemap</a>
+        <a class="cta" href="index.html">Home</a>
+        <button class="theme-toggle" type="button" id="themeToggle">Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="eyebrow">Legal information</div>
+          <h2>Terms and Conditions<span class="tm-mark">TM</span></h2>
+          <p>
+            Terms and Conditions for The English Qur’an™, published by Al-Hikmah Publishing (UK).
+          </p>
+          <div class="hero-meta">
+            <span class="tag">Effective date: 01/04/2026</span>
+            <span class="tag">Last updated: 01/04/2026</span>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <div class="intro-block">
+            <p>
+              These Terms and Conditions explain the rules, rights, and responsibilities that apply when you use The English Qur’an™ website and related services.
+            </p>
+          </div>
+
+          <div class="terms-list">
+            <div class="term-item">
+              <h3>Published by</h3>
+              <p>Al-Hikmah Publishing (UK)</p>
+            </div>
+
+            <div class="term-item">
+              <h3>1. Introduction</h3>
+              <p>These Terms and Conditions govern your access to and use of The English Qur’an™ website, any associated web application, digital platform, hosted content, email communications, downloadable materials, audio, visual media, APIs, software features, and any related services made available by Al-Hikmah Publishing (UK), whether now existing or introduced in the future, together referred to in these Terms as the Service.
+
+By accessing, browsing, reading, listening to, downloading from, linking to, submitting information to, or otherwise using the Service, you agree to be legally bound by these Terms. If you do not agree, you must not use the Service.
+
+These Terms apply to all users worldwide.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>2. About Us</h3>
+              <p>The Service is owned, operated, published, controlled, and made available by:
+
+Al-Hikmah Publishing (UK)</p>
+            </div>
+
+            <div class="term-item">
+              <h3>3. Acceptance of Terms</h3>
+              <p>Your use of the Service constitutes your acceptance of these Terms and our Privacy Policy. If you are using the Service on behalf of an organisation, institution, school, business, charity, publisher, platform, or any other entity, you represent that you have authority to bind that entity to these Terms.
+
+If you do not have that authority, you must not use the Service on behalf of that entity.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>4. Eligibility</h3>
+              <p>You must use the Service only in compliance with applicable law. If you are under the age at which you can enter a legally binding agreement in your jurisdiction, you may use the Service only with the involvement and consent of a parent or legal guardian.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>5. Nature of the Service</h3>
+              <p>The Service may include, without limitation:
+
+the English translation text,
+Arabic text presentation,
+surah pages,
+search tools,
+bookmarks,
+themes and reading settings,
+forms,
+email sign-ups,
+updates,
+downloadable or printable materials,
+audio recordings,
+study tools,
+educational resources,
+subscription services,
+donation features,
+premium services,
+mobile or desktop applications,
+future APIs and structured feeds,
+branding, logos, layouts, metadata, interface design, and source presentation.
+
+We may add, withdraw, alter, suspend, restrict, or discontinue any part of the Service at any time.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>6. Intellectual Property and Ownership</h3>
+              <p>Unless expressly stated otherwise in writing, all rights, title, and interest in and to the Service are reserved by Al-Hikmah Publishing (UK) and its licensors.
+
+This includes, without limitation:
+
+The English Qur’an™ translation text,
+wording, phrasing, structure, literary expression, arrangement, editorial presentation, and stylistic form,
+page design, layout, user interface, branding, navigation structure, software logic, HTML, CSS, scripts, databases, and compilations,
+audio recordings, recitations, synchronisation, presentation formats, visual assets, icons, and graphics,
+trade names, logos, marks, product names, and associated goodwill,
+any updates, revisions, adaptations, derivative editorial editions, enhanced formats, and future releases.
+
+All such rights are protected by copyright, trademark, database rights, passing off, unfair competition principles, and other intellectual property laws and treaties, including international conventions where applicable.
+
+No ownership rights are transferred to you.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>7. Limited Licence</h3>
+              <p>Subject to these Terms, Al-Hikmah Publishing (UK) grants you a limited, revocable, non-exclusive, non-transferable, non-sublicensable licence to access and use the Service solely for your own personal, private, non-commercial reading and study.
+
+This licence does not grant you any right to:
+
+reproduce the translation in whole or in part,
+redistribute it,
+commercially exploit it,
+publish it elsewhere,
+create derivative versions,
+incorporate it into another work,
+use it in training systems or databases,
+or exploit the Service beyond the narrow permission expressly granted above.
+
+Any use not expressly permitted is prohibited.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>8. Prohibited Uses</h3>
+              <p>You must not, and must not permit or assist others to:
+
+copy, reproduce, republish, upload, post, transmit, mirror, frame, archive, print for distribution, broadcast, distribute, sell, license, rent, lease, syndicate, or otherwise exploit any part of the Service;
+
+reproduce or distribute the translation text in books, ebooks, PDFs, apps, websites, videos, articles, teaching packs, study resources, social media posts, messaging groups, email campaigns, databases, repositories, or software;
+
+modify, alter, abridge, annotate into, adapt, transform, translate, rephrase, remix, or create derivative works based on any part of the Service or the translation;
+
+remove, obscure, or alter copyright notices, trademark notices, attribution statements, proprietary notices, or technical protections;
+
+scrape, mine, crawl, harvest, index, cache, mirror, spider, copy by automation, or extract content, data, metadata, structure, or verse text by any automated or semi-automated means;
+
+use the Service or any part of it for training, fine-tuning, grounding, prompting, benchmarking, evaluating, or developing any machine learning model, large language model, artificial intelligence system, retrieval system, search corpus, text dataset, embedding set, or automated content engine;
+
+use the Service to build or support any competing translation, reading platform, database, search engine, study application, educational platform, or commercial religious product;
+
+circumvent or attempt to circumvent access controls, rate limits, technical barriers, security features, anti-bot measures, or usage restrictions;
+
+reverse engineer, decompile, disassemble, or otherwise attempt to derive source code, internal logic, or architecture from any software component of the Service, except to the limited extent that such restriction is prohibited by law and cannot lawfully be excluded;
+
+use the Service in any unlawful, defamatory, fraudulent, harmful, abusive, hateful, infringing, deceptive, or misleading manner;
+
+falsely imply endorsement, affiliation, sponsorship, approval, or connection with Al-Hikmah Publishing (UK) or The English Qur’an™;
+
+register or use any domain name, social media handle, app name, business name, product title, ad keyword, or marketplace listing that is identical with, confusingly similar to, or misappropriates the branding or goodwill of The English Qur’an™ or Al-Hikmah Publishing (UK);
+
+use the Service in a way that could damage, disable, overburden, impair, or compromise the operation, integrity, stability, reputation, security, or availability of the Service.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>9. AI, Data Mining, and Dataset Prohibition</h3>
+              <p>Without prior written permission from Al-Hikmah Publishing (UK), you may not use any part of the Service, whether manually or automatically, for:
+
+AI training,
+machine learning,
+dataset creation,
+corpus building,
+text extraction,
+semantic indexing,
+embeddings,
+vector databases,
+model evaluation,
+synthetic output generation,
+or any similar computational, statistical, or automated reuse.
+
+This prohibition applies whether the use is commercial, academic, institutional, personal, experimental, public, private, open-source, or internal.
+
+You may not claim fair access to the Service for these purposes merely because the Service is publicly viewable.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>10. No Republishing or Distribution</h3>
+              <p>Except where expressly permitted in writing, no part of the translation or Service may be:
+
+republished on another website,
+copied into an app,
+distributed in a PDF or ebook,
+included in a print edition,
+posted to social media in systematic or substantial form,
+shared via Telegram, WhatsApp, email lists, or community archives in a way that substitutes for the Service,
+embedded in another platform,
+or included in commercial or non-commercial educational products.
+
+Short quotations for genuine review, criticism, or limited reference may be permitted only where lawful and only if they are minimal, properly attributed, non-systematic, non-substitutive, and do not prejudice the rights of Al-Hikmah Publishing (UK).</p>
+            </div>
+
+            <div class="term-item">
+              <h3>11. Permissions</h3>
+              <p>Any request for reproduction, licensing, syndication, institutional use, educational use, API access, quotations beyond fair dealing, audio use, app inclusion, or translation-related reuse must be made in writing to Al-Hikmah Publishing UK.
+
+Permission is valid only if given expressly in writing by an authorised representative.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>12. Trade Marks and Branding</h3>
+              <p>“The English Qur’an™”, “Al-Hikmah Publishing (UK)”, associated logos, brand names, designations, slogans, marks, and visual identifiers are proprietary and may not be used without prior written permission.
+
+You must not use any mark, name, or branding that is likely to cause confusion, misrepresentation, dilution, impersonation, or passing off.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>13. User Submissions</h3>
+              <p>If the Service allows contact forms, feedback, suggestions, testimonials, reviews, support requests, or other submissions, you agree that:
+
+your submissions must be lawful and must not infringe any rights;
+you must not submit confidential information unless specifically requested;
+you must not upload harmful code, spam, or abusive content;
+you remain responsible for what you submit.
+
+Unless we expressly agree otherwise in writing, any suggestions, feedback, feature requests, or improvement ideas you send may be used by us without restriction or compensation.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>14. Accounts and Personal Features</h3>
+              <p>If the Service later includes accounts, saved preferences, bookmarks, reading history, subscription areas, premium access, or similar features:
+
+you are responsible for maintaining the confidentiality of your login credentials;
+you are responsible for all activity under your account;
+you must provide accurate information;
+we may suspend, restrict, or terminate accounts at our discretion where misuse, risk, or breach is suspected.
+
+We are not obliged to maintain any account, bookmark, saved verse, or stored preference permanently.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>15. Privacy and Data Protection</h3>
+              <p>Your use of the Service is also governed by our Privacy Policy. Where personal data is collected, processed, stored, or transmitted, we will handle it in accordance with applicable data protection law, including where relevant the UK GDPR and Data Protection Act 2018.
+
+You are responsible for ensuring that any information you submit is accurate and lawful to provide.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>16. Third-Party Services</h3>
+              <p>The Service may include or rely on third-party hosting providers, analytics providers, email systems, payment services, spam-protection tools, embedded services, fonts, CDN providers, form processors, or other external infrastructure.
+
+We do not control third-party services and are not responsible for their separate terms, privacy practices, availability, or security, except as required by law.
+
+Your use of third-party services may also be subject to their own terms.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>17. Availability and Changes</h3>
+              <p>We do not guarantee that the Service will always be available, uninterrupted, secure, error-free, or compatible with every browser, device, operating system, assistive technology, or network connection.
+
+We may:
+
+modify content,
+correct errors,
+change features,
+redesign pages,
+suspend access,
+restrict regions,
+remove material,
+or discontinue the Service in whole or in part at any time and without notice.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>18. No Reliance and Content Disclaimer</h3>
+              <p>The Service is provided as a reading and publishing platform. While great care may be taken in preparation and presentation, the Service is provided on an as is and as available basis.
+
+To the fullest extent permitted by law, Al-Hikmah Publishing (UK) does not make warranties, representations, or guarantees, express or implied, including as to:
+
+uninterrupted availability,
+merchantability,
+fitness for a particular purpose,
+compatibility,
+non-infringement,
+accuracy of third-party infrastructure,
+or freedom from technical defects.
+
+Nothing on the Service constitutes legal advice, scholarly certification, sectarian endorsement, or professional advice of any kind unless expressly stated.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>19. Religious Content Position</h3>
+              <p>The Service presents an English translation of the Qur’an and related materials as published by Al-Hikmah Publishing (UK). Users remain responsible for how they read, interpret, cite, rely upon, or use the material.
+
+The Service does not create any adviser-client, scholar-student, fiduciary, or professional relationship between you and Al-Hikmah Publishing (UK).</p>
+            </div>
+
+            <div class="term-item">
+              <h3>20. Security</h3>
+              <p>You must not attempt to test, scan, penetrate, breach, disable, or compromise the security of the Service or any associated infrastructure.
+
+Any actual or suspected misuse, bot activity, scraping, credential abuse, denial-of-service behaviour, unauthorised probing, or hostile activity may be investigated and may be reported to relevant service providers, regulators, or law enforcement bodies.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>21. Suspension and Termination</h3>
+              <p>We may, at any time and without liability, suspend, restrict, block, throttle, or terminate your access to the Service, with or without notice, if:
+
+you breach these Terms,
+we reasonably suspect misuse,
+we believe your conduct creates legal, technical, reputational, or security risk,
+or we otherwise consider it necessary to protect the Service, our rights, our users, or third parties.
+
+Termination of access does not affect any accrued rights, restrictions, or obligations.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>22. Injunctive Relief and Enforcement</h3>
+              <p>You acknowledge that unauthorised use of the Service, and especially unauthorised copying, redistribution, scraping, or AI-related extraction of the translation, may cause serious and irreparable harm for which damages alone may not be an adequate remedy.
+
+Accordingly, Al-Hikmah Publishing (UK) shall be entitled, where lawful, to seek injunctive relief, equitable relief, takedowns, delivery up, account of profits, damages, legal costs, and any other remedies available under applicable law.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>23. Indemnity</h3>
+              <p>You agree to indemnify, defend, and hold harmless Al-Hikmah Publishing UK, its proprietors, affiliates, officers, employees, contractors, licensors, successors, and agents from and against any claims, liabilities, damages, losses, judgments, costs, and expenses, including reasonable legal fees, arising out of or in connection with:
+
+your use of the Service,
+your breach of these Terms,
+your infringement of any intellectual property or other rights,
+your unlawful conduct,
+your misuse of content,
+or your submissions or actions in connection with the Service.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>24. Limitation of Liability</h3>
+              <p>To the fullest extent permitted by law, Al-Hikmah Publishing UK shall not be liable for any indirect, incidental, special, consequential, exemplary, or punitive loss or damage, or any loss of profit, revenue, goodwill, opportunity, data, savings, or business, arising from or related to the Service or these Terms, even if advised of the possibility.
+
+Nothing in these Terms excludes or limits liability where such exclusion or limitation would be unlawful, including liability for death or personal injury caused by negligence, fraud, or fraudulent misrepresentation.
+
+Subject to the previous paragraph, and to the fullest extent permitted by law, the total aggregate liability of Al-Hikmah Publishing UK arising out of or in connection with the Service shall not exceed £50 or the amount you paid us directly for the specific Service giving rise to the claim, whichever is greater.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>25. Copyright Complaints and Takedowns</h3>
+              <p>If you believe that any content on the Service infringes your rights, please contact us with:
+
+your full name and contact details,
+identification of the work concerned,
+identification of the allegedly infringing material,
+the location of the material,
+the basis of your complaint,
+and a statement that the information you provide is accurate and made in good faith.
+
+We may remove, restrict, or investigate content at our discretion.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>26. Export, Sanctions, and Restricted Use</h3>
+              <p>You must not use, access, export, or re-export the Service in violation of applicable sanctions, export controls, or trade restrictions. You are responsible for compliance with laws applicable in your own jurisdiction.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>27. Governing Law and Jurisdiction</h3>
+              <p>These Terms and any dispute or claim arising out of or in connection with them, their subject matter, or their formation, whether contractual or non-contractual, shall be governed by and construed in accordance with the laws of England and Wales.
+
+The courts of England and Wales shall have exclusive jurisdiction, save that Al-Hikmah Publishing UK may seek injunctive or protective relief in any competent jurisdiction where infringement, misuse, or threatened misuse occurs.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>28. International Use</h3>
+              <p>The Service may be accessed globally, but we make no representation that the Service is appropriate, lawful, or available in every jurisdiction. Those who access the Service from outside the United Kingdom do so on their own initiative and are responsible for compliance with local law.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>29. Time Limit for Claims</h3>
+              <p>To the fullest extent permitted by law, any claim arising out of or in connection with the Service or these Terms must be brought within one year from the date on which the claim arose, unless a longer period is required by non-excludable law.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>30. Entire Agreement</h3>
+              <p>These Terms, together with any documents expressly incorporated by reference, including the Privacy Policy, constitute the entire agreement between you and Al-Hikmah Publishing UK in relation to the Service and supersede any previous understandings or communications relating to the same subject matter.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>31. No Waiver</h3>
+              <p>Any failure or delay by us in exercising any right or remedy shall not constitute a waiver of that or any other right or remedy.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>32. Severability</h3>
+              <p>If any provision of these Terms is found to be unlawful, invalid, or unenforceable, that provision shall be deemed severed to the minimum extent necessary, and the remaining provisions shall remain in full force and effect.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>33. Assignment</h3>
+              <p>You may not assign, transfer, sublicense, or otherwise deal with your rights or obligations under these Terms without our prior written consent.
+
+We may assign or transfer our rights and obligations under these Terms where lawful to do so.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>34. Changes to These Terms</h3>
+              <p>We may amend these Terms from time to time. Updated Terms will be posted on the Service with a revised effective date. Your continued use of the Service after updated Terms are posted constitutes acceptance of the revised Terms.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>35. Contact</h3>
+              <p>All permissions requests, legal notices, copyright notices, and terms-related enquiries should be sent to:</p>
+            </div>
+
+            <div class="term-item">
+              <h3>36. Third-Party Purchases and External Retailers</h3>
+              <p>The Service may include links to third-party platforms, retailers, distributors, or marketplaces, including but not limited to Amazon, Ingram, bookstores, or other external sellers (“External Retailers”), where printed or digital editions of The English Qur’an™ or related materials may be available.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>36.1 No Sale by Us</h3>
+              <p>All purchases made through External Retailers are conducted solely between you and the relevant third party.
+
+Al-Hikmah Publishing UK does not sell, fulfil, ship, or process orders made through External Retailers.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>36.2 No Responsibility</h3>
+              <p>We are not responsible for:
+
+pricing, discounts, or availability
+order processing or payment handling
+delivery, shipping, or delays
+product condition, printing quality, or packaging
+returns, refunds, or exchanges
+customer service provided by the retailer
+
+All such matters must be directed to the External Retailer.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>36.3 No Endorsement Guarantee</h3>
+              <p>Links to External Retailers are provided for convenience only.
+
+We do not guarantee:
+
+accuracy of listings
+consistency of product descriptions
+availability across regions
+or that listings have not been altered by third parties</p>
+            </div>
+
+            <div class="term-item">
+              <h3>36.4 Affiliate Disclosure (if applicable)</h3>
+              <p>Some links may be affiliate links, meaning Al-Hikmah Publishing UK may receive a commission if you make a purchase through those links.
+
+This does not affect the price you pay.</p>
+            </div>
+
+            <div class="term-item">
+              <h3>36.5 Your Responsibility</h3>
+              <p>You are responsible for reviewing and agreeing to the terms, conditions, and privacy policies of any External Retailer before making a purchase.
+
+Al-Hikmah Publishing UK</p>
+            </div>
+          </div>
+
+          <div class="back-row">
+            <a class="button button-primary" href="index.html">Return to Home</a>
+            <a class="button button-secondary" href="privacy.html">Privacy Policy</a>
+            <a class="button button-secondary" href="sitemap.html">Sitemap</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-copy">
+        <p>© 2015–2026 Al-Hikmah Publishing UK</p>
+        <p>The English Qur’an™, translated by Dr A K Khan.</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#surahs">Browse Surahs</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="sitemap.html">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById("themeToggle");
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      themeToggle.textContent = theme === "light" ? "Dark" : "Light";
+      try {
+        localStorage.setItem("quranIndexTheme", theme);
+      } catch (error) {}
+    }
+
+    themeToggle.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      applyTheme(current === "light" ? "dark" : "light");
+    });
+
+    try {
+      applyTheme(localStorage.getItem("quranIndexTheme") || "light");
+    } catch (error) {
+      applyTheme("light");
+    }
+  </script>
+</body>
+</html>
 
