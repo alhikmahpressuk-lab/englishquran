@@ -1,1 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en" translate="no" class="notranslate">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+  />
+  <meta name="google" content="notranslate" />
+  <meta name="translate" content="no" />
+  <meta http-equiv="Content-Language" content="en" />
+  <title>Surah 7 | Al-Aʿrāf | The English Qur’an</title>
+  <meta name="description" content="Surah 7, Al-Aʿrāf, from The English Qur’an." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri+Quran&display=swap');
 
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --surface-deep: #edf4f2;
+      --text: #182128;
+      --muted: #66727d;
+      --line: #e3e8ec;
+      --accent: #1e6b5c;
+      --accent-deep: #154d42;
+      --accent-soft: #e8f3f0;
+      --danger-soft: #fff2f2;
+      --danger: #b42318;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --max: 980px;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f1418;
+      --surface: #182128;
+      --surface-soft: #1f2a33;
+      --surface-deep: #22303a;
+      --text: #f3f7fa;
+      --muted: #a8b5bf;
+      --line: #2d3a44;
+      --accent: #38a189;
+      --accent-deep: #2c7a67;
+      --accent-soft: rgba(56, 161, 137, 0.16);
+      --danger-soft: rgba(180, 35, 24, 0.12);
+      --danger: #ff8a80;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .notranslate {
+      translate: no;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 95%, transparent);
+    }
+
+    .topbar-inner,
+    .container,
+    .footer-inner {
+      width: min(var(--max), calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a,
+    .theme-toggle,
+    .bookmark-open {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.94rem;
+      color: var(--muted);
+      transition: 0.2s ease;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .nav a:hover,
+    .theme-toggle:hover,
+    .bookmark-open:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      border-color: var(--accent);
+    }
+
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      color: #fff;
+      border-color: var(--accent-deep);
+    }
+
+    .bookmark-open.has-last {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+      font-weight: 700;
+    }
+
+    html[data-theme="dark"] .bookmark-open.has-last {
+      color: #d8fff4;
+    }
+
+    .hero {
+      padding: 34px 0 18px;
+    }
+
+    .hero-card,
+    .content-card,
+    .bookmark-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .hero-card {
+      padding: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -110px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(30, 107, 92, 0.13) 0%, rgba(30, 107, 92, 0) 72%);
+      pointer-events: none;
+    }
+
+    html[data-theme="dark"] .hero-card::after {
+      background: radial-gradient(circle, rgba(56, 161, 137, 0.18) 0%, rgba(56, 161, 137, 0) 72%);
+    }
+
+    .crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy .meaning {
+      margin: 14px 0 0;
+      color: color-mix(in srgb, var(--text) 78%, white);
+      font-size: 1rem;
+    }
+
+    .hero-copy .summary {
+      margin: 18px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 1rem;
+      max-width: 58ch;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .meta-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .meta-value.ar {
+      direction: rtl;
+      text-align: right;
+      font-family: "Amiri Quran", serif;
+      font-size: 1.2rem;
+      line-height: 1.8;
+    }
+
+    .section {
+      padding: 12px 0 36px;
+    }
+
+    .bookmark-panel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+    }
+
+    .bookmark-panel.active {
+      display: block;
+    }
+
+    .bookmark-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .bookmark-header h3 {
+      margin: 0;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-header p {
+      margin: 6px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 0.96rem;
+    }
+
+    .bookmark-close {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-close:hover {
+      background: var(--surface-soft);
+    }
+
+    .bookmark-summary {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-card-label {
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .bookmark-card-value {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bookmark-card-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-action,
+    .bookmark-remove {
+      appearance: none;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-action {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-action:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .bookmark-remove:hover {
+      filter: brightness(0.98);
+    }
+
+    .bookmark-list-wrap {
+      margin-top: 8px;
+    }
+
+    .bookmark-list-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-empty {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .bookmark-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-item-left {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .bookmark-item-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .bookmark-item-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .bookmark-item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-mini,
+    .bookmark-mini-remove {
+      appearance: none;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-mini {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-mini:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-mini-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .tab-button:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: var(--surface-soft);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .content-card {
+      padding: 18px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .subpanel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-soft);
+    }
+
+    .subpanel.active {
+      display: block;
+    }
+
+    .subpanel h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subpanel p {
+      margin: 0 0 14px;
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .mode-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mode-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .mode-button:hover {
+      background: var(--surface-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+
+    .mode-button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .verse-selector-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .verse-selector-row label {
+      font-weight: 600;
+    }
+
+    .verse-selector-row select {
+      min-width: 180px;
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+    }
+
+    .jump-button {
+      appearance: none;
+      border: none;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .jump-button:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-state,
+    .loading-state,
+    .error-state,
+    .note-state {
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 82%, white);
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-state,
+    .error-state,
+    .note-state {
+      display: none;
+    }
+
+    .verse {
+      padding: 24px 16px;
+      border-radius: 18px;
+      scroll-margin-top: 110px;
+    }
+
+    .verse:target {
+      background: var(--surface-deep);
+    }
+
+    .verse + .verse {
+      border-top: 1px solid var(--line);
+    }
+
+    .bismillah-block {
+      padding: 24px 16px 28px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .bismillah-arabic {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.9rem, 2.8vw, 2.6rem);
+      line-height: 2;
+      direction: rtl;
+      color: #111827;
+      margin-bottom: 14px;
+    }
+
+    html[data-theme="dark"] .bismillah-arabic {
+      color: #f8fbfd;
+    }
+
+    .bismillah-english {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    .arabic-wrap {
+      text-align: right;
+      direction: rtl;
+      margin-bottom: 18px;
+    }
+
+    .arabic-ayah {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.55rem, 2.15vw, 1.95rem);
+      line-height: 2.15;
+      color: #111827;
+      word-spacing: 0.04em;
+      letter-spacing: 0;
+      display: inline;
+    }
+
+    html[data-theme="dark"] .arabic-ayah {
+      color: #f8fbfd;
+    }
+
+    .transliteration-wrap {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 78%, white);
+      font-size: 0.98rem;
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    .english {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .english-number {
+      min-width: 48px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0;
+      font-size: 1rem;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .english-text {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      padding-top: 2px;
+    }
+
+    .overview {
+      padding: 8px 4px;
+    }
+
+    .overview h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .overview p {
+      margin: 0 0 16px;
+      font-size: 1.05rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      line-height: 1.8;
+    }
+
+    .overview ul {
+      margin: 0 0 22px;
+      padding-left: 22px;
+    }
+
+    .overview li {
+      margin-bottom: 10px;
+      font-size: 1.03rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    .footer {
+      padding: 0 0 34px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      min-height: 42px;
+    }
+
+    .footer-links a:hover {
+      background: var(--surface-soft);
+    }
+
+    .hidden-arabic .arabic-wrap {
+      display: none;
+    }
+
+    .hidden-english .english {
+      display: none;
+    }
+
+    .hidden-transliteration .transliteration-wrap {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        padding: 14px 0;
+      }
+
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .hero-card,
+      .content-card,
+      .bookmark-panel {
+        border-radius: 18px;
+      }
+
+      .hero-card {
+        padding: 22px;
+      }
+
+      .content-card,
+      .bookmark-panel {
+        padding: 12px;
+      }
+
+      .verse {
+        padding: 20px 10px;
+      }
+
+      .bismillah-block {
+        padding: 20px 12px 24px;
+      }
+
+      .english-number {
+        min-width: 42px;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 0.96rem;
+      }
+
+      .overview p,
+      .overview li {
+        font-size: 1rem;
+      }
+
+      .arabic-ayah {
+        font-size: 1.42rem;
+        line-height: 2.05;
+      }
+
+      .bismillah-arabic {
+        font-size: 1.9rem;
+        line-height: 1.95;
+      }
+
+      .mode-options {
+        flex-direction: column;
+      }
+
+      .mode-button {
+        width: 100%;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-open {
+        min-height: 42px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .nav {
+        gap: 8px;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-open {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .verse-selector-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .verse-selector-row select,
+      .jump-button,
+      .bookmark-action,
+      .bookmark-remove,
+      .bookmark-close {
+        width: 100%;
+      }
+
+      .bookmark-item {
+        align-items: flex-start;
+      }
+
+      .bookmark-item-actions {
+        width: 100%;
+      }
+
+      .bookmark-mini,
+      .bookmark-mini-remove {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body translate="no" class="notranslate">
+  <header class="topbar notranslate" translate="no">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" translate="no">٧</div>
+        <div class="brand-text">
+          <h1 translate="no">The English Qur’an</h1>
+          <p translate="no">Surah 7 · Al-Aʿrāf</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html" translate="no">All Surahs</a>
+        <a class="cta" href="#content" translate="no">Read Surah 7</a>
+        <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks" aria-expanded="false" translate="no">Bookmarks</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode" translate="no">Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main translate="no" class="notranslate">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="crumb" translate="no">Surah 7 · Al-Aʿrāf</div>
+
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <h2 translate="no">Al-Aʿrāf</h2>
+              <p class="meaning" translate="no">The Heights</p>
+              <p class="summary" translate="no">
+                A surah of warning, reflection, and consequence, calling people to follow revealed guidance, learn from past nations, and respond to truth with humility before it is too late.
+              </p>
+            </div>
+
+            <div class="hero-meta">
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Arabic name</div>
+                <div class="meta-value ar notranslate" lang="ar" translate="no">الأعراف</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Verses</div>
+                <div class="meta-value" translate="no">206</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Revelation</div>
+                <div class="meta-value" translate="no">Makki</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section notranslate" id="content" translate="no">
+      <div class="container">
+        <div class="bookmark-panel" id="bookmarkPanel">
+          <div class="bookmark-header">
+            <div>
+              <h3 translate="no">Bookmarks</h3>
+              <p translate="no">Your reading position is remembered automatically.</p>
+            </div>
+            <button class="bookmark-close" type="button" id="bookmarkClose" translate="no">Close</button>
+          </div>
+
+          <div class="bookmark-summary">
+            <div class="bookmark-card">
+              <div class="bookmark-card-label" translate="no">Last read verse</div>
+              <div class="bookmark-card-value" id="lastReadText" translate="no">No verse tracked yet.</div>
+              <div class="bookmark-card-row">
+                <button class="bookmark-action" type="button" id="goLastRead" translate="no">Go to last read</button>
+                <button class="bookmark-remove" type="button" id="clearHistory" translate="no">Clear bookmark history</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="bookmark-list-wrap">
+            <h4 class="bookmark-list-title" translate="no">Recently visited verses</h4>
+            <div class="bookmark-empty" id="bookmarkEmpty" translate="no">No reading history yet.</div>
+            <div class="bookmark-list" id="bookmarkList"></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="tab-button active" type="button" data-tab="read" translate="no">Read</button>
+          <button class="tab-button" type="button" data-tab="overview" translate="no">Overview</button>
+          <button class="tab-button" type="button" data-tab="mode" translate="no">Mode</button>
+          <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
+        </div>
+
+        <div class="content-card">
+          <div class="subpanel" id="modePanel">
+            <h3 translate="no">Reading Mode</h3>
+            <p translate="no">Select how the verses are displayed.</p>
+            <div class="mode-options">
+              <button class="mode-button active" type="button" data-mode="bilingual" translate="no">Arabic + English</button>
+              <button class="mode-button" type="button" data-mode="transliteration" translate="no">Transliteration</button>
+              <button class="mode-button" type="button" data-mode="arabic-only" translate="no">Arabic Only</button>
+              <button class="mode-button" type="button" data-mode="english-only" translate="no">English Only</button>
+            </div>
+          </div>
+
+          <div class="subpanel" id="versePanel">
+            <h3 translate="no">Jump to Verse</h3>
+            <p translate="no">Select any ayah in Surah Al-Aʿrāf and jump straight to it.</p>
+            <div class="verse-selector-row">
+              <label for="verseSelect" translate="no">Verse</label>
+              <select id="verseSelect" aria-label="Select verse number" translate="no"></select>
+              <button class="jump-button" type="button" id="jumpButton" translate="no">Go to verse</button>
+            </div>
+          </div>
+
+          <div class="tab-panel active" id="read">
+            <div class="bookmark-state" id="bookmarkState" translate="no"></div>
+            <div class="loading-state" id="loadingState" translate="no">Loading Surah Al-Aʿrāf...</div>
+            <div class="error-state" id="errorState" translate="no">The surah could not be loaded. Please refresh the page and try again.</div>
+            <div class="note-state" id="noteState" translate="no">Transliteration could not be loaded, so the page has switched back to Arabic + English.</div>
+            <div id="versesContainer" class="notranslate" translate="no"></div>
+          </div>
+
+          <div class="tab-panel" id="overview">
+            <div class="overview notranslate" translate="no">
+              <h3 translate="no">Overview</h3>
+              <p translate="no">Surah Al-Aʿrāf presents a powerful and continuous call to recognise truth, respond to guidance, and avoid the repeated failures of past nations. Revealed in Makkah, it speaks directly to the human heart, urging reflection, humility, and awareness of consequences. It opens by affirming the Qur’an as a message sent down to Prophet Muhammad ﷺ so that people may be warned and reminded, calling them to follow what has been revealed and not to turn to other sources in its place.</p>
+
+              <p translate="no">The Surah returns to the beginning of human history with the creation of Ādam (Adam) and the refusal of Iblīs (Shayṭān), exposing the root of arrogance and the ongoing reality of temptation and misguidance. It shows how Shayṭān seeks to mislead, while guidance remains clear for those who are willing to follow it. This sets the tone for the rest of the Surah, where the struggle between truth and falsehood continues across generations.</p>
+
+              <p translate="no">A central part of the Surah presents a series of prophetic accounts, showing a consistent pattern. Nūḥ (Noah), Hūd, Ṣāliḥ, Lūṭ (Lot), and Shuʿayb each called their people to worship Allah alone and to live with justice and integrity. In every case, their people rejected the message, persisted in wrongdoing, and faced the consequences. These accounts are direct warnings, showing that rejecting clear guidance leads to loss, while those who believe are saved.</p>
+
+              <p translate="no">The Surah gives particular attention to the story of Mūsā (Moses) and his confrontation with Firʿawn (Pharaoh), showing the struggle between truth and tyranny. It highlights the rescue of Banī Isrāʾīl, the signs they witnessed, and their continued challenges and shortcomings after being saved. These events reinforce lessons about gratitude, obedience, and the danger of turning away after receiving clear guidance.</p>
+
+              <p translate="no">The Surah also introduces the scene of Al-Aʿrāf, a place between Paradise and Hell, where people recognise the reality of both outcomes. This powerful image reinforces accountability and the certainty of the Hereafter. Throughout, the Surah calls for balance, modesty, justice, and sincerity, warning against arrogance, excess, and denial.</p>
+
+              <p translate="no">It concludes by reminding that the message has been made clear, and that success belongs to those who listen, reflect, and follow guidance with humility. As a whole, Surah Al-Aʿrāf draws a clear line between those who respond to truth and those who reject it, showing the consequences of each path with clarity and force.</p>
+
+              <h3 translate="no">Key Themes</h3>
+              <ul>
+                <li translate="no">The Qur’an as a clear warning and reminder</li>
+                <li translate="no">Prophet Muhammad ﷺ as the messenger delivering the truth</li>
+                <li translate="no">Ādam (Adam) and Iblīs (Shayṭān), the origin of misguidance</li>
+                <li translate="no">The pattern of prophets and rejection by their people</li>
+                <li translate="no">Nūḥ (Noah), Hūd, Ṣāliḥ, Lūṭ (Lot), and Shuʿayb</li>
+                <li translate="no">Mūsā (Moses) and Firʿawn (Pharaoh), truth versus tyranny</li>
+                <li translate="no">Banī Isrāʾīl, guidance and repeated failure</li>
+                <li translate="no">Accountability and the reality of the Hereafter</li>
+                <li translate="no">Al-Aʿrāf and the clear distinction between outcomes</li>
+                <li translate="no">Justice, humility, and sincerity in following guidance</li>
+              </ul>
+
+              <h3 translate="no">Central Message</h3>
+              <p translate="no">Guidance has always been clear, yet people repeatedly reject it out of pride and denial.</p>
+              <p translate="no">The stories of the prophets show a consistent pattern, truth is delivered, and responses determine the outcome.</p>
+              <p translate="no">Believers are called to follow guidance with humility, avoiding the arrogance of Iblīs (Shayṭān) and past nations.</p>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="mode"></div>
+          <div class="tab-panel" id="verse"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer notranslate" translate="no">
+    <div class="footer-inner">
+      <div translate="no">Surah 7 | Al-Aʿrāf</div>
+      <div class="footer-links">
+        <a href="surah-6.html" translate="no">Previous Surah · Al-Anʿām</a>
+        <a href="index.html" translate="no">Homepage</a>
+        <a href="surah-8.html" translate="no">Next Surah · Al-Anfāl</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const englishVerses = [
+      "Alif Lām Mīm Ṣād.",
+      "This is a Book sent down to you, so let there be no tightness in your chest because of it, so that you may warn by it, and as a reminder for the believers.",
+      "Follow what has been sent down to you from your Lord, and do not follow allies besides Him. Little do you remember.",
+      "And how many towns We destroyed. Our punishment came upon them by night or while they were resting at midday.",
+      "Their only cry when Our punishment came upon them was that they said, “Indeed, we were wrongdoers.”",
+      "So We will surely question those to whom messengers were sent, and We will surely question the messengers.",
+      "Then We will surely relate to them with knowledge. And We were never absent.",
+      "And the weighing on that Day is true. So those whose scales are heavy, they are the successful.",
+      "And those whose scales are light, those are the ones who have lost themselves because they used to wrong Our signs.",
+      "And We have certainly established you upon the earth and placed for you within it means of living. Little are you grateful.",
+      "And We created you, then shaped you, then said to the angels, “Prostrate to Ādam.” So they prostrated, except Iblīs. He was not among those who prostrated.",
+      "He said, “What prevented you from prostrating when I commanded you?” He said, “I am better than him. You created me from fire, and You created him from clay.”",
+      "He said, “Then descend from it. It is not for you to be arrogant here. So get out. You are among the disgraced.”",
+      "He said, “Grant me respite until the Day they are resurrected.”",
+      "He said, “You are among those given respite.”",
+      "He said, “Because You have let me go astray, I will surely lie in wait for them on Your straight path.",
+      "Then I will come to them from before them and from behind them, from their right and from their left, and You will find most of them ungrateful.”",
+      "He said, “Get out from it, disgraced and expelled. Whoever among them follows you, I will surely fill Hell with you all.”",
+      "And O Ādam, dwell, you and your wife, in the Garden, and eat from wherever you wish, but do not approach this tree, or you will be among the wrongdoers.",
+      "Then Shayṭān whispered to them so that he might uncover to them what had been concealed from them of their shame. And he said, “Your Lord has only forbidden you this tree so that you do not become angels or become among those who live forever.”",
+      "And he swore to them, “Indeed, I am to you a sincere adviser.”",
+      "So he led them on by deception. And when they tasted of the tree, their shame became apparent to them, and they began to cover themselves with leaves of the Garden. And their Lord called out to them, “Did I not forbid you from that tree and say to you that Shayṭān is a clear enemy to you?”",
+      "They said, “Our Lord, we have wronged ourselves. And if You do not forgive us and have mercy on us, we will surely be among the losers.”",
+      "He said, “Descend, some of you enemies to others. And for you on the earth is a dwelling place and provision for a time.”",
+      "He said, “In it you will live, and in it you will die, and from it you will be brought forth.”",
+      "O children of Ādam, We have sent down to you clothing to cover your shame and as adornment. But the garment of mindfulness, that is best. That is from the signs of Allah, so that they may remember.",
+      "O children of Ādam, let not Shayṭān tempt you as he removed your parents from the Garden, stripping them of their clothing to show them their shame. Indeed, he and his kind see you from where you do not see them. We have made the devils allies of those who do not believe.",
+      "And when they commit an indecency, they say, “We found our fathers doing it, and Allah commanded us to do it.” Say, “Allah does not command indecency. Do you say about Allah what you do not know?”",
+      "Say, “My Lord has commanded justice. And set your faces toward Him at every place of worship, and call upon Him sincerely devoted to Him in religion. Just as He originated you, so you will return.”",
+      "A group He has guided, and a group has deserved misguidance. They took devils as allies instead of Allah, and they think that they are guided.",
+      "O children of Ādam, take your adornment at every place of worship, eat and drink, but do not be excessive. Indeed, He does not love those who are excessive.",
+      "Say, “Who has forbidden the adornment of Allah which He has brought forth for His servants, and the good provisions?” Say, “They are for those who believe in the life of this world, exclusively theirs on the Day of Resurrection.” Thus We make the signs clear for a people who know.",
+      "Say, “My Lord has only forbidden indecencies, what is apparent of them and what is hidden, and sin, and oppression without right, and that you associate with Allah that for which He has sent down no authority, and that you say about Allah what you do not know.”",
+      "And for every community there is a fixed term. When their term comes, they cannot delay it for an hour, nor can they bring it forward.",
+      "O children of Ādam, if messengers come to you from among you, relating My signs to you, then whoever is mindful of Allah and set things right, there will be no fear upon them, nor will they grieve.",
+      "But those who deny Our signs and are arrogant toward them, those are the companions of the Fire, remaining in it forever.",
+      "And who is more unjust than one who invents a lie against Allah or denies His signs? Their share will reach them from the Book until, when Our messengers come to take them in death, they will say, “Where are those you used to call upon besides Allah?” They will say, “They have vanished from us,” and they will bear witness against themselves that they were disbelievers.",
+      "He will say, “Enter among communities of jinn and humankind that have passed before you into the Fire.” Every time a community enters, it curses its sister, until when they have all joined one another in it, the last of them will say about the first of them, “Our Lord, these led us astray, so give them a double punishment of the Fire.” He will say, “For each is double, but you do not know.”",
+      "And the first of them will say to the last of them, “You had no advantage over us, so taste the punishment for what you used to earn.”",
+      "Indeed, those who deny Our signs and are arrogant toward them, the gates of heaven will not be opened for them, nor will they enter the Garden until the camel passes through the eye of the needle. Thus We repay the criminals.",
+      "For them are beds from Hell, and above them coverings. Thus We repay the wrongdoers.",
+      "But those who believe and do righteous deeds, We do not burden any soul beyond its capacity, those are the companions of the Garden, remaining in it forever.",
+      "And We will remove whatever resentment is in their chests. Rivers will flow beneath them, and they will say, “All praise belongs to Allah, who guided us to this. We would never have been guided had Allah not guided us. The messengers of our Lord certainly came with the truth.” And they will be called, “This is the Garden which you have been made to inherit for what you used to do.”",
+      "And the companions of the Garden will call out to the companions of the Fire, “We have found what our Lord promised us to be true, have you found what your Lord promised to be true?” They will say, “Yes.” Then an announcer will proclaim among them, “The curse of Allah is upon the wrongdoers,",
+      "those who turn people away from the path of Allah and seek to make it distorted, while they disbelieve in the Hereafter.”",
+      "And between them will be a barrier, and upon the heights are men who recognise everyone by their marks. And they will call out to the companions of the Garden, “Peace be upon you.” They will not have entered it, though they hope.",
+      "And when their eyes are turned toward the companions of the Fire, they will say, “Our Lord, do not place us with the wrongdoing people.”",
+      "And the people of the heights will call out to men whom they recognise by their marks, saying, “Your gathering and your arrogance have not benefited you.",
+      "Are these the ones you swore Allah would never grant mercy?” “Enter the Garden. There will be no fear upon you, nor will you grieve.”",
+      "And the companions of the Fire will call out to the companions of the Garden, “Pour upon us some water or some of what Allah has provided you.” They will say, “Indeed, Allah has forbidden both to the disbelievers,",
+      "those who took their religion as play and amusement, and whom the worldly life deceived. So today We will forget them as they forgot the meeting of this Day of theirs and for denying Our signs.",
+      "And We certainly brought them a Book which We explained with knowledge, as guidance and mercy for a people who believe.",
+      "Are they waiting except for its outcome? On the Day its outcome comes, those who forgot it before will say, “The messengers of our Lord certainly came with the truth. So are there any intercessors who can intercede for us, or can we be sent back so that we may do other than what we used to do?” They have certainly lost themselves, and what they used to invent has vanished from them.",
+      "Indeed, your Lord is Allah, who created the heavens and the earth in six days, then established Himself over the Throne. He covers the night with the day, chasing it swiftly, and the sun, the moon, and the stars are subjected by His command. Surely, to Him belongs creation and command. Blessed is Allah, Lord of the worlds.",
+      "Call upon your Lord humbly and privately. Indeed, He does not love the transgressors.",
+      "And do not cause corruption on the earth after it has been set right. And call upon Him in fear and hope. Indeed, the mercy of Allah is near to those who do good.",
+      "And He is the One who sends the winds as good news before His mercy, until, when they carry heavy clouds, We drive them to a dead land and send down rain upon it, bringing forth with it fruits of every kind. Thus We bring forth the dead, so that you may remember.",
+      "And the good land brings forth its vegetation by the permission of its Lord. But that which is bad brings forth nothing except sparsely. Thus We turn the signs for a people who are grateful.",
+      "We certainly sent Nūḥ to his people. He said, “O my people, worship Allah, you have no god other than Him. Indeed, I fear for you the punishment of a mighty Day.”",
+      "The leaders among his people said, “Indeed, we see you in clear error.”",
+      "He said, “O my people, there is no error in me, but I am a messenger from the Lord of the worlds.",
+      "I convey to you the messages of my Lord, advise you sincerely, and I know from Allah what you do not know.",
+      "Do you find it strange that a reminder has come to you from your Lord through a man from among you, to warn you and so that you may be mindful of Allah, and that you may receive mercy?”",
+      "But they denied him, so We saved him and those with him in the Ark, and We drowned those who denied Our signs. Indeed, they were a blind people.",
+      "And to ʿĀd We sent their brother Hūd. He said, “O my people, worship Allah, you have no god other than Him. Will you not then be mindful?”",
+      "The leaders who disbelieved among his people said, “Indeed, we see you in foolishness, and truly, we think you are among the liars.”",
+      "He said, “O my people, there is no foolishness in me, but I am a messenger from the Lord of the worlds.",
+      "I convey to you the messages of my Lord, and I am to you a trustworthy adviser.",
+      "Do you find it strange that a reminder has come to you from your Lord through a man from among you, to warn you? And remember when He made you successors after the people of Nūḥ and increased you greatly in stature. So remember the favours of Allah, so that you may succeed.",
+      "They said, “Have you come to us that we should worship Allah alone and abandon what our fathers used to worship? Then bring us what you promise us, if you are truthful.”",
+      "He said, “Punishment and anger have already fallen upon you from your Lord. Do you argue with me over names you and your fathers invented, for which Allah sent down no authority? So wait. Indeed, I am with you among those who wait.”",
+      "So We saved him and those with him by mercy from Us, and We cut off the last of those who denied Our signs and were not believers.",
+      "And to Thamūd We sent their brother Ṣāliḥ. He said, “O my people, worship Allah, you have no god other than Him. There has come to you clear proof from your Lord. This she-camel of Allah is a sign for you, so leave her to eat in the land of Allah and do not touch her with harm, or a painful punishment will seize you.”",
+      "And remember when He made you successors after ʿĀd and settled you in the land, building palaces on its plains and carving homes in the mountains. So remember the favours of Allah and do not act corruptly in the land.",
+      "The leaders who were arrogant among his people said to those who were considered weak, those who believed among them, “Do you truly know that Ṣāliḥ is sent from his Lord?” They said, “Indeed, we believe in what he has been sent with.”",
+      "Those who were arrogant said, “Indeed, we disbelieve in what you believe in.”",
+      "So they hamstrung the she-camel, defied the command of their Lord, and said, “O Ṣāliḥ, bring us what you threaten us with, if you are among the messengers.”",
+      "Then the tremor seized them, and they became lifeless in their homes.",
+      "So he turned away from them and said, “O my people, I certainly conveyed to you the message of my Lord and advised you sincerely, but you do not love sincere advisers.”",
+      "And Lūṭ, when he said to his people, “Do you commit an indecency such as none among the worlds has preceded you in?”",
+      "You approach men with desire instead of women. Rather, you are a people who transgress all bounds.",
+      "And the only answer of his people was that they said, “Expel them from your town. They are people who seek purity.”",
+      "So We saved him and his family, except for his wife. She was among those who remained behind.",
+      "And We sent down upon them a rain. So see how was the outcome of the criminals.",
+      "And to Madyan We sent their brother Shuʿayb. He said, “O my people, worship Allah, you have no god except Him. Clear proof has come to you from your Lord. So give full measure and full weight, and do not deprive people of what is rightfully theirs, and do not spread corruption on the earth after it has been set right. That is better for you, if you are believers.”",
+      "And do not sit along every path, threatening and turning away from the path of Allah those who believe in Him, and seeking to distort it. And remember when you were few and He increased you. And see how was the outcome of the corrupters.",
+      "And if there is a group among you who believe in what I have been sent with, and a group who do not believe, then be patient until Allah judges between us. And He is the best of judges.",
+      "The leaders who were arrogant among his people said, “We will surely expel you, O Shuʿayb, and those who believe with you from our town, or you must return to our religion.” He said, “Even if we detest it?",
+      "We would have invented a lie against Allah if we were to return to your religion after Allah has saved us from it. And it is not for us to return to it unless Allah, our Lord, wills. Our Lord encompasses everything in knowledge. Upon Allah we place our trust. Our Lord, decide between us and our people with truth. And You are the best of those who decide.”",
+      "And the leaders who disbelieved among his people said, “If you follow Shuʿayb, then you will surely be losers.”",
+      "So the mighty tremor seized them, and they lay lifeless in their homes.",
+      "Those who denied Shuʿayb, it was as though they had never lived there. Those who denied Shuʿayb, they were the losers.",
+      "So he turned away from them and said, “O my people, I certainly conveyed to you the messages of my Lord and advised you sincerely. So how should I grieve for a people who disbelieve?”",
+      "And We did not send any prophet to a town except that We seized its people with hardship and adversity so that they might humble themselves.",
+      "Then We replaced the bad with good until they multiplied and said, “Hardship and ease touched our fathers.” So We seized them suddenly while they were unaware.",
+      "And if the people of the towns had believed and been mindful, We would have opened for them blessings from the heavens and the earth. But they denied, so We seized them for what they used to earn.",
+      "Do the people of the towns feel secure that Our punishment will not come to them by night while they are asleep?",
+      "Or do the people of the towns feel secure that Our punishment will not come to them in daylight while they are at play?",
+      "Do they feel secure from the plan of Allah? None feels secure from the plan of Allah except the losing people.",
+      "Has it not become clear to those who inherited the earth after its people that if We willed, We could strike them for their sins and seal their hearts so that they do not hear?",
+      "Those were the towns whose stories We relate to you. Their messengers certainly came to them with clear proofs, but they were not going to believe in what they had denied before. Thus Allah seals the hearts of the disbelievers.",
+      "And We did not find for most of them any covenant. And indeed, We found most of them rebellious.",
+      "Then We sent after them Mūsā with Our signs to Firʿawn and his leaders, but they wronged them. So see how was the outcome of the corrupters.",
+      "And Mūsā said, “O Firʿawn, I am indeed a messenger from the Lord of the worlds,",
+      "bound to say nothing about Allah except the truth. I have come to you with clear proof from your Lord, so send with me the Children of Isrāʾīl.”",
+      "He said, “If you have come with a sign, then bring it, if you are among the truthful.”",
+      "So he threw down his staff, and it was clearly a serpent.",
+      "And he drew out his hand, and it was white for the onlookers.",
+      "The leaders of the people of Firʿawn said, “Indeed, this is a skilled magician,",
+      "who wants to drive you out of your land. So what do you advise?”",
+      "They said, “Delay him and his brother, and send gatherers to the cities,",
+      "to bring you every skilled magician.”",
+      "And the magicians came to Firʿawn. They said, “Will there surely be a reward for us if we are the victors?”",
+      "He said, “Yes. And you will surely be among those brought near.”",
+      "They said, “O Mūsā, either you throw, or we will be the ones to throw.”",
+      "He said, “You throw.” So when they threw, they bewitched the eyes of the people, struck fear into them, and produced a great magic.",
+      "And We inspired Mūsā, “Throw your staff.” Then it swallowed what they were falsifying.",
+      "So the truth prevailed, and what they were doing was exposed as false.",
+      "And they were defeated there, and they turned back humbled.",
+      "And the magicians fell down in prostration.",
+      "They said, “We believe in the Lord of the worlds,",
+      "the Lord of Mūsā and Hārūn.”",
+      "Firʿawn said, “You believed in Him before I gave you permission? This is a plot you plotted in the city to drive its people out of it. But you will soon know.”",
+      "I will surely cut off your hands and your feet on opposite sides, then I will surely crucify you all.”",
+      "They said, “Indeed, to our Lord we will return.",
+      "You take revenge on us only because we believed in the signs of our Lord when they came to us. Our Lord, pour patience upon us and cause us to die as those who submit.”",
+      "And the leaders of the people of Firʿawn said, “Will you leave Mūsā and his people to cause corruption in the land and abandon you and your gods?” He said, “We will kill their sons and keep their women alive. And indeed, we are dominant over them.”",
+      "Mūsā said to his people, “Seek help through Allah and be patient. Indeed, the earth belongs to Allah. He gives it in inheritance to whom He wills of His servants. And the outcome is for the mindful.”",
+      "They said, “We were harmed before you came to us and after you came to us.” He said, “It may be that your Lord will destroy your enemy and make you successors in the land, then see how you act.”",
+      "And We certainly seized the people of Firʿawn with years of drought and loss of fruits so that they might remember.",
+      "But when good came to them, they said, “This is ours.” And if harm struck them, they blamed it on Mūsā and those with him. Indeed, their misfortune was with Allah, but most of them did not know.",
+      "And they said, “Whatever sign you bring us to bewitch us with it, we will not believe you.”",
+      "So We sent upon them the flood, the locusts, the lice, the frogs, and the blood as clear signs, but they were arrogant and became a criminal people.",
+      "And when the punishment fell upon them, they said, “O Mūsā, call upon your Lord for us by what He has promised you. If you remove the punishment from us, we will surely believe you and will surely send the Children of Isrāʾīl with you.”",
+      "But when We removed the punishment from them until a term they were to reach, then they broke their word.",
+      "So We took retribution from them and drowned them in the sea because they denied Our signs and were heedless of them.",
+      "And We made the people who were oppressed inherit the eastern parts of the land and the western parts of it which We had blessed. And the good word of your Lord was fulfilled upon the Children of Isrāʾīl because of their patience. And We destroyed what Firʿawn and his people had been making and what they had been building.",
+      "And We brought the Children of Isrāʾīl across the sea, and they came upon a people devoted to idols they had. They said, “O Mūsā, make for us a god just as they have gods.” He said, “Indeed, you are an ignorant people.",
+      "Indeed, what these people are upon will be destroyed, and what they are doing is false.”",
+      "He said, “Shall I seek for you a god other than Allah, while He has favoured you over the worlds?”",
+      "And remember when We saved you from the people of Firʿawn, afflicting you with the worst punishment, slaughtering your sons and sparing your women. And in that was a great trial from your Lord.",
+      "And We appointed for Mūsā thirty nights and completed them with ten, so the appointed time of his Lord was forty nights. And Mūsā said to his brother Hārūn, “Take my place among my people, act rightly, and do not follow the way of the corrupters.”",
+      "And when Mūsā came at the appointed time and his Lord spoke to him, he said, “My Lord, show Yourself to me so that I may look at You.” He said, “You will not see Me, but look at the mountain. If it remains in place, then you will see Me.” But when his Lord manifested Himself to the mountain, He made it crumble, and Mūsā fell unconscious. Then when he recovered, he said, “Glory be to You. I turn to You in repentance, and I am the first of the believers.”",
+      "He said, “O Mūsā, I have chosen you above the people with My messages and My speech. So take what I have given you and be among the grateful.”",
+      "And We wrote for him on the tablets instruction of every matter, and clarification of everything, “So take them firmly and command your people to take the best of it. I will show you the home of the rebellious.”",
+      "I will turn away from My signs those who are arrogant on the earth without right. Even if they see every sign, they will not believe in it. And if they see the path of guidance, they will not take it as a path. But if they see the path of error, they will take it as a path. That is because they denied Our signs and were heedless of them.",
+      "And those who deny Our signs and the meeting of the Hereafter, their deeds have failed. Are they repaid except for what they used to do?",
+      "And the people of Mūsā took after him from their ornaments a calf, a body with a lowing sound. Did they not see that it did not speak to them nor guide them to a path? They took it, and they were wrongdoers.",
+      "And when regret seized them and they saw that they had gone astray, they said, “If our Lord does not have mercy on us and forgive us, we will surely be among the losers.”",
+      "And when Mūsā returned to his people angry and sorrowful, he said, “How evil is what you did after me. Did you hasten the command of your Lord?” And he threw down the tablets and seized his brother by the head, pulling him toward himself. He said, “Son of my mother, the people overpowered me and nearly killed me, so do not make the enemies rejoice over me, and do not place me among the wrongdoing people.”",
+      "He said, “My Lord, forgive me and my brother, and admit us into Your mercy. And You are the Ever-Merciful of those who show mercy.”",
+      "Indeed, those who took the calf will be overtaken by anger from their Lord and humiliation in the life of this world. Thus We repay those who invent lies.",
+      "But those who commit evil deeds, then repent after that and believe, then indeed, your Lord after that is Most-Forgiving, Ever-Merciful.",
+      "And when the anger subsided from Mūsā, he took the tablets. And in their inscription was guidance and mercy for those who fear their Lord.",
+      "And Mūsā chose from his people seventy men for Our appointed time. Then when the mighty tremor seized them, he said, “My Lord, if You had willed, You could have destroyed them before, and me as well. Will You destroy us for what the foolish among us have done? It is only Your trial by which You let go astray whom You will and guide whom You will. You are our Protector, so forgive us and have mercy on us, and You are the best of forgivers.",
+      "And decree for us good in this world and in the Hereafter. Indeed, we have turned to You.” He said, “My punishment, I strike with it whom I will, but My mercy encompasses everything. So I will decree it for those who are mindful, give charity, and those who believe in Our signs,",
+      "those who follow the Messenger, the unlettered Prophet, whom they find written with them in the Tawrāh and the Injīl, who commands them to what is right and forbids them from what is wrong, makes lawful for them the good things and forbids them from the impure, and relieves them of their burdens and the shackles that were upon them. So those who believe in him, honour him, support him, and follow the light that was sent down with him, those are the successful.”",
+      "Say, “O people, indeed I am the Messenger of Allah to you all, to Him belongs the dominion of the heavens and the earth. There is no god except Him. He gives life and causes death. So believe in Allah and His Messenger, the unlettered Prophet, who believes in Allah and His words, and follow him so that you may be guided.”",
+      "And among the people of Mūsā is a community that guides by the truth and establishes justice by it.",
+      "And We divided them into twelve tribes as communities. And We inspired Mūsā when his people asked him for water, “Strike the rock with your staff.” So twelve springs burst forth from it. Each people knew its drinking place. And We shaded them with clouds and sent down upon them manna and quails, “Eat from the good things We have provided for you.” And they did not wrong Us, but they were wronging themselves.",
+      "And remember when it was said to them, “Dwell in this town and eat from it wherever you wish, and say, ‘Remove our sins,’ and enter the gate bowing, so We may forgive your wrongs. We will increase those who do good.”",
+      "But those who did wrong among them changed the word to something other than what had been said to them, so We sent upon them punishment from the sky for what they used to do wrong.",
+      "And ask them about the town that was by the sea, when they transgressed concerning the Sabbath, when their fish came to them openly on their Sabbath day, and on the day they did not observe the Sabbath, they did not come. Thus We tested them because they persisted in rebellion.",
+      "And when a group among them said, “Why do you warn a people Allah is about to destroy or punish with a severe punishment?” They said, “As an excuse before your Lord, and perhaps they may be mindful of Allah.”",
+      "So when they forgot what they were reminded of, We saved those who forbade evil, and We seized those who did wrong with a miserable punishment because they used to rebel.",
+      "Then when they were insolent about what they had been forbidden, We said to them, “Be apes, despised.”",
+      "And remember when your Lord proclaimed that He would surely send upon them, until the Day of Resurrection, those who would afflict them with the worst punishment. Indeed, your Lord is swift in punishment, and indeed, He is Most-Forgiving, Ever-Merciful.",
+      "And We divided them throughout the earth into communities. Among them are the righteous, and among them are others less than that. And We tested them with good and bad so that they might return.",
+      "Then there came after them successors who inherited the Book, taking the gains of this lower life and saying, “We will be forgiven.” But if similar gain comes to them, they take it again. Was not the covenant of the Book taken from them that they would not say about Allah except the truth, and they studied what is in it? And the Home of the Hereafter is better for those who are mindful. Will you not then understand?",
+      "And those who hold firmly to the Book and uphold the prayer, indeed We do not allow the reward of those who set things right to be lost.",
+      "And when We raised the mountain above them as if it were a canopy, and they thought it would fall upon them, “Hold firmly what We have given you and remember what is in it, so that you may be mindful of Allah.”",
+      "And when your Lord took from the children of Ādam, from their backs, their descendants, and made them bear witness over themselves, “Am I not your Lord?” They said, “Yes, we bear witness.” Lest you should say on the Day of Resurrection, “Indeed, we were unaware of this,”",
+      "or say, “It was only our fathers who associated partners before, and we were descendants after them. Will You then destroy us for what the falsifiers did?”",
+      "And thus We make the signs clear, so that they may return.",
+      "And recite to them the story of the one to whom We gave Our signs, but he detached himself from them, so Shayṭān pursued him and he became among the misguided.",
+      "And if We had willed, We could have raised him by them, but he clung to the earth and followed his desire. So his example is like that of a dog, if you drive it away, it pants, and if you leave it, it pants. That is the example of the people who deny Our signs. So relate the stories, so that they may reflect.",
+      "Evil is the example of the people who deny Our signs and wrong themselves.",
+      "Whoever Allah guides, he is the guided. And whoever He lets go astray, those are the losers.",
+      "And We have certainly created for Hell many of the jinn and humankind. They have hearts with which they do not understand, eyes with which they do not see, and ears with which they do not hear. Those are like cattle, rather they are more astray. Those are the heedless.",
+      "And to Allah belong the most beautiful names, so call upon Him by them, and leave those who deviate concerning His names. They will be repaid for what they used to do.",
+      "And among those We created is a community that guides by the truth and establishes justice by it.",
+      "And those who deny Our signs, We will lead them on gradually from where they do not know.",
+      "And I grant them respite. Indeed, My plan is firm.",
+      "Have they not reflected? There is no madness in their companion. He is only a clear warner.",
+      "Have they not looked into the dominion of the heavens and the earth and whatever Allah has created, and that perhaps their term has drawn near? Then in what speech after this will they believe?",
+      "Whomever Allah lets go astray, there is no guide for him. And He leaves them wandering blindly in their transgression.",
+      "They ask you about the Hour, “When will it take place?” Say, “Its knowledge is only with my Lord. None will reveal it at its time except Him. It weighs heavy in the heavens and the earth. It will not come upon you except suddenly.” They ask you as though you are eager for it. Say, “Its knowledge is only with Allah, but most people do not know.”",
+      "Say, “I possess no power to benefit myself or harm myself except what Allah wills. And if I knew the unseen, I would have acquired much good, and no harm would have touched me. I am only a warner and a bearer of good news for a people who believe.”",
+      "He is the One who created you from a single soul and made from it its mate, so that he might find rest in her. Then when he covered her, she carried a light burden and passed on with it. But when it grew heavy, they both called upon Allah, their Lord, “If You grant us a righteous child, we will surely be among the grateful.”",
+      "But when He granted them a righteous child, they associated partners with Him in what He gave them. Exalted is Allah above what they associate.",
+      "Do they associate what creates nothing and themselves are created,",
+      "and cannot help them, nor can they help themselves?",
+      "And if you call them to guidance, they do not follow you. It is the same for them whether you call them or remain silent.",
+      "Indeed, those you call upon besides Allah are servants like you. So call upon them and let them respond to you, if you are truthful.",
+      "Do they have feet with which they walk, or hands with which they strike, or eyes with which they see, or ears with which they hear? Say, “Call your partners, then plot against me and give me no respite.",
+      "Indeed, my Protector is Allah, who sent down the Book. And He protects the righteous.",
+      "And those you call upon besides Him cannot help you, nor can they help themselves.”",
+      "And if you call them to guidance, they do not hear. And you see them looking at you, but they do not see.",
+      "Take forgiveness, command what is right, and turn away from the ignorant.",
+      "And if a prompting from Shayṭān touches you, then seek refuge in Allah. Indeed, He is All-Hearing, All-Knowing.",
+      "Indeed, those who are mindful of Allah, when a prompting from Shayṭān touches them, they remember, and then they see clearly.",
+      "But their brothers draw them deeper into error, then they do not stop.",
+      "And when you do not bring them a sign, they say, “Why did you not choose it?” Say, “I only follow what is revealed to me from my Lord.” This is insight from your Lord, and guidance and mercy for a people who believe.",
+      "And when the Qur’an is recited, listen to it and remain silent, so that you may receive mercy.",
+      "And remember your Lord within yourself, humbly and in awe, without loudness in words, morning and evening, and do not be among the heedless.",
+      "Indeed, those who are with your Lord are not arrogant toward His worship. They glorify Him, and to Him they prostrate."
+    ];
+
+    const versesContainer = document.getElementById("versesContainer");
+    const loadingState = document.getElementById("loadingState");
+    const errorState = document.getElementById("errorState");
+    const noteState = document.getElementById("noteState");
+    const bookmarkState = document.getElementById("bookmarkState");
+
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+
+    const modePanel = document.getElementById("modePanel");
+    const versePanel = document.getElementById("versePanel");
+    const modeButtons = document.querySelectorAll(".mode-button");
+    const verseSelect = document.getElementById("verseSelect");
+    const jumpButton = document.getElementById("jumpButton");
+    const themeToggle = document.getElementById("themeToggle");
+
+    const bookmarkOpen = document.getElementById("bookmarkOpen");
+    const bookmarkPanel = document.getElementById("bookmarkPanel");
+    const bookmarkClose = document.getElementById("bookmarkClose");
+    const lastReadText = document.getElementById("lastReadText");
+    const goLastRead = document.getElementById("goLastRead");
+    const clearHistory = document.getElementById("clearHistory");
+    const bookmarkList = document.getElementById("bookmarkList");
+    const bookmarkEmpty = document.getElementById("bookmarkEmpty");
+
+    const surahNumber = 7;
+    const totalVerses = 206;
+    const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
+    const historyStorageKey = `teq-surah-${surahNumber}-history`;
+    const historyLimit = 25;
+
+    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+    const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
+
+    let currentMode = "bilingual";
+    let transliterationAvailable = false;
+    let currentVisibleVerse = 1;
+    let readingObserver = null;
+    let readingSaveTimer = null;
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function toArabicDigits(num) {
+      return String(num).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+    }
+
+    function buildVerseSelector() {
+      let options = "";
+      for (let i = 1; i <= totalVerses; i += 1) {
+        options += `<option value="${i}">Verse ${i}</option>`;
+      }
+      verseSelect.innerHTML = options;
+    }
+
+    function setActiveTab(target) {
+      tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === target));
+      tabPanels.forEach((panel) => panel.classList.toggle("active", panel.id === target));
+      modePanel.classList.toggle("active", target === "mode");
+      versePanel.classList.toggle("active", target === "verse");
+    }
+
+    function applyMode(mode) {
+      currentMode = mode;
+      modeButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === mode);
+      });
+
+      versesContainer.classList.remove("hidden-arabic", "hidden-english", "hidden-transliteration");
+      noteState.style.display = "none";
+
+      if (mode === "bilingual") {
+        versesContainer.classList.add("hidden-transliteration");
+        return;
+      }
+
+      if (mode === "transliteration") {
+        if (!transliterationAvailable) {
+          noteState.style.display = "block";
+          versesContainer.classList.add("hidden-transliteration");
+          modeButtons.forEach((button) => {
+            button.classList.toggle("active", button.dataset.mode === "bilingual");
+          });
+          currentMode = "bilingual";
+          return;
+        }
+        return;
+      }
+
+      if (mode === "arabic-only") {
+        versesContainer.classList.add("hidden-english", "hidden-transliteration");
+        return;
+      }
+
+      if (mode === "english-only") {
+        versesContainer.classList.add("hidden-arabic", "hidden-transliteration");
+        return;
+      }
+
+      versesContainer.classList.add("hidden-transliteration");
+    }
+
+    function formatSavedTime(isoValue) {
+      if (!isoValue) return "";
+      const date = new Date(isoValue);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function showBookmarkMessage(message) {
+      bookmarkState.textContent = message;
+      bookmarkState.style.display = "block";
+      clearTimeout(showBookmarkMessage.timer);
+      showBookmarkMessage.timer = setTimeout(() => {
+        bookmarkState.style.display = "none";
+      }, 2400);
+    }
+
+    function getLastRead() {
+      try {
+        const raw = localStorage.getItem(lastReadStorageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed.ayah !== "number") return null;
+        if (parsed.ayah < 1 || parsed.ayah > totalVerses) return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(historyStorageKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && typeof item.ayah === "number" && item.ayah >= 1 && item.ayah <= totalVerses);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLastReadAndHistory(ayahNumber) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      localStorage.setItem(
+        lastReadStorageKey,
+        JSON.stringify({
+          ayah: safeVerse,
+          savedAt: new Date().toISOString()
+        })
+      );
+
+      const history = getHistory().filter((item) => item.ayah !== safeVerse);
+      history.unshift({
+        ayah: safeVerse,
+        savedAt: new Date().toISOString()
+      });
+
+      localStorage.setItem(
+        historyStorageKey,
+        JSON.stringify(history.slice(0, historyLimit))
+      );
+
+      updateBookmarkUI();
+    }
+
+    function clearBookmarkHistory() {
+      localStorage.removeItem(lastReadStorageKey);
+      localStorage.removeItem(historyStorageKey);
+      updateBookmarkUI();
+      showBookmarkMessage("Bookmark history cleared.");
+    }
+
+    function updateBookmarkUI() {
+      const lastRead = getLastRead();
+      const history = getHistory();
+
+      if (lastRead) {
+        lastReadText.textContent = `Verse ${lastRead.ayah}${lastRead.savedAt ? `, saved ${formatSavedTime(lastRead.savedAt)}` : ""}`;
+        goLastRead.disabled = false;
+        bookmarkOpen.classList.add("has-last");
+        bookmarkOpen.textContent = `Bookmarks · ${lastRead.ayah}`;
+      } else {
+        lastReadText.textContent = "No verse tracked yet.";
+        goLastRead.disabled = true;
+        bookmarkOpen.classList.remove("has-last");
+        bookmarkOpen.textContent = "Bookmarks";
+      }
+
+      bookmarkList.innerHTML = "";
+
+      if (!history.length) {
+        bookmarkEmpty.style.display = "block";
+      } else {
+        bookmarkEmpty.style.display = "none";
+
+        history.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "bookmark-item";
+
+          row.innerHTML = `
+            <div class="bookmark-item-left">
+              <div class="bookmark-item-title">Verse ${item.ayah}</div>
+              <div class="bookmark-item-meta">${item.savedAt ? `Visited ${escapeHtml(formatSavedTime(item.savedAt))}` : ""}</div>
+            </div>
+            <div class="bookmark-item-actions">
+              <button class="bookmark-mini" type="button" data-go-history="${item.ayah}">Go to verse</button>
+              <button class="bookmark-mini-remove" type="button" data-remove-history="${item.ayah}">Remove</button>
+            </div>
+          `;
+
+          bookmarkList.appendChild(row);
+        });
+
+        bookmarkList.querySelectorAll("[data-go-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-go-history"));
+            jumpToVerse(ayah);
+            closeBookmarkPanel();
+          });
+        });
+
+        bookmarkList.querySelectorAll("[data-remove-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-remove-history"));
+            const filtered = getHistory().filter((item) => item.ayah !== ayah);
+            localStorage.setItem(historyStorageKey, JSON.stringify(filtered));
+
+            const lastRead = getLastRead();
+            if (lastRead && lastRead.ayah === ayah) {
+              if (filtered.length) {
+                localStorage.setItem(lastReadStorageKey, JSON.stringify(filtered[0]));
+              } else {
+                localStorage.removeItem(lastReadStorageKey);
+              }
+            }
+
+            updateBookmarkUI();
+            showBookmarkMessage(`Verse ${ayah} removed from bookmark history.`);
+          });
+        });
+      }
+    }
+
+    function openBookmarkPanel() {
+      bookmarkPanel.classList.add("active");
+      bookmarkOpen.setAttribute("aria-expanded", "true");
+    }
+
+    function closeBookmarkPanel() {
+      bookmarkPanel.classList.remove("active");
+      bookmarkOpen.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleBookmarkPanel() {
+      bookmarkPanel.classList.toggle("active");
+      bookmarkOpen.setAttribute("aria-expanded", bookmarkPanel.classList.contains("active") ? "true" : "false");
+    }
+
+    function setCurrentVisibleVerse(ayahNumber, persist = true) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      currentVisibleVerse = safeVerse;
+      verseSelect.value = String(safeVerse);
+
+      if (persist) {
+        clearTimeout(readingSaveTimer);
+        readingSaveTimer = setTimeout(() => {
+          saveLastReadAndHistory(safeVerse);
+        }, 180);
+      }
+    }
+
+    function jumpToVerse(verseNumber) {
+      const safeVerseNumber = Number(verseNumber);
+      const target = document.getElementById(`ayah-${safeVerseNumber}`);
+      if (!target) return;
+
+      setActiveTab("read");
+      setCurrentVisibleVerse(safeVerseNumber, true);
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
+    }
+
+    function handleInitialVerseJump() {
+      const params = new URLSearchParams(window.location.search);
+      const ayahParam = params.get("ayah");
+      const hash = window.location.hash;
+
+      let verseNumber = null;
+
+      if (ayahParam && /^\d+$/.test(ayahParam)) {
+        verseNumber = Number(ayahParam);
+      } else if (hash && /^#ayah-\d+$/.test(hash)) {
+        verseNumber = Number(hash.replace("#ayah-", ""));
+      } else {
+        const lastRead = getLastRead();
+        if (lastRead) {
+          verseNumber = lastRead.ayah;
+        }
+      }
+
+      if (!verseNumber || verseNumber < 1 || verseNumber > totalVerses) {
+        setCurrentVisibleVerse(1, false);
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        const target = document.getElementById(`ayah-${verseNumber}`);
+        if (target) {
+          setCurrentVisibleVerse(verseNumber, false);
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
+        }
+      });
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        themeToggle.textContent = "Light";
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        themeToggle.textContent = "Dark";
+      }
+      localStorage.setItem("site-theme", theme);
+    }
+
+    function observeReadingProgress() {
+      const verseElements = document.querySelectorAll(".verse");
+      if (!verseElements.length) return;
+
+      if (readingObserver) {
+        readingObserver.disconnect();
+      }
+
+      readingObserver = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .map((entry) => ({
+              id: Number(entry.target.id.replace("ayah-", "")),
+              ratio: entry.intersectionRatio
+            }))
+            .sort((a, b) => b.ratio - a.ratio || a.id - b.id);
+
+          if (visible.length) {
+            setCurrentVisibleVerse(visible[0].id, true);
+          }
+        },
+        {
+          root: null,
+          threshold: [0.35, 0.5, 0.7],
+          rootMargin: "-12% 0px -55% 0px"
+        }
+      );
+
+      verseElements.forEach((element) => readingObserver.observe(element));
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setActiveTab(button.dataset.tab);
+      });
+    });
+
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        applyMode(button.dataset.mode);
+        setActiveTab("read");
+      });
+    });
+
+    jumpButton.addEventListener("click", () => {
+      jumpToVerse(verseSelect.value);
+    });
+
+    verseSelect.addEventListener("change", () => {
+      if (verseSelect.value) {
+        jumpToVerse(verseSelect.value);
+      }
+    });
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      applyTheme(isDark ? "light" : "dark");
+    });
+
+    bookmarkOpen.addEventListener("click", () => {
+      toggleBookmarkPanel();
+    });
+
+    bookmarkClose.addEventListener("click", () => {
+      closeBookmarkPanel();
+    });
+
+    goLastRead.addEventListener("click", () => {
+      const saved = getLastRead();
+      if (!saved) return;
+      jumpToVerse(saved.ayah);
+      closeBookmarkPanel();
+    });
+
+    clearHistory.addEventListener("click", () => {
+      clearBookmarkHistory();
+    });
+
+    async function fetchArabicAndTransliteration() {
+      const perPage = 50;
+      const totalPages = 5;
+      const requests = [];
+
+      for (let page = 1; page <= totalPages; page += 1) {
+        const url = `https://api.quran.com/api/v4/verses/by_chapter/7?words=true&word_fields=text_uthmani,transliteration&fields=text_uthmani&per_page=${perPage}&page=${page}`;
+        requests.push(
+          fetch(url).then((response) => {
+            if (!response.ok) {
+              throw new Error(`Request failed on page ${page}`);
+            }
+            return response.json();
+          })
+        );
+      }
+
+      const responses = await Promise.all(requests);
+
+      const verses = responses.flatMap((payload) => {
+        if (Array.isArray(payload.verses)) return payload.verses;
+        if (payload.data && Array.isArray(payload.data.verses)) return payload.data.verses;
+        return [];
+      });
+
+      return verses
+        .filter((verse) => verse.verse_number && verse.text_uthmani)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .map((verse) => {
+          const transliteration = Array.isArray(verse.words)
+            ? verse.words
+                .map((word) => {
+                  if (word.transliteration && word.transliteration.text) return word.transliteration.text;
+                  return "";
+                })
+                .filter(Boolean)
+                .join(" ")
+            : "";
+
+          return {
+            number: verse.verse_number,
+            arabic: verse.text_uthmani,
+            transliteration
+          };
+        });
+    }
+
+    function renderVerses(verseData) {
+      const bismillahBlock = `
+        <section class="bismillah-block notranslate" id="bismillah" translate="no">
+          <div class="bismillah-arabic notranslate" lang="ar" translate="no">${escapeHtml(bismillahArabic)}</div>
+          <div class="bismillah-english notranslate" translate="no">${escapeHtml(bismillahEnglish)}</div>
+        </section>
+      `;
+
+      const versesHtml = verseData.map((verse, index) => {
+        const english = englishVerses[index] || "";
+        const transliterationBlock = verse.transliteration
+          ? `<div class="transliteration-wrap notranslate" translate="no">${escapeHtml(verse.transliteration)}</div>`
+          : `<div class="transliteration-wrap notranslate" translate="no">Transliteration not available for this verse.</div>`;
+
+        return `
+          <article class="verse notranslate" id="ayah-${verse.number}" tabindex="-1" translate="no">
+            <div class="arabic-wrap notranslate" translate="no">
+              <div class="arabic-ayah notranslate" lang="ar" translate="no">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
+            </div>
+            ${transliterationBlock}
+            <div class="english notranslate" translate="no">
+              <div class="english-number notranslate" translate="no">${verse.number}.</div>
+              <div class="english-text notranslate" translate="no">${escapeHtml(english)}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      versesContainer.innerHTML = bismillahBlock + versesHtml;
+    }
+
+    async function loadSurah() {
+      try {
+        const verseData = await fetchArabicAndTransliteration();
+
+        if (verseData.length !== englishVerses.length) {
+          throw new Error(`Verse count mismatch: Arabic ${verseData.length}, English ${englishVerses.length}`);
+        }
+
+        transliterationAvailable = verseData.some((v) => v.transliteration && v.transliteration.trim());
+        renderVerses(verseData);
+        buildVerseSelector();
+        applyMode("bilingual");
+        updateBookmarkUI();
+
+        loadingState.style.display = "none";
+        errorState.style.display = "none";
+
+        observeReadingProgress();
+        handleInitialVerseJump();
+      } catch (error) {
+        console.error(error);
+        loadingState.style.display = "none";
+        errorState.style.display = "block";
+      }
+    }
+
+    const savedTheme = localStorage.getItem("site-theme");
+    applyTheme(savedTheme === "dark" ? "dark" : "light");
+
+    buildVerseSelector();
+    setActiveTab("read");
+    updateBookmarkUI();
+    loadSurah();
+  </script>
+</body>
+</html>
