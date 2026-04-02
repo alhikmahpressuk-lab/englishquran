@@ -563,6 +563,7 @@
 
     .content-card {
       padding: 18px;
+      position: relative;
     }
 
     .tab-panel {
@@ -702,7 +703,7 @@
     .verse {
       padding: 24px 16px;
       border-radius: 18px;
-      scroll-margin-top: 110px;
+      scroll-margin-top: 120px;
       border: 1px solid transparent;
       transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
@@ -727,7 +728,7 @@
       background: var(--surface-soft);
       border: 1px solid var(--line);
       margin-bottom: 8px;
-      text-align: center;
+      text-align: centre;
     }
 
     .bismillah-arabic {
@@ -737,6 +738,7 @@
       direction: rtl;
       color: #111827;
       margin-bottom: 14px;
+      text-align: centre;
     }
 
     html[data-theme="dark"] .bismillah-arabic {
@@ -746,6 +748,7 @@
     .bismillah-english {
       font-size: 1rem;
       color: color-mix(in srgb, var(--text) 88%, white);
+      text-align: centre;
     }
 
     .arabic-wrap {
@@ -756,11 +759,10 @@
 
     .arabic-ayah {
       font-family: "Amiri Quran", "Amiri", serif;
-      font-size: clamp(1.55rem, 2.15vw, 1.95rem);
+      font-size: clamp(1.9rem, 2.8vw, 2.6rem);
       line-height: 2.15;
       color: #111827;
       word-spacing: 0.04em;
-      letter-spacing: 0;
       display: inline;
     }
 
@@ -805,14 +807,14 @@
       background: var(--accent-soft);
       color: var(--accent-deep);
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      align-items: centre;
+      justify-content: centre;
       font-weight: 700;
       flex-shrink: 0;
       margin-top: 0;
       font-size: 1rem;
       line-height: 1;
-      text-align: center;
+      text-align: centre;
     }
 
     .english-text {
@@ -893,6 +895,68 @@
       line-height: 1.7;
     }
 
+    .sync-bar {
+      position: fixed;
+      top: 84px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 130;
+      display: none;
+      align-items: centre;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 95%, transparent);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      max-width: calc(100% - 24px);
+      white-space: nowrap;
+    }
+
+    .sync-bar.active {
+      display: inline-flex;
+    }
+
+    .sync-bar-text {
+      font-size: 0.82rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      padding: 0 2px;
+    }
+
+    .sync-mini-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 32px;
+      padding: 0 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: centre;
+      justify-content: centre;
+      line-height: 1;
+      transition: 0.2s ease;
+    }
+
+    .sync-mini-btn:hover {
+      background: var(--surface-soft);
+    }
+
+    .sync-mini-btn.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .sync-mini-btn.primary:hover {
+      background: var(--accent-deep);
+      border-color: var(--accent-deep);
+    }
+
     .footer {
       padding: 0 0 34px;
     }
@@ -920,8 +984,8 @@
       border: 1px solid var(--line);
       transition: 0.2s ease;
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      align-items: centre;
+      justify-content: centre;
       line-height: 1;
       min-height: 42px;
     }
@@ -952,13 +1016,17 @@
       .topbar-inner {
         flex-direction: column;
         align-items: stretch;
-        justify-content: center;
+        justify-content: centre;
         padding: 14px 0;
       }
 
       .nav {
         width: 100%;
         justify-content: flex-start;
+      }
+
+      .sync-bar {
+        top: 128px;
       }
     }
 
@@ -1000,7 +1068,7 @@
       }
 
       .arabic-ayah {
-        font-size: 1.42rem;
+        font-size: 1.75rem;
         line-height: 2.05;
       }
 
@@ -1023,6 +1091,15 @@
       .theme-toggle,
       .bookmark-open {
         min-height: 42px;
+      }
+
+      .sync-bar {
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .sync-bar-text {
+        display: none;
       }
     }
 
@@ -1088,6 +1165,12 @@
       </nav>
     </div>
   </header>
+
+  <div class="sync-bar notranslate" id="syncBar" translate="no" aria-live="polite">
+    <span class="sync-bar-text" id="syncText" translate="no">Recitation view is active. Reading view is now open.</span>
+    <button class="sync-mini-btn primary" type="button" id="syncPlayPause" translate="no">Play</button>
+    <button class="sync-mini-btn" type="button" id="syncExit" translate="no">Normal</button>
+  </div>
 
   <main translate="no" class="notranslate">
     <section class="hero">
@@ -1176,7 +1259,7 @@
 
           <div class="subpanel" id="versePanel">
             <h3 translate="no">Jump to Verse</h3>
-            <p translate="no">Select any ayah in Surah Ibrāhīm and jump straight to it. In synced recitation view, the audio will move to that verse.</p>
+            <p translate="no">Select any ayah in Surah Ibrāhīm and jump straight to it. In recitation view, the audio will move to that verse when timing is available.</p>
             <div class="verse-selector-row">
               <label for="verseSelect" translate="no">Verse</label>
               <select id="verseSelect" aria-label="Select verse number" translate="no"></select>
@@ -1211,7 +1294,7 @@
             <div class="audio-card">
               <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
               <audio id="surahAudioPlayer" controls preload="none"></audio>
-              <div class="listen-note" id="listenNote" translate="no">Choose any reciter, then listen and read comfortably in any mode you select. Switch to Synced recitation view to follow the verses as the recitation moves forward.</div>
+              <div class="listen-note" id="listenNote" translate="no">Choose any reciter, then listen and read comfortably in any mode you select.</div>
             </div>
           </div>
 
@@ -1363,6 +1446,11 @@
     const surahAudioPlayer = document.getElementById("surahAudioPlayer");
     const audioMeta = document.getElementById("audioMeta");
 
+    const syncBar = document.getElementById("syncBar");
+    const syncText = document.getElementById("syncText");
+    const syncPlayPause = document.getElementById("syncPlayPause");
+    const syncExit = document.getElementById("syncExit");
+
     const surahNumber = 14;
     const totalVerses = 52;
     const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
@@ -1393,6 +1481,8 @@
     let activeVerseNumber = null;
     let activeWordKey = null;
     let autoScrollTimer = null;
+    let wakeLock = null;
+    let wakeLockRefreshTimer = null;
 
     function escapeHtml(text) {
       return String(text)
@@ -1463,17 +1553,44 @@
       versesContainer.classList.add("hidden-transliteration");
     }
 
-    function applyAudioView(view) {
+    function updateSyncBarState() {
+      if (currentAudioView === "synced") {
+        syncBar.classList.add("active");
+        syncPlayPause.textContent = surahAudioPlayer.paused ? "Play" : "Pause";
+      } else {
+        syncBar.classList.remove("active");
+      }
+    }
+
+    function applyAudioView(view, autoMove = true) {
       currentAudioView = view;
+
       audioViewButtons.forEach((button) => {
         button.classList.toggle("active", button.dataset.audioView === view);
       });
 
       if (view === "synced") {
-        listenNote.textContent = "Synced recitation view is active. Jump to Verse will move the recitation to that verse, the current verse will be highlighted, and the page will follow the recitation as it moves.";
+        listenNote.textContent = "Recitation view is active. Reading view is now open.";
+        syncText.textContent = "Recitation view is active. Reading view is now open.";
+        updateSyncBarState();
+
+        if (autoMove) {
+          setActiveTab("read");
+          requestAnimationFrame(() => {
+            const targetVerse = document.getElementById(`ayah-${currentVisibleVerse}`) || document.getElementById("bismillah");
+            if (targetVerse) {
+              targetVerse.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          });
+        }
+
+        if (currentAudioUrl && syncByVerse[currentVisibleVerse]) {
+          highlightVerse(currentVisibleVerse, false);
+        }
       } else {
-        listenNote.textContent = "Standard recitation is active. Choose any reciter, then listen and read comfortably in any mode you select.";
+        listenNote.textContent = "Choose any reciter, then listen and read comfortably in any mode you select.";
         clearAllHighlights();
+        updateSyncBarState();
       }
     }
 
@@ -1658,7 +1775,7 @@
       }
     }
 
-    function scrollToVerse(ayahNumber, behaviour = "smooth", block = "center") {
+    function scrollToVerse(ayahNumber, behaviour = "smooth", block = "start") {
       const target = document.getElementById(`ayah-${ayahNumber}`);
       if (!target) return;
       target.scrollIntoView({ behavior: behaviour, block });
@@ -1697,7 +1814,7 @@
             const tooHigh = rect.top < 110;
             const tooLow = rect.bottom > window.innerHeight - 130;
             if (tooHigh || tooLow) {
-              newVerse.scrollIntoView({ behavior: "smooth", block: "center" });
+              newVerse.scrollIntoView({ behavior: "smooth", block: "centre" });
             }
           }, 70);
         }
@@ -1822,6 +1939,11 @@
         if (autoplay) {
           surahAudioPlayer.play().catch(() => {});
         }
+
+        if (currentAudioView === "synced") {
+          updateSyncBarState();
+          highlightVerse(currentVisibleVerse, false);
+        }
       } catch (error) {
         console.error(error);
         currentAudioUrl = "";
@@ -1835,46 +1957,67 @@
       }
     }
 
+    function getActiveTimingItem(currentMs) {
+      if (!syncTimestamps.length) return null;
+
+      for (const item of syncTimestamps) {
+        if (currentMs >= item.timestampFrom && currentMs <= item.timestampTo) {
+          return item;
+        }
+      }
+
+      let nearest = null;
+      let nearestDistance = Infinity;
+
+      for (const item of syncTimestamps) {
+        const distance = Math.min(
+          Math.abs(currentMs - item.timestampFrom),
+          Math.abs(currentMs - item.timestampTo)
+        );
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearest = item;
+        }
+      }
+
+      if (nearestDistance <= 900) {
+        return nearest;
+      }
+
+      return null;
+    }
+
     function processSyncedPlayback() {
       if (currentAudioView !== "synced") return;
       if (!syncTimestamps.length) return;
 
       const currentMs = Math.floor(surahAudioPlayer.currentTime * 1000);
-
-      let active = null;
-      for (const item of syncTimestamps) {
-        if (currentMs >= item.timestampFrom && currentMs <= item.timestampTo) {
-          active = item;
-          break;
-        }
-      }
-
-      if (!active) {
-        if (currentMs < syncTimestamps[0].timestampFrom) {
-          active = syncTimestamps[0];
-        } else if (currentMs > syncTimestamps[syncTimestamps.length - 1].timestampTo) {
-          active = syncTimestamps[syncTimestamps.length - 1];
-        }
-      }
-
+      const active = getActiveTimingItem(currentMs);
       if (!active) return;
 
       highlightVerse(active.verseNumber, true);
       setCurrentVisibleVerse(active.verseNumber, true);
 
-      if (active.segments.length) {
-        const relativeWord = active.segments.find((segment) => {
+      if (Array.isArray(active.segments) && active.segments.length) {
+        const activeSegment = active.segments.find((segment) => {
           const start = Number(segment[1]);
           const end = Number(segment[2]);
           return Number.isFinite(start) && Number.isFinite(end) && currentMs >= start && currentMs <= end;
         });
 
-        if (relativeWord) {
-          const wordIndex = Number(relativeWord[0]) + 1;
-          if (Number.isFinite(wordIndex)) {
+        if (activeSegment) {
+          const wordIndex = Number(activeSegment[0]);
+          if (Number.isFinite(wordIndex) && wordIndex >= 1) {
             highlightWord(active.verseNumber, wordIndex);
+            return;
           }
         }
+      }
+
+      if (activeWordKey) {
+        const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
+        if (oldWord) oldWord.classList.remove("word-active");
+        activeWordKey = null;
       }
     }
 
@@ -1890,38 +2033,27 @@
         const shouldPlay = !surahAudioPlayer.paused;
         const targetTime = Math.max(0, syncByVerse[safeVerseNumber].timestampFrom / 1000);
 
+        const seekAndMaybePlay = () => {
+          try {
+            surahAudioPlayer.currentTime = targetTime;
+          } catch (error) {
+            console.error(error);
+          }
+          highlightVerse(safeVerseNumber, true);
+          processSyncedPlayback();
+          if (shouldPlay) {
+            surahAudioPlayer.play().catch(() => {});
+          }
+        };
+
         if (!surahAudioPlayer.src) {
           surahAudioPlayer.src = currentAudioUrl;
           surahAudioPlayer.load();
-          surahAudioPlayer.addEventListener(
-            "loadedmetadata",
-            () => {
-              surahAudioPlayer.currentTime = targetTime;
-              highlightVerse(safeVerseNumber, true);
-              if (shouldPlay) {
-                surahAudioPlayer.play().catch(() => {});
-              }
-            },
-            { once: true }
-          );
+          surahAudioPlayer.addEventListener("loadedmetadata", seekAndMaybePlay, { once: true });
+        } else if (surahAudioPlayer.readyState >= 1) {
+          seekAndMaybePlay();
         } else {
-          const seekNow = () => {
-            try {
-              surahAudioPlayer.currentTime = targetTime;
-            } catch (error) {
-              console.error(error);
-            }
-            highlightVerse(safeVerseNumber, true);
-            if (shouldPlay) {
-              surahAudioPlayer.play().catch(() => {});
-            }
-          };
-
-          if (surahAudioPlayer.readyState >= 1) {
-            seekNow();
-          } else {
-            surahAudioPlayer.addEventListener("loadedmetadata", seekNow, { once: true });
-          }
+          surahAudioPlayer.addEventListener("loadedmetadata", seekAndMaybePlay, { once: true });
         }
 
         history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
@@ -2049,6 +2181,41 @@
       versesContainer.innerHTML = bismillahBlock + versesHtml;
     }
 
+    async function requestWakeLock() {
+      if (!("wakeLock" in navigator)) return;
+
+      try {
+        if (wakeLock) return;
+        wakeLock = await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release", () => {
+          wakeLock = null;
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (!wakeLock) return;
+      try {
+        await wakeLock.release();
+      } catch (error) {
+        console.error(error);
+      }
+      wakeLock = null;
+    }
+
+    function maintainWakeLock() {
+      clearTimeout(wakeLockRefreshTimer);
+      wakeLockRefreshTimer = setTimeout(async () => {
+        if (!surahAudioPlayer.paused) {
+          await releaseWakeLock();
+          await requestWakeLock();
+          maintainWakeLock();
+        }
+      }, 5 * 60 * 1000);
+    }
+
     tabButtons.forEach((button) => {
       button.addEventListener("click", () => {
         setActiveTab(button.dataset.tab);
@@ -2063,8 +2230,16 @@
     });
 
     audioViewButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        applyAudioView(button.dataset.audioView);
+      button.addEventListener("click", async () => {
+        if (button.dataset.audioView === "synced") {
+          applyAudioView("synced", true);
+          if (!currentAudioUrl) {
+            await loadSelectedAudio(false);
+          }
+          updateSyncBarState();
+        } else {
+          applyAudioView("standard", false);
+        }
       });
     });
 
@@ -2113,6 +2288,22 @@
       }
     });
 
+    syncPlayPause.addEventListener("click", async () => {
+      if (!surahAudioPlayer.src && !currentAudioUrl) {
+        await loadSelectedAudio(false);
+      }
+
+      if (surahAudioPlayer.paused) {
+        surahAudioPlayer.play().catch(() => {});
+      } else {
+        surahAudioPlayer.pause();
+      }
+    });
+
+    syncExit.addEventListener("click", () => {
+      applyAudioView("standard", false);
+    });
+
     surahAudioPlayer.addEventListener("timeupdate", () => {
       processSyncedPlayback();
     });
@@ -2121,9 +2312,31 @@
       processSyncedPlayback();
     });
 
-    surahAudioPlayer.addEventListener("ended", () => {
+    surahAudioPlayer.addEventListener("play", async () => {
+      updateSyncBarState();
+      await requestWakeLock();
+      maintainWakeLock();
+    });
+
+    surahAudioPlayer.addEventListener("pause", async () => {
+      updateSyncBarState();
+      clearTimeout(wakeLockRefreshTimer);
+      await releaseWakeLock();
+    });
+
+    surahAudioPlayer.addEventListener("ended", async () => {
+      updateSyncBarState();
+      clearTimeout(wakeLockRefreshTimer);
+      await releaseWakeLock();
       if (currentAudioView === "synced") {
         clearAllHighlights();
+      }
+    });
+
+    document.addEventListener("visibilitychange", async () => {
+      if (document.visibilityState === "visible" && !surahAudioPlayer.paused) {
+        await requestWakeLock();
+        maintainWakeLock();
       }
     });
 
@@ -2143,7 +2356,7 @@
         renderVerses(verseData);
         buildVerseSelector();
         applyMode("bilingual");
-        applyAudioView("standard");
+        applyAudioView("standard", false);
         updateBookmarkUI();
 
         loadingState.style.display = "none";
@@ -2165,6 +2378,7 @@
     buildVerseSelector();
     setActiveTab("read");
     updateBookmarkUI();
+    updateSyncBarState();
     loadSurah();
   </script>
 </body>
