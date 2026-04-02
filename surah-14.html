@@ -1,1 +1,24 @@
+<div class="subpanel" id="listenPanel">
+  <h3 translate="no">Listen</h3>
+  <p translate="no">Choose a reciter and listen to the full recitation of Surah Ibrāhīm.</p>
 
+  <div class="listen-controls">
+    <div class="listen-field">
+      <label for="reciterSelect" translate="no">Reciter</label>
+      <select id="reciterSelect" aria-label="Select reciter" translate="no">
+        <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
+        <option value="shuraim">Sheikh Saud ash-Shuraym</option>
+        <option value="bukhatir">Sheikh Salah Bukhatir</option>
+        <option value="ali-jaber">Sheikh Ali Jaber</option>
+        <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
+      </select>
+    </div>
+
+    <button class="jump-button" type="button" id="loadAudioButton" translate="no">Load recitation</button>
+  </div>
+
+  <div class="audio-card">
+    <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
+    <audio id="surahAudioPlayer" controls preload="none"></audio>
+  </div>
+</div>
