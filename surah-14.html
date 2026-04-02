@@ -31,9 +31,6 @@
       --radius: 22px;
       --radius-sm: 16px;
       --max: 980px;
-      --verse-active: rgba(30, 107, 92, 0.12);
-      --word-active: rgba(30, 107, 92, 0.18);
-      --word-text-active: #154d42;
     }
 
     html[data-theme="dark"] {
@@ -50,9 +47,6 @@
       --danger-soft: rgba(180, 35, 24, 0.12);
       --danger: #ff8a80;
       --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
-      --verse-active: rgba(56, 161, 137, 0.16);
-      --word-active: rgba(56, 161, 137, 0.22);
-      --word-text-active: #d8fff4;
     }
 
     * {
@@ -678,8 +672,7 @@
     .bookmark-state,
     .loading-state,
     .error-state,
-    .note-state,
-    .sync-state {
+    .note-state {
       padding: 18px 16px;
       border-radius: 18px;
       background: var(--surface-soft);
@@ -695,26 +688,14 @@
       display: none;
     }
 
-    .sync-state {
-      margin-top: 14px;
-      margin-bottom: 0;
-      font-size: 0.96rem;
-    }
-
     .verse {
       padding: 24px 16px;
       border-radius: 18px;
       scroll-margin-top: 110px;
-      transition: background 0.18s ease, box-shadow 0.18s ease;
     }
 
     .verse:target {
       background: var(--surface-deep);
-    }
-
-    .verse.active-recitation {
-      background: var(--verse-active);
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, var(--line));
     }
 
     .verse + .verse {
@@ -757,7 +738,7 @@
     .arabic-ayah {
       font-family: "Amiri Quran", "Amiri", serif;
       font-size: clamp(1.55rem, 2.15vw, 1.95rem);
-      line-height: 2.2;
+      line-height: 2.15;
       color: #111827;
       word-spacing: 0.04em;
       letter-spacing: 0;
@@ -766,19 +747,6 @@
 
     html[data-theme="dark"] .arabic-ayah {
       color: #f8fbfd;
-    }
-
-    .arabic-word {
-      display: inline-block;
-      padding: 0.05em 0.22em;
-      border-radius: 0.45em;
-      transition: background 0.14s ease, color 0.14s ease, transform 0.14s ease;
-    }
-
-    .arabic-word.word-active {
-      background: var(--word-active);
-      color: var(--word-text-active);
-      transform: translateY(-1px);
     }
 
     .transliteration-wrap {
@@ -886,6 +854,17 @@
     #surahAudioPlayer {
       width: 100%;
       min-height: 52px;
+    }
+
+    .listen-note {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--accent-soft);
+      border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+      color: color-mix(in srgb, var(--text) 88%, white);
+      font-size: 0.96rem;
+      line-height: 1.7;
     }
 
     .footer {
@@ -996,7 +975,7 @@
 
       .arabic-ayah {
         font-size: 1.42rem;
-        line-height: 2.08;
+        line-height: 2.05;
       }
 
       .bismillah-arabic {
@@ -1169,7 +1148,7 @@
 
           <div class="subpanel" id="versePanel">
             <h3 translate="no">Jump to Verse</h3>
-            <p translate="no">Select any ayah in Surah Ibrāhīm and jump straight to it. If synced recitation is loaded, the audio will jump there too.</p>
+            <p translate="no">Select any ayah in Surah Ibrāhīm and jump straight to it.</p>
             <div class="verse-selector-row">
               <label for="verseSelect" translate="no">Verse</label>
               <select id="verseSelect" aria-label="Select verse number" translate="no"></select>
@@ -1187,7 +1166,7 @@
                 <select id="reciterSelect" aria-label="Select reciter" translate="no">
                   <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
                   <option value="shuraim">Sheikh Saud ash-Shuraym</option>
-                  <option value="bukhatir">Sheikh Salah Bukhatir</option>
+                  <option value="dussary">Yasser Ad-Dussary</option>
                   <option value="ali-jaber">Sheikh Ali Jaber</option>
                   <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
                 </select>
@@ -1199,7 +1178,7 @@
             <div class="audio-card">
               <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
               <audio id="surahAudioPlayer" controls preload="none"></audio>
-              <div class="sync-state" id="syncState" translate="no">Synced verse and word highlighting will appear here when available.</div>
+              <div class="listen-note" translate="no">Choose any reciter, then listen and read comfortably in any mode you select.</div>
             </div>
           </div>
 
@@ -1322,7 +1301,6 @@
     const errorState = document.getElementById("errorState");
     const noteState = document.getElementById("noteState");
     const bookmarkState = document.getElementById("bookmarkState");
-    const syncState = document.getElementById("syncState");
 
     const tabButtons = document.querySelectorAll(".tab-button");
     const tabPanels = document.querySelectorAll(".tab-panel");
@@ -1352,12 +1330,11 @@
 
     const surahNumber = 14;
     const totalVerses = 52;
-    const verseKeyPrefix = "14:";
     const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
     const historyStorageKey = `teq-surah-${surahNumber}-history`;
     const historyLimit = 25;
 
-    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
     const reciters = {
@@ -1371,10 +1348,10 @@
         type: "chapter_reciter",
         id: 10
       },
-      "bukhatir": {
-        name: "Sheikh Salah Bukhatir",
-        type: "direct",
-        url: "https://download.quranicaudio.com/quran/salah_bukhatir/014.mp3"
+      "dussary": {
+        name: "Yasser Ad-Dussary",
+        type: "chapter_reciter",
+        id: 174
       },
       "ali-jaber": {
         name: "Sheikh Ali Jaber",
@@ -1393,20 +1370,6 @@
     let currentVisibleVerse = 1;
     let readingObserver = null;
     let readingSaveTimer = null;
-
-    let verseDataGlobal = [];
-    let currentAudioSync = {
-      reciterKey: null,
-      audioUrl: "",
-      verseTimings: [],
-      verseTimingsMap: new Map(),
-      hasSync: false
-    };
-
-    let activeRecitationVerse = null;
-    let activeRecitationWordKey = null;
-    let audioScrollLock = false;
-    let lastAutoScrolledVerse = null;
 
     function escapeHtml(text) {
       return String(text)
@@ -1601,7 +1564,7 @@
         bookmarkList.querySelectorAll("[data-go-history]").forEach((button) => {
           button.addEventListener("click", () => {
             const ayah = Number(button.getAttribute("data-go-history"));
-            jumpToVerse(ayah, true);
+            jumpToVerse(ayah);
             closeBookmarkPanel();
           });
         });
@@ -1658,13 +1621,7 @@
       }
     }
 
-    function scrollVerseIntoView(verseNumber, smooth = true) {
-      const target = document.getElementById(`ayah-${verseNumber}`);
-      if (!target) return;
-      target.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
-    }
-
-    function jumpToVerse(verseNumber, withAudioJump = true) {
+    function jumpToVerse(verseNumber) {
       const safeVerseNumber = Number(verseNumber);
       const target = document.getElementById(`ayah-${safeVerseNumber}`);
       if (!target) return;
@@ -1672,12 +1629,8 @@
       setActiveTab("read");
       setCurrentVisibleVerse(safeVerseNumber, true);
 
-      scrollVerseIntoView(safeVerseNumber, true);
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
       history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
-
-      if (withAudioJump) {
-        jumpAudioToVerse(safeVerseNumber, surahAudioPlayer.paused ? false : true);
-      }
     }
 
     function handleInitialVerseJump() {
@@ -1756,198 +1709,13 @@
       verseElements.forEach((element) => readingObserver.observe(element));
     }
 
-    function clearRecitationHighlights() {
-      document.querySelectorAll(".verse.active-recitation").forEach((el) => {
-        el.classList.remove("active-recitation");
-      });
-
-      document.querySelectorAll(".arabic-word.word-active").forEach((el) => {
-        el.classList.remove("word-active");
-      });
-
-      activeRecitationVerse = null;
-      activeRecitationWordKey = null;
-    }
-
-    function setActiveVerseHighlight(verseNumber, autoScroll = true) {
-      if (activeRecitationVerse === verseNumber) return;
-
-      if (activeRecitationVerse !== null) {
-        const previous = document.getElementById(`ayah-${activeRecitationVerse}`);
-        if (previous) previous.classList.remove("active-recitation");
-      }
-
-      const next = document.getElementById(`ayah-${verseNumber}`);
-      if (next) {
-        next.classList.add("active-recitation");
-        activeRecitationVerse = verseNumber;
-
-        if (autoScroll && lastAutoScrolledVerse !== verseNumber) {
-          const rect = next.getBoundingClientRect();
-          const tooHigh = rect.top < 96;
-          const tooLow = rect.bottom > window.innerHeight - 120;
-          if (tooHigh || tooLow) {
-            audioScrollLock = true;
-            next.scrollIntoView({ behavior: "smooth", block: "center" });
-            lastAutoScrolledVerse = verseNumber;
-            setTimeout(() => {
-              audioScrollLock = false;
-            }, 450);
-          }
-        }
-      }
-    }
-
-    function setActiveWordHighlight(verseNumber, wordIndex) {
-      const wordKey = `${verseNumber}-${wordIndex}`;
-      if (activeRecitationWordKey === wordKey) return;
-
-      if (activeRecitationWordKey) {
-        const previous = document.querySelector(`[data-word-key="${activeRecitationWordKey}"]`);
-        if (previous) previous.classList.remove("word-active");
-      }
-
-      const next = document.querySelector(`[data-word-key="${wordKey}"]`);
-      if (next) {
-        next.classList.add("word-active");
-        activeRecitationWordKey = wordKey;
-      } else {
-        activeRecitationWordKey = null;
-      }
-    }
-
-    function normaliseVerseTimings(audioFile) {
-      if (!audioFile || !Array.isArray(audioFile.verse_timings)) return [];
-
-      return audioFile.verse_timings
-        .map((entry) => {
-          const verseKey = entry.verse_key || entry.verseKey || "";
-          const verseNumber = Number(String(verseKey).split(":")[1]);
-          const startMs = Number(entry.timestamp_from ?? entry.timestampFrom ?? entry.start_time ?? entry.start ?? 0);
-          const endMs = Number(entry.timestamp_to ?? entry.timestampTo ?? entry.end_time ?? entry.end ?? 0);
-
-          const segments = Array.isArray(entry.segments)
-            ? entry.segments
-                .map((segment) => {
-                  if (!Array.isArray(segment) || segment.length < 3) return null;
-                  const wordIndex = Number(segment[0]);
-                  const from = Number(segment[1]);
-                  const to = Number(segment[2]);
-                  if (!Number.isFinite(wordIndex) || !Number.isFinite(from) || !Number.isFinite(to)) return null;
-                  return { wordIndex, startMs: from, endMs: to };
-                })
-                .filter(Boolean)
-            : [];
-
-          if (!verseNumber || !Number.isFinite(startMs) || !Number.isFinite(endMs)) {
-            return null;
-          }
-
-          return {
-            verseKey,
-            verseNumber,
-            startMs,
-            endMs,
-            segments
-          };
-        })
-        .filter(Boolean)
-        .sort((a, b) => a.verseNumber - b.verseNumber);
-    }
-
-    function findTimingForCurrentTime(currentMs) {
-      if (!currentAudioSync.hasSync || !currentAudioSync.verseTimings.length) return null;
-
-      const verseTiming =
-        currentAudioSync.verseTimings.find((entry) => currentMs >= entry.startMs && currentMs <= entry.endMs) ||
-        currentAudioSync.verseTimings.find((entry, index, arr) => {
-          const next = arr[index + 1];
-          return currentMs >= entry.startMs && next && currentMs < next.startMs;
-        }) ||
-        currentAudioSync.verseTimings[currentAudioSync.verseTimings.length - 1];
-
-      if (!verseTiming) return null;
-
-      let activeWordIndex = null;
-      if (Array.isArray(verseTiming.segments) && verseTiming.segments.length) {
-        const wordTiming =
-          verseTiming.segments.find((segment) => currentMs >= segment.startMs && currentMs <= segment.endMs) ||
-          verseTiming.segments.find((segment, index, arr) => {
-            const next = arr[index + 1];
-            return currentMs >= segment.startMs && next && currentMs < next.startMs;
-          }) ||
-          null;
-
-        if (wordTiming) {
-          activeWordIndex = wordTiming.wordIndex;
-        }
-      }
-
-      return {
-        verseNumber: verseTiming.verseNumber,
-        wordIndex: activeWordIndex
-      };
-    }
-
-    function updateRecitationSyncFromTime() {
-      if (!currentAudioSync.hasSync) return;
-
-      const currentMs = Math.round(surahAudioPlayer.currentTime * 1000);
-      const found = findTimingForCurrentTime(currentMs);
-      if (!found) return;
-
-      setActiveVerseHighlight(found.verseNumber, true);
-      setCurrentVisibleVerse(found.verseNumber, true);
-
-      if (found.wordIndex !== null) {
-        setActiveWordHighlight(found.verseNumber, found.wordIndex);
-      }
-    }
-
-    function jumpAudioToVerse(verseNumber, shouldPlay = false) {
-      const safeVerseNumber = Number(verseNumber);
-      if (!safeVerseNumber || safeVerseNumber < 1 || safeVerseNumber > totalVerses) return;
-
-      if (!surahAudioPlayer.src) return;
-
-      if (!currentAudioSync.hasSync) {
-        if (currentAudioSync.reciterKey === "bukhatir") {
-          syncState.textContent = "This recitation is playing, but precise verse jumping and live sync are not available for this source.";
-        }
-        return;
-      }
-
-      const timing = currentAudioSync.verseTimingsMap.get(safeVerseNumber);
-      if (!timing) return;
-
-      const startSeconds = Math.max(0, timing.startMs / 1000);
-      surahAudioPlayer.currentTime = startSeconds;
-
-      setActiveVerseHighlight(safeVerseNumber, true);
-      if (timing.segments && timing.segments.length) {
-        setActiveWordHighlight(safeVerseNumber, timing.segments[0].wordIndex);
-      }
-
-      if (shouldPlay) {
-        surahAudioPlayer.play().catch(() => {});
-      }
-    }
-
     async function fetchReciterAudio(reciterKey) {
       const reciter = reciters[reciterKey];
       if (!reciter) {
         throw new Error("Reciter not found.");
       }
 
-      if (reciter.type === "direct") {
-        return {
-          audioUrl: reciter.url,
-          verseTimings: [],
-          hasSync: false
-        };
-      }
-
-      const url = `https://api.quran.com/api/v4/chapter_recitations/${reciter.id}/${surahNumber}?segments=true`;
+      const url = `https://api.quran.com/api/v4/chapter_recitations/${reciter.id}/${surahNumber}`;
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -1955,24 +1723,17 @@
       }
 
       const payload = await response.json();
-      const audioFile = payload?.audio_file || payload?.audioFile || null;
-      const rawAudioUrl = audioFile?.audio_url || audioFile?.audioUrl || "";
+      const audioUrl = payload?.audio_file?.audio_url;
 
-      if (!rawAudioUrl) {
+      if (!audioUrl) {
         throw new Error(`No audio returned for ${reciter.name}`);
       }
 
-      const audioUrl = /^https?:\/\//i.test(rawAudioUrl)
-        ? rawAudioUrl
-        : `https://verses.quran.com/${String(rawAudioUrl).replace(/^\/+/, "")}`;
+      if (/^https?:\/\//i.test(audioUrl)) {
+        return audioUrl;
+      }
 
-      const verseTimings = normaliseVerseTimings(audioFile);
-
-      return {
-        audioUrl,
-        verseTimings,
-        hasSync: verseTimings.length > 0
-      };
+      return `https://verses.quran.com/${audioUrl.replace(/^\/+/, "")}`;
     }
 
     async function loadSelectedAudio(autoplay = false) {
@@ -1982,169 +1743,24 @@
       if (!reciter) return;
 
       audioMeta.textContent = `Loading recitation: ${reciter.name}`;
-      syncState.textContent = "Loading sync data...";
       loadAudioButton.disabled = true;
       loadAudioButton.textContent = "Loading...";
 
-      clearRecitationHighlights();
-
       try {
-        const result = await fetchReciterAudio(reciterKey);
-
-        currentAudioSync = {
-          reciterKey,
-          audioUrl: result.audioUrl,
-          verseTimings: result.verseTimings,
-          verseTimingsMap: new Map(result.verseTimings.map((item) => [item.verseNumber, item])),
-          hasSync: result.hasSync
-        };
-
-        surahAudioPlayer.src = result.audioUrl;
+        const audioUrl = await fetchReciterAudio(reciterKey);
+        surahAudioPlayer.src = audioUrl;
         surahAudioPlayer.load();
-
         audioMeta.textContent = `Selected reciter: ${reciter.name}`;
-
-        if (result.hasSync) {
-          syncState.textContent = "Live verse and word highlighting is active. Jumping to a verse will move the recitation there.";
-        } else {
-          syncState.textContent = "This recitation is available, but precise live verse and word sync are not available for this source.";
-        }
 
         if (autoplay) {
           surahAudioPlayer.play().catch(() => {});
         }
       } catch (error) {
         console.error(error);
-        currentAudioSync = {
-          reciterKey: null,
-          audioUrl: "",
-          verseTimings: [],
-          verseTimingsMap: new Map(),
-          hasSync: false
-        };
         audioMeta.textContent = `Could not load recitation for ${reciter.name}. Please try another reciter.`;
-        syncState.textContent = "Recitation could not be loaded.";
       } finally {
         loadAudioButton.disabled = false;
         loadAudioButton.textContent = "Load recitation";
-      }
-    }
-
-    function renderWords(words, verseNumber) {
-      if (!Array.isArray(words) || !words.length) {
-        return "";
-      }
-
-      return words.map((word, index) => {
-        const wordText =
-          word.text_uthmani ||
-          word.text_uthmani_simple ||
-          word.code_v2 ||
-          "";
-        const display = escapeHtml(wordText);
-        const wordIndex = index + 1;
-        return `<span class="arabic-word notranslate" data-word-key="${verseNumber}-${wordIndex}" translate="no">${display}</span>`;
-      }).join(" ");
-    }
-
-    async function fetchArabicAndTransliteration() {
-      const perPage = 60;
-      const url = `https://api.quran.com/api/v4/verses/by_chapter/14?words=true&word_fields=text_uthmani,transliteration&fields=text_uthmani&per_page=${perPage}&page=1`;
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error("Could not load verse data.");
-      }
-
-      const payload = await response.json();
-      const verses = Array.isArray(payload.verses)
-        ? payload.verses
-        : payload.data && Array.isArray(payload.data.verses)
-          ? payload.data.verses
-          : [];
-
-      return verses
-        .filter((verse) => verse.verse_number && verse.text_uthmani)
-        .sort((a, b) => a.verse_number - b.verse_number)
-        .map((verse) => {
-          const transliteration = Array.isArray(verse.words)
-            ? verse.words
-                .map((word) => {
-                  if (word.transliteration && word.transliteration.text) return word.transliteration.text;
-                  return "";
-                })
-                .filter(Boolean)
-                .join(" ")
-            : "";
-
-          return {
-            number: verse.verse_number,
-            arabic: verse.text_uthmani,
-            transliteration,
-            words: Array.isArray(verse.words) ? verse.words : []
-          };
-        });
-    }
-
-    function renderVerses(verseData) {
-      const bismillahBlock = `
-        <section class="bismillah-block notranslate" id="bismillah" translate="no">
-          <div class="bismillah-arabic notranslate" lang="ar" translate="no">${escapeHtml(bismillahArabic)}</div>
-          <div class="bismillah-english notranslate" translate="no">${escapeHtml(bismillahEnglish)}</div>
-        </section>
-      `;
-
-      const versesHtml = verseData.map((verse, index) => {
-        const english = englishVerses[index] || "";
-        const transliterationBlock = verse.transliteration
-          ? `<div class="transliteration-wrap notranslate" translate="no">${escapeHtml(verse.transliteration)}</div>`
-          : `<div class="transliteration-wrap notranslate" translate="no">Transliteration not available for this verse.</div>`;
-
-        const arabicWords = renderWords(verse.words, verse.number) || escapeHtml(verse.arabic);
-
-        return `
-          <article class="verse notranslate" id="ayah-${verse.number}" tabindex="-1" translate="no">
-            <div class="arabic-wrap notranslate" translate="no">
-              <div class="arabic-ayah notranslate" lang="ar" translate="no">${arabicWords} <span class="notranslate" translate="no">﴿${toArabicDigits(verse.number)}﴾</span></div>
-            </div>
-            ${transliterationBlock}
-            <div class="english notranslate" translate="no">
-              <div class="english-number notranslate" translate="no">${verse.number}.</div>
-              <div class="english-text notranslate" translate="no">${escapeHtml(english)}</div>
-            </div>
-          </article>
-        `;
-      }).join("");
-
-      versesContainer.innerHTML = bismillahBlock + versesHtml;
-    }
-
-    function handleAudioTimeUpdate() {
-      if (!currentAudioSync.hasSync) return;
-      updateRecitationSyncFromTime();
-    }
-
-    function handleAudioSeeked() {
-      if (!currentAudioSync.hasSync) return;
-      updateRecitationSyncFromTime();
-    }
-
-    function handleAudioPlay() {
-      if (currentAudioSync.hasSync) {
-        syncState.textContent = "Live verse and word highlighting is active. Jumping to a verse will move the recitation there.";
-        updateRecitationSyncFromTime();
-      }
-    }
-
-    function handleAudioPause() {
-      if (currentAudioSync.hasSync) {
-        syncState.textContent = "Recitation paused. Verse and word highlight remain on the current position.";
-      }
-    }
-
-    function handleAudioEnded() {
-      if (currentAudioSync.hasSync) {
-        syncState.textContent = "Recitation completed.";
       }
     }
 
@@ -2162,12 +1778,12 @@
     });
 
     jumpButton.addEventListener("click", () => {
-      jumpToVerse(verseSelect.value, true);
+      jumpToVerse(verseSelect.value);
     });
 
     verseSelect.addEventListener("change", () => {
       if (verseSelect.value) {
-        jumpToVerse(verseSelect.value, true);
+        jumpToVerse(verseSelect.value);
       }
     });
 
@@ -2187,7 +1803,7 @@
     goLastRead.addEventListener("click", () => {
       const saved = getLastRead();
       if (!saved) return;
-      jumpToVerse(saved.ayah, true);
+      jumpToVerse(saved.ayah);
       closeBookmarkPanel();
     });
 
@@ -2206,11 +1822,83 @@
       }
     });
 
-    surahAudioPlayer.addEventListener("timeupdate", handleAudioTimeUpdate);
-    surahAudioPlayer.addEventListener("seeked", handleAudioSeeked);
-    surahAudioPlayer.addEventListener("play", handleAudioPlay);
-    surahAudioPlayer.addEventListener("pause", handleAudioPause);
-    surahAudioPlayer.addEventListener("ended", handleAudioEnded);
+    async function fetchArabicAndTransliteration() {
+      const perPage = 60;
+      const totalPages = 1;
+      const requests = [];
+
+      for (let page = 1; page <= totalPages; page += 1) {
+        const url = `https://api.quran.com/api/v4/verses/by_chapter/14?words=true&word_fields=text_uthmani,transliteration&fields=text_uthmani&per_page=${perPage}&page=${page}`;
+        requests.push(
+          fetch(url).then((response) => {
+            if (!response.ok) {
+              throw new Error(`Request failed on page ${page}`);
+            }
+            return response.json();
+          })
+        );
+      }
+
+      const responses = await Promise.all(requests);
+
+      const verses = responses.flatMap((payload) => {
+        if (Array.isArray(payload.verses)) return payload.verses;
+        if (payload.data && Array.isArray(payload.data.verses)) return payload.data.verses;
+        return [];
+      });
+
+      return verses
+        .filter((verse) => verse.verse_number && verse.text_uthmani)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .map((verse) => {
+          const transliteration = Array.isArray(verse.words)
+            ? verse.words
+                .map((word) => {
+                  if (word.transliteration && word.transliteration.text) return word.transliteration.text;
+                  return "";
+                })
+                .filter(Boolean)
+                .join(" ")
+            : "";
+
+          return {
+            number: verse.verse_number,
+            arabic: verse.text_uthmani,
+            transliteration
+          };
+        });
+    }
+
+    function renderVerses(verseData) {
+      const bismillahBlock = `
+        <section class="bismillah-block notranslate" id="bismillah" translate="no">
+          <div class="bismillah-arabic notranslate" lang="ar" translate="no">${escapeHtml(bismillahArabic)}</div>
+          <div class="bismillah-english notranslate" translate="no">${escapeHtml(bismillahEnglish)}</div>
+        </section>
+      `;
+
+      const versesHtml = verseData.map((verse, index) => {
+        const english = englishVerses[index] || "";
+        const transliterationBlock = verse.transliteration
+          ? `<div class="transliteration-wrap notranslate" translate="no">${escapeHtml(verse.transliteration)}</div>`
+          : `<div class="transliteration-wrap notranslate" translate="no">Transliteration not available for this verse.</div>`;
+
+        return `
+          <article class="verse notranslate" id="ayah-${verse.number}" tabindex="-1" translate="no">
+            <div class="arabic-wrap notranslate" translate="no">
+              <div class="arabic-ayah notranslate" lang="ar" translate="no">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
+            </div>
+            ${transliterationBlock}
+            <div class="english notranslate" translate="no">
+              <div class="english-number notranslate" translate="no">${verse.number}.</div>
+              <div class="english-text notranslate" translate="no">${escapeHtml(english)}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      versesContainer.innerHTML = bismillahBlock + versesHtml;
+    }
 
     async function loadSurah() {
       try {
@@ -2220,9 +1908,7 @@
           throw new Error(`Verse count mismatch: Arabic ${verseData.length}, English ${englishVerses.length}`);
         }
 
-        verseDataGlobal = verseData;
         transliterationAvailable = verseData.some((v) => v.transliteration && v.transliteration.trim());
-
         renderVerses(verseData);
         buildVerseSelector();
         applyMode("bilingual");
