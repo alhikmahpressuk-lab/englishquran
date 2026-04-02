@@ -1,1 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en" translate="no" class="notranslate">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+  />
+  <meta name="google" content="notranslate" />
+  <meta name="translate" content="no" />
+  <meta http-equiv="Content-Language" content="en" />
+  <title>Surah 9 | At-Tawbah | The English Qur’an</title>
+  <meta name="description" content="Surah 9, At-Tawbah, from The English Qur’an." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri+Quran&display=swap');
 
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --surface-deep: #edf4f2;
+      --text: #182128;
+      --muted: #66727d;
+      --line: #e3e8ec;
+      --accent: #1e6b5c;
+      --accent-deep: #154d42;
+      --accent-soft: #e8f3f0;
+      --danger-soft: #fff2f2;
+      --danger: #b42318;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --max: 980px;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f1418;
+      --surface: #182128;
+      --surface-soft: #1f2a33;
+      --surface-deep: #22303a;
+      --text: #f3f7fa;
+      --muted: #a8b5bf;
+      --line: #2d3a44;
+      --accent: #38a189;
+      --accent-deep: #2c7a67;
+      --accent-soft: rgba(56, 161, 137, 0.16);
+      --danger-soft: rgba(180, 35, 24, 0.12);
+      --danger: #ff8a80;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .notranslate {
+      translate: no;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 95%, transparent);
+    }
+
+    .topbar-inner,
+    .container,
+    .footer-inner {
+      width: min(var(--max), calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a,
+    .theme-toggle,
+    .bookmark-open {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.94rem;
+      color: var(--muted);
+      transition: 0.2s ease;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .nav a:hover,
+    .theme-toggle:hover,
+    .bookmark-open:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      border-color: var(--accent);
+    }
+
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      color: #fff;
+      border-color: var(--accent-deep);
+    }
+
+    .bookmark-open.has-last {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+      font-weight: 700;
+    }
+
+    html[data-theme="dark"] .bookmark-open.has-last {
+      color: #d8fff4;
+    }
+
+    .hero {
+      padding: 34px 0 18px;
+    }
+
+    .hero-card,
+    .content-card,
+    .bookmark-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .hero-card {
+      padding: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -110px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(30, 107, 92, 0.13) 0%, rgba(30, 107, 92, 0) 72%);
+      pointer-events: none;
+    }
+
+    html[data-theme="dark"] .hero-card::after {
+      background: radial-gradient(circle, rgba(56, 161, 137, 0.18) 0%, rgba(56, 161, 137, 0) 72%);
+    }
+
+    .crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy .meaning {
+      margin: 14px 0 0;
+      color: color-mix(in srgb, var(--text) 78%, white);
+      font-size: 1rem;
+    }
+
+    .hero-copy .summary {
+      margin: 18px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 1rem;
+      max-width: 58ch;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .meta-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .meta-value.ar {
+      direction: rtl;
+      text-align: right;
+      font-family: "Amiri Quran", serif;
+      font-size: 1.2rem;
+      line-height: 1.8;
+    }
+
+    .section {
+      padding: 12px 0 36px;
+    }
+
+    .bookmark-panel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+    }
+
+    .bookmark-panel.active {
+      display: block;
+    }
+
+    .bookmark-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .bookmark-header h3 {
+      margin: 0;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-header p {
+      margin: 6px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 0.96rem;
+    }
+
+    .bookmark-close {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-close:hover {
+      background: var(--surface-soft);
+    }
+
+    .bookmark-summary {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-card-label {
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .bookmark-card-value {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bookmark-card-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-action,
+    .bookmark-remove {
+      appearance: none;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-action {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-action:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .bookmark-remove:hover {
+      filter: brightness(0.98);
+    }
+
+    .bookmark-list-wrap {
+      margin-top: 8px;
+    }
+
+    .bookmark-list-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-empty {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .bookmark-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-item-left {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .bookmark-item-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .bookmark-item-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .bookmark-item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-mini,
+    .bookmark-mini-remove {
+      appearance: none;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-mini {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-mini:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-mini-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .tab-button:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: var(--surface-soft);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .content-card {
+      padding: 18px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .subpanel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-soft);
+    }
+
+    .subpanel.active {
+      display: block;
+    }
+
+    .subpanel h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subpanel p {
+      margin: 0 0 14px;
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .mode-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mode-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .mode-button:hover {
+      background: var(--surface-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+
+    .mode-button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .verse-selector-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .verse-selector-row label {
+      font-weight: 600;
+    }
+
+    .verse-selector-row select {
+      min-width: 180px;
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+    }
+
+    .jump-button {
+      appearance: none;
+      border: none;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .jump-button:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-state,
+    .loading-state,
+    .error-state,
+    .note-state {
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 82%, white);
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-state,
+    .error-state,
+    .note-state {
+      display: none;
+    }
+
+    .verse {
+      padding: 24px 16px;
+      border-radius: 18px;
+      scroll-margin-top: 110px;
+    }
+
+    .verse:target {
+      background: var(--surface-deep);
+    }
+
+    .verse + .verse {
+      border-top: 1px solid var(--line);
+    }
+
+    .arabic-wrap {
+      text-align: right;
+      direction: rtl;
+      margin-bottom: 18px;
+    }
+
+    .arabic-ayah {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.55rem, 2.15vw, 1.95rem);
+      line-height: 2.15;
+      color: #111827;
+      word-spacing: 0.04em;
+      letter-spacing: 0;
+      display: inline;
+    }
+
+    html[data-theme="dark"] .arabic-ayah {
+      color: #f8fbfd;
+    }
+
+    .transliteration-wrap {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 78%, white);
+      font-size: 0.98rem;
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    .english {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .english-number {
+      min-width: 48px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0;
+      font-size: 1rem;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .english-text {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      padding-top: 2px;
+    }
+
+    .overview {
+      padding: 8px 4px;
+    }
+
+    .overview h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .overview p {
+      margin: 0 0 16px;
+      font-size: 1.05rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      line-height: 1.8;
+    }
+
+    .overview ul {
+      margin: 0 0 22px;
+      padding-left: 22px;
+    }
+
+    .overview li {
+      margin-bottom: 10px;
+      font-size: 1.03rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    .footer {
+      padding: 0 0 34px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      min-height: 42px;
+    }
+
+    .footer-links a:hover {
+      background: var(--surface-soft);
+    }
+
+    .hidden-arabic .arabic-wrap {
+      display: none;
+    }
+
+    .hidden-english .english {
+      display: none;
+    }
+
+    .hidden-transliteration .transliteration-wrap {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        padding: 14px 0;
+      }
+
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .hero-card,
+      .content-card,
+      .bookmark-panel {
+        border-radius: 18px;
+      }
+
+      .hero-card {
+        padding: 22px;
+      }
+
+      .content-card,
+      .bookmark-panel {
+        padding: 12px;
+      }
+
+      .verse {
+        padding: 20px 10px;
+      }
+
+      .english-number {
+        min-width: 42px;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 0.96rem;
+      }
+
+      .overview p,
+      .overview li {
+        font-size: 1rem;
+      }
+
+      .arabic-ayah {
+        font-size: 1.42rem;
+        line-height: 2.05;
+      }
+
+      .mode-options {
+        flex-direction: column;
+      }
+
+      .mode-button {
+        width: 100%;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-open {
+        min-height: 42px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .nav {
+        gap: 8px;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-open {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .verse-selector-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .verse-selector-row select,
+      .jump-button,
+      .bookmark-action,
+      .bookmark-remove,
+      .bookmark-close {
+        width: 100%;
+      }
+
+      .bookmark-item {
+        align-items: flex-start;
+      }
+
+      .bookmark-item-actions {
+        width: 100%;
+      }
+
+      .bookmark-mini,
+      .bookmark-mini-remove {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body translate="no" class="notranslate">
+  <header class="topbar notranslate" translate="no">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" translate="no">٩</div>
+        <div class="brand-text">
+          <h1 translate="no">The English Qur’an</h1>
+          <p translate="no">Surah 9 · At-Tawbah</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html" translate="no">All Surahs</a>
+        <a class="cta" href="#content" translate="no">Read Surah 9</a>
+        <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks" aria-expanded="false" translate="no">Bookmarks</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode" translate="no">Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main translate="no" class="notranslate">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="crumb" translate="no">Surah 9 · At-Tawbah</div>
+
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <h2 translate="no">At-Tawbah</h2>
+              <p class="meaning" translate="no">Repentance</p>
+              <p class="summary" translate="no">
+                A surah of truth, accountability, and clear distinction, exposing hypocrisy, affirming sincere commitment, and calling the believers to honesty, strength, and loyalty to Allah.
+              </p>
+            </div>
+
+            <div class="hero-meta">
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Arabic name</div>
+                <div class="meta-value ar notranslate" lang="ar" translate="no">التوبة</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Verses</div>
+                <div class="meta-value" translate="no">129</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Revelation</div>
+                <div class="meta-value" translate="no">Madani</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section notranslate" id="content" translate="no">
+      <div class="container">
+        <div class="bookmark-panel" id="bookmarkPanel">
+          <div class="bookmark-header">
+            <div>
+              <h3 translate="no">Bookmarks</h3>
+              <p translate="no">Your reading position is remembered automatically.</p>
+            </div>
+            <button class="bookmark-close" type="button" id="bookmarkClose" translate="no">Close</button>
+          </div>
+
+          <div class="bookmark-summary">
+            <div class="bookmark-card">
+              <div class="bookmark-card-label" translate="no">Last read verse</div>
+              <div class="bookmark-card-value" id="lastReadText" translate="no">No verse tracked yet.</div>
+              <div class="bookmark-card-row">
+                <button class="bookmark-action" type="button" id="goLastRead" translate="no">Go to last read</button>
+                <button class="bookmark-remove" type="button" id="clearHistory" translate="no">Clear bookmark history</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="bookmark-list-wrap">
+            <h4 class="bookmark-list-title" translate="no">Recently visited verses</h4>
+            <div class="bookmark-empty" id="bookmarkEmpty" translate="no">No reading history yet.</div>
+            <div class="bookmark-list" id="bookmarkList"></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="tab-button active" type="button" data-tab="read" translate="no">Read</button>
+          <button class="tab-button" type="button" data-tab="overview" translate="no">Overview</button>
+          <button class="tab-button" type="button" data-tab="mode" translate="no">Mode</button>
+          <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
+        </div>
+
+        <div class="content-card">
+          <div class="subpanel" id="modePanel">
+            <h3 translate="no">Reading Mode</h3>
+            <p translate="no">Select how the verses are displayed.</p>
+            <div class="mode-options">
+              <button class="mode-button active" type="button" data-mode="bilingual" translate="no">Arabic + English</button>
+              <button class="mode-button" type="button" data-mode="transliteration" translate="no">Transliteration</button>
+              <button class="mode-button" type="button" data-mode="arabic-only" translate="no">Arabic Only</button>
+              <button class="mode-button" type="button" data-mode="english-only" translate="no">English Only</button>
+            </div>
+          </div>
+
+          <div class="subpanel" id="versePanel">
+            <h3 translate="no">Jump to Verse</h3>
+            <p translate="no">Select any ayah in Surah At-Tawbah and jump straight to it.</p>
+            <div class="verse-selector-row">
+              <label for="verseSelect" translate="no">Verse</label>
+              <select id="verseSelect" aria-label="Select verse number" translate="no"></select>
+              <button class="jump-button" type="button" id="jumpButton" translate="no">Go to verse</button>
+            </div>
+          </div>
+
+          <div class="tab-panel active" id="read">
+            <div class="bookmark-state" id="bookmarkState" translate="no"></div>
+            <div class="loading-state" id="loadingState" translate="no">Loading Surah At-Tawbah...</div>
+            <div class="error-state" id="errorState" translate="no">The surah could not be loaded. Please refresh the page and try again.</div>
+            <div class="note-state" id="noteState" translate="no">Transliteration could not be loaded, so the page has switched back to Arabic + English.</div>
+            <div id="versesContainer" class="notranslate" translate="no"></div>
+          </div>
+
+          <div class="tab-panel" id="overview">
+            <div class="overview notranslate" translate="no">
+              <h3 translate="no">Overview</h3>
+              <p translate="no">Surah At-Tawbah delivers a firm and decisive message on truth, accountability, and the final separation between sincere belief and open rejection. Revealed in Madinah during a later period, it addresses a stage where the Muslim community had become established and was now required to uphold clarity, strength, and consistency in its commitments. Unlike other Surahs, it does not begin with “Bismillah”, reflecting the direct and uncompromising tone of the message, particularly in relation to broken treaties and open opposition.</p>
+
+              <p translate="no">The Surah announces a clear disassociation from those who repeatedly violated their agreements and continued hostility, setting defined limits and timelines. At the same time, it upholds fairness, making exceptions for those who remained true to their agreements. It establishes that commitments must be honoured, but betrayal cannot be ignored, reinforcing justice and accountability in all dealings.</p>
+
+              <p translate="no">A major focus of the Surah is exposing hypocrisy within the community. It reveals the attitudes, excuses, and hidden intentions of those who claimed belief but avoided sacrifice and responsibility. Their reluctance, hesitation, and double standards are made clear, distinguishing them from those who are sincere, committed, and willing to stand firm.</p>
+
+              <p translate="no">The Surah also emphasises striving in the path of Allah with sincerity, whether through effort, sacrifice, or readiness to act when required. It corrects attachment to comfort, wealth, and ease, reminding believers that true success requires commitment beyond words. Alongside this, it highlights those who remained behind without valid reason, contrasting them with those who responded with honesty and devotion.</p>
+
+              <p translate="no">It also refers to past events and the role of Prophet Muhammad ﷺ in leading the community through moments of difficulty, reinforcing the importance of loyalty, obedience, and trust. The Surah closes with a powerful reminder of Allah’s mercy alongside His justice, and a final affirmation of the sincerity and care of the Messenger towards the believers.</p>
+
+              <p translate="no">As a whole, Surah At-Tawbah establishes a clear boundary between truth and falsehood, sincerity and hypocrisy, commitment and avoidance, calling for complete honesty, strength, and accountability in faith.</p>
+
+              <h3 translate="no">Key Themes</h3>
+              <ul>
+                <li translate="no">Disassociation from broken treaties and persistent opposition</li>
+                <li translate="no">Justice, accountability, and honouring commitments</li>
+                <li translate="no">Exposure of hypocrisy and false claims of belief</li>
+                <li translate="no">Sincerity, sacrifice, and striving in the path of Allah</li>
+                <li translate="no">Loyalty, obedience, and responsibility</li>
+                <li translate="no">Correction of attachment to comfort and worldly ease</li>
+                <li translate="no">The role of Prophet Muhammad ﷺ in leadership and guidance</li>
+                <li translate="no">Mercy and justice of Allah</li>
+                <li translate="no">Clear distinction between truth and falsehood</li>
+              </ul>
+
+              <h3 translate="no">Central Message</h3>
+              <p translate="no">Faith must be sincere, proven through action, commitment, and honesty without contradiction.</p>
+              <p translate="no">Hypocrisy is exposed through excuses, hesitation, and avoidance of responsibility.</p>
+              <p translate="no">Believers are called to stand firm, uphold justice, and remain loyal to truth at all times.</p>
+              <p translate="no">Success lies in complete sincerity, strength in faith, and trust in Allah without compromise.</p>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="mode"></div>
+          <div class="tab-panel" id="verse"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer notranslate" translate="no">
+    <div class="footer-inner">
+      <div translate="no">Surah 9 | At-Tawbah</div>
+      <div class="footer-links">
+        <a href="surah-8.html" translate="no">Previous Surah · Al-Anfāl</a>
+        <a href="index.html" translate="no">Homepage</a>
+        <a href="surah-10.html" translate="no">Next Surah · Yūnus</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const englishVerses = [
+      "A declaration of disavowal from Allah and His Messenger to those among the associators with whom you made a treaty.",
+      "So travel freely in the land for four months, and know that you cannot escape Allah, and that Allah will bring disgrace upon the disbelievers.",
+      "And a proclamation from Allah and His Messenger to the people on the Day of the Great Pilgrimage, that Allah is free from obligation to the associators, and so is His Messenger. So if you repent, that is better for you. But if you turn away, then know that you cannot escape Allah. And give tidings of a painful punishment to those who disbelieve.",
+      "Except for those among the associators with whom you made a treaty, and who did not fail you in anything, nor supported anyone against you. Fulfil your treaty with them until its term. Indeed, Allah loves those who are mindful of Him.",
+      "Then, when the sacred months have passed, kill the associators wherever you find them, capture them, besiege them, and lie in wait for them at every place of ambush. But if they repent, uphold the prayer, and give zakah, then leave their way free. Indeed, Allah is Most-Forgiving, Ever-Merciful.",
+      "And if any one of the associators seeks your protection, then grant him protection so that he may hear the words of Allah. Then escort him to a place of safety. That is because they are a people who do not know.",
+      "How can there be a treaty with Allah and with His Messenger for the associators, except for those with whom you made a treaty at the Sacred Mosque? So long as they remain upright with you, remain upright with them. Indeed, Allah loves those who are mindful of Him.",
+      "How so, when if they gain the upper hand over you, they respect neither bond nor treaty concerning you? They please you with their mouths, but their hearts refuse, and most of them are rebellious.",
+      "They have sold the signs of Allah for a small gain and barred others from His path. Indeed, evil is what they have been doing.",
+      "They respect neither bond nor obligation concerning a believer. Those are the transgressors.",
+      "But if they repent, uphold the prayer, and give zakah, then they are your brothers in faith. And We set out the signs clearly for a people who understand.",
+      "And if they break their oaths after their treaty and attack your religion, then fight the leaders of disbelief, for there are no binding oaths for them, so that they may desist.",
+      "Will you not fight a people who broke their oaths, sought to expel the Messenger, and were the first to attack you? Do you fear them? Allah is more deserving that you fear Him, if you are believers.",
+      "Fight them, Allah will punish them by your hands, disgrace them, give you victory over them, and heal the hearts of believing people,",
+      "and remove the rage from their hearts. And Allah turns in mercy to whom He wills. And Allah is All-Knowing, All-Wise.",
+      "Or did you think that you would be left alone while Allah has not yet made evident those among you who strive, and who take no close allies besides Allah, His Messenger, and the believers? And Allah is fully aware of what you do.",
+      "It is not for the associators to maintain the mosques of Allah while bearing witness against themselves to disbelief. Those, their deeds have come to nothing, and they will remain in the Fire.",
+      "Only those who believe in Allah and the Last Day, uphold the prayer, give zakah, and fear none but Allah, are fit to maintain the mosques of Allah. It may be that they are among the rightly guided.",
+      "Do you consider the providing of water to pilgrims and the maintenance of the Sacred Mosque equal to belief in Allah and the Last Day, and striving in the way of Allah? They are not equal with Allah. And Allah does not guide wrongdoing people.",
+      "Those who believed, migrated, and strove in the way of Allah with their wealth and their lives are greater in rank with Allah. Those are the successful.",
+      "Their Lord gives them good news of mercy from Him, pleasure, and gardens in which they will have lasting delight,",
+      "remaining in them forever. Indeed, with Allah is a great reward.",
+      "O you who believe, do not take your fathers and your brothers as close allies if they prefer disbelief over faith. And whoever among you takes them as allies, those are the wrongdoers.",
+      "Say, “If your fathers, your sons, your brothers, your spouses, your relatives, the wealth you have acquired, the trade you fear may decline, and the homes you love are dearer to you than Allah, His Messenger, and striving in His way, then wait until Allah brings His command.” And Allah does not guide rebellious people.",
+      "Allah has already given you victory on many occasions, and on the Day of Ḥunayn, when your great numbers pleased you, but they did not benefit you at all, and the land became narrow for you despite its vastness, then you turned back fleeing.",
+      "Then Allah sent down His tranquillity upon His Messenger and upon the believers, and sent down forces you did not see, and punished those who disbelieved. That is the recompense of the disbelievers.",
+      "Then after that Allah turns in mercy to whom He wills. And Allah is Most-Forgiving, Ever-Merciful.",
+      "O you who believe, the associators are indeed impure, so let them not come near the Sacred Mosque after this year of theirs. If you fear poverty, Allah will enrich you from His bounty, if He wills. Indeed, Allah is All-Knowing, All-Wise.",
+      "Fight those among the People of the Book who do not believe in Allah nor the Last Day, who do not forbid what Allah and His Messenger have forbidden, and who do not follow the religion of truth, until they give the jizyah willingly while humbled.",
+      "And the Jews say, “ʿUzayr is the son of Allah,” and the Christians say, “al-Masīḥ is the son of Allah.” That is their statement from their mouths. They imitate the saying of those who disbelieved before. May Allah destroy them. How are they turned away?",
+      "They have taken their scholars and monks as lords besides Allah, and also al-Masīḥ, son of Maryam, though they were only commanded to worship One God. There is no god except Him. Exalted is He above what they associate with Him.",
+      "They want to extinguish the light of Allah with their mouths, but Allah refuses except to perfect His light, even though the disbelievers hate it.",
+      "He is the One who sent His Messenger with guidance and the religion of truth to make it prevail over every religion, even though the associators hate it.",
+      "O you who believe, indeed many of the scholars and monks consume people’s wealth unjustly and turn them away from the path of Allah. And those who hoard gold and silver and do not spend it in the way of Allah, give them tidings of a painful punishment.",
+      "On the Day it is heated in the fire of Hell and their foreheads, their sides, and their backs are branded with it, “This is what you hoarded for yourselves, so taste what you used to hoard.”",
+      "Indeed, the number of months with Allah is twelve months in the Book of Allah from the day He created the heavens and the earth. Of them, four are sacred. That is the upright religion, so do not wrong yourselves during them. And fight the associators all together as they fight you all together. And know that Allah is with those who are mindful of Him.",
+      "Postponing the sacred month is only an increase in disbelief by which those who disbelieve are led astray. They make it lawful one year and unlawful another year to match the number Allah has made sacred, thus making lawful what Allah has made sacred. The evil of their deeds has been made appealing to them. And Allah does not guide the disbelieving people.",
+      "O you who believe, what is the matter with you that when it is said to you, “Go forth in the way of Allah,” you cling heavily to the earth? Are you content with the life of this world rather than the Hereafter? But the enjoyment of the life of this world compared with the Hereafter is only little.",
+      "If you do not go forth, He will punish you with a painful punishment and replace you with another people, and you will not harm Him at all. And Allah has power over everything.",
+      "If you do not support him, Allah already supported him when those who disbelieved drove him out as one of two, when they were both in the cave and he said to his companion, “Do not grieve. Indeed, Allah is with us.” Then Allah sent down His tranquillity upon him and supported him with forces you did not see, and made the word of those who disbelieved the lowest, while the word of Allah is supreme. And Allah is All-Mighty, All-Wise.",
+      "Go forth, whether light or heavy, and strive with your wealth and your lives in the way of Allah. That is better for you, if you only knew.",
+      "Had it been an easy gain and a moderate journey, they would have followed you. But the distance was too far for them. And they will swear by Allah, “If we were able, we would certainly have gone out with you.” They destroy themselves, and Allah knows that they are liars.",
+      "May Allah pardon you. Why did you give them permission until it became clear to you who were truthful and you came to know the liars?",
+      "Those who believe in Allah and the Last Day do not ask your permission to be excused from striving with their wealth and their lives. And Allah knows the mindful of Him.",
+      "Only those who do not believe in Allah and the Last Day ask your permission, whose hearts are in doubt, so they waver in their doubt.",
+      "If they had intended to go forth, they would have prepared for it. But Allah disliked their setting out, so He held them back, and it was said, “Sit with those who sit behind.”",
+      "Had they gone forth with you, they would have increased you only in confusion, and they would have rushed about among you seeking to spread discord. And among you are some who would have listened to them. And Allah knows the wrongdoers.",
+      "They had already sought to spread discord before and turned matters upside down for you until the truth came and the command of Allah became clear, while they disliked it.",
+      "And among them is one who says, “Give me permission and do not put me to trial.” Surely into trial they have already fallen. And indeed, Hell surrounds the disbelievers.",
+      "If good comes to you, it grieves them. And if a calamity strikes you, they say, “We had already taken our precautions,” and they turn away rejoicing.",
+      "Say, “Nothing will ever befall us except what Allah has written for us. He is our Protector.” And upon Allah let the believers place their trust.",
+      "Say, “Are you awaiting for us anything except one of the two best outcomes, while we await for you that Allah may afflict you with punishment from Himself or by our hands? So wait, we too are waiting with you.”",
+      "Say, “Spend willingly or unwillingly, it will never be accepted from you. Indeed, you have been a rebellious people.”",
+      "And nothing prevented their spending from being accepted from them except that they disbelieved in Allah and in His Messenger, they do not come to prayer except lazily, and they do not spend except unwillingly.",
+      "So do not let their wealth or their children impress you. Allah only intends to punish them through them in this worldly life, and that their souls depart while they are disbelievers.",
+      "And they swear by Allah that they are from you, while they are not from you, but they are a people who are afraid.",
+      "If they could find a refuge, or caves, or any place to enter, they would turn to it rushing madly.",
+      "And among them are those who criticise you concerning the charities. If they are given from them, they are pleased, but if they are not given from them, then they become angry.",
+      "If only they had been content with what Allah and His Messenger gave them and had said, “Allah is sufficient for us. Allah will give us from His bounty, and so will His Messenger. Indeed, to Allah we turn in hope.”",
+      "Charities are only for the poor, the needy, those employed to collect them, those whose hearts are to be reconciled, for freeing those in bondage, for those in debt, for the cause of Allah, and for the stranded traveller, as an obligation from Allah. And Allah is All-Knowing, All-Wise.",
+      "And among them are those who harm the Prophet and say, “He is all ears.” Say, “He is an ear of goodness for you. He believes in Allah, trusts the believers, and is a mercy for those among you who believe.” And for those who harm the Messenger of Allah is a painful punishment.",
+      "They swear by Allah to you in order to please you, but Allah and His Messenger are more worthy that they should please Him, if they are believers.",
+      "Do they not know that whoever opposes Allah and His Messenger, for him is the fire of Hell, remaining in it forever? That is the great disgrace.",
+      "The hypocrites fear that a surah may be sent down against them informing them of what is in their hearts. Say, “Mock as you wish. Indeed, Allah will bring out what you fear.”",
+      "And if you ask them, they will surely say, “We were only talking idly and joking.” Say, “Was it Allah, His signs, and His Messenger that you were mocking?”",
+      "Do not make excuses. You have disbelieved after your belief. If We pardon a group among you, We will punish another group because they were criminals.",
+      "The hypocrite men and hypocrite women are of one another. They command what is wrong, forbid what is right, and withhold their hands. They forgot Allah, so He forgot them. Indeed, the hypocrites are the rebellious.",
+      "Allah has promised the hypocrite men and hypocrite women and the disbelievers the fire of Hell, remaining in it forever. It is enough for them. Allah has cursed them, and for them is a lasting punishment.",
+      "Like those before you, they were stronger than you in power, more abundant in wealth and children, and they enjoyed their share. So you have enjoyed your share just as those before you enjoyed their share, and you have engaged in false talk as they engaged. Those, their deeds have come to nothing in this world and the Hereafter, and those are the losers.",
+      "Has the news not reached them of those before them, the people of Nūḥ, ʿĀd, Thamūd, the people of Ibrāhīm, the companions of Madyan, and the overturned towns? Their messengers came to them with clear proofs. Allah would never wrong them, but they were wronging themselves.",
+      "The believing men and believing women are allies of one another. They command what is right, forbid what is wrong, uphold the prayer, give zakah, and obey Allah and His Messenger. Those, Allah will have mercy upon them. Indeed, Allah is All-Mighty, All-Wise.",
+      "Allah has promised the believing men and believing women gardens beneath which rivers flow, remaining in them forever, and good dwellings in gardens of lasting residence. But the pleasure of Allah is greater. That is the great success.",
+      "O Prophet, strive against the disbelievers and the hypocrites, and be firm with them. Their refuge is Hell, and how miserable is the destination.",
+      "They swear by Allah that they did not say it, but they certainly spoke the word of disbelief and disbelieved after their submission, and planned what they could not achieve. And they found fault only because Allah and His Messenger had enriched them from His bounty. So if they repent, it will be better for them. But if they turn away, Allah will punish them with a painful punishment in this world and the Hereafter, and they will have in the earth no protector and no helper.",
+      "And among them are those who made a covenant with Allah, “If He gives us from His bounty, we will surely give charity and will surely be among the righteous.”",
+      "But when He gave them from His bounty, they became miserly with it and turned away while refusing.",
+      "So He caused hypocrisy to remain in their hearts until the Day they will meet Him, because they broke their promise to Allah and because they used to lie.",
+      "Do they not know that Allah knows their secrets and their private talk, and that Allah is the Knower of the unseen?",
+      "Those who criticise the willing believers concerning charity, and those who can find only their own effort, and they mock them, Allah will mock them, and for them is a painful punishment.",
+      "Whether you seek forgiveness for them or do not seek forgiveness for them, even if you seek forgiveness for them seventy times, Allah will never forgive them. That is because they disbelieved in Allah and His Messenger. And Allah does not guide the rebellious people.",
+      "Those who were left behind rejoiced in remaining behind the Messenger of Allah, and they hated to strive with their wealth and their lives in the way of Allah, and they said, “Do not go forth in the heat.” Say, “The fire of Hell is hotter,” if only they understood.",
+      "So let them laugh a little and weep much as a recompense for what they used to earn.",
+      "If Allah returns you to a group of them and they ask your permission to go forth, then say, “You will never go forth with me again, nor will you ever fight an enemy with me. You were content to sit behind the first time, so sit with those who remain behind.”",
+      "And never pray over any of them who dies, nor stand at his grave. Indeed, they disbelieved in Allah and His Messenger and died while rebellious.",
+      "And do not let their wealth and their children impress you. Allah only intends to punish them through them in this world, and that their souls depart while they are disbelievers.",
+      "And whenever a surah is sent down saying, “Believe in Allah and strive with His Messenger,” those with wealth among them ask your permission and say, “Leave us to be with those who stay behind.”",
+      "They were content to be with those left behind, and their hearts were sealed, so they do not understand.",
+      "But the Messenger and those who believed with him strove with their wealth and their lives. For them are all good things, and those are the successful.",
+      "Allah has prepared for them gardens beneath which rivers flow, remaining in them forever. That is the great success.",
+      "And those with excuses among the desert Arabs came asking permission, while those who lied to Allah and His Messenger sat behind. A painful punishment will strike those among them who disbelieved.",
+      "There is no blame upon the weak, the sick, or those who do not find what to spend, if they are sincere to Allah and His Messenger. There is no cause against those who do good. And Allah is Most-Forgiving, Ever-Merciful.",
+      "Nor upon those who came to you so that you might provide mounts for them, and when you said, “I cannot find anything on which to mount you,” they turned away with their eyes overflowing with tears, grieving that they could not find what to spend.",
+      "The cause is only against those who ask your permission while they are rich. They were content to be with those left behind, and Allah sealed their hearts, so they do not know.",
+      "They will make excuses to you when you return to them. Say, “Do not make excuses. We will never believe you. Allah has already informed us of your news. Allah and His Messenger will see your deeds, then you will be returned to the Knower of the unseen and the seen, and He will inform you of what you used to do.”",
+      "They will swear by Allah to you when you return to them, so that you may leave them alone. So leave them alone. Indeed, they are filth, and their refuge is Hell, a recompense for what they used to earn.",
+      "They swear to you so that you may be pleased with them. But if you are pleased with them, Allah is certainly not pleased with the rebellious people.",
+      "The desert Arabs are stronger in disbelief and hypocrisy, and more likely not to know the limits of what Allah sent down to His Messenger. And Allah is All-Knowing, All-Wise.",
+      "And among the desert Arabs is one who considers what he spends as a loss and waits for misfortunes to befall you. Upon them will be the misfortune of evil. And Allah is All-Hearing, All-Knowing.",
+      "And among the desert Arabs is one who believes in Allah and the Last Day, and considers what he spends as means of nearness to Allah and the prayers of the Messenger. Surely, it is indeed a means of nearness for them. Allah will admit them into His mercy. Indeed, Allah is Most-Forgiving, Ever-Merciful.",
+      "And the first forerunners among the migrants and the helpers, and those who followed them with excellence, Allah is pleased with them and they are pleased with Him. And He has prepared for them gardens beneath which rivers flow, remaining in them forever. That is the great success.",
+      "And among those around you of the desert Arabs are hypocrites, and among the people of Madinah as well. They persist in hypocrisy. You do not know them, but We know them. We will punish them twice, then they will be returned to a great punishment.",
+      "And others have admitted their sins, having mixed a righteous deed with another that was bad. It may be that Allah will turn to them in mercy. Indeed, Allah is Most-Forgiving, Ever-Merciful.",
+      "Take from their wealth a charity by which you cleanse them and purify them, and pray for them. Indeed, your prayer is a source of reassurance for them. And Allah is All-Hearing, All-Knowing.",
+      "Do they not know that Allah is the One who accepts repentance from His servants and takes charities, and that Allah is the One who constantly accepts repentance, the Ever-Merciful?",
+      "And say, “Do deeds, for Allah will see your deeds, and so will His Messenger and the believers. And you will be returned to the Knower of the unseen and the seen, and He will inform you of what you used to do.”",
+      "And others are kept in suspense for the command of Allah, whether He punishes them or turns to them in mercy. And Allah is All-Knowing, All-Wise.",
+      "And those who built a mosque to cause harm, disbelief, division among the believers, and as a station for one who had previously waged war against Allah and His Messenger, will certainly swear, “We intended only good.” But Allah bears witness that they are indeed liars.",
+      "Do not ever stand in it. A mosque founded on mindfulness from the first day is more deserving that you stand in it. In it are men who love to purify themselves, and Allah loves those who purify themselves.",
+      "Is one who founded his building on mindfulness of Allah and His pleasure better, or one who founded his building on the edge of a crumbling cliff, so it collapsed with him into the fire of Hell? And Allah does not guide wrongdoing people.",
+      "The building which they built will never cease to be a source of doubt in their hearts unless their hearts are cut to pieces. And Allah is All-Knowing, All-Wise.",
+      "Indeed, Allah has purchased from the believers their lives and their wealth in exchange for Paradise. They fight in the way of Allah, so they kill and are killed. It is a true promise binding on Him in the Tawrāh, the Injīl, and the Qur’an. And who is more faithful to his promise than Allah? So rejoice in the bargain you have made. That is the great triumph.",
+      "Those who repent, worship, praise, fast, bow, prostrate, command what is right, forbid what is wrong, and keep the limits of Allah, give good news to the believers.",
+      "It is not for the Prophet and those who believe to seek forgiveness for the associators, even if they are close relatives, after it has become clear to them that they are companions of the blazing Fire.",
+      "And the seeking of forgiveness by Ibrāhīm for his father was only because of a promise he had made to him. But when it became clear to him that he was an enemy to Allah, he disassociated himself from him. Indeed, Ibrāhīm was deeply tender and forbearing.",
+      "Allah would never let a people go astray after He guided them until He makes clear to them what they should be mindful of. Indeed, Allah has full knowledge of everything.",
+      "Indeed, to Allah belongs the dominion of the heavens and the earth. He gives life and causes death. And you have besides Allah no protector and no helper.",
+      "Allah has certainly turned in mercy to the Prophet, and the migrants and the helpers who followed him in the hour of hardship, after the hearts of a group among them had nearly swerved. Then He turned to them in mercy. Indeed, He is to them Most-Kind, Ever-Merciful.",
+      "And also to the three who were left behind, until the earth, for all its vastness, became tight around them, and their souls became tight for them, and they realised that there is no refuge from Allah except with Him. Then He turned to them in mercy so that they might repent. Indeed, Allah is the One who constantly accepts repentance, the Ever-Merciful.",
+      "O you who believe, be mindful of Allah and be with the truthful.",
+      "It was not for the people of Madinah and those around them of the desert Arabs to remain behind the Messenger of Allah, nor to prefer themselves over him. That is because neither thirst, nor fatigue, nor hunger touches them in the way of Allah, nor do they step on any ground that enrages the disbelievers, nor do they gain anything from an enemy, except that a righteous deed is written for them because of it. Indeed, Allah does not let the reward of those who do good be lost.",
+      "And they do not spend any small or large amount, nor do they cross a valley, except that it is written for them, so that Allah may reward them according to the best of what they used to do.",
+      "And it is not for the believers to go forth all together. So why should not a group from every section of them go forth to gain understanding in religion and to warn their people when they return to them, so that they may beware.",
+      "O you who believe, fight those disbelievers who are near to you and let them find firmness in you. And know that Allah is with those who are mindful of Him.",
+      "And whenever a surah is sent down, among them is one who says, “Which of you has this increased in faith?” As for those who believe, it increases them in faith, and they rejoice.",
+      "But as for those in whose hearts is disease, it adds defilement to their defilement, and they die while they are disbelievers.",
+      "Do they not see that they are tested once or twice every year, yet they neither repent nor take heed?",
+      "And whenever a surah is sent down, they look at one another, “Does anyone see you?” Then they turn away. Allah has turned their hearts away, because they are a people who do not understand.",
+      "There has certainly come to you a Messenger from among yourselves. Your hardship weighs heavily upon him. He is deeply concerned for you, and to the believers he is gentle and merciful.",
+      "But if they turn away, then say, “Allah is sufficient for me. There is no god except Him. Upon Him I place my trust. And He is the Lord of the Mighty Throne.”"
+    ];
+
+    const versesContainer = document.getElementById("versesContainer");
+    const loadingState = document.getElementById("loadingState");
+    const errorState = document.getElementById("errorState");
+    const noteState = document.getElementById("noteState");
+    const bookmarkState = document.getElementById("bookmarkState");
+
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+
+    const modePanel = document.getElementById("modePanel");
+    const versePanel = document.getElementById("versePanel");
+    const modeButtons = document.querySelectorAll(".mode-button");
+    const verseSelect = document.getElementById("verseSelect");
+    const jumpButton = document.getElementById("jumpButton");
+    const themeToggle = document.getElementById("themeToggle");
+
+    const bookmarkOpen = document.getElementById("bookmarkOpen");
+    const bookmarkPanel = document.getElementById("bookmarkPanel");
+    const bookmarkClose = document.getElementById("bookmarkClose");
+    const lastReadText = document.getElementById("lastReadText");
+    const goLastRead = document.getElementById("goLastRead");
+    const clearHistory = document.getElementById("clearHistory");
+    const bookmarkList = document.getElementById("bookmarkList");
+    const bookmarkEmpty = document.getElementById("bookmarkEmpty");
+
+    const surahNumber = 9;
+    const totalVerses = 129;
+    const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
+    const historyStorageKey = `teq-surah-${surahNumber}-history`;
+    const historyLimit = 25;
+
+    let currentMode = "bilingual";
+    let transliterationAvailable = false;
+    let currentVisibleVerse = 1;
+    let readingObserver = null;
+    let readingSaveTimer = null;
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function toArabicDigits(num) {
+      return String(num).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+    }
+
+    function buildVerseSelector() {
+      let options = "";
+      for (let i = 1; i <= totalVerses; i += 1) {
+        options += `<option value="${i}">Verse ${i}</option>`;
+      }
+      verseSelect.innerHTML = options;
+    }
+
+    function setActiveTab(target) {
+      tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === target));
+      tabPanels.forEach((panel) => panel.classList.toggle("active", panel.id === target));
+      modePanel.classList.toggle("active", target === "mode");
+      versePanel.classList.toggle("active", target === "verse");
+    }
+
+    function applyMode(mode) {
+      currentMode = mode;
+      modeButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === mode);
+      });
+
+      versesContainer.classList.remove("hidden-arabic", "hidden-english", "hidden-transliteration");
+      noteState.style.display = "none";
+
+      if (mode === "bilingual") {
+        versesContainer.classList.add("hidden-transliteration");
+        return;
+      }
+
+      if (mode === "transliteration") {
+        if (!transliterationAvailable) {
+          noteState.style.display = "block";
+          versesContainer.classList.add("hidden-transliteration");
+          modeButtons.forEach((button) => {
+            button.classList.toggle("active", button.dataset.mode === "bilingual");
+          });
+          currentMode = "bilingual";
+          return;
+        }
+        return;
+      }
+
+      if (mode === "arabic-only") {
+        versesContainer.classList.add("hidden-english", "hidden-transliteration");
+        return;
+      }
+
+      if (mode === "english-only") {
+        versesContainer.classList.add("hidden-arabic", "hidden-transliteration");
+        return;
+      }
+
+      versesContainer.classList.add("hidden-transliteration");
+    }
+
+    function formatSavedTime(isoValue) {
+      if (!isoValue) return "";
+      const date = new Date(isoValue);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function showBookmarkMessage(message) {
+      bookmarkState.textContent = message;
+      bookmarkState.style.display = "block";
+      clearTimeout(showBookmarkMessage.timer);
+      showBookmarkMessage.timer = setTimeout(() => {
+        bookmarkState.style.display = "none";
+      }, 2400);
+    }
+
+    function getLastRead() {
+      try {
+        const raw = localStorage.getItem(lastReadStorageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed.ayah !== "number") return null;
+        if (parsed.ayah < 1 || parsed.ayah > totalVerses) return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(historyStorageKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && typeof item.ayah === "number" && item.ayah >= 1 && item.ayah <= totalVerses);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLastReadAndHistory(ayahNumber) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      localStorage.setItem(
+        lastReadStorageKey,
+        JSON.stringify({
+          ayah: safeVerse,
+          savedAt: new Date().toISOString()
+        })
+      );
+
+      const history = getHistory().filter((item) => item.ayah !== safeVerse);
+      history.unshift({
+        ayah: safeVerse,
+        savedAt: new Date().toISOString()
+      });
+
+      localStorage.setItem(
+        historyStorageKey,
+        JSON.stringify(history.slice(0, historyLimit))
+      );
+
+      updateBookmarkUI();
+    }
+
+    function clearBookmarkHistory() {
+      localStorage.removeItem(lastReadStorageKey);
+      localStorage.removeItem(historyStorageKey);
+      updateBookmarkUI();
+      showBookmarkMessage("Bookmark history cleared.");
+    }
+
+    function updateBookmarkUI() {
+      const lastRead = getLastRead();
+      const history = getHistory();
+
+      if (lastRead) {
+        lastReadText.textContent = `Verse ${lastRead.ayah}${lastRead.savedAt ? `, saved ${formatSavedTime(lastRead.savedAt)}` : ""}`;
+        goLastRead.disabled = false;
+        bookmarkOpen.classList.add("has-last");
+        bookmarkOpen.textContent = `Bookmarks · ${lastRead.ayah}`;
+      } else {
+        lastReadText.textContent = "No verse tracked yet.";
+        goLastRead.disabled = true;
+        bookmarkOpen.classList.remove("has-last");
+        bookmarkOpen.textContent = "Bookmarks";
+      }
+
+      bookmarkList.innerHTML = "";
+
+      if (!history.length) {
+        bookmarkEmpty.style.display = "block";
+      } else {
+        bookmarkEmpty.style.display = "none";
+
+        history.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "bookmark-item";
+
+          row.innerHTML = `
+            <div class="bookmark-item-left">
+              <div class="bookmark-item-title">Verse ${item.ayah}</div>
+              <div class="bookmark-item-meta">${item.savedAt ? `Visited ${escapeHtml(formatSavedTime(item.savedAt))}` : ""}</div>
+            </div>
+            <div class="bookmark-item-actions">
+              <button class="bookmark-mini" type="button" data-go-history="${item.ayah}">Go to verse</button>
+              <button class="bookmark-mini-remove" type="button" data-remove-history="${item.ayah}">Remove</button>
+            </div>
+          `;
+
+          bookmarkList.appendChild(row);
+        });
+
+        bookmarkList.querySelectorAll("[data-go-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-go-history"));
+            jumpToVerse(ayah);
+            closeBookmarkPanel();
+          });
+        });
+
+        bookmarkList.querySelectorAll("[data-remove-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-remove-history"));
+            const filtered = getHistory().filter((item) => item.ayah !== ayah);
+            localStorage.setItem(historyStorageKey, JSON.stringify(filtered));
+
+            const lastRead = getLastRead();
+            if (lastRead && lastRead.ayah === ayah) {
+              if (filtered.length) {
+                localStorage.setItem(lastReadStorageKey, JSON.stringify(filtered[0]));
+              } else {
+                localStorage.removeItem(lastReadStorageKey);
+              }
+            }
+
+            updateBookmarkUI();
+            showBookmarkMessage(`Verse ${ayah} removed from bookmark history.`);
+          });
+        });
+      }
+    }
+
+    function openBookmarkPanel() {
+      bookmarkPanel.classList.add("active");
+      bookmarkOpen.setAttribute("aria-expanded", "true");
+    }
+
+    function closeBookmarkPanel() {
+      bookmarkPanel.classList.remove("active");
+      bookmarkOpen.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleBookmarkPanel() {
+      bookmarkPanel.classList.toggle("active");
+      bookmarkOpen.setAttribute("aria-expanded", bookmarkPanel.classList.contains("active") ? "true" : "false");
+    }
+
+    function setCurrentVisibleVerse(ayahNumber, persist = true) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      currentVisibleVerse = safeVerse;
+      verseSelect.value = String(safeVerse);
+
+      if (persist) {
+        clearTimeout(readingSaveTimer);
+        readingSaveTimer = setTimeout(() => {
+          saveLastReadAndHistory(safeVerse);
+        }, 180);
+      }
+    }
+
+    function jumpToVerse(verseNumber) {
+      const safeVerseNumber = Number(verseNumber);
+      const target = document.getElementById(`ayah-${safeVerseNumber}`);
+      if (!target) return;
+
+      setActiveTab("read");
+      setCurrentVisibleVerse(safeVerseNumber, true);
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
+    }
+
+    function handleInitialVerseJump() {
+      const params = new URLSearchParams(window.location.search);
+      const ayahParam = params.get("ayah");
+      const hash = window.location.hash;
+
+      let verseNumber = null;
+
+      if (ayahParam && /^\d+$/.test(ayahParam)) {
+        verseNumber = Number(ayahParam);
+      } else if (hash && /^#ayah-\d+$/.test(hash)) {
+        verseNumber = Number(hash.replace("#ayah-", ""));
+      } else {
+        const lastRead = getLastRead();
+        if (lastRead) {
+          verseNumber = lastRead.ayah;
+        }
+      }
+
+      if (!verseNumber || verseNumber < 1 || verseNumber > totalVerses) {
+        setCurrentVisibleVerse(1, false);
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        const target = document.getElementById(`ayah-${verseNumber}`);
+        if (target) {
+          setCurrentVisibleVerse(verseNumber, false);
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
+        }
+      });
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        themeToggle.textContent = "Light";
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        themeToggle.textContent = "Dark";
+      }
+      localStorage.setItem("site-theme", theme);
+    }
+
+    function observeReadingProgress() {
+      const verseElements = document.querySelectorAll(".verse");
+      if (!verseElements.length) return;
+
+      if (readingObserver) {
+        readingObserver.disconnect();
+      }
+
+      readingObserver = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .map((entry) => ({
+              id: Number(entry.target.id.replace("ayah-", "")),
+              ratio: entry.intersectionRatio
+            }))
+            .sort((a, b) => b.ratio - a.ratio || a.id - b.id);
+
+          if (visible.length) {
+            setCurrentVisibleVerse(visible[0].id, true);
+          }
+        },
+        {
+          root: null,
+          threshold: [0.35, 0.5, 0.7],
+          rootMargin: "-12% 0px -55% 0px"
+        }
+      );
+
+      verseElements.forEach((element) => readingObserver.observe(element));
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setActiveTab(button.dataset.tab);
+      });
+    });
+
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        applyMode(button.dataset.mode);
+        setActiveTab("read");
+      });
+    });
+
+    jumpButton.addEventListener("click", () => {
+      jumpToVerse(verseSelect.value);
+    });
+
+    verseSelect.addEventListener("change", () => {
+      if (verseSelect.value) {
+        jumpToVerse(verseSelect.value);
+      }
+    });
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      applyTheme(isDark ? "light" : "dark");
+    });
+
+    bookmarkOpen.addEventListener("click", () => {
+      toggleBookmarkPanel();
+    });
+
+    bookmarkClose.addEventListener("click", () => {
+      closeBookmarkPanel();
+    });
+
+    goLastRead.addEventListener("click", () => {
+      const saved = getLastRead();
+      if (!saved) return;
+      jumpToVerse(saved.ayah);
+      closeBookmarkPanel();
+    });
+
+    clearHistory.addEventListener("click", () => {
+      clearBookmarkHistory();
+    });
+
+    async function fetchArabicAndTransliteration() {
+      const perPage = 50;
+      const totalPages = 3;
+      const requests = [];
+
+      for (let page = 1; page <= totalPages; page += 1) {
+        const url = `https://api.quran.com/api/v4/verses/by_chapter/9?words=true&word_fields=text_uthmani,transliteration&fields=text_uthmani&per_page=${perPage}&page=${page}`;
+        requests.push(
+          fetch(url).then((response) => {
+            if (!response.ok) {
+              throw new Error(`Request failed on page ${page}`);
+            }
+            return response.json();
+          })
+        );
+      }
+
+      const responses = await Promise.all(requests);
+
+      const verses = responses.flatMap((payload) => {
+        if (Array.isArray(payload.verses)) return payload.verses;
+        if (payload.data && Array.isArray(payload.data.verses)) return payload.data.verses;
+        return [];
+      });
+
+      return verses
+        .filter((verse) => verse.verse_number && verse.text_uthmani)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .map((verse) => {
+          const transliteration = Array.isArray(verse.words)
+            ? verse.words
+                .map((word) => {
+                  if (word.transliteration && word.transliteration.text) return word.transliteration.text;
+                  return "";
+                })
+                .filter(Boolean)
+                .join(" ")
+            : "";
+
+          return {
+            number: verse.verse_number,
+            arabic: verse.text_uthmani,
+            transliteration
+          };
+        });
+    }
+
+    function renderVerses(verseData) {
+      const versesHtml = verseData.map((verse, index) => {
+        const english = englishVerses[index] || "";
+        const transliterationBlock = verse.transliteration
+          ? `<div class="transliteration-wrap notranslate" translate="no">${escapeHtml(verse.transliteration)}</div>`
+          : `<div class="transliteration-wrap notranslate" translate="no">Transliteration not available for this verse.</div>`;
+
+        return `
+          <article class="verse notranslate" id="ayah-${verse.number}" tabindex="-1" translate="no">
+            <div class="arabic-wrap notranslate" translate="no">
+              <div class="arabic-ayah notranslate" lang="ar" translate="no">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
+            </div>
+            ${transliterationBlock}
+            <div class="english notranslate" translate="no">
+              <div class="english-number notranslate" translate="no">${verse.number}.</div>
+              <div class="english-text notranslate" translate="no">${escapeHtml(english)}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      versesContainer.innerHTML = versesHtml;
+    }
+
+    async function loadSurah() {
+      try {
+        const verseData = await fetchArabicAndTransliteration();
+
+        if (verseData.length !== englishVerses.length) {
+          throw new Error(`Verse count mismatch: Arabic ${verseData.length}, English ${englishVerses.length}`);
+        }
+
+        transliterationAvailable = verseData.some((v) => v.transliteration && v.transliteration.trim());
+        renderVerses(verseData);
+        buildVerseSelector();
+        applyMode("bilingual");
+        updateBookmarkUI();
+
+        loadingState.style.display = "none";
+        errorState.style.display = "none";
+
+        observeReadingProgress();
+        handleInitialVerseJump();
+      } catch (error) {
+        console.error(error);
+        loadingState.style.display = "none";
+        errorState.style.display = "block";
+      }
+    }
+
+    const savedTheme = localStorage.getItem("site-theme");
+    applyTheme(savedTheme === "dark" ? "dark" : "light");
+
+    buildVerseSelector();
+    setActiveTab("read");
+    updateBookmarkUI();
+    loadSurah();
+  </script>
+</body>
+</html>
