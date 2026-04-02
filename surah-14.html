@@ -1,24 +1,1931 @@
-<div class="subpanel" id="listenPanel">
-  <h3 translate="no">Listen</h3>
-  <p translate="no">Choose a reciter and listen to the full recitation of Surah Ibrāhīm.</p>
+<!DOCTYPE html>
+<html lang="en" translate="no" class="notranslate">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+  />
+  <meta name="google" content="notranslate" />
+  <meta name="translate" content="no" />
+  <meta http-equiv="Content-Language" content="en" />
+  <title>Surah 14 | Ibrāhīm | The English Qur’an</title>
+  <meta name="description" content="Surah 14, Ibrāhīm, from The English Qur’an." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri+Quran&display=swap');
 
-  <div class="listen-controls">
-    <div class="listen-field">
-      <label for="reciterSelect" translate="no">Reciter</label>
-      <select id="reciterSelect" aria-label="Select reciter" translate="no">
-        <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
-        <option value="shuraim">Sheikh Saud ash-Shuraym</option>
-        <option value="bukhatir">Sheikh Salah Bukhatir</option>
-        <option value="ali-jaber">Sheikh Ali Jaber</option>
-        <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
-      </select>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --surface-deep: #edf4f2;
+      --text: #182128;
+      --muted: #66727d;
+      --line: #e3e8ec;
+      --accent: #1e6b5c;
+      --accent-deep: #154d42;
+      --accent-soft: #e8f3f0;
+      --danger-soft: #fff2f2;
+      --danger: #b42318;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --max: 980px;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f1418;
+      --surface: #182128;
+      --surface-soft: #1f2a33;
+      --surface-deep: #22303a;
+      --text: #f3f7fa;
+      --muted: #a8b5bf;
+      --line: #2d3a44;
+      --accent: #38a189;
+      --accent-deep: #2c7a67;
+      --accent-soft: rgba(56, 161, 137, 0.16);
+      --danger-soft: rgba(180, 35, 24, 0.12);
+      --danger: #ff8a80;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .notranslate {
+      translate: no;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 95%, transparent);
+    }
+
+    .topbar-inner,
+    .container,
+    .footer-inner {
+      width: min(var(--max), calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a,
+    .theme-toggle,
+    .bookmark-open {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.94rem;
+      color: var(--muted);
+      transition: 0.2s ease;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .nav a:hover,
+    .theme-toggle:hover,
+    .bookmark-open:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      border-color: var(--accent);
+    }
+
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      color: #fff;
+      border-color: var(--accent-deep);
+    }
+
+    .bookmark-open.has-last {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+      font-weight: 700;
+    }
+
+    html[data-theme="dark"] .bookmark-open.has-last {
+      color: #d8fff4;
+    }
+
+    .hero {
+      padding: 34px 0 18px;
+    }
+
+    .hero-card,
+    .content-card,
+    .bookmark-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .hero-card {
+      padding: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -110px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(30, 107, 92, 0.13) 0%, rgba(30, 107, 92, 0) 72%);
+      pointer-events: none;
+    }
+
+    html[data-theme="dark"] .hero-card::after {
+      background: radial-gradient(circle, rgba(56, 161, 137, 0.18) 0%, rgba(56, 161, 137, 0) 72%);
+    }
+
+    .crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy .meaning {
+      margin: 14px 0 0;
+      color: color-mix(in srgb, var(--text) 78%, white);
+      font-size: 1rem;
+    }
+
+    .hero-copy .summary {
+      margin: 18px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 1rem;
+      max-width: 58ch;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .meta-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .meta-value.ar {
+      direction: rtl;
+      text-align: right;
+      font-family: "Amiri Quran", serif;
+      font-size: 1.2rem;
+      line-height: 1.8;
+    }
+
+    .section {
+      padding: 12px 0 36px;
+    }
+
+    .bookmark-panel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+    }
+
+    .bookmark-panel.active {
+      display: block;
+    }
+
+    .bookmark-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .bookmark-header h3 {
+      margin: 0;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-header p {
+      margin: 6px 0 0;
+      color: color-mix(in srgb, var(--text) 80%, white);
+      font-size: 0.96rem;
+    }
+
+    .bookmark-close {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-close:hover {
+      background: var(--surface-soft);
+    }
+
+    .bookmark-summary {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-card-label {
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .bookmark-card-value {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bookmark-card-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-action,
+    .bookmark-remove {
+      appearance: none;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-action {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-action:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .bookmark-remove:hover {
+      filter: brightness(0.98);
+    }
+
+    .bookmark-list-wrap {
+      margin-top: 8px;
+    }
+
+    .bookmark-list-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .bookmark-empty {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .bookmark-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .bookmark-item-left {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .bookmark-item-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .bookmark-item-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .bookmark-item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bookmark-mini,
+    .bookmark-mini-remove {
+      appearance: none;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-mini {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-mini:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-mini-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .tab-button:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: var(--surface-soft);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .content-card {
+      padding: 18px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .subpanel {
+      display: none;
+      margin-bottom: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-soft);
+    }
+
+    .subpanel.active {
+      display: block;
+    }
+
+    .subpanel h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subpanel p {
+      margin: 0 0 14px;
+      color: color-mix(in srgb, var(--text) 80%, white);
+    }
+
+    .mode-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mode-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .mode-button:hover {
+      background: var(--surface-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+
+    .mode-button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .verse-selector-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .verse-selector-row label {
+      font-weight: 600;
+    }
+
+    .verse-selector-row select,
+    .listen-field select {
+      min-width: 180px;
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+    }
+
+    .jump-button {
+      appearance: none;
+      border: none;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .jump-button:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-state,
+    .loading-state,
+    .error-state,
+    .note-state {
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 82%, white);
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .bookmark-state,
+    .error-state,
+    .note-state {
+      display: none;
+    }
+
+    .verse {
+      padding: 24px 16px;
+      border-radius: 18px;
+      scroll-margin-top: 110px;
+    }
+
+    .verse:target {
+      background: var(--surface-deep);
+    }
+
+    .verse + .verse {
+      border-top: 1px solid var(--line);
+    }
+
+    .bismillah-block {
+      padding: 24px 16px 28px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .bismillah-arabic {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.9rem, 2.8vw, 2.6rem);
+      line-height: 2;
+      direction: rtl;
+      color: #111827;
+      margin-bottom: 14px;
+    }
+
+    html[data-theme="dark"] .bismillah-arabic {
+      color: #f8fbfd;
+    }
+
+    .bismillah-english {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    .arabic-wrap {
+      text-align: right;
+      direction: rtl;
+      margin-bottom: 18px;
+    }
+
+    .arabic-ayah {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.55rem, 2.15vw, 1.95rem);
+      line-height: 2.15;
+      color: #111827;
+      word-spacing: 0.04em;
+      letter-spacing: 0;
+      display: inline;
+    }
+
+    html[data-theme="dark"] .arabic-ayah {
+      color: #f8fbfd;
+    }
+
+    .transliteration-wrap {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--text) 78%, white);
+      font-size: 0.98rem;
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    .english {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .english-number {
+      min-width: 48px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0;
+      font-size: 1rem;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .english-text {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      padding-top: 2px;
+    }
+
+    .overview {
+      padding: 8px 4px;
+    }
+
+    .overview h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .overview p {
+      margin: 0 0 16px;
+      font-size: 1.05rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      line-height: 1.8;
+    }
+
+    .overview ul {
+      margin: 0 0 22px;
+      padding-left: 22px;
+    }
+
+    .overview li {
+      margin-bottom: 10px;
+      font-size: 1.03rem;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    .listen-controls {
+      display: flex;
+      gap: 12px;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    .listen-field {
+      display: grid;
+      gap: 8px;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .listen-field label {
+      font-weight: 600;
+    }
+
+    .audio-card {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .audio-meta {
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: color-mix(in srgb, var(--text) 88%, white);
+    }
+
+    #surahAudioPlayer {
+      width: 100%;
+      min-height: 52px;
+    }
+
+    .footer {
+      padding: 0 0 34px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      min-height: 42px;
+    }
+
+    .footer-links a:hover {
+      background: var(--surface-soft);
+    }
+
+    .hidden-arabic .arabic-wrap {
+      display: none;
+    }
+
+    .hidden-english .english {
+      display: none;
+    }
+
+    .hidden-transliteration .transliteration-wrap {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        padding: 14px 0;
+      }
+
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .hero-card,
+      .content-card,
+      .bookmark-panel {
+        border-radius: 18px;
+      }
+
+      .hero-card {
+        padding: 22px;
+      }
+
+      .content-card,
+      .bookmark-panel {
+        padding: 12px;
+      }
+
+      .verse {
+        padding: 20px 10px;
+      }
+
+      .bismillah-block {
+        padding: 20px 12px 24px;
+      }
+
+      .english-number {
+        min-width: 42px;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 0.96rem;
+      }
+
+      .overview p,
+      .overview li {
+        font-size: 1rem;
+      }
+
+      .arabic-ayah {
+        font-size: 1.42rem;
+        line-height: 2.05;
+      }
+
+      .bismillah-arabic {
+        font-size: 1.9rem;
+        line-height: 1.95;
+      }
+
+      .mode-options {
+        flex-direction: column;
+      }
+
+      .mode-button {
+        width: 100%;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-open {
+        min-height: 42px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .nav {
+        gap: 8px;
+      }
+
+      .nav a,
+      .theme-toggle,
+      .bookmark-open {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .verse-selector-row,
+      .listen-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .verse-selector-row select,
+      .jump-button,
+      .bookmark-action,
+      .bookmark-remove,
+      .bookmark-close,
+      .listen-field,
+      #loadAudioButton {
+        width: 100%;
+      }
+
+      .bookmark-item {
+        align-items: flex-start;
+      }
+
+      .bookmark-item-actions {
+        width: 100%;
+      }
+
+      .bookmark-mini,
+      .bookmark-mini-remove {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body translate="no" class="notranslate">
+  <header class="topbar notranslate" translate="no">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" translate="no">١٤</div>
+        <div class="brand-text">
+          <h1 translate="no">The English Qur’an</h1>
+          <p translate="no">Surah 14 · Ibrāhīm</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html" translate="no">All Surahs</a>
+        <a class="cta" href="#content" translate="no">Read Surah 14</a>
+        <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks" aria-expanded="false" translate="no">Bookmarks</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode" translate="no">Dark</button>
+      </nav>
     </div>
+  </header>
 
-    <button class="jump-button" type="button" id="loadAudioButton" translate="no">Load recitation</button>
-  </div>
+  <main translate="no" class="notranslate">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="crumb" translate="no">Surah 14 · Ibrāhīm</div>
 
-  <div class="audio-card">
-    <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
-    <audio id="surahAudioPlayer" controls preload="none"></audio>
-  </div>
-</div>
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <h2 translate="no">Ibrāhīm</h2>
+              <p class="meaning" translate="no">Abraham</p>
+              <p class="summary" translate="no">
+                A surah of guidance, gratitude, and firm truth, calling people out of darkness into light and presenting Ibrāhīm as a model of faith, trust, and sincere devotion to Allah.
+              </p>
+            </div>
+
+            <div class="hero-meta">
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Arabic name</div>
+                <div class="meta-value ar notranslate" lang="ar" translate="no">إبراهيم</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Verses</div>
+                <div class="meta-value" translate="no">52</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label" translate="no">Revelation</div>
+                <div class="meta-value" translate="no">Makki</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section notranslate" id="content" translate="no">
+      <div class="container">
+        <div class="bookmark-panel" id="bookmarkPanel">
+          <div class="bookmark-header">
+            <div>
+              <h3 translate="no">Bookmarks</h3>
+              <p translate="no">Your reading position is remembered automatically.</p>
+            </div>
+            <button class="bookmark-close" type="button" id="bookmarkClose" translate="no">Close</button>
+          </div>
+
+          <div class="bookmark-summary">
+            <div class="bookmark-card">
+              <div class="bookmark-card-label" translate="no">Last read verse</div>
+              <div class="bookmark-card-value" id="lastReadText" translate="no">No verse tracked yet.</div>
+              <div class="bookmark-card-row">
+                <button class="bookmark-action" type="button" id="goLastRead" translate="no">Go to last read</button>
+                <button class="bookmark-remove" type="button" id="clearHistory" translate="no">Clear bookmark history</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="bookmark-list-wrap">
+            <h4 class="bookmark-list-title" translate="no">Recently visited verses</h4>
+            <div class="bookmark-empty" id="bookmarkEmpty" translate="no">No reading history yet.</div>
+            <div class="bookmark-list" id="bookmarkList"></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="tab-button active" type="button" data-tab="read" translate="no">Read</button>
+          <button class="tab-button" type="button" data-tab="overview" translate="no">Overview</button>
+          <button class="tab-button" type="button" data-tab="mode" translate="no">Mode</button>
+          <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
+          <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
+        </div>
+
+        <div class="content-card">
+          <div class="subpanel" id="modePanel">
+            <h3 translate="no">Reading Mode</h3>
+            <p translate="no">Select how the verses are displayed.</p>
+            <div class="mode-options">
+              <button class="mode-button active" type="button" data-mode="bilingual" translate="no">Arabic + English</button>
+              <button class="mode-button" type="button" data-mode="transliteration" translate="no">Transliteration</button>
+              <button class="mode-button" type="button" data-mode="arabic-only" translate="no">Arabic Only</button>
+              <button class="mode-button" type="button" data-mode="english-only" translate="no">English Only</button>
+            </div>
+          </div>
+
+          <div class="subpanel" id="versePanel">
+            <h3 translate="no">Jump to Verse</h3>
+            <p translate="no">Select any ayah in Surah Ibrāhīm and jump straight to it.</p>
+            <div class="verse-selector-row">
+              <label for="verseSelect" translate="no">Verse</label>
+              <select id="verseSelect" aria-label="Select verse number" translate="no"></select>
+              <button class="jump-button" type="button" id="jumpButton" translate="no">Go to verse</button>
+            </div>
+          </div>
+
+          <div class="subpanel" id="listenPanel">
+            <h3 translate="no">Listen</h3>
+            <p translate="no">Choose a reciter and listen to the full recitation of Surah Ibrāhīm.</p>
+
+            <div class="listen-controls">
+              <div class="listen-field">
+                <label for="reciterSelect" translate="no">Reciter</label>
+                <select id="reciterSelect" aria-label="Select reciter" translate="no">
+                  <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
+                  <option value="shuraim">Sheikh Saud ash-Shuraym</option>
+                  <option value="bukhatir">Sheikh Salah Bukhatir</option>
+                  <option value="ali-jaber">Sheikh Ali Jaber</option>
+                  <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
+                </select>
+              </div>
+
+              <button class="jump-button" type="button" id="loadAudioButton" translate="no">Load recitation</button>
+            </div>
+
+            <div class="audio-card">
+              <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
+              <audio id="surahAudioPlayer" controls preload="none"></audio>
+            </div>
+          </div>
+
+          <div class="tab-panel active" id="read">
+            <div class="bookmark-state" id="bookmarkState" translate="no"></div>
+            <div class="loading-state" id="loadingState" translate="no">Loading Surah Ibrāhīm...</div>
+            <div class="error-state" id="errorState" translate="no">The surah could not be loaded. Please refresh the page and try again.</div>
+            <div class="note-state" id="noteState" translate="no">Transliteration could not be loaded, so the page has switched back to Arabic + English.</div>
+            <div id="versesContainer" class="notranslate" translate="no"></div>
+          </div>
+
+          <div class="tab-panel" id="overview">
+            <div class="overview notranslate" translate="no">
+              <h3 translate="no">Overview</h3>
+              <p translate="no">Surah Ibrāhīm calls people to move from darkness into light through clear guidance and firm belief. Revealed in Makkah, it emphasises the purpose of revelation, showing that the Qur’an has been sent down to Prophet Muhammad ﷺ to bring people out of confusion, misguidance, and denial into clarity, truth, and awareness of Allah. It highlights that rejection is not due to lack of evidence, but due to arrogance, attachment to worldly life, and refusal to accept responsibility.</p>
+
+              <p translate="no">The Surah presents the consistent message of the prophets, showing that every messenger called their people to worship Allah alone, yet faced resistance, denial, and opposition. It makes clear that truth does not change, and that those who reject it do so by choice, despite its clarity. It also shows the consequences of disbelief, contrasting it with the stability and strength of those who believe.</p>
+
+              <p translate="no">A central focus of the Surah is the example of Prophet Ibrāhīm (Abraham), who stands as a model of pure faith, complete trust, and sincere devotion. His supplications are highlighted, showing his concern for future generations, his gratitude for Allah’s blessings, and his commitment to establishing worship centred on Allah alone. Through him, the Surah emphasises the importance of building a lasting legacy of belief and obedience.</p>
+
+              <p translate="no">The Surah also uses powerful imagery to describe truth and falsehood, comparing a firm word to a strong tree with deep roots and lasting branches, while falsehood is like something weak and uprooted with no stability. It warns of the Day of Judgement, where regret will not benefit those who turned away, and where accountability will be complete and unavoidable.</p>
+
+              <p translate="no">It concludes by affirming Allah’s full control, justice, and knowledge, reminding that delay in consequence does not mean absence of judgement. As a whole, Surah Ibrāhīm calls for sincere belief, reflection, and gratitude, guiding people to hold firmly to truth and build their lives upon it.</p>
+
+              <h3 translate="no">Key Themes</h3>
+              <ul>
+                <li translate="no">The Qur’an as guidance from darkness to light</li>
+                <li translate="no">Prophet Muhammad ﷺ as the messenger delivering the message</li>
+                <li translate="no">The consistent call of all prophets to worship Allah alone</li>
+                <li translate="no">Rejection due to arrogance and attachment to worldly life</li>
+                <li translate="no">Prophet Ibrāhīm (Abraham) as a model of faith and devotion</li>
+                <li translate="no">Supplication, gratitude, and legacy of belief</li>
+                <li translate="no">Truth as firm and lasting, falsehood as weak and fading</li>
+                <li translate="no">Warning of the Day of Judgement and accountability</li>
+                <li translate="no">Allah’s control, justice, and complete knowledge</li>
+              </ul>
+
+              <h3 translate="no">Central Message</h3>
+              <p translate="no">Guidance brings people from darkness into light, yet many turn away out of arrogance and attachment to worldly life, the example of Prophet Ibrāhīm (Abraham) shows that true faith is built on trust, gratitude, and sincere devotion to Allah alone, truth is firm and lasting while falsehood is weak and temporary, success lies in holding firmly to guidance and preparing for the final return to Allah.</p>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="mode"></div>
+          <div class="tab-panel" id="verse"></div>
+          <div class="tab-panel" id="listen"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer notranslate" translate="no">
+    <div class="footer-inner">
+      <div translate="no">Surah 14 | Ibrāhīm</div>
+      <div class="footer-links">
+        <a href="surah-13.html" translate="no">Previous Surah · Ar-Raʿd</a>
+        <a href="index.html" translate="no">Homepage</a>
+        <a href="surah-15.html" translate="no">Next Surah · Al-Ḥijr</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const englishVerses = [
+      "Alif Lām Rā. A Book which We have sent down to you so that you may bring people out of darkness into the light, by the permission of their Lord, to the path of the All-Mighty, the All-Praiseworthy,",
+      "Allah, to whom belongs whatever is in the heavens and whatever is on the earth. And woe to the disbelievers from a severe punishment,",
+      "those who prefer the life of this world over the Hereafter, turn people away from the path of Allah, and seek to make it distorted. They are far astray.",
+      "We did not send any messenger except in the language of his people, so that he might make things clear to them. Then Allah leads astray whom He wills and guides whom He wills. He is the All-Mighty, the All-Wise.",
+      "We certainly sent Mūsā with Our signs, saying, “Bring your people out of darkness into the light, and remind them of the days of Allah.” Indeed, in that are signs for everyone who is patient and grateful.",
+      "And when Mūsā said to his people, “Remember the blessing of Allah upon you, when He saved you from the people of Firʿawn, who were afflicting you with severe torment, slaughtering your sons and sparing your women. In that was a great trial from your Lord.”",
+      "And when your Lord proclaimed, “If you are grateful, I will surely increase you; but if you are ungrateful, then My punishment is severe.”",
+      "And Mūsā said, “If you and all who are on the earth were to disbelieve, Allah is indeed Free of need, All-Praiseworthy.”",
+      "Has the news not reached you of those before you, the people of Nūḥ, ʿĀd, and Thamūd, and those after them? None knows them except Allah. Their messengers came to them with clear signs, but they put their hands to their mouths and said, “We disbelieve in what you have been sent with, and we are in serious doubt about what you call us to.”",
+      "Their messengers said, “Is there any doubt about Allah, the Originator of the heavens and the earth? He calls you so that He may forgive you your sins and give you respite for a fixed term.” They said, “You are only human beings like us. You want to turn us away from what our fathers used to worship. So bring us a clear authority.”",
+      "Their messengers said to them, “We are only human beings like you, but Allah favours whom He wills among His servants. It is not for us to bring you any authority except by the permission of Allah. And in Allah let the believers place their trust.”",
+      "And why should we not place our trust in Allah, when He has guided us to our paths? We will surely be patient over the harm you cause us. And in Allah let those who trust place their trust.”",
+      "Those who disbelieved said to their messengers, “We will surely drive you out of our land, or you must return to our way.” So their Lord revealed to them, “We will surely destroy the wrongdoers,",
+      "and We will surely cause you to dwell in the land after them. That is for those who fear My standing and fear My warning.”",
+      "And they sought a decisive judgement, and every stubborn tyrant was brought to loss.",
+      "Ahead of him is Hell, and he will be given water of pus to drink.",
+      "He will sip it but can hardly swallow it. Death will come to him from every direction, yet he will not die, and ahead of him is a harsh punishment.",
+      "The example of those who disbelieve in their Lord: their deeds are like ashes scattered by the wind on a stormy day. They have no power over anything they earned. That is the farthest misguidance.",
+      "Do you not see that Allah created the heavens and the earth in truth? If He wills, He can remove you and bring a new creation,",
+      "and that is not difficult for Allah.",
+      "And they will all appear before Allah. The weak will say to those who were arrogant, “We were following you, so can you relieve us of any part of the punishment of Allah?” They will say, “If Allah had guided us, we would have guided you. It is the same for us whether we panic or endure patiently. There is no escape for us.”",
+      "And Shayṭān will say, when the matter has been decided, “Indeed, Allah promised you a true promise, and I promised you, then I betrayed you. I had no authority over you except that I invited you and you responded to me. So do not blame me, but blame yourselves. I cannot help you, nor can you help me. I reject your associating me with Allah before. Indeed, for the wrongdoers is a painful punishment.”",
+      "And those who believed and did good deeds will be admitted into Gardens beneath which rivers flow, remaining in them forever by the permission of their Lord. Their greeting there will be, “Peace.”",
+      "Do you not see how Allah sets forth an example: a good word is like a good tree, its root firm and its branches in the sky,",
+      "giving its fruit at all times by the permission of its Lord. And Allah sets forth examples for people, so that they may take heed.",
+      "And the example of a bad word is like a bad tree, uprooted from the surface of the earth, having no stability.",
+      "Allah keeps firm those who believe with the firm word, in the life of this world and in the Hereafter. And Allah leads astray the wrongdoers. And Allah does whatever He wills.",
+      "Have you not seen those who exchanged the blessing of Allah for disbelief, and settled their people in the home of ruin,",
+      "Hell, in which they will burn? And how wretched is the place of settlement.",
+      "And they set up equals to Allah to lead people astray from His path. Say, “Enjoy yourselves, for your destination is the Fire.”",
+      "Say to My servants who believe that they should uphold the prayer and give from what We have provided them, secretly and openly, before a Day comes in which there will be no trading and no friendships.",
+      "Allah is the One who created the heavens and the earth, sent down water from the sky, and brought forth fruits as provision for you. He subjected the ships for you to sail through the sea by His command, and He subjected the rivers for you.",
+      "And He subjected for you the sun and the moon, constant in their courses, and He subjected for you the night and the day.",
+      "And He gave you from all that you asked of Him. If you were to count the blessings of Allah, you could not enumerate them. Indeed, mankind is most unjust and ungrateful.",
+      "And when Ibrāhīm said, “My Lord, make this city secure, and keep me and my sons away from worshipping idols.",
+      "My Lord, they have led many people astray. So whoever follows me is truly from me, and whoever disobeys me, then You are Most-Forgiving, Ever-Merciful.",
+      "Our Lord, I have settled some of my descendants in a barren valley near Your Sacred House, our Lord, so that they may uphold the prayer. So make hearts among the people incline towards them, and provide for them from fruits, so that they may be grateful.",
+      "Our Lord, You know what we conceal and what we declare. Nothing is hidden from Allah on the earth or in the heavens.",
+      "All praise belongs to Allah, who has granted me, in old age, Ismāʿīl and Isḥāq. Indeed, my Lord is the Hearer of supplication.",
+      "My Lord, make me one who upholds the prayer, and also from my descendants. Our Lord, accept my supplication.",
+      "Our Lord, forgive me, my parents, and the believers on the Day the reckoning is established.",
+      "Do not think that Allah is unaware of what the wrongdoers do. He only delays them to a Day when eyes will stare in horror,",
+      "rushing forward, their heads raised, their eyes not blinking, and their hearts empty.",
+      "Warn the people of a Day when the punishment will come upon them, and those who did wrong will say, “Our Lord, give us a short reprieve; we will respond to Your call and follow the messengers.” Did you not swear before that there would be no passing away for you?",
+      "You lived in the dwellings of those who wronged themselves, and it was made clear to you how We dealt with them, and We set forth examples for you.",
+      "They plotted their plots, but their plotting is known to Allah, even if their plotting were such that mountains could be moved by it.",
+      "So do not think that Allah will break His promise to His messengers. Indeed, Allah is All-Mighty, Possessor of retribution.",
+      "On the Day the earth is changed into another earth, and the heavens as well, and they will appear before Allah, the One, the Overpowering.",
+      "And you will see the criminals on that Day bound together in chains,",
+      "their garments of tar, and the Fire covering their faces,",
+      "so that Allah may repay every soul for what it earned. Indeed, Allah is swift in reckoning.",
+      "This is a message for people, so that they may be warned by it, know that He is One, and so that people of understanding may take heed."
+    ];
+
+    const versesContainer = document.getElementById("versesContainer");
+    const loadingState = document.getElementById("loadingState");
+    const errorState = document.getElementById("errorState");
+    const noteState = document.getElementById("noteState");
+    const bookmarkState = document.getElementById("bookmarkState");
+
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+
+    const modePanel = document.getElementById("modePanel");
+    const versePanel = document.getElementById("versePanel");
+    const listenPanel = document.getElementById("listenPanel");
+
+    const modeButtons = document.querySelectorAll(".mode-button");
+    const verseSelect = document.getElementById("verseSelect");
+    const jumpButton = document.getElementById("jumpButton");
+    const themeToggle = document.getElementById("themeToggle");
+
+    const bookmarkOpen = document.getElementById("bookmarkOpen");
+    const bookmarkPanel = document.getElementById("bookmarkPanel");
+    const bookmarkClose = document.getElementById("bookmarkClose");
+    const lastReadText = document.getElementById("lastReadText");
+    const goLastRead = document.getElementById("goLastRead");
+    const clearHistory = document.getElementById("clearHistory");
+    const bookmarkList = document.getElementById("bookmarkList");
+    const bookmarkEmpty = document.getElementById("bookmarkEmpty");
+
+    const reciterSelect = document.getElementById("reciterSelect");
+    const loadAudioButton = document.getElementById("loadAudioButton");
+    const surahAudioPlayer = document.getElementById("surahAudioPlayer");
+    const audioMeta = document.getElementById("audioMeta");
+
+    const surahNumber = 14;
+    const totalVerses = 52;
+    const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
+    const historyStorageKey = `teq-surah-${surahNumber}-history`;
+    const historyLimit = 25;
+
+    const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+    const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
+
+    const reciters = {
+      "sudais": {
+        name: "Sheikh Abdur-Rahman as-Sudais",
+        type: "chapter_reciter",
+        id: 3
+      },
+      "shuraim": {
+        name: "Sheikh Saud ash-Shuraym",
+        type: "chapter_reciter",
+        id: 10
+      },
+      "bukhatir": {
+        name: "Sheikh Salah Bukhatir",
+        type: "direct",
+        url: "https://download.quranicaudio.com/quran/salah_bukhatir/014.mp3"
+      },
+      "ali-jaber": {
+        name: "Sheikh Ali Jaber",
+        type: "chapter_reciter",
+        id: 158
+      },
+      "abdul-basit": {
+        name: "Sheikh Abdul Basit Abdul Samad",
+        type: "chapter_reciter",
+        id: 2
+      }
+    };
+
+    let currentMode = "bilingual";
+    let transliterationAvailable = false;
+    let currentVisibleVerse = 1;
+    let readingObserver = null;
+    let readingSaveTimer = null;
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function toArabicDigits(num) {
+      return String(num).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+    }
+
+    function buildVerseSelector() {
+      let options = "";
+      for (let i = 1; i <= totalVerses; i += 1) {
+        options += `<option value="${i}">Verse ${i}</option>`;
+      }
+      verseSelect.innerHTML = options;
+    }
+
+    function setActiveTab(target) {
+      tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === target));
+      tabPanels.forEach((panel) => panel.classList.toggle("active", panel.id === target));
+      modePanel.classList.toggle("active", target === "mode");
+      versePanel.classList.toggle("active", target === "verse");
+      listenPanel.classList.toggle("active", target === "listen");
+    }
+
+    function applyMode(mode) {
+      currentMode = mode;
+      modeButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === mode);
+      });
+
+      versesContainer.classList.remove("hidden-arabic", "hidden-english", "hidden-transliteration");
+      noteState.style.display = "none";
+
+      if (mode === "bilingual") {
+        versesContainer.classList.add("hidden-transliteration");
+        return;
+      }
+
+      if (mode === "transliteration") {
+        if (!transliterationAvailable) {
+          noteState.style.display = "block";
+          versesContainer.classList.add("hidden-transliteration");
+          modeButtons.forEach((button) => {
+            button.classList.toggle("active", button.dataset.mode === "bilingual");
+          });
+          currentMode = "bilingual";
+          return;
+        }
+        return;
+      }
+
+      if (mode === "arabic-only") {
+        versesContainer.classList.add("hidden-english", "hidden-transliteration");
+        return;
+      }
+
+      if (mode === "english-only") {
+        versesContainer.classList.add("hidden-arabic", "hidden-transliteration");
+        return;
+      }
+
+      versesContainer.classList.add("hidden-transliteration");
+    }
+
+    function formatSavedTime(isoValue) {
+      if (!isoValue) return "";
+      const date = new Date(isoValue);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function showBookmarkMessage(message) {
+      bookmarkState.textContent = message;
+      bookmarkState.style.display = "block";
+      clearTimeout(showBookmarkMessage.timer);
+      showBookmarkMessage.timer = setTimeout(() => {
+        bookmarkState.style.display = "none";
+      }, 2400);
+    }
+
+    function getLastRead() {
+      try {
+        const raw = localStorage.getItem(lastReadStorageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed.ayah !== "number") return null;
+        if (parsed.ayah < 1 || parsed.ayah > totalVerses) return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(historyStorageKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && typeof item.ayah === "number" && item.ayah >= 1 && item.ayah <= totalVerses);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLastReadAndHistory(ayahNumber) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      localStorage.setItem(
+        lastReadStorageKey,
+        JSON.stringify({
+          ayah: safeVerse,
+          savedAt: new Date().toISOString()
+        })
+      );
+
+      const history = getHistory().filter((item) => item.ayah !== safeVerse);
+      history.unshift({
+        ayah: safeVerse,
+        savedAt: new Date().toISOString()
+      });
+
+      localStorage.setItem(
+        historyStorageKey,
+        JSON.stringify(history.slice(0, historyLimit))
+      );
+
+      updateBookmarkUI();
+    }
+
+    function clearBookmarkHistory() {
+      localStorage.removeItem(lastReadStorageKey);
+      localStorage.removeItem(historyStorageKey);
+      updateBookmarkUI();
+      showBookmarkMessage("Bookmark history cleared.");
+    }
+
+    function updateBookmarkUI() {
+      const lastRead = getLastRead();
+      const history = getHistory();
+
+      if (lastRead) {
+        lastReadText.textContent = `Verse ${lastRead.ayah}${lastRead.savedAt ? `, saved ${formatSavedTime(lastRead.savedAt)}` : ""}`;
+        goLastRead.disabled = false;
+        bookmarkOpen.classList.add("has-last");
+        bookmarkOpen.textContent = `Bookmarks · ${lastRead.ayah}`;
+      } else {
+        lastReadText.textContent = "No verse tracked yet.";
+        goLastRead.disabled = true;
+        bookmarkOpen.classList.remove("has-last");
+        bookmarkOpen.textContent = "Bookmarks";
+      }
+
+      bookmarkList.innerHTML = "";
+
+      if (!history.length) {
+        bookmarkEmpty.style.display = "block";
+      } else {
+        bookmarkEmpty.style.display = "none";
+
+        history.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "bookmark-item";
+
+          row.innerHTML = `
+            <div class="bookmark-item-left">
+              <div class="bookmark-item-title">Verse ${item.ayah}</div>
+              <div class="bookmark-item-meta">${item.savedAt ? `Visited ${escapeHtml(formatSavedTime(item.savedAt))}` : ""}</div>
+            </div>
+            <div class="bookmark-item-actions">
+              <button class="bookmark-mini" type="button" data-go-history="${item.ayah}">Go to verse</button>
+              <button class="bookmark-mini-remove" type="button" data-remove-history="${item.ayah}">Remove</button>
+            </div>
+          `;
+
+          bookmarkList.appendChild(row);
+        });
+
+        bookmarkList.querySelectorAll("[data-go-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-go-history"));
+            jumpToVerse(ayah);
+            closeBookmarkPanel();
+          });
+        });
+
+        bookmarkList.querySelectorAll("[data-remove-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const ayah = Number(button.getAttribute("data-remove-history"));
+            const filtered = getHistory().filter((item) => item.ayah !== ayah);
+            localStorage.setItem(historyStorageKey, JSON.stringify(filtered));
+
+            const lastRead = getLastRead();
+            if (lastRead && lastRead.ayah === ayah) {
+              if (filtered.length) {
+                localStorage.setItem(lastReadStorageKey, JSON.stringify(filtered[0]));
+              } else {
+                localStorage.removeItem(lastReadStorageKey);
+              }
+            }
+
+            updateBookmarkUI();
+            showBookmarkMessage(`Verse ${ayah} removed from bookmark history.`);
+          });
+        });
+      }
+    }
+
+    function openBookmarkPanel() {
+      bookmarkPanel.classList.add("active");
+      bookmarkOpen.setAttribute("aria-expanded", "true");
+    }
+
+    function closeBookmarkPanel() {
+      bookmarkPanel.classList.remove("active");
+      bookmarkOpen.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleBookmarkPanel() {
+      bookmarkPanel.classList.toggle("active");
+      bookmarkOpen.setAttribute("aria-expanded", bookmarkPanel.classList.contains("active") ? "true" : "false");
+    }
+
+    function setCurrentVisibleVerse(ayahNumber, persist = true) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+
+      currentVisibleVerse = safeVerse;
+      verseSelect.value = String(safeVerse);
+
+      if (persist) {
+        clearTimeout(readingSaveTimer);
+        readingSaveTimer = setTimeout(() => {
+          saveLastReadAndHistory(safeVerse);
+        }, 180);
+      }
+    }
+
+    function jumpToVerse(verseNumber) {
+      const safeVerseNumber = Number(verseNumber);
+      const target = document.getElementById(`ayah-${safeVerseNumber}`);
+      if (!target) return;
+
+      setActiveTab("read");
+      setCurrentVisibleVerse(safeVerseNumber, true);
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
+    }
+
+    function handleInitialVerseJump() {
+      const params = new URLSearchParams(window.location.search);
+      const ayahParam = params.get("ayah");
+      const hash = window.location.hash;
+
+      let verseNumber = null;
+
+      if (ayahParam && /^\d+$/.test(ayahParam)) {
+        verseNumber = Number(ayahParam);
+      } else if (hash && /^#ayah-\d+$/.test(hash)) {
+        verseNumber = Number(hash.replace("#ayah-", ""));
+      } else {
+        const lastRead = getLastRead();
+        if (lastRead) {
+          verseNumber = lastRead.ayah;
+        }
+      }
+
+      if (!verseNumber || verseNumber < 1 || verseNumber > totalVerses) {
+        setCurrentVisibleVerse(1, false);
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        const target = document.getElementById(`ayah-${verseNumber}`);
+        if (target) {
+          setCurrentVisibleVerse(verseNumber, false);
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
+        }
+      });
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        themeToggle.textContent = "Light";
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        themeToggle.textContent = "Dark";
+      }
+      localStorage.setItem("site-theme", theme);
+    }
+
+    function observeReadingProgress() {
+      const verseElements = document.querySelectorAll(".verse");
+      if (!verseElements.length) return;
+
+      if (readingObserver) {
+        readingObserver.disconnect();
+      }
+
+      readingObserver = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .map((entry) => ({
+              id: Number(entry.target.id.replace("ayah-", "")),
+              ratio: entry.intersectionRatio
+            }))
+            .sort((a, b) => b.ratio - a.ratio || a.id - b.id);
+
+          if (visible.length) {
+            setCurrentVisibleVerse(visible[0].id, true);
+          }
+        },
+        {
+          root: null,
+          threshold: [0.35, 0.5, 0.7],
+          rootMargin: "-12% 0px -55% 0px"
+        }
+      );
+
+      verseElements.forEach((element) => readingObserver.observe(element));
+    }
+
+    async function fetchReciterAudio(reciterKey) {
+      const reciter = reciters[reciterKey];
+      if (!reciter) {
+        throw new Error("Reciter not found.");
+      }
+
+      if (reciter.type === "direct") {
+        return reciter.url;
+      }
+
+      const url = `https://api.quran.com/api/v4/chapter_recitations/${reciter.id}/${surahNumber}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Audio request failed for ${reciter.name}`);
+      }
+
+      const payload = await response.json();
+      const audioUrl = payload && payload.audio_file ? payload.audio_file.audio_url : "";
+
+      if (!audioUrl) {
+        throw new Error(`No audio returned for ${reciter.name}`);
+      }
+
+      if (/^https?:\/\//i.test(audioUrl)) {
+        return audioUrl;
+      }
+
+      return `https://verses.quran.com/${audioUrl.replace(/^\/+/, "")}`;
+    }
+
+    async function loadSelectedAudio(autoplay = false) {
+      const reciterKey = reciterSelect.value;
+      const reciter = reciters[reciterKey];
+
+      if (!reciter) return;
+
+      audioMeta.textContent = `Loading recitation: ${reciter.name}`;
+      loadAudioButton.disabled = true;
+      loadAudioButton.textContent = "Loading...";
+
+      try {
+        const audioUrl = await fetchReciterAudio(reciterKey);
+        surahAudioPlayer.src = audioUrl;
+        surahAudioPlayer.load();
+        audioMeta.textContent = `Selected reciter: ${reciter.name}`;
+
+        if (autoplay) {
+          surahAudioPlayer.play().catch(() => {});
+        }
+      } catch (error) {
+        console.error(error);
+        audioMeta.textContent = `Could not load recitation for ${reciter.name}. Please try another reciter.`;
+      } finally {
+        loadAudioButton.disabled = false;
+        loadAudioButton.textContent = "Load recitation";
+      }
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setActiveTab(button.dataset.tab);
+      });
+    });
+
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        applyMode(button.dataset.mode);
+        setActiveTab("read");
+      });
+    });
+
+    jumpButton.addEventListener("click", () => {
+      jumpToVerse(verseSelect.value);
+    });
+
+    verseSelect.addEventListener("change", () => {
+      if (verseSelect.value) {
+        jumpToVerse(verseSelect.value);
+      }
+    });
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      applyTheme(isDark ? "light" : "dark");
+    });
+
+    bookmarkOpen.addEventListener("click", () => {
+      toggleBookmarkPanel();
+    });
+
+    bookmarkClose.addEventListener("click", () => {
+      closeBookmarkPanel();
+    });
+
+    goLastRead.addEventListener("click", () => {
+      const saved = getLastRead();
+      if (!saved) return;
+      jumpToVerse(saved.ayah);
+      closeBookmarkPanel();
+    });
+
+    clearHistory.addEventListener("click", () => {
+      clearBookmarkHistory();
+    });
+
+    loadAudioButton.addEventListener("click", () => {
+      loadSelectedAudio(false);
+    });
+
+    reciterSelect.addEventListener("change", () => {
+      const reciter = reciters[reciterSelect.value];
+      if (reciter) {
+        audioMeta.textContent = `Selected reciter: ${reciter.name}`;
+      }
+    });
+
+    async function fetchArabicAndTransliteration() {
+      const perPage = 60;
+      const totalPages = 1;
+      const requests = [];
+
+      for (let page = 1; page <= totalPages; page += 1) {
+        const url = `https://api.quran.com/api/v4/verses/by_chapter/14?words=true&word_fields=text_uthmani,transliteration&fields=text_uthmani&per_page=${perPage}&page=${page}`;
+        requests.push(
+          fetch(url).then((response) => {
+            if (!response.ok) {
+              throw new Error(`Request failed on page ${page}`);
+            }
+            return response.json();
+          })
+        );
+      }
+
+      const responses = await Promise.all(requests);
+
+      const verses = responses.flatMap((payload) => {
+        if (Array.isArray(payload.verses)) return payload.verses;
+        if (payload.data && Array.isArray(payload.data.verses)) return payload.data.verses;
+        return [];
+      });
+
+      return verses
+        .filter((verse) => verse.verse_number && verse.text_uthmani)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .map((verse) => {
+          const transliteration = Array.isArray(verse.words)
+            ? verse.words
+                .map((word) => {
+                  if (word.transliteration && word.transliteration.text) return word.transliteration.text;
+                  return "";
+                })
+                .filter(Boolean)
+                .join(" ")
+            : "";
+
+          return {
+            number: verse.verse_number,
+            arabic: verse.text_uthmani,
+            transliteration
+          };
+        });
+    }
+
+    function renderVerses(verseData) {
+      const bismillahBlock = `
+        <section class="bismillah-block notranslate" id="bismillah" translate="no">
+          <div class="bismillah-arabic notranslate" lang="ar" translate="no">${escapeHtml(bismillahArabic)}</div>
+          <div class="bismillah-english notranslate" translate="no">${escapeHtml(bismillahEnglish)}</div>
+        </section>
+      `;
+
+      const versesHtml = verseData.map((verse, index) => {
+        const english = englishVerses[index] || "";
+        const transliterationBlock = verse.transliteration
+          ? `<div class="transliteration-wrap notranslate" translate="no">${escapeHtml(verse.transliteration)}</div>`
+          : `<div class="transliteration-wrap notranslate" translate="no">Transliteration not available for this verse.</div>`;
+
+        return `
+          <article class="verse notranslate" id="ayah-${verse.number}" tabindex="-1" translate="no">
+            <div class="arabic-wrap notranslate" translate="no">
+              <div class="arabic-ayah notranslate" lang="ar" translate="no">${escapeHtml(verse.arabic)} ﴿${toArabicDigits(verse.number)}﴾</div>
+            </div>
+            ${transliterationBlock}
+            <div class="english notranslate" translate="no">
+              <div class="english-number notranslate" translate="no">${verse.number}.</div>
+              <div class="english-text notranslate" translate="no">${escapeHtml(english)}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      versesContainer.innerHTML = bismillahBlock + versesHtml;
+    }
+
+    async function loadSurah() {
+      try {
+        const verseData = await fetchArabicAndTransliteration();
+
+        if (verseData.length !== englishVerses.length) {
+          throw new Error(`Verse count mismatch: Arabic ${verseData.length}, English ${englishVerses.length}`);
+        }
+
+        transliterationAvailable = verseData.some((v) => v.transliteration && v.transliteration.trim());
+        renderVerses(verseData);
+        buildVerseSelector();
+        applyMode("bilingual");
+        updateBookmarkUI();
+
+        loadingState.style.display = "none";
+        errorState.style.display = "none";
+
+        observeReadingProgress();
+        handleInitialVerseJump();
+        loadSelectedAudio(false);
+      } catch (error) {
+        console.error(error);
+        loadingState.style.display = "none";
+        errorState.style.display = "block";
+      }
+    }
+
+    const savedTheme = localStorage.getItem("site-theme");
+    applyTheme(savedTheme === "dark" ? "dark" : "light");
+
+    buildVerseSelector();
+    setActiveTab("read");
+    updateBookmarkUI();
+    loadSurah();
+  </script>
+</body>
+</html>
