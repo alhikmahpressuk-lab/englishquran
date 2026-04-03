@@ -60,7 +60,7 @@
     }
 
     html {
-      scroll-behaviour: smooth;
+      scroll-behavior: smooth;
       -webkit-text-size-adjust: 100%;
     }
 
@@ -704,7 +704,7 @@
       border-radius: 18px;
       scroll-margin-top: 120px;
       border: 1px solid transparent;
-      transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .verse:target {
@@ -735,7 +735,15 @@
       background: var(--surface-soft);
       border: 1px solid var(--line);
       margin-bottom: 8px;
-      text-align: centre;
+      text-align: center;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      scroll-margin-top: 120px;
+    }
+
+    .bismillah-block.is-reciting {
+      background: var(--reciting-bg);
+      border-color: var(--reciting-border);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 14%, transparent) inset;
     }
 
     .bismillah-arabic {
@@ -745,6 +753,7 @@
       direction: rtl;
       color: #111827;
       margin-bottom: 14px;
+      text-align: center;
     }
 
     html[data-theme="dark"] .bismillah-arabic {
@@ -754,6 +763,7 @@
     .bismillah-english {
       font-size: 1rem;
       color: color-mix(in srgb, var(--text) 88%, white);
+      text-align: center;
     }
 
     .arabic-wrap {
@@ -1551,7 +1561,6 @@
 
     const surahNumber = 14;
     const totalVerses = 52;
-    const nextSurahNumber = 15;
     const nextSurahFile = "surah-15.html";
     const nextSurahName = "Al-Ḥijr";
 
@@ -1570,6 +1579,11 @@
       "abdul-basit": { name: "Sheikh Abdul Basit Abdul Samad", id: 2 }
     };
 
+    const introBismillahRecitationId = 7;
+
+    const introAudio = new Audio();
+    introAudio.preload = "none";
+
     let currentMode = "bilingual";
     let currentAudioView = "standard";
     let transliterationAvailable = false;
@@ -1582,7 +1596,6 @@
     let syncByVerse = {};
     let activeVerseNumber = null;
     let activeWordKey = null;
-    let autoScrollTimer = null;
     let wakeLock = null;
     let wakeLockRefreshTimer = null;
 
@@ -1590,6 +1603,16 @@
     let singleVerseNumber = null;
     let continueVerseNumber = null;
     let nextSurahPromptShown = false;
+
+    let smoothScrollFrame = null;
+    let smoothScrollTargetY = null;
+    let lastAutoScrolledVerse = null;
+
+    let introBismillahUrl = "";
+    let introBismillahPending = false;
+    let introBismillahPlaying = false;
+    let introAfterVerse = 1;
+    let introHasPlayedInCurrentRun = false;
 
     function escapeHtml(text) {
       return String(text)
@@ -1602,6 +1625,12 @@
 
     function toArabicDigits(num) {
       return String(num).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+    }
+
+    function normaliseAudioUrl(url) {
+      if (!url) return "";
+      if (/^https?:\/\//i.test(url)) return url;
+      return `https://verses.quran.com/${String(url).replace(/^\/+/, "")}`;
     }
 
     function buildVerseSelector() {
@@ -1687,7 +1716,7 @@
     function updateSyncBarState() {
       if (currentAudioView === "synced") {
         syncBar.classList.add("active");
-        syncPlayPause.textContent = surahAudioPlayer.paused ? "Play" : "Pause";
+        syncPlayPause.textContent = surahAudioPlayer.paused && !introBismillahPlaying ? "Play" : "Pause";
       } else {
         syncBar.classList.remove("active");
         syncPlayPause.textContent = "Play";
@@ -1698,6 +1727,12 @@
       document.querySelectorAll(".verse").forEach((verse) => {
         verse.classList.toggle("is-clickable-sync", currentAudioView === "synced");
       });
+    }
+
+    function markBismillahReciting(isReciting) {
+      const bismillahBlock = document.getElementById("bismillah");
+      if (!bismillahBlock) return;
+      bismillahBlock.classList.toggle("is-reciting", Boolean(isReciting));
     }
 
     function applyAudioView(view, autoMove = true) {
@@ -1719,7 +1754,7 @@
           requestAnimationFrame(() => {
             const targetVerse = document.getElementById(`ayah-${currentVisibleVerse}`) || document.getElementById("bismillah");
             if (targetVerse) {
-              targetVerse.scrollIntoView({ behaviour: "smooth", block: "start" });
+              gentleScrollToElement(targetVerse, { center: false });
             }
           });
         }
@@ -1728,6 +1763,10 @@
         singleVerseMode = false;
         singleVerseNumber = null;
         continueVerseNumber = null;
+        introBismillahPending = false;
+        introBismillahPlaying = false;
+        introHasPlayedInCurrentRun = false;
+        markBismillahReciting(false);
         clearAllHighlights();
         hidePrompt();
         updateSyncBarState();
@@ -1915,6 +1954,59 @@
       }
     }
 
+    function cancelSmoothScroll() {
+      if (smoothScrollFrame) {
+        cancelAnimationFrame(smoothScrollFrame);
+        smoothScrollFrame = null;
+      }
+    }
+
+    function gentleScrollToY(targetY, duration = 560) {
+      const startY = window.scrollY || window.pageYOffset;
+      const distance = targetY - startY;
+
+      if (Math.abs(distance) < 8) return;
+
+      cancelSmoothScroll();
+      smoothScrollTargetY = targetY;
+
+      const startTime = performance.now();
+
+      function easeInOutCubic(t) {
+        return t < 0.5
+          ? 4 * t * t * t
+          : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
+      function frame(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeInOutCubic(progress);
+        const nextY = startY + distance * eased;
+
+        window.scrollTo(0, nextY);
+
+        if (progress < 1) {
+          smoothScrollFrame = requestAnimationFrame(frame);
+        } else {
+          smoothScrollFrame = null;
+        }
+      }
+
+      smoothScrollFrame = requestAnimationFrame(frame);
+    }
+
+    function gentleScrollToElement(element, options = {}) {
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      const top = rect.top + window.scrollY;
+      const targetY = options.center
+        ? Math.max(0, top - (window.innerHeight * 0.32))
+        : Math.max(0, top - 105);
+
+      gentleScrollToY(targetY, options.duration || 560);
+    }
+
     function clearAllHighlights() {
       if (activeVerseNumber !== null) {
         const oldVerse = document.getElementById(`ayah-${activeVerseNumber}`);
@@ -1928,23 +2020,27 @@
 
       activeVerseNumber = null;
       activeWordKey = null;
+      markBismillahReciting(false);
     }
 
     function keepVerseVisible(ayahNumber) {
+      if (lastAutoScrolledVerse === ayahNumber) return;
       const verse = document.getElementById(`ayah-${ayahNumber}`);
       if (!verse) return;
 
-      clearTimeout(autoScrollTimer);
-      autoScrollTimer = setTimeout(() => {
-        verse.scrollIntoView({ behaviour: "smooth", block: "center" });
-      }, 60);
+      lastAutoScrolledVerse = ayahNumber;
+      gentleScrollToElement(verse, { center: true, duration: 620 });
     }
 
     function highlightVerse(ayahNumber, autoScroll = false) {
+      if (activeVerseNumber === ayahNumber) return;
+
       if (activeVerseNumber !== null && activeVerseNumber !== ayahNumber) {
         const oldVerse = document.getElementById(`ayah-${activeVerseNumber}`);
         if (oldVerse) oldVerse.classList.remove("is-reciting");
       }
+
+      markBismillahReciting(false);
 
       const newVerse = document.getElementById(`ayah-${ayahNumber}`);
       if (newVerse) {
@@ -1985,7 +2081,7 @@
 
       readingObserver = new IntersectionObserver(
         (entries) => {
-          if (currentAudioView === "synced" && !surahAudioPlayer.paused) return;
+          if (currentAudioView === "synced" && (!surahAudioPlayer.paused || introBismillahPlaying)) return;
 
           const visible = entries
             .filter((entry) => entry.isIntersecting)
@@ -2007,12 +2103,6 @@
       );
 
       verseElements.forEach((element) => readingObserver.observe(element));
-    }
-
-    function normaliseAudioUrl(url) {
-      if (!url) return "";
-      if (/^https?:\/\//i.test(url)) return url;
-      return `https://verses.quran.com/${String(url).replace(/^\/+/, "")}`;
     }
 
     async function fetchReciterAudio(reciterId) {
@@ -2054,6 +2144,26 @@
       return { audioUrl, timestamps, byVerse };
     }
 
+    async function fetchIntroBismillahAudio() {
+      if (surahNumber === 9) return "";
+      if (introBismillahUrl) return introBismillahUrl;
+
+      try {
+        const response = await fetch(`https://api.quran.com/api/v4/recitations/${introBismillahRecitationId}/by_ayah/1:1`);
+        if (!response.ok) {
+          throw new Error("Could not load Bismillah audio.");
+        }
+        const payload = await response.json();
+        const audioFiles = Array.isArray(payload.audio_files) ? payload.audio_files : [];
+        const firstFile = audioFiles[0];
+        introBismillahUrl = normaliseAudioUrl(firstFile?.url || "");
+        return introBismillahUrl;
+      } catch (error) {
+        console.error(error);
+        return "";
+      }
+    }
+
     async function loadSelectedAudio(autoplay = false) {
       const reciterKey = reciterSelect.value;
       const reciter = reciters[reciterKey];
@@ -2064,7 +2174,11 @@
       loadAudioButton.textContent = "Loading...";
 
       try {
-        const result = await fetchReciterAudio(reciter.id);
+        const [result] = await Promise.all([
+          fetchReciterAudio(reciter.id),
+          fetchIntroBismillahAudio()
+        ]);
+
         currentAudioUrl = result.audioUrl;
         syncTimestamps = result.timestamps;
         syncByVerse = result.byVerse;
@@ -2077,6 +2191,9 @@
         continueVerseNumber = null;
         nextSurahPromptShown = false;
         hidePrompt();
+        introBismillahPending = false;
+        introBismillahPlaying = false;
+        introHasPlayedInCurrentRun = false;
         audioMeta.textContent = `Selected reciter: ${reciter.name}`;
 
         if (autoplay) {
@@ -2129,16 +2246,19 @@
       return syncByVerse[Number(verseNumber)] || null;
     }
 
-    function seekToVerseStart(verseNumber, shouldPlay = true, onceOnly = false) {
+    function beginSelectedRecitationFromVerse(verseNumber, shouldPlay = true, onceOnly = false) {
       const timing = getVerseTiming(verseNumber);
       if (!timing) return false;
 
       hidePrompt();
       nextSurahPromptShown = false;
+      markBismillahReciting(false);
 
       singleVerseMode = onceOnly;
       singleVerseNumber = onceOnly ? Number(verseNumber) : null;
       continueVerseNumber = onceOnly ? (Number(verseNumber) < totalVerses ? Number(verseNumber) + 1 : null) : null;
+      introBismillahPending = false;
+      introBismillahPlaying = false;
 
       const applySeek = () => {
         try {
@@ -2168,6 +2288,55 @@
       return true;
     }
 
+    async function playIntroBismillahThenStart(verseNumber = 1) {
+      if (surahNumber === 9) {
+        introHasPlayedInCurrentRun = true;
+        beginSelectedRecitationFromVerse(verseNumber, true, false);
+        return;
+      }
+
+      const url = await fetchIntroBismillahAudio();
+      if (!url) {
+        introHasPlayedInCurrentRun = true;
+        beginSelectedRecitationFromVerse(verseNumber, true, false);
+        return;
+      }
+
+      hidePrompt();
+      clearAllHighlights();
+      setActiveTab("read");
+      introAfterVerse = verseNumber;
+      introBismillahPending = true;
+      introBismillahPlaying = true;
+      introHasPlayedInCurrentRun = true;
+      singleVerseMode = false;
+      singleVerseNumber = null;
+      continueVerseNumber = null;
+
+      surahAudioPlayer.pause();
+      try {
+        surahAudioPlayer.currentTime = 0;
+      } catch (error) {
+        console.error(error);
+      }
+
+      introAudio.src = url;
+      introAudio.currentTime = 0;
+      markBismillahReciting(true);
+      gentleScrollToElement(document.getElementById("bismillah"), { center: false, duration: 600 });
+      updateSyncBarState();
+
+      try {
+        await introAudio.play();
+      } catch (error) {
+        console.error(error);
+        introBismillahPending = false;
+        introBismillahPlaying = false;
+        markBismillahReciting(false);
+        beginSelectedRecitationFromVerse(verseNumber, true, false);
+      }
+    }
+
     function showSingleVersePrompt(verseNumber) {
       const safeVerse = Number(verseNumber);
       const hasNext = safeVerse < totalVerses;
@@ -2176,15 +2345,14 @@
         `Verse ${safeVerse} finished`,
         hasNext
           ? `You have heard verse ${safeVerse}. You can replay this verse or continue the recitation from verse ${safeVerse + 1}.`
-          : `You have heard the final verse of Surah Ibrāhīm.`
-        ,
+          : `You have heard the final verse of Surah Ibrāhīm.`,
         hasNext
           ? [
               {
                 label: `Replay verse ${safeVerse}`,
                 primary: false,
                 onClick: () => {
-                  seekToVerseStart(safeVerse, true, true);
+                  beginSelectedRecitationFromVerse(safeVerse, true, true);
                 }
               },
               {
@@ -2195,7 +2363,7 @@
                   singleVerseNumber = null;
                   continueVerseNumber = null;
                   hidePrompt();
-                  seekToVerseStart(safeVerse + 1, true, false);
+                  beginSelectedRecitationFromVerse(safeVerse + 1, true, false);
                 }
               }
             ]
@@ -2204,7 +2372,7 @@
                 label: `Replay verse ${safeVerse}`,
                 primary: false,
                 onClick: () => {
-                  seekToVerseStart(safeVerse, true, true);
+                  beginSelectedRecitationFromVerse(safeVerse, true, true);
                 }
               },
               {
@@ -2248,7 +2416,6 @@
       localStorage.setItem("teq-audio-next-reciter", reciterSelect.value);
       localStorage.setItem("teq-audio-next-view", "synced");
       localStorage.setItem("teq-audio-next-autoplay", "true");
-      localStorage.setItem("teq-audio-next-from-surah", String(surahNumber));
       window.location.href = `${nextSurahFile}?reciter=${encodeURIComponent(reciterSelect.value)}&view=synced&autoplay=1`;
     }
 
@@ -2295,12 +2462,12 @@
       setCurrentVisibleVerse(safeVerseNumber, true);
 
       if (currentAudioView === "synced" && syncByVerse[safeVerseNumber] && currentAudioUrl) {
-        seekToVerseStart(safeVerseNumber, !surahAudioPlayer.paused, false);
+        beginSelectedRecitationFromVerse(safeVerseNumber, !surahAudioPlayer.paused, false);
         history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
         return;
       }
 
-      target.scrollIntoView({ behaviour: "smooth", block: "start" });
+      gentleScrollToElement(target, { center: false, duration: 560 });
       history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
     }
 
@@ -2313,7 +2480,7 @@
 
       setActiveTab("read");
       setCurrentVisibleVerse(verseNumber, true);
-      seekToVerseStart(verseNumber, true, true);
+      beginSelectedRecitationFromVerse(verseNumber, true, true);
       history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
     }
 
@@ -2351,7 +2518,7 @@
         const target = document.getElementById(`ayah-${verseNumber}`);
         if (target) {
           setCurrentVisibleVerse(verseNumber, false);
-          target.scrollIntoView({ behaviour: "smooth", block: "start" });
+          gentleScrollToElement(target, { center: false, duration: 560 });
           history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
         }
       });
@@ -2469,7 +2636,7 @@
     function maintainWakeLock() {
       clearTimeout(wakeLockRefreshTimer);
       wakeLockRefreshTimer = setTimeout(async () => {
-        if (!surahAudioPlayer.paused) {
+        if (!surahAudioPlayer.paused || introBismillahPlaying) {
           await releaseWakeLock();
           await requestWakeLock();
           maintainWakeLock();
@@ -2482,8 +2649,10 @@
       closeBookmarkPanel();
       clearAllHighlights();
       hidePrompt();
+      introAudio.pause();
       surahAudioPlayer.pause();
       try {
+        introAudio.currentTime = 0;
         surahAudioPlayer.currentTime = 0;
       } catch (error) {
         console.error(error);
@@ -2492,9 +2661,13 @@
       singleVerseNumber = null;
       continueVerseNumber = null;
       nextSurahPromptShown = false;
+      introBismillahPending = false;
+      introBismillahPlaying = false;
+      introHasPlayedInCurrentRun = false;
+      lastAutoScrolledVerse = null;
       setActiveTab("read");
       syncPlayPause.textContent = "Play";
-      document.getElementById("content").scrollIntoView({ behaviour: "smooth", block: "start" });
+      gentleScrollToElement(document.getElementById("content"), { center: false, duration: 560 });
     }
 
     tabButtons.forEach((button) => {
@@ -2581,11 +2754,19 @@
 
       hidePrompt();
 
+      if (introBismillahPlaying) {
+        introAudio.pause();
+        return;
+      }
+
       if (surahAudioPlayer.paused) {
-        if (currentAudioView === "synced" && !surahAudioPlayer.currentTime && syncByVerse[1]) {
-          seekToVerseStart(1, true, false);
+        const nearStart = !surahAudioPlayer.currentTime || surahAudioPlayer.currentTime < 0.25;
+
+        if (currentAudioView === "synced" && nearStart && !introHasPlayedInCurrentRun) {
+          await playIntroBismillahThenStart(1);
           return;
         }
+
         surahAudioPlayer.play().catch(() => {});
       } else {
         surahAudioPlayer.pause();
@@ -2594,8 +2775,36 @@
 
     syncExit.addEventListener("click", () => {
       applyAudioView("standard", false);
+      introAudio.pause();
       surahAudioPlayer.pause();
       syncPlayPause.textContent = "Play";
+    });
+
+    introAudio.addEventListener("play", async () => {
+      introBismillahPlaying = true;
+      updateSyncBarState();
+      await requestWakeLock();
+      maintainWakeLock();
+    });
+
+    introAudio.addEventListener("pause", async () => {
+      if (!introBismillahPending) {
+        introBismillahPlaying = false;
+        markBismillahReciting(false);
+      }
+      updateSyncBarState();
+      if (surahAudioPlayer.paused) {
+        clearTimeout(wakeLockRefreshTimer);
+        await releaseWakeLock();
+      }
+    });
+
+    introAudio.addEventListener("ended", async () => {
+      introBismillahPending = false;
+      introBismillahPlaying = false;
+      markBismillahReciting(false);
+      updateSyncBarState();
+      beginSelectedRecitationFromVerse(introAfterVerse, true, false);
     });
 
     surahAudioPlayer.addEventListener("timeupdate", () => {
@@ -2629,8 +2838,10 @@
 
     surahAudioPlayer.addEventListener("pause", async () => {
       updateSyncBarState();
-      clearTimeout(wakeLockRefreshTimer);
-      await releaseWakeLock();
+      if (!introBismillahPlaying) {
+        clearTimeout(wakeLockRefreshTimer);
+        await releaseWakeLock();
+      }
     });
 
     surahAudioPlayer.addEventListener("ended", async () => {
@@ -2638,18 +2849,18 @@
       clearTimeout(wakeLockRefreshTimer);
       await releaseWakeLock();
 
-      if (currentAudioView === "synced") {
-        if (!singleVerseMode) {
-          showNextSurahPrompt();
-        }
+      if (currentAudioView === "synced" && !singleVerseMode) {
+        showNextSurahPrompt();
       }
 
       clearAllHighlights();
       syncPlayPause.textContent = "Play";
+      introHasPlayedInCurrentRun = false;
+      lastAutoScrolledVerse = null;
     });
 
     document.addEventListener("visibilitychange", async () => {
-      if (document.visibilityState === "visible" && !surahAudioPlayer.paused) {
+      if (document.visibilityState === "visible" && (!surahAudioPlayer.paused || introBismillahPlaying)) {
         await requestWakeLock();
         maintainWakeLock();
       }
