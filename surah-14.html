@@ -833,7 +833,7 @@
       border-radius: 14px;
       background: var(--accent-soft);
       color: var(--accent-deep);
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
@@ -842,7 +842,6 @@
       font-size: 1rem;
       line-height: 1;
       text-align: center;
-      vertical-align: middle;
     }
 
     .english-text {
@@ -1195,7 +1194,7 @@
 
       <nav class="nav" aria-label="Primary">
         <a href="index.html" translate="no">All Surahs</a>
-        <a class="cta" href="#top" id="readSurahButton" translate="no">Read Surah 14</a>
+        <a class="cta" href="#hero" id="readSurahButton" translate="no">Read Surah 14</a>
         <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks" aria-expanded="false" translate="no">Bookmarks</button>
         <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode" translate="no">Dark</button>
       </nav>
@@ -1208,7 +1207,7 @@
     <button class="sync-mini-btn" type="button" id="syncExit" translate="no">Normal</button>
   </div>
 
-  <main translate="no" class="notranslate" id="top">
+  <main translate="no" class="notranslate">
     <section class="hero" id="hero">
       <div class="container">
         <div class="hero-card">
@@ -1520,7 +1519,6 @@
     let autoScrollTimer = null;
     let wakeLock = null;
     let wakeLockRefreshTimer = null;
-    let lastAutoScrollVerse = null;
 
     function escapeHtml(text) {
       return String(text)
@@ -1621,10 +1619,6 @@
               targetVerse.scrollIntoView({ behavior: "smooth", block: "start" });
             }
           });
-        }
-
-        if (currentAudioUrl && syncByVerse[currentVisibleVerse]) {
-          highlightVerse(currentVisibleVerse, false);
         }
       } else {
         listenNote.textContent = "Choose any reciter, then listen and read comfortably in any mode you select.";
@@ -1833,24 +1827,16 @@
 
       activeVerseNumber = null;
       activeWordKey = null;
-      lastAutoScrollVerse = null;
     }
 
     function keepVerseVisible(ayahNumber) {
       const verse = document.getElementById(`ayah-${ayahNumber}`);
       if (!verse) return;
 
-      const rect = verse.getBoundingClientRect();
-      const topSafe = 120;
-      const bottomSafe = window.innerHeight - 100;
-
-      if (rect.top < topSafe || rect.bottom > bottomSafe || lastAutoScrollVerse !== ayahNumber) {
-        clearTimeout(autoScrollTimer);
-        autoScrollTimer = setTimeout(() => {
-          verse.scrollIntoView({ behavior: "smooth", block: "center" });
-          lastAutoScrollVerse = ayahNumber;
-        }, 60);
-      }
+      clearTimeout(autoScrollTimer);
+      autoScrollTimer = setTimeout(() => {
+        verse.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 60);
     }
 
     function highlightVerse(ayahNumber, autoScroll = false) {
@@ -1990,11 +1976,6 @@
         if (autoplay) {
           surahAudioPlayer.play().catch(() => {});
         }
-
-        if (currentAudioView === "synced") {
-          updateSyncBarState();
-          highlightVerse(currentVisibleVerse, false);
-        }
       } catch (error) {
         console.error(error);
         currentAudioUrl = "";
@@ -2081,7 +2062,7 @@
       setCurrentVisibleVerse(safeVerseNumber, true);
 
       if (currentAudioView === "synced" && syncByVerse[safeVerseNumber] && currentAudioUrl) {
-        const shouldPlay = !surahAudioPlayer.paused;
+        const wasPlaying = !surahAudioPlayer.paused;
         const targetTime = Math.max(0, syncByVerse[safeVerseNumber].timestampFrom / 1000);
 
         const seekAndMaybePlay = () => {
@@ -2092,7 +2073,7 @@
           }
           highlightVerse(safeVerseNumber, true);
           processSyncedPlayback();
-          if (shouldPlay) {
+          if (wasPlaying) {
             surahAudioPlayer.play().catch(() => {});
           }
         };
@@ -2267,15 +2248,20 @@
       }, 5 * 60 * 1000);
     }
 
-    function resetToFrontNormalMode() {
+    function resetToFullNormalFront() {
       applyAudioView("standard", false);
       setActiveTab("read");
       closeBookmarkPanel();
       clearAllHighlights();
+      surahAudioPlayer.pause();
+      try {
+        surahAudioPlayer.currentTime = 0;
+      } catch (error) {
+        console.error(error);
+      }
       syncPlayPause.textContent = "Play";
-      lastAutoScrollVerse = null;
-      history.replaceState(null, "", "#top");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      history.replaceState(null, "", "#hero");
+      document.getElementById("hero").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     tabButtons.forEach((button) => {
@@ -2322,7 +2308,7 @@
 
     readSurahButton.addEventListener("click", (event) => {
       event.preventDefault();
-      resetToFrontNormalMode();
+      resetToFullNormalFront();
     });
 
     bookmarkOpen.addEventListener("click", () => {
