@@ -60,7 +60,7 @@
     }
 
     html {
-      scroll-behaviour: smooth;
+      scroll-behavior: smooth;
       -webkit-text-size-adjust: 100%;
     }
 
@@ -130,6 +130,7 @@
       font-weight: 700;
       box-shadow: var(--shadow);
       flex-shrink: 0;
+      text-align: center;
     }
 
     .brand-text h1 {
@@ -170,6 +171,7 @@
       justify-content: center;
       white-space: nowrap;
       line-height: 1;
+      text-align: center;
     }
 
     .nav a:hover,
@@ -250,6 +252,7 @@
       font-size: 0.9rem;
       font-weight: 600;
       margin-bottom: 16px;
+      text-align: center;
     }
 
     .hero-grid {
@@ -291,6 +294,7 @@
       border-radius: var(--radius-sm);
       padding: 18px;
       transition: background 0.2s ease, border-color 0.2s ease;
+      text-align: center;
     }
 
     .meta-label {
@@ -299,17 +303,19 @@
       letter-spacing: 0.08em;
       color: var(--muted);
       margin-bottom: 8px;
+      text-align: center;
     }
 
     .meta-value {
       font-size: 1.02rem;
       font-weight: 600;
       color: var(--text);
+      text-align: center;
     }
 
     .meta-value.ar {
       direction: rtl;
-      text-align: right;
+      text-align: center;
       font-family: "Amiri Quran", serif;
       font-size: 1.2rem;
       line-height: 1.8;
@@ -365,6 +371,7 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
+      text-align: center;
     }
 
     .bookmark-close:hover {
@@ -390,18 +397,21 @@
       text-transform: uppercase;
       color: var(--muted);
       margin-bottom: 8px;
+      text-align: center;
     }
 
     .bookmark-card-value {
       font-size: 1rem;
       font-weight: 700;
       margin-bottom: 10px;
+      text-align: center;
     }
 
     .bookmark-card-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .bookmark-action,
@@ -417,6 +427,7 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
+      text-align: center;
     }
 
     .bookmark-action {
@@ -447,6 +458,7 @@
       margin: 0 0 10px;
       font-size: 1rem;
       letter-spacing: -0.02em;
+      text-align: center;
     }
 
     .bookmark-empty {
@@ -455,6 +467,7 @@
       border: 1px solid var(--line);
       background: var(--surface-soft);
       color: color-mix(in srgb, var(--text) 80%, white);
+      text-align: center;
     }
 
     .bookmark-list {
@@ -508,6 +521,7 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
+      text-align: center;
     }
 
     .bookmark-mini {
@@ -531,6 +545,7 @@
       gap: 10px;
       flex-wrap: wrap;
       margin-bottom: 16px;
+      justify-content: center;
     }
 
     .tab-button {
@@ -548,6 +563,7 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
+      text-align: center;
     }
 
     .tab-button:hover {
@@ -591,11 +607,13 @@
       margin: 0 0 12px;
       font-size: 1.1rem;
       letter-spacing: -0.02em;
+      text-align: center;
     }
 
     .subpanel p {
       margin: 0 0 14px;
       color: color-mix(in srgb, var(--text) 80%, white);
+      text-align: center;
     }
 
     .mode-options,
@@ -603,6 +621,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+      justify-content: center;
     }
 
     .mode-button,
@@ -621,6 +640,7 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
+      text-align: center;
     }
 
     .mode-button:hover,
@@ -641,11 +661,13 @@
       gap: 12px;
       align-items: center;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .verse-selector-row label,
     .listen-field label {
       font-weight: 600;
+      text-align: center;
     }
 
     .verse-selector-row select,
@@ -658,6 +680,8 @@
       color: var(--text);
       padding: 0 14px;
       outline: none;
+      text-align: center;
+      text-align-last: center;
     }
 
     .jump-button {
@@ -675,6 +699,7 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
+      text-align: center;
     }
 
     .jump-button:hover {
@@ -692,6 +717,7 @@
       color: color-mix(in srgb, var(--text) 82%, white);
       font-size: 1rem;
       margin-bottom: 16px;
+      text-align: center;
     }
 
     .bookmark-state,
@@ -703,7 +729,7 @@
     .verse {
       padding: 24px 16px;
       border-radius: 18px;
-      scroll-margin-top: 120px;
+      scroll-margin-top: 128px;
       border: 1px solid transparent;
       transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
@@ -728,7 +754,7 @@
       background: var(--surface-soft);
       border: 1px solid var(--line);
       margin-bottom: 8px;
-      text-align: centre;
+      text-align: center;
     }
 
     .bismillah-arabic {
@@ -738,7 +764,7 @@
       direction: rtl;
       color: #111827;
       margin-bottom: 14px;
-      text-align: centre;
+      text-align: center;
     }
 
     html[data-theme="dark"] .bismillah-arabic {
@@ -748,7 +774,7 @@
     .bismillah-english {
       font-size: 1rem;
       color: color-mix(in srgb, var(--text) 88%, white);
-      text-align: centre;
+      text-align: center;
     }
 
     .arabic-wrap {
@@ -791,6 +817,7 @@
       font-size: 0.98rem;
       line-height: 1.8;
       font-style: italic;
+      text-align: center;
     }
 
     .english {
@@ -807,14 +834,15 @@
       background: var(--accent-soft);
       color: var(--accent-deep);
       display: inline-flex;
-      align-items: centre;
-      justify-content: centre;
+      align-items: center;
+      justify-content: center;
       font-weight: 700;
       flex-shrink: 0;
       margin-top: 0;
       font-size: 1rem;
       line-height: 1;
-      text-align: centre;
+      text-align: center;
+      vertical-align: middle;
     }
 
     .english-text {
@@ -831,6 +859,7 @@
       margin: 0 0 14px;
       font-size: 1.2rem;
       letter-spacing: -0.02em;
+      text-align: center;
     }
 
     .overview p {
@@ -856,6 +885,7 @@
       gap: 12px;
       align-items: end;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .listen-field {
@@ -877,6 +907,7 @@
       margin-bottom: 12px;
       font-weight: 600;
       color: color-mix(in srgb, var(--text) 88%, white);
+      text-align: center;
     }
 
     #surahAudioPlayer {
@@ -893,6 +924,7 @@
       color: color-mix(in srgb, var(--text) 88%, white);
       font-size: 0.96rem;
       line-height: 1.7;
+      text-align: center;
     }
 
     .sync-bar {
@@ -902,7 +934,7 @@
       transform: translateX(-50%);
       z-index: 130;
       display: none;
-      align-items: centre;
+      align-items: center;
       gap: 8px;
       padding: 7px 10px;
       border-radius: 999px;
@@ -912,6 +944,7 @@
       backdrop-filter: blur(10px);
       max-width: calc(100% - 24px);
       white-space: nowrap;
+      text-align: center;
     }
 
     .sync-bar.active {
@@ -922,6 +955,7 @@
       font-size: 0.82rem;
       color: color-mix(in srgb, var(--text) 88%, white);
       padding: 0 2px;
+      text-align: center;
     }
 
     .sync-mini-btn {
@@ -936,10 +970,11 @@
       font-size: 0.8rem;
       font-weight: 700;
       display: inline-flex;
-      align-items: centre;
-      justify-content: centre;
+      align-items: center;
+      justify-content: center;
       line-height: 1;
       transition: 0.2s ease;
+      text-align: center;
     }
 
     .sync-mini-btn:hover {
@@ -984,10 +1019,11 @@
       border: 1px solid var(--line);
       transition: 0.2s ease;
       display: inline-flex;
-      align-items: centre;
-      justify-content: centre;
+      align-items: center;
+      justify-content: center;
       line-height: 1;
       min-height: 42px;
+      text-align: center;
     }
 
     .footer-links a:hover {
@@ -1016,13 +1052,13 @@
       .topbar-inner {
         flex-direction: column;
         align-items: stretch;
-        justify-content: centre;
+        justify-content: center;
         padding: 14px 0;
       }
 
       .nav {
         width: 100%;
-        justify-content: flex-start;
+        justify-content: center;
       }
 
       .sync-bar {
@@ -1159,7 +1195,7 @@
 
       <nav class="nav" aria-label="Primary">
         <a href="index.html" translate="no">All Surahs</a>
-        <a class="cta" href="#content" translate="no">Read Surah 14</a>
+        <a class="cta" href="#top" id="readSurahButton" translate="no">Read Surah 14</a>
         <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks" aria-expanded="false" translate="no">Bookmarks</button>
         <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode" translate="no">Dark</button>
       </nav>
@@ -1172,8 +1208,8 @@
     <button class="sync-mini-btn" type="button" id="syncExit" translate="no">Normal</button>
   </div>
 
-  <main translate="no" class="notranslate">
-    <section class="hero">
+  <main translate="no" class="notranslate" id="top">
+    <section class="hero" id="hero">
       <div class="container">
         <div class="hero-card">
           <div class="crumb" translate="no">Surah 14 · Ibrāhīm</div>
@@ -1431,6 +1467,7 @@
     const verseSelect = document.getElementById("verseSelect");
     const jumpButton = document.getElementById("jumpButton");
     const themeToggle = document.getElementById("themeToggle");
+    const readSurahButton = document.getElementById("readSurahButton");
 
     const bookmarkOpen = document.getElementById("bookmarkOpen");
     const bookmarkPanel = document.getElementById("bookmarkPanel");
@@ -1483,6 +1520,7 @@
     let autoScrollTimer = null;
     let wakeLock = null;
     let wakeLockRefreshTimer = null;
+    let lastAutoScrollVerse = null;
 
     function escapeHtml(text) {
       return String(text)
@@ -1559,6 +1597,7 @@
         syncPlayPause.textContent = surahAudioPlayer.paused ? "Play" : "Pause";
       } else {
         syncBar.classList.remove("active");
+        syncPlayPause.textContent = "Play";
       }
     }
 
@@ -1794,6 +1833,24 @@
 
       activeVerseNumber = null;
       activeWordKey = null;
+      lastAutoScrollVerse = null;
+    }
+
+    function keepVerseVisible(ayahNumber) {
+      const verse = document.getElementById(`ayah-${ayahNumber}`);
+      if (!verse) return;
+
+      const rect = verse.getBoundingClientRect();
+      const topSafe = 120;
+      const bottomSafe = window.innerHeight - 100;
+
+      if (rect.top < topSafe || rect.bottom > bottomSafe || lastAutoScrollVerse !== ayahNumber) {
+        clearTimeout(autoScrollTimer);
+        autoScrollTimer = setTimeout(() => {
+          verse.scrollIntoView({ behavior: "smooth", block: "center" });
+          lastAutoScrollVerse = ayahNumber;
+        }, 60);
+      }
     }
 
     function highlightVerse(ayahNumber, autoScroll = false) {
@@ -1808,15 +1865,7 @@
         activeVerseNumber = ayahNumber;
 
         if (autoScroll) {
-          clearTimeout(autoScrollTimer);
-          autoScrollTimer = setTimeout(() => {
-            const rect = newVerse.getBoundingClientRect();
-            const tooHigh = rect.top < 110;
-            const tooLow = rect.bottom > window.innerHeight - 130;
-            if (tooHigh || tooLow) {
-              newVerse.scrollIntoView({ behavior: "smooth", block: "centre" });
-            }
-          }, 70);
+          keepVerseVisible(ayahNumber);
         }
       }
     }
@@ -1849,6 +1898,8 @@
 
       readingObserver = new IntersectionObserver(
         (entries) => {
+          if (currentAudioView === "synced" && !surahAudioPlayer.paused) return;
+
           const visible = entries
             .filter((entry) => entry.isIntersecting)
             .map((entry) => ({
@@ -2216,6 +2267,17 @@
       }, 5 * 60 * 1000);
     }
 
+    function resetToFrontNormalMode() {
+      applyAudioView("standard", false);
+      setActiveTab("read");
+      closeBookmarkPanel();
+      clearAllHighlights();
+      syncPlayPause.textContent = "Play";
+      lastAutoScrollVerse = null;
+      history.replaceState(null, "", "#top");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
     tabButtons.forEach((button) => {
       button.addEventListener("click", () => {
         setActiveTab(button.dataset.tab);
@@ -2256,6 +2318,11 @@
     themeToggle.addEventListener("click", () => {
       const isDark = document.documentElement.getAttribute("data-theme") === "dark";
       applyTheme(isDark ? "light" : "dark");
+    });
+
+    readSurahButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      resetToFrontNormalMode();
     });
 
     bookmarkOpen.addEventListener("click", () => {
@@ -2302,6 +2369,7 @@
 
     syncExit.addEventListener("click", () => {
       applyAudioView("standard", false);
+      syncPlayPause.textContent = "Play";
     });
 
     surahAudioPlayer.addEventListener("timeupdate", () => {
@@ -2331,6 +2399,7 @@
       if (currentAudioView === "synced") {
         clearAllHighlights();
       }
+      syncPlayPause.textContent = "Play";
     });
 
     document.addEventListener("visibilitychange", async () => {
