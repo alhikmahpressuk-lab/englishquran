@@ -130,7 +130,6 @@
       font-weight: 700;
       box-shadow: var(--shadow);
       flex-shrink: 0;
-      text-align: center;
     }
 
     .brand-text h1 {
@@ -171,7 +170,6 @@
       justify-content: center;
       white-space: nowrap;
       line-height: 1;
-      text-align: center;
     }
 
     .nav a:hover,
@@ -252,7 +250,6 @@
       font-size: 0.9rem;
       font-weight: 600;
       margin-bottom: 16px;
-      text-align: center;
     }
 
     .hero-grid {
@@ -294,7 +291,6 @@
       border-radius: var(--radius-sm);
       padding: 18px;
       transition: background 0.2s ease, border-color 0.2s ease;
-      text-align: center;
     }
 
     .meta-label {
@@ -303,19 +299,17 @@
       letter-spacing: 0.08em;
       color: var(--muted);
       margin-bottom: 8px;
-      text-align: center;
     }
 
     .meta-value {
       font-size: 1.02rem;
       font-weight: 600;
       color: var(--text);
-      text-align: center;
     }
 
     .meta-value.ar {
       direction: rtl;
-      text-align: center;
+      text-align: right;
       font-family: "Amiri Quran", serif;
       font-size: 1.2rem;
       line-height: 1.8;
@@ -371,7 +365,6 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
-      text-align: center;
     }
 
     .bookmark-close:hover {
@@ -397,21 +390,18 @@
       text-transform: uppercase;
       color: var(--muted);
       margin-bottom: 8px;
-      text-align: center;
     }
 
     .bookmark-card-value {
       font-size: 1rem;
       font-weight: 700;
       margin-bottom: 10px;
-      text-align: center;
     }
 
     .bookmark-card-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      justify-content: center;
     }
 
     .bookmark-action,
@@ -427,7 +417,6 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
-      text-align: center;
     }
 
     .bookmark-action {
@@ -458,7 +447,6 @@
       margin: 0 0 10px;
       font-size: 1rem;
       letter-spacing: -0.02em;
-      text-align: center;
     }
 
     .bookmark-empty {
@@ -467,7 +455,6 @@
       border: 1px solid var(--line);
       background: var(--surface-soft);
       color: color-mix(in srgb, var(--text) 80%, white);
-      text-align: center;
     }
 
     .bookmark-list {
@@ -521,7 +508,6 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
-      text-align: center;
     }
 
     .bookmark-mini {
@@ -545,7 +531,6 @@
       gap: 10px;
       flex-wrap: wrap;
       margin-bottom: 16px;
-      justify-content: center;
     }
 
     .tab-button {
@@ -563,7 +548,6 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
-      text-align: center;
     }
 
     .tab-button:hover {
@@ -579,7 +563,6 @@
 
     .content-card {
       padding: 18px;
-      position: relative;
     }
 
     .tab-panel {
@@ -607,13 +590,11 @@
       margin: 0 0 12px;
       font-size: 1.1rem;
       letter-spacing: -0.02em;
-      text-align: center;
     }
 
     .subpanel p {
       margin: 0 0 14px;
       color: color-mix(in srgb, var(--text) 80%, white);
-      text-align: center;
     }
 
     .mode-options,
@@ -621,7 +602,6 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      justify-content: center;
     }
 
     .mode-button,
@@ -640,7 +620,6 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
-      text-align: center;
     }
 
     .mode-button:hover,
@@ -661,13 +640,11 @@
       gap: 12px;
       align-items: center;
       flex-wrap: wrap;
-      justify-content: center;
     }
 
     .verse-selector-row label,
     .listen-field label {
       font-weight: 600;
-      text-align: center;
     }
 
     .verse-selector-row select,
@@ -680,8 +657,6 @@
       color: var(--text);
       padding: 0 14px;
       outline: none;
-      text-align: center;
-      text-align-last: center;
     }
 
     .jump-button {
@@ -699,7 +674,6 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
-      text-align: center;
     }
 
     .jump-button:hover {
@@ -717,7 +691,6 @@
       color: color-mix(in srgb, var(--text) 82%, white);
       font-size: 1rem;
       margin-bottom: 16px;
-      text-align: center;
     }
 
     .bookmark-state,
@@ -729,7 +702,7 @@
     .verse {
       padding: 24px 16px;
       border-radius: 18px;
-      scroll-margin-top: 128px;
+      scroll-margin-top: 120px;
       border: 1px solid transparent;
       transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
@@ -745,7 +718,7 @@
     }
 
     .verse + .verse {
-      margin-top: 2px;
+      border-top: 1px solid var(--line);
     }
 
     .bismillah-block {
@@ -764,7 +737,6 @@
       direction: rtl;
       color: #111827;
       margin-bottom: 14px;
-      text-align: center;
     }
 
     html[data-theme="dark"] .bismillah-arabic {
@@ -774,7 +746,6 @@
     .bismillah-english {
       font-size: 1rem;
       color: color-mix(in srgb, var(--text) 88%, white);
-      text-align: center;
     }
 
     .arabic-wrap {
@@ -785,10 +756,11 @@
 
     .arabic-ayah {
       font-family: "Amiri Quran", "Amiri", serif;
-      font-size: clamp(1.9rem, 2.8vw, 2.6rem);
+      font-size: clamp(1.55rem, 2.15vw, 1.95rem);
       line-height: 2.15;
       color: #111827;
       word-spacing: 0.04em;
+      letter-spacing: 0;
       display: inline;
     }
 
@@ -817,7 +789,6 @@
       font-size: 0.98rem;
       line-height: 1.8;
       font-style: italic;
-      text-align: center;
     }
 
     .english {
@@ -833,7 +804,7 @@
       border-radius: 14px;
       background: var(--accent-soft);
       color: var(--accent-deep);
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
@@ -858,7 +829,6 @@
       margin: 0 0 14px;
       font-size: 1.2rem;
       letter-spacing: -0.02em;
-      text-align: center;
     }
 
     .overview p {
@@ -884,7 +854,6 @@
       gap: 12px;
       align-items: end;
       flex-wrap: wrap;
-      justify-content: center;
     }
 
     .listen-field {
@@ -906,7 +875,6 @@
       margin-bottom: 12px;
       font-weight: 600;
       color: color-mix(in srgb, var(--text) 88%, white);
-      text-align: center;
     }
 
     #surahAudioPlayer {
@@ -923,7 +891,6 @@
       color: color-mix(in srgb, var(--text) 88%, white);
       font-size: 0.96rem;
       line-height: 1.7;
-      text-align: center;
     }
 
     .sync-bar {
@@ -943,7 +910,6 @@
       backdrop-filter: blur(10px);
       max-width: calc(100% - 24px);
       white-space: nowrap;
-      text-align: center;
     }
 
     .sync-bar.active {
@@ -954,7 +920,6 @@
       font-size: 0.82rem;
       color: color-mix(in srgb, var(--text) 88%, white);
       padding: 0 2px;
-      text-align: center;
     }
 
     .sync-mini-btn {
@@ -973,7 +938,6 @@
       justify-content: center;
       line-height: 1;
       transition: 0.2s ease;
-      text-align: center;
     }
 
     .sync-mini-btn:hover {
@@ -1022,7 +986,6 @@
       justify-content: center;
       line-height: 1;
       min-height: 42px;
-      text-align: center;
     }
 
     .footer-links a:hover {
@@ -1057,7 +1020,7 @@
 
       .nav {
         width: 100%;
-        justify-content: center;
+        justify-content: flex-start;
       }
 
       .sync-bar {
@@ -1103,7 +1066,7 @@
       }
 
       .arabic-ayah {
-        font-size: 1.75rem;
+        font-size: 1.42rem;
         line-height: 2.05;
       }
 
@@ -1194,7 +1157,7 @@
 
       <nav class="nav" aria-label="Primary">
         <a href="index.html" translate="no">All Surahs</a>
-        <a class="cta" href="#hero" id="readSurahButton" translate="no">Read Surah 14</a>
+        <a class="cta" href="#content" id="readSurahButton" translate="no">Read Surah 14</a>
         <button class="bookmark-open" type="button" id="bookmarkOpen" aria-label="Open bookmarks" aria-expanded="false" translate="no">Bookmarks</button>
         <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle light and dark mode" translate="no">Dark</button>
       </nav>
@@ -1202,13 +1165,13 @@
   </header>
 
   <div class="sync-bar notranslate" id="syncBar" translate="no" aria-live="polite">
-    <span class="sync-bar-text" id="syncText" translate="no">Recitation view is active. Reading view is now open.</span>
+    <span class="sync-bar-text" id="syncText" translate="no">Recitation view is active.</span>
     <button class="sync-mini-btn primary" type="button" id="syncPlayPause" translate="no">Play</button>
     <button class="sync-mini-btn" type="button" id="syncExit" translate="no">Normal</button>
   </div>
 
   <main translate="no" class="notranslate">
-    <section class="hero" id="hero">
+    <section class="hero">
       <div class="container">
         <div class="hero-card">
           <div class="crumb" translate="no">Surah 14 · Ibrāhīm</div>
@@ -1294,7 +1257,7 @@
 
           <div class="subpanel" id="versePanel">
             <h3 translate="no">Jump to Verse</h3>
-            <p translate="no">Select any ayah in Surah Ibrāhīm and jump straight to it. In recitation view, the audio will move to that verse when timing is available.</p>
+            <p translate="no">Select any ayah in Surah Ibrāhīm and jump straight to it. In synced recitation view, the audio will move to that verse when timing is available.</p>
             <div class="verse-selector-row">
               <label for="verseSelect" translate="no">Verse</label>
               <select id="verseSelect" aria-label="Select verse number" translate="no"></select>
@@ -1306,7 +1269,7 @@
             <h3 translate="no">Listen</h3>
             <p translate="no">Choose a reciter and listen to the full recitation of Surah Ibrāhīm.</p>
 
-            <div class="audio-view-options" style="margin-bottom:14px;">
+            <div class="audio-view-options" style="margin-bottom: 14px;">
               <button class="audio-view-button active" type="button" data-audio-view="standard" translate="no">Standard recitation</button>
               <button class="audio-view-button" type="button" data-audio-view="synced" translate="no">Synced recitation view</button>
             </div>
@@ -1530,7 +1493,7 @@
     }
 
     function toArabicDigits(num) {
-      return String(num).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
+      return String(num).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
     }
 
     function buildVerseSelector() {
@@ -1607,8 +1570,8 @@
       });
 
       if (view === "synced") {
-        listenNote.textContent = "Recitation view is active. Reading view is now open.";
-        syncText.textContent = "Recitation view is active. Reading view is now open.";
+        listenNote.textContent = "Synced recitation view is active. The page will follow the recitation verse by verse when timing is available.";
+        syncText.textContent = "Recitation view is active.";
         updateSyncBarState();
 
         if (autoMove) {
@@ -1806,12 +1769,6 @@
           saveLastReadAndHistory(safeVerse);
         }, 180);
       }
-    }
-
-    function scrollToVerse(ayahNumber, behaviour = "smooth", block = "start") {
-      const target = document.getElementById(`ayah-${ayahNumber}`);
-      if (!target) return;
-      target.scrollIntoView({ behavior: behaviour, block });
     }
 
     function clearAllHighlights() {
@@ -2092,7 +2049,7 @@
         return;
       }
 
-      scrollToVerse(safeVerseNumber, "smooth", "start");
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
       history.replaceState(null, "", `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
     }
 
@@ -2248,9 +2205,8 @@
       }, 5 * 60 * 1000);
     }
 
-    function resetToFullNormalFront() {
+    function resetToFullNormalReading() {
       applyAudioView("standard", false);
-      setActiveTab("read");
       closeBookmarkPanel();
       clearAllHighlights();
       surahAudioPlayer.pause();
@@ -2259,9 +2215,9 @@
       } catch (error) {
         console.error(error);
       }
+      setActiveTab("read");
       syncPlayPause.textContent = "Play";
-      history.replaceState(null, "", "#hero");
-      document.getElementById("hero").scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("content").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     tabButtons.forEach((button) => {
@@ -2308,7 +2264,7 @@
 
     readSurahButton.addEventListener("click", (event) => {
       event.preventDefault();
-      resetToFullNormalFront();
+      resetToFullNormalReading();
     });
 
     bookmarkOpen.addEventListener("click", () => {
@@ -2355,6 +2311,7 @@
 
     syncExit.addEventListener("click", () => {
       applyAudioView("standard", false);
+      surahAudioPlayer.pause();
       syncPlayPause.textContent = "Play";
     });
 
@@ -2395,10 +2352,6 @@
       }
     });
 
-    function observeVersesAfterRender() {
-      observeReadingProgress();
-    }
-
     async function loadSurah() {
       try {
         const verseData = await fetchArabicAndTransliteration();
@@ -2417,7 +2370,7 @@
         loadingState.style.display = "none";
         errorState.style.display = "none";
 
-        observeVersesAfterRender();
+        observeReadingProgress();
         handleInitialVerseJump();
         loadSelectedAudio(false);
       } catch (error) {
