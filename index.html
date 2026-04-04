@@ -635,7 +635,6 @@
 
     .smart-search-input-wrap input {
       flex: 1 1 auto;
-      width: 100%;
       min-height: 52px;
       padding: 0 14px;
       border-radius: 14px;
@@ -649,17 +648,6 @@
     .smart-search-input-wrap input:focus {
       border-color: rgba(30, 107, 92, 0.55);
       box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
-    }
-
-    .search-clear-field {
-      display: flex;
-      align-items: flex-end;
-      grid-column: 4;
-    }
-
-    .search-clear-field .mini-button {
-      width: 100%;
-      min-height: 52px;
     }
 
     .contact-grid {
@@ -1077,10 +1065,6 @@
       .hero-points {
         grid-template-columns: 1fr;
       }
-
-      .search-clear-field {
-        grid-column: auto;
-      }
     }
 
     @media (max-width: 860px) {
@@ -1148,10 +1132,6 @@
         width: 100%;
         margin-top: 12px;
         box-shadow: var(--shadow);
-      }
-
-      .search-clear-field {
-        grid-column: auto;
       }
     }
 
@@ -1251,7 +1231,6 @@
             <p class="subtitle">
               Read the Qur’an in a clean, calm and accessible format, with the original Arabic placed before each English verse, presented with clarity, dignity and ease for today’s reader.
             </p>
-
             <div style="margin: 18px 0 0; padding: 12px 16px; background: var(--surface-soft); border-radius: 12px; display: inline-block;">
               <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--text);">
                 We have made the Qur’an easy to remember. <span style="font-size: 0.9rem; color: var(--muted); margin-left: 6px;">(Qur’an 54:17)</span>
@@ -1411,6 +1390,7 @@
               <label for="searchInput">Smart search</label>
               <div class="smart-search-input-wrap">
                 <input id="searchInput" type="text" placeholder="Try: Al Baqarah, 2, 2:255, Juz 30, Ya Sin 58" autocomplete="off" />
+                <button class="mini-button" type="button" id="clearSearchButton">Clear</button>
               </div>
             </div>
 
@@ -1433,10 +1413,6 @@
               <select id="juzFilter">
                 <option value="all">All Juz</option>
               </select>
-            </div>
-
-            <div class="field search-clear-field">
-              <button class="mini-button" type="button" id="clearSearchButton">Clear</button>
             </div>
           </div>
 
