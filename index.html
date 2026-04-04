@@ -1,2544 +1,2434 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>The English Qur’an</title>
-  <meta
-    name="description"
-    content="The English Qur’an, a clear, faithful and modern English translation, presented in a clean and accessible reading experience."
-  />
-  <style>
-    :root {
-      --bg: #f6f8f9;
-      --surface: #ffffff;
-      --surface-soft: #f2f5f6;
-      --text: #172026;
-      --muted: #66727d;
-      --line: #e2e8ec;
-      --accent: #1e6b5c;
-      --accent-soft: #e8f3f0;
-      --accent-deep: #154d42;
-      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
-      --radius: 20px;
-      --radius-sm: 14px;
-      --max: 1240px;
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-    }
-
-    html[data-theme="dark"] {
-      --bg: #0f1519;
-      --surface: #121b20;
-      --surface-soft: #18242b;
-      --text: #eef4f6;
-      --muted: #a6b5bd;
-      --line: #27343c;
-      --accent: #2a8b77;
-      --accent-soft: #18342d;
-      --accent-deep: #86dac7;
-      --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
-      color-scheme: dark;
-    }
-
-    * {
-      box-sizing: border-box;
-      min-width: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      overflow-x: hidden;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      margin: 0;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      overflow-x: hidden;
-      width: 100%;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    img,
-    svg,
-    iframe {
-      max-width: 100%;
-    }
-
-    .container {
-      width: min(var(--max), calc(100% - 32px));
-      margin: 0 auto;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
-      border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
-    }
-
-    .topbar-inner {
-      width: min(var(--max), calc(100% - 32px));
-      margin: 0 auto;
-      min-height: 78px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 12px 0;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      min-width: 0;
-    }
-
-    .brand-mark {
-      width: 50px;
-      height: 50px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-size: 24px;
-      font-weight: 700;
-      box-shadow: var(--shadow);
-      flex-shrink: 0;
-    }
-
-    .brand-text h1 {
-      margin: 0;
-      font-size: 1.15rem;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-    }
-
-    .brand-text p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .nav a,
-    .theme-toggle {
-      min-height: 42px;
-      padding: 0 16px;
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 0.95rem;
-      font-weight: 600;
-      transition: 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      border: 1px solid transparent;
-      background: transparent;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .nav a:hover,
-    .theme-toggle:hover {
-      background: var(--surface);
-      color: var(--text);
-      border-color: var(--line);
-    }
-
-    .nav .cta {
-      background: var(--accent);
-      color: #fff;
-      font-weight: 600;
-      box-shadow: var(--shadow);
-      border-color: var(--accent);
-    }
-
-    .nav .cta:hover {
-      background: var(--accent-deep);
-      color: #fff;
-      border-color: var(--accent-deep);
-    }
-
-    .theme-toggle {
-      background: var(--surface);
-      border-color: var(--line);
-      color: var(--text);
-    }
-
-    .hero {
-      padding: 56px 0 26px;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.25fr 0.95fr;
-      gap: 28px;
-      align-items: stretch;
-    }
-
-    .hero-card,
-    .info-card,
-    .quick-grid,
-    .continue-card,
-    .search-panel,
-    .surah-section,
-    .juz-section,
-    .book-section,
-    .about-section,
-    .contact-section,
-    .listen-section,
-    .new-reader-section,
-    .support-section {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-card {
-      padding: 34px;
-      position: relative;
-      overflow: visible;
-      isolation: isolate;
-    }
-
-    .hero-card::before {
-      content: "";
-      position: absolute;
-      inset: auto -100px -110px auto;
-      width: 260px;
-      height: 260px;
-      background: radial-gradient(circle, rgba(30,107,92,0.12) 0%, rgba(30,107,92,0) 72%);
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 16px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent-deep);
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .hero-card h2 {
-      margin: 0;
-      font-size: clamp(2rem, 4.5vw, 3.7rem);
-      line-height: 1.04;
-      letter-spacing: -0.045em;
-      max-width: 12ch;
-    }
-
-    .tm-mark {
-      font-size: 0.28em;
-      vertical-align: top;
-      position: relative;
-      top: 0.45em;
-      margin-left: 0.08em;
-      letter-spacing: 0;
-    }
-
-    .hero-card .subtitle {
-      margin: 18px 0 0;
-      font-size: 1.15rem;
-      color: color-mix(in srgb, var(--text) 82%, white 18%);
-      max-width: 62ch;
-    }
-
-    .hero-actions,
-    .quick-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
-    }
-
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      min-height: 50px;
-      padding: 0 18px;
-      border-radius: 999px;
-      font-weight: 600;
-      transition: 0.2s ease;
-      border: 1px solid transparent;
-      cursor: pointer;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .button-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .button-primary:hover {
-      background: var(--accent-deep);
-    }
-
-    .button-secondary {
-      background: var(--surface-soft);
-      color: var(--text);
-      border-color: var(--line);
-    }
-
-    .button-secondary:hover {
-      background: color-mix(in srgb, var(--surface-soft) 85%, var(--accent-soft) 15%);
-    }
-
-    .panel-picker-wrap {
-      position: relative;
-    }
-
-    .surah-panel {
-      position: absolute;
-      top: calc(100% + 12px);
-      left: 0;
-      width: min(420px, calc(100vw - 48px));
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 24px 60px rgba(16, 24, 40, 0.16);
-      z-index: 40;
-      overflow: hidden;
-    }
-
-    .surah-panel-inner {
-      display: flex;
-      flex-direction: column;
-      max-height: 520px;
-    }
-
-    .surah-panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--line);
-      background: color-mix(in srgb, var(--surface) 90%, var(--accent-soft) 10%);
-    }
-
-    .surah-panel-head h3 {
-      margin: 0;
-      font-size: 1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .surah-close-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--muted);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: 0.2s ease;
-      font-size: 1.2rem;
-      line-height: 1;
-    }
-
-    .surah-close-btn:hover {
-      background: var(--accent-soft);
-      color: var(--accent-deep);
-      border-color: rgba(30, 107, 92, 0.28);
-    }
-
-    .surah-panel-search {
-      padding: 14px 18px 0;
-    }
-
-    .surah-panel-search input {
-      width: 100%;
-      min-height: 48px;
-      padding: 0 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .surah-panel-search input:focus {
-      border-color: rgba(30, 107, 92, 0.55);
-      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
-    }
-
-    .surah-panel-list {
-      padding: 14px;
-      overflow-y: auto;
-      display: grid;
-      gap: 8px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .surah-panel-link {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 14px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      transition: 0.2s ease;
-    }
-
-    .surah-panel-link:hover {
-      transform: translateY(-1px);
-      border-color: rgba(30, 107, 92, 0.28);
-      background: color-mix(in srgb, var(--surface-soft) 82%, var(--accent-soft) 18%);
-    }
-
-    .surah-panel-number {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      color: var(--accent-deep);
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .surah-panel-name {
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      color: var(--text);
-    }
-
-    .surah-panel-empty {
-      padding: 18px 12px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.94rem;
-    }
-
-    .hero-points {
-      margin: 28px 0 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .hero-points li {
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 14px;
-      font-size: 0.94rem;
-      color: color-mix(in srgb, var(--text) 84%, white 16%);
-    }
-
-    .info-card {
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      justify-content: center;
-    }
-
-    .info-block {
-      padding: 18px;
-      border-radius: var(--radius-sm);
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-    }
-
-    .info-block h3 {
-      margin: 0 0 8px;
-      font-size: 1rem;
-    }
-
-    .info-block p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.97rem;
-    }
-
-    .section {
-      padding: 18px 0 10px;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .section-head h3 {
-      margin: 0;
-      font-size: clamp(1.4rem, 2.5vw, 2rem);
-      letter-spacing: -0.03em;
-    }
-
-    .section-head p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      max-width: 72ch;
-    }
-
-    .quick-grid,
-    .continue-card,
-    .book-section,
-    .about-section,
-    .search-panel,
-    .surah-section,
-    .juz-section,
-    .contact-section,
-    .listen-section,
-    .new-reader-section,
-    .support-section {
-      padding: 26px;
-      margin-bottom: 24px;
-    }
-
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .quick-card {
-      display: block;
-      padding: 20px;
-      border-radius: 18px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      transition: 0.2s ease;
-    }
-
-    .quick-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(30, 107, 92, 0.36);
-      background: color-mix(in srgb, var(--surface-soft) 82%, var(--accent-soft) 18%);
-    }
-
-    .quick-card strong {
-      display: block;
-      font-size: 1.55rem;
-      color: var(--accent-deep);
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-
-    .quick-card span {
-      display: block;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .continue-card {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 94%, var(--accent-soft) 6%), var(--surface));
-    }
-
-    .continue-copy h3 {
-      margin: 0 0 8px;
-      font-size: 1.15rem;
-      letter-spacing: -0.02em;
-    }
-
-    .continue-copy p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.97rem;
-    }
-
-    .continue-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-    }
-
-    .new-reader-grid,
-    .listen-grid,
-    .search-grid,
-    .contact-grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .new-reader-grid,
-    .listen-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .search-grid {
-      grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.95fr) minmax(0, 0.85fr) minmax(0, 0.85fr);
-      align-items: end;
-    }
-
-    .smart-search-field {
-      display: grid;
-      gap: 8px;
-    }
-
-    .smart-search-input-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-    }
-
-    .smart-search-input-wrap input {
-      flex: 1 1 auto;
-      width: 100%;
-      min-height: 52px;
-      padding: 0 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .smart-search-input-wrap input:focus {
-      border-color: rgba(30, 107, 92, 0.55);
-      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
-    }
-
-    .search-clear-field {
-      display: flex;
-      align-items: flex-end;
-      grid-column: 4;
-    }
-
-    .search-clear-field .mini-button {
-      width: 100%;
-      min-height: 52px;
-    }
-
-    .contact-grid {
-      grid-template-columns: 1fr 1fr;
-      margin-bottom: 14px;
-    }
-
-    .feature-card,
-    .support-card {
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 20px;
-    }
-
-    .feature-card h4,
-    .support-card h4 {
-      margin: 0 0 8px;
-      font-size: 1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .feature-card p,
-    .support-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .support-copy {
-      display: grid;
-      gap: 16px;
-    }
-
-    .support-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
-
-    .support-note {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .field label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: color-mix(in srgb, var(--text) 85%, white 15%);
-    }
-
-    .field input,
-    .field select,
-    .field textarea {
-      width: 100%;
-      min-height: 52px;
-      padding: 0 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .field textarea {
-      min-height: 150px;
-      padding: 14px;
-    }
-
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      border-color: rgba(30, 107, 92, 0.55);
-      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
-    }
-
-    .field select:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-    }
-
-    .search-help,
-    .contact-help,
-    .section-note {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .contact-intro {
-      margin-bottom: 18px;
-    }
-
-    .contact-intro h3 {
-      margin: 0;
-      font-size: clamp(1.4rem, 2.5vw, 2rem);
-      letter-spacing: -0.03em;
-    }
-
-    .contact-intro p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      max-width: 72ch;
-    }
-
-    .contact-check {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 16px 0 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .contact-check input {
-      width: 18px;
-      height: 18px;
-      margin-top: 2px;
-      accent-color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    .contact-actions {
-      margin-top: 18px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .contact-note {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .results-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .results-note {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .surah-grid,
-    .juz-grid,
-    .about-grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .surah-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .juz-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .about-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .surah-card,
-    .juz-card,
-    .about-card {
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 20px;
-    }
-
-    .surah-top,
-    .juz-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .surah-number,
-    .juz-number {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: var(--accent-soft);
-      color: var(--accent-deep);
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .surah-arabic {
-      font-size: 1.5rem;
-      line-height: 1.3;
-      direction: rtl;
-      text-align: right;
-      color: var(--accent-deep);
-      font-family: "Amiri", "Noto Naskh Arabic", "Scheherazade New", serif;
-    }
-
-    .surah-main h4,
-    .juz-main h4,
-    .about-card h4,
-    .book-copy h4 {
-      margin: 0;
-      font-size: 1.08rem;
-      letter-spacing: -0.02em;
-    }
-
-    .surah-main p,
-    .juz-main p,
-    .about-card p,
-    .book-copy p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .surah-meta,
-    .juz-meta,
-    .quick-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag,
-    .pill {
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      font-size: 0.84rem;
-      color: color-mix(in srgb, var(--muted) 92%, var(--text) 8%);
-    }
-
-    .pill {
-      cursor: pointer;
-      transition: 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 38px;
-      text-align: center;
-    }
-
-    .pill:hover,
-    .pill.active {
-      background: var(--accent-soft);
-      color: var(--accent-deep);
-      border-color: rgba(30, 107, 92, 0.32);
-    }
-
-    .surah-actions,
-    .juz-actions,
-    .book-links {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .mini-button,
-    .book-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 0 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .mini-button:hover,
-    .book-link:hover {
-      background: var(--accent-soft);
-      border-color: rgba(30, 107, 92, 0.28);
-      color: var(--accent-deep);
-    }
-
-    .book-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-      align-items: center;
-    }
-
-    .footer {
-      border-top: 1px solid var(--line);
-      background: var(--surface);
-      padding: 26px 0 calc(40px + var(--safe-bottom));
-      margin-top: 28px;
-    }
-
-    .footer-inner {
-      width: min(var(--max), calc(100% - 32px));
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .footer-copy {
-      display: grid;
-      gap: 4px;
-    }
-
-    .footer p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .footer-links a {
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
-      font-size: 0.92rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 40px;
-      text-align: center;
-    }
-
-    .legal-links {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      width: 100%;
-      margin-top: 8px;
-    }
-
-    .legal-links a {
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
-      font-size: 0.82rem;
-      line-height: 1;
-      min-height: 32px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      transition: 0.2s ease;
-    }
-
-    .legal-links a:hover {
-      background: var(--accent-soft);
-      border-color: rgba(30, 107, 92, 0.28);
-      color: var(--accent-deep);
-    }
-
-    .footer-nav-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0;
-    }
-
-    .empty-state {
-      padding: 28px;
-      border: 1px dashed var(--line);
-      border-radius: 18px;
-      text-align: center;
-      color: var(--muted);
-      background: var(--surface-soft);
-    }
-
-    @media (max-width: 1080px) {
-      .hero-grid,
-      .search-grid,
-      .quick-grid,
-      .surah-grid,
-      .juz-grid,
-      .about-grid,
-      .book-grid,
-      .new-reader-grid,
-      .listen-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .hero-points {
-        grid-template-columns: 1fr;
-      }
-
-      .search-clear-field {
-        grid-column: auto;
-      }
-    }
-
-    @media (max-width: 860px) {
-      .topbar-inner {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .nav {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .continue-card {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .footer-nav-wrap {
-        width: 100%;
-        align-items: flex-start;
-      }
-
-      .legal-links {
-        justify-content: flex-start;
-      }
-    }
-
-    @media (max-width: 820px) {
-      .hero-grid,
-      .search-grid,
-      .quick-grid,
-      .surah-grid,
-      .juz-grid,
-      .about-grid,
-      .book-grid,
-      .contact-grid,
-      .new-reader-grid,
-      .listen-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        padding-top: 30px;
-      }
-
-      .hero-card,
-      .info-card,
-      .quick-grid,
-      .continue-card,
-      .search-panel,
-      .surah-section,
-      .juz-section,
-      .book-section,
-      .about-section,
-      .contact-section,
-      .listen-section,
-      .new-reader-section,
-      .support-section {
-        padding: 22px;
-      }
-
-      .surah-panel {
-        position: static;
-        width: 100%;
-        margin-top: 12px;
-        box-shadow: var(--shadow);
-      }
-
-      .search-clear-field {
-        grid-column: auto;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .container,
-      .topbar-inner,
-      .footer-inner {
-        width: min(var(--max), calc(100% - 20px));
-      }
-
-      .brand-text h1 {
-        font-size: 1rem;
-      }
-
-      .hero-card h2 {
-        font-size: 2rem;
-      }
-
-      .nav {
-        gap: 8px;
-      }
-
-      .nav a,
-      .theme-toggle {
-        min-height: 38px;
-        padding: 0 12px;
-        font-size: 0.88rem;
-      }
-
-      .button,
-      .mini-button,
-      .book-link {
-        width: 100%;
-      }
-
-      .smart-search-input-wrap {
-        flex-direction: row;
-        align-items: center;
-      }
-
-      .surah-actions,
-      .juz-actions,
-      .book-links,
-      .continue-actions,
-      .contact-actions,
-      .support-actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .footer-links,
-      .legal-links {
-        flex-direction: row;
-        align-items: center;
-      }
-
-      .panel-picker-wrap {
-        width: 100%;
-      }
-
-      .surah-panel {
-        width: 100%;
-      }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>The English Qur’an</title>
+  <meta
+    name="description"
+    content="The English Qur’an, a clear, faithful and modern English translation, presented in a clean and accessible reading experience."
+  />
+  <style>
+    :root {
+      --bg: #f6f8f9;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --text: #172026;
+      --muted: #66727d;
+      --line: #e2e8ec;
+      --accent: #1e6b5c;
+      --accent-soft: #e8f3f0;
+      --accent-deep: #154d42;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --radius: 20px;
+      --radius-sm: 14px;
+      --max: 1240px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f1519;
+      --surface: #121b20;
+      --surface-soft: #18242b;
+      --text: #eef4f6;
+      --muted: #a6b5bd;
+      --line: #27343c;
+      --accent: #2a8b77;
+      --accent-soft: #18342d;
+      --accent-deep: #86dac7;
+      --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    img,
+    svg,
+    iframe {
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
+    }
+
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav a,
+    .theme-toggle {
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nav a:hover,
+    .theme-toggle:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .nav .cta {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      border-color: var(--accent);
+    }
+
+    .nav .cta:hover {
+      background: var(--accent-deep);
+      color: #fff;
+      border-color: var(--accent-deep);
+    }
+
+    .theme-toggle {
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .hero {
+      padding: 56px 0 26px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .hero-card,
+    .info-card,
+    .quick-grid,
+    .continue-card,
+    .search-panel,
+    .surah-section,
+    .juz-section,
+    .book-section,
+    .about-section,
+    .contact-section,
+    .listen-section,
+    .new-reader-section,
+    .support-section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 34px;
+      position: relative;
+      overflow: visible;
+      isolation: isolate;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -100px -110px auto;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(30,107,92,0.12) 0%, rgba(30,107,92,0) 72%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4.5vw, 3.7rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+      max-width: 12ch;
+    }
+
+    .tm-mark {
+      font-size: 0.28em;
+      vertical-align: top;
+      position: relative;
+      top: 0.45em;
+      margin-left: 0.08em;
+      letter-spacing: 0;
+    }
+
+    .hero-card .subtitle {
+      margin: 18px 0 0;
+      font-size: 1.15rem;
+      color: color-mix(in srgb, var(--text) 82%, white 18%);
+      max-width: 62ch;
+    }
+
+    .hero-actions,
+    .quick-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: 0.2s ease;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .button-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .button-primary:hover {
+      background: var(--accent-deep);
+    }
+
+    .button-secondary {
+      background: var(--surface-soft);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .button-secondary:hover {
+      background: color-mix(in srgb, var(--surface-soft) 85%, var(--accent-soft) 15%);
+    }
+
+    .listen-picker-wrap {
+      position: relative;
+    }
+
+    .listen-surah-panel {
+      position: absolute;
+      top: calc(100% + 12px);
+      left: 0;
+      width: min(420px, calc(100vw - 48px));
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(16, 24, 40, 0.16);
+      z-index: 40;
+      overflow: hidden;
+    }
+
+    .listen-surah-panel-inner {
+      display: flex;
+      flex-direction: column;
+      max-height: 520px;
+    }
+
+    .listen-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 90%, var(--accent-soft) 10%);
+    }
+
+    .listen-panel-head h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .listen-close-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .listen-close-btn:hover {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: rgba(30, 107, 92, 0.28);
+    }
+
+    .listen-panel-search {
+      padding: 14px 18px 0;
+    }
+
+    .listen-panel-search input {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .listen-panel-search input:focus {
+      border-color: rgba(30, 107, 92, 0.55);
+      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
+    }
+
+    .listen-surah-list {
+      padding: 14px;
+      overflow-y: auto;
+      display: grid;
+      gap: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .listen-surah-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+    }
+
+    .listen-surah-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(30, 107, 92, 0.28);
+      background: color-mix(in srgb, var(--surface-soft) 82%, var(--accent-soft) 18%);
+    }
+
+    .listen-surah-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--accent-deep);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .listen-surah-name {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .listen-empty {
+      padding: 18px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .hero-points {
+      margin: 28px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .hero-points li {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-size: 0.94rem;
+      color: color-mix(in srgb, var(--text) 84%, white 16%);
+    }
+
+    .info-card {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .info-block {
+      padding: 18px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .info-block h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .info-block p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    .section {
+      padding: 18px 0 10px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      letter-spacing: -0.03em;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      max-width: 72ch;
+    }
+
+    .quick-grid,
+    .continue-card,
+    .book-section,
+    .about-section,
+    .search-panel,
+    .surah-section,
+    .juz-section,
+    .contact-section,
+    .listen-section,
+    .new-reader-section,
+    .support-section {
+      padding: 26px;
+      margin-bottom: 24px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .quick-card {
+      display: block;
+      padding: 20px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+    }
+
+    .quick-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(30, 107, 92, 0.36);
+      background: color-mix(in srgb, var(--surface-soft) 82%, var(--accent-soft) 18%);
+    }
+
+    .quick-card strong {
+      display: block;
+      font-size: 1.55rem;
+      color: var(--accent-deep);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .quick-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .continue-card {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 94%, var(--accent-soft) 6%), var(--surface));
+    }
+
+    .continue-copy h3 {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+    }
+
+    .continue-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    .continue-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .new-reader-grid,
+    .listen-grid,
+    .search-grid,
+    .contact-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .new-reader-grid,
+    .listen-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .search-grid {
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.95fr) minmax(0, 0.85fr) minmax(0, 0.85fr);
+      align-items: end;
+    }
+
+    .smart-search-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .smart-search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .smart-search-input-wrap input {
+      flex: 1 1 auto;
+      width: 100%;
+      min-height: 52px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .smart-search-input-wrap input:focus {
+      border-color: rgba(30, 107, 92, 0.55);
+      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
+    }
+
+    .search-clear-field {
+      display: flex;
+      align-items: flex-end;
+      grid-column: 4;
+    }
+
+    .search-clear-field .mini-button {
+      width: 100%;
+      min-height: 52px;
+    }
+
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 14px;
+    }
+
+    .feature-card,
+    .support-card {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .feature-card h4,
+    .support-card h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .feature-card p,
+    .support-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .support-copy {
+      display: grid;
+      gap: 16px;
+    }
+
+    .support-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .support-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: color-mix(in srgb, var(--text) 85%, white 15%);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .field textarea {
+      min-height: 150px;
+      padding: 14px;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(30, 107, 92, 0.55);
+      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
+    }
+
+    .field select:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .search-help,
+    .contact-help,
+    .section-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .contact-intro {
+      margin-bottom: 18px;
+    }
+
+    .contact-intro h3 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      letter-spacing: -0.03em;
+    }
+
+    .contact-intro p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 72ch;
+    }
+
+    .contact-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .contact-check input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .contact-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .contact-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .results-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .results-note {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .surah-grid,
+    .juz-grid,
+    .about-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .surah-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .juz-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .about-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .surah-card,
+    .juz-card,
+    .about-card {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .surah-top,
+    .juz-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .surah-number,
+    .juz-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .surah-arabic {
+      font-size: 1.5rem;
+      line-height: 1.3;
+      direction: rtl;
+      text-align: right;
+      color: var(--accent-deep);
+      font-family: "Amiri", "Noto Naskh Arabic", "Scheherazade New", serif;
+    }
+
+    .surah-main h4,
+    .juz-main h4,
+    .about-card h4,
+    .book-copy h4 {
+      margin: 0;
+      font-size: 1.08rem;
+      letter-spacing: -0.02em;
+    }
+
+    .surah-main p,
+    .juz-main p,
+    .about-card p,
+    .book-copy p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .surah-meta,
+    .juz-meta,
+    .quick-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag,
+    .pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      font-size: 0.84rem;
+      color: color-mix(in srgb, var(--muted) 92%, var(--text) 8%);
+    }
+
+    .pill {
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      text-align: center;
+    }
+
+    .pill:hover,
+    .pill.active {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: rgba(30, 107, 92, 0.32);
+    }
+
+    .surah-actions,
+    .juz-actions,
+    .book-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .mini-button,
+    .book-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .mini-button:hover,
+    .book-link:hover {
+      background: var(--accent-soft);
+      border-color: rgba(30, 107, 92, 0.28);
+      color: var(--accent-deep);
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      padding: 26px 0 calc(40px + var(--safe-bottom));
+      margin-top: 28px;
+    }
+
+    .footer-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      display: grid;
+      gap: 4px;
+    }
+
+    .footer p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
+      font-size: 0.92rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      text-align: center;
+    }
+
+    .legal-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .legal-links a {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
+      font-size: 0.82rem;
+      line-height: 1;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: 0.2s ease;
+    }
+
+    .legal-links a:hover {
+      background: var(--accent-soft);
+      border-color: rgba(30, 107, 92, 0.28);
+      color: var(--accent-deep);
+    }
+
+    .footer-nav-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0;
+    }
+
+    .empty-state {
+      padding: 28px;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--surface-soft);
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .search-grid,
+      .quick-grid,
+      .surah-grid,
+      .juz-grid,
+      .about-grid,
+      .book-grid,
+      .new-reader-grid,
+      .listen-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero-points {
+        grid-template-columns: 1fr;
+      }
+
+      .search-clear-field {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .continue-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .footer-nav-wrap {
+        width: 100%;
+        align-items: flex-start;
+      }
+
+      .legal-links {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .hero-grid,
+      .search-grid,
+      .quick-grid,
+      .surah-grid,
+      .juz-grid,
+      .about-grid,
+      .book-grid,
+      .contact-grid,
+      .new-reader-grid,
+      .listen-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 30px;
+      }
+
+      .hero-card,
+      .info-card,
+      .quick-grid,
+      .continue-card,
+      .search-panel,
+      .surah-section,
+      .juz-section,
+      .book-section,
+      .about-section,
+      .contact-section,
+      .listen-section,
+      .new-reader-section,
+      .support-section {
+        padding: 22px;
+      }
+
+      .listen-surah-panel {
+        position: static;
+        width: 100%;
+        margin-top: 12px;
+        box-shadow: var(--shadow);
+      }
+
+      .search-clear-field {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .container,
+      .topbar-inner,
+      .footer-inner {
+        width: min(var(--max), calc(100% - 20px));
+      }
+
+      .brand-text h1 {
+        font-size: 1rem;
+      }
+
+      .hero-card h2 {
+        font-size: 2rem;
+      }
+
+      .nav {
+        gap: 8px;
+      }
+
+      .nav a,
+      .theme-toggle {
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 0.88rem;
+      }
+
+      .button,
+      .mini-button,
+      .book-link {
+        width: 100%;
+      }
+
+      .smart-search-input-wrap {
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .surah-actions,
+      .juz-actions,
+      .book-links,
+      .continue-actions,
+      .contact-actions,
+      .support-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .footer-links,
+      .legal-links {
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .listen-picker-wrap {
+        width: 100%;
+      }
+
+      .listen-surah-panel {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-mark">ق</div>
-        <div class="brand-text">
-          <h1>The English Qur’an</h1>
-          <p>Clear, faithful and modern English</p>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <a href="#surahs">Surahs</a>
-        <a href="#juz">Juz</a>
-        <a href="#about">About</a>
-        <a href="#book">Book</a>
-        <a href="#contact">Contact</a>
-        <a class="cta" href="surah-1.html">Start Reading</a>
-        <button class="theme-toggle" type="button" id="themeToggle">Dark</button>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="container">
-        <div class="hero-grid">
-          <div class="hero-card">
-            <div class="eyebrow">A clear and modern reading experience</div>
-            <h2>The English Qur’an<span class="tm-mark">TM</span></h2>
-            <p class="subtitle">
-              Read the Qur’an in a clean, calm and accessible format, with the original Arabic placed before each English verse, presented with clarity, dignity and ease for today’s reader.
-            </p>
-
-            <div style="margin: 18px 0 0; padding: 12px 16px; background: var(--surface-soft); border-radius: 12px; display: inline-block;">
-              <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--text);">
-                We have made the Qur’an easy to remember. <span style="font-size: 0.9rem; color: var(--muted); margin-left: 6px;">(Qur’an 54:17)</span>
-              </p>
-            </div>
-
-            <div class="hero-actions">
-              <a class="button button-primary" href="surah-1.html">Start Reading</a>
-
-              <div class="panel-picker-wrap">
-                <button
-                  class="button button-secondary"
-                  id="startListeningToggle"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="listenSurahPanel"
-                >
-                  Start Listening
-                </button>
-
-                <div id="listenSurahPanel" class="surah-panel" hidden>
-                  <div class="surah-panel-inner">
-                    <div class="surah-panel-head">
-                      <h3>Select a Surah</h3>
-                      <button id="closeListeningPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
-                    </div>
-
-                    <div class="surah-panel-search">
-                      <input
-                        id="listenSurahSearch"
-                        type="text"
-                        placeholder="Search by surah name or number"
-                        autocomplete="off"
-                      />
-                    </div>
-
-                    <div id="listenSurahList" class="surah-panel-list"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="panel-picker-wrap">
-                <button
-                  class="button button-secondary"
-                  id="startReadingToggleMiddle"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="readSurahPanel"
-                >
-                  Start Reading
-                </button>
-
-                <div id="readSurahPanel" class="surah-panel" hidden>
-                  <div class="surah-panel-inner">
-                    <div class="surah-panel-head">
-                      <h3>Select a Surah</h3>
-                      <button id="closeReadingPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
-                    </div>
-
-                    <div class="surah-panel-search">
-                      <input
-                        id="readSurahSearch"
-                        type="text"
-                        placeholder="Search by surah name or number"
-                        autocomplete="off"
-                      />
-                    </div>
-
-                    <div id="readSurahList" class="surah-panel-list"></div>
-                  </div>
-                </div>
-              </div>
-
-              <a class="button button-secondary" href="#surahs">Browse Surahs</a>
-              <a class="button button-secondary" href="#juz">Browse Juz</a>
-              <a class="button button-secondary" href="#book">Get the Book</a>
-              <a class="button button-secondary" href="#about">About the Translation</a>
-            </div>
-
-            <ul class="hero-points">
-              <li>Go straight to any surah, verse, or part of the Qur’an with clean direct navigation.</li>
-              <li>Search works without diacritics, so readers can type naturally and still reach the right result.</li>
-              <li>Read at your own pace, or listen with synced recitation from the beginning of any surah.</li>
-            </ul>
-          </div>
-
-          <aside class="info-card">
-            <div class="info-block">
-              <h3>Go straight to a surah</h3>
-              <p>Every surah is listed with its English name, Arabic title, verse count, and direct reading link.</p>
-            </div>
-
-            <div class="info-block">
-              <h3>Choose a verse quickly</h3>
-              <p>Select any surah from the main list, then choose the verse number from the verses box.</p>
-            </div>
-
-            <div class="info-block">
-              <h3>Read or listen clearly</h3>
-              <p>Open the Qur’an for reading, or begin from the start in synced recitation mode with your selected reciter.</p>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="new-reader-section">
-          <div class="section-head">
-            <div>
-              <h3>New to the Qur’an?</h3>
-              <p>A simple place to begin for first time readers, returning readers, and anyone exploring the Qur’an in English.</p>
-            </div>
-          </div>
-
-          <div class="new-reader-grid">
-            <div class="feature-card">
-              <h4>Start with Al Fātiḥah</h4>
-              <p>Begin with the opening surah, short, central, and foundational to the Qur’an’s message.</p>
-            </div>
-
-            <div class="feature-card">
-              <h4>Continue into Al Baqarah</h4>
-              <p>Move into the longest surah for sustained reading, guidance, and a fuller introduction to the Qur’an.</p>
-            </div>
-
-            <div class="feature-card">
-              <h4>Explore freely</h4>
-              <p>You may also browse any surah, verse, or Juz directly, according to your interest or study plan.</p>
-            </div>
-          </div>
-
-          <p class="section-note">This site is designed to make beginning easy, without losing seriousness, clarity, or structure.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="continueReadingSection" style="display:none;">
-      <div class="container">
-        <div class="continue-card" id="continueReadingCard">
-          <div class="continue-copy">
-            <h3>Continue Reading</h3>
-            <p id="continueReadingText">Resume from your last saved place.</p>
-          </div>
-          <div class="continue-actions">
-            <a class="button button-primary" id="continueReadingLink" href="surah-1.html">Continue</a>
-            <button class="button button-secondary" type="button" id="clearReadingButton">Clear</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="quick-grid">
-          <a class="quick-card" href="#surahs">
-            <strong>114</strong>
-            <span>Browse all surahs</span>
-          </a>
-          <a class="quick-card" href="#juz">
-            <strong>30</strong>
-            <span>Browse all Juz</span>
-          </a>
-          <a class="quick-card" href="#surahs">
-            <strong id="makkiCount">86</strong>
-            <span>Makki surahs</span>
-          </a>
-          <a class="quick-card" href="#surahs">
-            <strong id="madaniCount">28</strong>
-            <span>Madani surahs</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="surahs">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h3>Browse the Surahs</h3>
-            <p>Select any surah from the structured list below. Search by surah name, surah number, verse reference, Juz number, Arabic name, transliterated name, or meaning.</p>
-          </div>
-        </div>
-
-        <div class="search-panel">
-          <div class="search-grid">
-            <div class="smart-search-field">
-              <label for="searchInput">Smart search</label>
-              <div class="smart-search-input-wrap">
-                <input id="searchInput" type="text" placeholder="Try: Al Baqarah, 2, 2:255, Juz 30, Ya Sin 58" autocomplete="off" />
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="surahFilter">Surahs</label>
-              <select id="surahFilter">
-                <option value="all">List all 114 surahs</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="verseFilter">Verses</label>
-              <select id="verseFilter" disabled>
-                <option value="all">Select surah first</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="juzFilter">Juz</label>
-              <select id="juzFilter">
-                <option value="all">All Juz</option>
-              </select>
-            </div>
-
-            <div class="field search-clear-field">
-              <button class="mini-button" type="button" id="clearSearchButton">Clear</button>
-            </div>
-          </div>
-
-          <p class="search-help">No diacritic typing is needed. Enter can open a direct result such as 19:16, 36:58, Al Baqarah 255, or Juz 5.</p>
-
-          <div class="quick-nav">
-            <button class="pill active" type="button" data-filter="all">All</button>
-            <button class="pill" type="button" data-filter="Makki">Makki</button>
-            <button class="pill" type="button" data-filter="Madani">Madani</button>
-            <button class="pill" type="button" data-filter="short">Short surahs</button>
-            <button class="pill" type="button" data-filter="long">Long surahs</button>
-            <button class="pill" type="button" data-filter="juz-start">Starts a Juz</button>
-          </div>
-        </div>
-
-        <div class="surah-section">
-          <div class="results-bar">
-            <div class="results-note" id="resultsCount">114 surahs</div>
-          </div>
-          <div class="surah-grid" id="surahGrid"></div>
-          <div class="empty-state" id="emptyState" style="display:none;">No surahs matched your search. Try another surah name, number, verse reference, or Juz.</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="juz">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h3>Browse by Juz</h3>
-            <p>Each Juz shows its exact start and end point and opens from the correct place for structured reading.</p>
-          </div>
-        </div>
-
-        <div class="juz-section">
-          <div class="juz-grid" id="juzGrid"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="listen">
-      <div class="container">
-        <div class="listen-section">
-          <div class="section-head">
-            <div>
-              <h3>Listen to the Qur’an</h3>
-              <p>Choose a reciter, follow synced recitation, and navigate through the Qur’an with a calm and structured listening experience.</p>
-            </div>
-          </div>
-
-          <div class="listen-grid">
-            <div class="feature-card">
-              <h4>Choose your reciter</h4>
-              <p>Start listening from the homepage, then select your surah and use the reciter options available in the recitation view.</p>
-            </div>
-
-            <div class="feature-card">
-              <h4>Begin from the start</h4>
-              <p>Each selected surah opens directly in synced recitation mode from the beginning, so listening starts cleanly and naturally.</p>
-            </div>
-
-            <div class="feature-card">
-              <h4>Follow as you listen</h4>
-              <p>Use the recitation view to stay with the surah as it plays, making navigation, replay, and continuation easier throughout the Qur’an.</p>
-            </div>
-          </div>
-
-          <p class="section-note">The listening flow is built into the main site, so reading and recitation remain part of one clear Qur’an experience.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="book">
-      <div class="container">
-        <div class="book-section">
-          <div class="section-head">
-            <div>
-              <h3>Get the Book</h3>
-              <p>Available globally in print through trusted platforms.</p>
-            </div>
-          </div>
-
-          <div class="book-grid">
-            <div class="book-copy">
-              <h4>The English Qur’an in print</h4>
-              <p>Access the printed edition through the available global platforms below.</p>
-            </div>
-
-            <div class="book-links">
-              <a class="book-link" href="https://amzn.eu/d/0dRT7lMW" target="_blank" rel="noopener noreferrer">Amazon</a>
-              <a class="book-link" href="https://shop.ingramspark.com/b/084?params=xzqr7rCaEWWzms7j5zNG5JFyoRQ0VFb3vLMBreZw2qr" target="_blank" rel="noopener noreferrer">IngramSpark</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="about">
-      <div class="container">
-        <div class="about-section">
-          <div class="section-head">
-            <div>
-              <h3>About this translation</h3>
-              <p>This website follows the manuscript of The English Qur’an and presents the translation within a clear and disciplined reading environment.</p>
-            </div>
-          </div>
-
-          <div class="about-grid">
-            <div class="about-card">
-              <h4>The importance of this translation</h4>
-              <p>This translation was produced in response to a pressing need, to present the Qur’an in English that is faithful, precise, intellectually honest, and still natural and readable for the modern reader. It serves readers who seek guidance but struggle with archaic language, younger generations raised in English speaking settings, and thoughtful non Muslims who wish to approach the Qur’an without unnecessary barriers.</p>
-            </div>
-
-            <div class="about-card">
-              <h4>Translation method and conventions</h4>
-              <p>The method is simple and disciplined, to let the Qur’an speak without commentary, embellishment, or distancing language. Wherever possible, the translation remains close to the Arabic wording. Where English requires adjustment, it does so carefully and transparently. The aim is faithful communication, clarity, and direct engagement with the Qur’anic voice.</p>
-            </div>
-
-            <div class="about-card">
-              <h4>About the translator</h4>
-              <p>A. K. Khan is a UK based Islamic educator, author, and researcher whose work is devoted to restoring direct and intelligible engagement with the Qur’an for modern English readers. His background combines early Qur’anic study, advanced English academic training, and sustained study of classical Arabic, allowing him to approach Qur’anic translation with clarity, discipline, and fidelity to meaning.</p>
-            </div>
-
-            <div class="about-card">
-              <h4>Mission and vision</h4>
-              <p>The mission of this work is service, service to the reader, service to understanding, and service to the Qur’an itself by conveying its message clearly without unnecessary intrusion. This website also stands within a wider vision, by Allah’s permission, to expand this work into every language so that more people across the world may approach the Qur’an with clarity, seriousness, and trust.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="contact">
-      <div class="container">
-        <div class="contact-section">
-          <div class="contact-intro">
-            <h3>Get in touch</h3>
-            <p>Share a message, a reflection, or connect with the project. You may also choose to receive updates as new information on our Qur’an project becomes available, along with future releases.</p>
-          </div>
-
-          <form action="https://formspree.io/f/mreokljn" method="POST" id="contactForm">
-            <div class="contact-grid">
-              <div class="field">
-                <label for="contactName">Your name</label>
-                <input id="contactName" name="name" type="text" placeholder="Enter your name" required />
-              </div>
-
-              <div class="field">
-                <label for="contactEmail">Your email</label>
-                <input id="contactEmail" name="email" type="email" placeholder="Enter your email address" required />
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="contactPurpose">What is this about?</label>
-              <select id="contactPurpose" name="purpose" required>
-                <option value="" selected disabled>Select an option</option>
-                <option value="General enquiry">General enquiry</option>
-                <option value="Feedback or correction">Feedback or correction</option>
-                <option value="Partnership or collaboration">Partnership or collaboration</option>
-                <option value="Subscription only">Subscription only</option>
-              </select>
-            </div>
-
-            <div class="field" id="messageFieldWrap">
-              <label for="contactMessage">Your message</label>
-              <textarea id="contactMessage" name="message" placeholder="Write your message here…" required></textarea>
-            </div>
-
-            <p class="contact-help" id="messageHelp">Please write your message here.</p>
-
-            <label class="contact-check" for="contactSubscribe">
-              <input id="contactSubscribe" name="subscribe" type="checkbox" value="Yes" />
-              <span>Receive new information, updates, and future releases</span>
-            </label>
-
-            <input type="hidden" name="_subject" value="New website message - The English Qur’an" />
-            <input type="hidden" name="_next" value="thank-you.html" />
-            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;" />
-
-            <div class="contact-actions">
-              <button class="button button-primary" type="submit">Send message</button>
-              <span class="contact-note">Your message will be sent securely through the website form.</span>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="support">
-      <div class="container">
-        <div class="support-section">
-          <div class="section-head">
-            <div>
-              <h3>Support the English Qur’an Project</h3>
-              <p>This work is freely open to readers. If you would like to support its continuation, you may do so here.</p>
-            </div>
-          </div>
-
-          <div class="support-copy">
-            <div class="support-card">
-              <h4>Support this project</h4>
-              <p>Your support helps sustain the website, publication work, and wider development of The English Qur’an for readers around the world.</p>
-            </div>
-
-            <div class="support-actions">
-              <a class="button button-primary" href="https://www.paypal.com/donate/?hosted_button_id=TRXETFJ2KKWQE" target="_blank" rel="noopener noreferrer">Donate with PayPal</a>
-              <span class="support-note">The English Qur’an Project is part of Al-Hikmah School CIO (Charity Incorporated Organisation) based in the UK and is published by Al-Hikmah Publishing UK.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-copy">
-        <p>© 2015–2026 Al-Hikmah Publishing UK. All Rights Reserved.</p>
-        <p>The English Qur’an™, translated by Dr A K Khan.</p>
-      </div>
-
-      <div class="footer-nav-wrap">
-        <div class="footer-links">
-          <a href="#surahs">Browse Surahs</a>
-          <a href="#juz">Browse Juz</a>
-          <a href="#listen">Listen</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-          <a href="#support">Support</a>
-        </div>
-        <div class="legal-links">
-          <a href="terms-and-conditions.html">Terms</a>
-          <a href="privacy-policy.html">Privacy</a>
-          <a href="sitemap.html">Sitemap</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const surahs = [
-      { number: 1, english: "Al-Fātiḥah", meaning: "The Opening", arabic: "الفاتحة", verses: 7, type: "Makki" },
-      { number: 2, english: "Al-Baqarah", meaning: "The Cow", arabic: "البقرة", verses: 286, type: "Madani" },
-      { number: 3, english: "Āl ʿImrān", meaning: "The Family of ʿImrān", arabic: "آل عمران", verses: 200, type: "Madani" },
-      { number: 4, english: "An-Nisāʾ", meaning: "The Women", arabic: "النساء", verses: 176, type: "Madani" },
-      { number: 5, english: "Al-Māʾidah", meaning: "The Table Spread", arabic: "المائدة", verses: 120, type: "Madani" },
-      { number: 6, english: "Al-Anʿām", meaning: "The Cattle", arabic: "الأنعام", verses: 165, type: "Makki" },
-      { number: 7, english: "Al-Aʿrāf", meaning: "The Heights", arabic: "الأعراف", verses: 206, type: "Makki" },
-      { number: 8, english: "Al-Anfāl", meaning: "The Spoils of War", arabic: "الأنفال", verses: 75, type: "Madani" },
-      { number: 9, english: "At-Tawbah", meaning: "Repentance", arabic: "التوبة", verses: 129, type: "Madani" },
-      { number: 10, english: "Yūnus", meaning: "Jonah", arabic: "يونس", verses: 109, type: "Makki" },
-      { number: 11, english: "Hūd", meaning: "Hud", arabic: "هود", verses: 123, type: "Makki" },
-      { number: 12, english: "Yūsuf", meaning: "Joseph", arabic: "يوسف", verses: 111, type: "Makki" },
-      { number: 13, english: "Ar-Raʿd", meaning: "Thunder", arabic: "الرعد", verses: 43, type: "Madani" },
-      { number: 14, english: "Ibrāhīm", meaning: "Abraham", arabic: "إبراهيم", verses: 52, type: "Makki" },
-      { number: 15, english: "Al-Ḥijr", meaning: "The Rocky Tract", arabic: "الحجر", verses: 99, type: "Makki" },
-      { number: 16, english: "An-Naḥl", meaning: "The Bee", arabic: "النحل", verses: 128, type: "Makki" },
-      { number: 17, english: "Al-Isrāʾ", meaning: "The Night Journey", arabic: "الإسراء", verses: 111, type: "Makki" },
-      { number: 18, english: "Al-Kahf", meaning: "The Cave", arabic: "الكهف", verses: 110, type: "Makki" },
-      { number: 19, english: "Maryam", meaning: "Mary", arabic: "مريم", verses: 98, type: "Makki" },
-      { number: 20, english: "Ṭā Hā", meaning: "Ṭā Hā", arabic: "طه", verses: 135, type: "Makki" },
-      { number: 21, english: "Al-Anbiyāʾ", meaning: "The Prophets", arabic: "الأنبياء", verses: 112, type: "Makki" },
-      { number: 22, english: "Al-Ḥajj", meaning: "The Pilgrimage", arabic: "الحج", verses: 78, type: "Madani" },
-      { number: 23, english: "Al-Muʾminūn", meaning: "The Believers", arabic: "المؤمنون", verses: 118, type: "Makki" },
-      { number: 24, english: "An-Nūr", meaning: "The Light", arabic: "النور", verses: 64, type: "Madani" },
-      { number: 25, english: "Al-Furqān", meaning: "The Criterion", arabic: "الفرقان", verses: 77, type: "Makki" },
-      { number: 26, english: "Ash-Shuʿarāʾ", meaning: "The Poets", arabic: "الشعراء", verses: 227, type: "Makki" },
-      { number: 27, english: "An-Naml", meaning: "The Ant", arabic: "النمل", verses: 93, type: "Makki" },
-      { number: 28, english: "Al-Qaṣaṣ", meaning: "The Stories", arabic: "القصص", verses: 88, type: "Makki" },
-      { number: 29, english: "Al-ʿAnkabūt", meaning: "The Spider", arabic: "العنكبوت", verses: 69, type: "Makki" },
-      { number: 30, english: "Ar-Rūm", meaning: "The Romans", arabic: "الروم", verses: 60, type: "Makki" },
-      { number: 31, english: "Luqmān", meaning: "Luqman", arabic: "لقمان", verses: 34, type: "Makki" },
-      { number: 32, english: "As-Sajdah", meaning: "The Prostration", arabic: "السجدة", verses: 30, type: "Makki" },
-      { number: 33, english: "Al-Aḥzāb", meaning: "The Confederates", arabic: "الأحزاب", verses: 73, type: "Madani" },
-      { number: 34, english: "Sabaʾ", meaning: "Sheba", arabic: "سبأ", verses: 54, type: "Makki" },
-      { number: 35, english: "Fāṭir", meaning: "Originator", arabic: "فاطر", verses: 45, type: "Makki" },
-      { number: 36, english: "Yā Sīn", meaning: "Yā Sīn", arabic: "يس", verses: 83, type: "Makki" },
-      { number: 37, english: "Aṣ-Ṣāffāt", meaning: "Those Lined Up", arabic: "الصافات", verses: 182, type: "Makki" },
-      { number: 38, english: "Ṣād", meaning: "Ṣād", arabic: "ص", verses: 88, type: "Makki" },
-      { number: 39, english: "Az-Zumar", meaning: "The Groups", arabic: "الزمر", verses: 75, type: "Makki" },
-      { number: 40, english: "Ghāfir", meaning: "The Forgiver", arabic: "غافر", verses: 85, type: "Makki" },
-      { number: 41, english: "Fuṣṣilat", meaning: "Explained in Detail", arabic: "فصلت", verses: 54, type: "Makki" },
-      { number: 42, english: "Ash-Shūrā", meaning: "Consultation", arabic: "الشورى", verses: 53, type: "Makki" },
-      { number: 43, english: "Az-Zukhruf", meaning: "Ornaments of Gold", arabic: "الزخرف", verses: 89, type: "Makki" },
-      { number: 44, english: "Ad-Dukhān", meaning: "The Smoke", arabic: "الدخان", verses: 59, type: "Makki" },
-      { number: 45, english: "Al-Jāthiyah", meaning: "The Kneeling", arabic: "الجاثية", verses: 37, type: "Makki" },
-      { number: 46, english: "Al-Aḥqāf", meaning: "The Sand Dunes", arabic: "الأحقاف", verses: 35, type: "Makki" },
-      { number: 47, english: "Muhammad", meaning: "Muhammad", arabic: "محمد", verses: 38, type: "Madani" },
-      { number: 48, english: "Al-Fatḥ", meaning: "The Victory", arabic: "الفتح", verses: 29, type: "Madani" },
-      { number: 49, english: "Al-Ḥujurāt", meaning: "The Chambers", arabic: "الحجرات", verses: 18, type: "Madani" },
-      { number: 50, english: "Qāf", meaning: "Qāf", arabic: "ق", verses: 45, type: "Makki" },
-      { number: 51, english: "Adh-Dhāriyāt", meaning: "Those That Scatter", arabic: "الذاريات", verses: 60, type: "Makki" },
-      { number: 52, english: "Aṭ-Ṭūr", meaning: "The Mount", arabic: "الطور", verses: 49, type: "Makki" },
-      { number: 53, english: "An-Najm", meaning: "The Star", arabic: "النجم", verses: 62, type: "Makki" },
-      { number: 54, english: "Al-Qamar", meaning: "The Moon", arabic: "القمر", verses: 55, type: "Makki" },
-      { number: 55, english: "Ar-Raḥmān", meaning: "The Most Merciful", arabic: "الرحمن", verses: 78, type: "Madani" },
-      { number: 56, english: "Al-Wāqiʿah", meaning: "The Inevitable Event", arabic: "الواقعة", verses: 96, type: "Makki" },
-      { number: 57, english: "Al-Ḥadīd", meaning: "Iron", arabic: "الحديد", verses: 29, type: "Madani" },
-      { number: 58, english: "Al-Mujādilah", meaning: "The Woman Who Pleaded", arabic: "المجادلة", verses: 22, type: "Madani" },
-      { number: 59, english: "Al-Ḥashr", meaning: "The Gathering", arabic: "الحشر", verses: 24, type: "Madani" },
-      { number: 60, english: "Al-Mumtaḥanah", meaning: "The Woman to Be Examined", arabic: "الممتحنة", verses: 13, type: "Madani" },
-      { number: 61, english: "Aṣ-Ṣaff", meaning: "The Row", arabic: "الصف", verses: 14, type: "Madani" },
-      { number: 62, english: "Al-Jumuʿah", meaning: "Friday", arabic: "الجمعة", verses: 11, type: "Madani" },
-      { number: 63, english: "Al-Munāfiqūn", meaning: "The Hypocrites", arabic: "المنافقون", verses: 11, type: "Madani" },
-      { number: 64, english: "At-Taghābun", meaning: "Mutual Loss and Gain", arabic: "التغابن", verses: 18, type: "Madani" },
-      { number: 65, english: "Aṭ-Ṭalāq", meaning: "Divorce", arabic: "الطلاق", verses: 12, type: "Madani" },
-      { number: 66, english: "At-Taḥrīm", meaning: "Prohibition", arabic: "التحريم", verses: 12, type: "Madani" },
-      { number: 67, english: "Al-Mulk", meaning: "Sovereignty", arabic: "الملك", verses: 30, type: "Makki" },
-      { number: 68, english: "Al-Qalam", meaning: "The Pen", arabic: "القلم", verses: 52, type: "Makki" },
-      { number: 69, english: "Al-Ḥāqqah", meaning: "The Inevitable Reality", arabic: "الحاقة", verses: 52, type: "Makki" },
-      { number: 70, english: "Al-Maʿārij", meaning: "The Ways of Ascent", arabic: "المعارج", verses: 44, type: "Makki" },
-      { number: 71, english: "Nūḥ", meaning: "Noah", arabic: "نوح", verses: 28, type: "Makki" },
-      { number: 72, english: "Al-Jinn", meaning: "The Jinn", arabic: "الجن", verses: 28, type: "Makki" },
-      { number: 73, english: "Al-Muzzammil", meaning: "The One Wrapped Up", arabic: "المزمل", verses: 20, type: "Makki" },
-      { number: 74, english: "Al-Muddaththir", meaning: "The One Covered Up", arabic: "المدثر", verses: 56, type: "Makki" },
-      { number: 75, english: "Al-Qiyāmah", meaning: "The Resurrection", arabic: "القيامة", verses: 40, type: "Makki" },
-      { number: 76, english: "Al-Insān", meaning: "The Human Being", arabic: "الإنسان", verses: 31, type: "Madani" },
-      { number: 77, english: "Al-Mursalāt", meaning: "Those Sent Forth", arabic: "المرسلات", verses: 50, type: "Makki" },
-      { number: 78, english: "An-Nabaʾ", meaning: "The Great News", arabic: "النبأ", verses: 40, type: "Makki" },
-      { number: 79, english: "An-Nāziʿāt", meaning: "Those Who Pull Out", arabic: "النازعات", verses: 46, type: "Makki" },
-      { number: 80, english: "ʿAbasa", meaning: "He Frowned", arabic: "عبس", verses: 42, type: "Makki" },
-      { number: 81, english: "At-Takwīr", meaning: "The Folding Up", arabic: "التكوير", verses: 29, type: "Makki" },
-      { number: 82, english: "Al-Infiṭār", meaning: "The Splitting Open", arabic: "الإنفطار", verses: 19, type: "Makki" },
-      { number: 83, english: "Al-Muṭaffifīn", meaning: "Those Who Give Less", arabic: "المطففين", verses: 36, type: "Makki" },
-      { number: 84, english: "Al-Inshiqāq", meaning: "The Tearing Apart", arabic: "الإنشقاق", verses: 25, type: "Makki" },
-      { number: 85, english: "Al-Burūj", meaning: "The Constellations", arabic: "البروج", verses: 22, type: "Makki" },
-      { number: 86, english: "Aṭ-Ṭāriq", meaning: "The Night Visitor", arabic: "الطارق", verses: 17, type: "Makki" },
-      { number: 87, english: "Al-Aʿlā", meaning: "The Most High", arabic: "الأعلى", verses: 19, type: "Makki" },
-      { number: 88, english: "Al-Ghāshiyah", meaning: "The Overwhelming Event", arabic: "الغاشية", verses: 26, type: "Makki" },
-      { number: 89, english: "Al-Fajr", meaning: "The Dawn", arabic: "الفجر", verses: 30, type: "Makki" },
-      { number: 90, english: "Al-Balad", meaning: "The City", arabic: "البلد", verses: 20, type: "Makki" },
-      { number: 91, english: "Ash-Shams", meaning: "The Sun", arabic: "الشمس", verses: 15, type: "Makki" },
-      { number: 92, english: "Al-Layl", meaning: "The Night", arabic: "الليل", verses: 21, type: "Makki" },
-      { number: 93, english: "Aḍ-Ḍuḥā", meaning: "The Morning Brightness", arabic: "الضحى", verses: 11, type: "Makki" },
-      { number: 94, english: "Ash-Sharḥ", meaning: "The Expansion", arabic: "الشرح", verses: 8, type: "Makki" },
-      { number: 95, english: "At-Tīn", meaning: "The Fig", arabic: "التين", verses: 8, type: "Makki" },
-      { number: 96, english: "Al-ʿAlaq", meaning: "The Clinging Substance", arabic: "العلق", verses: 19, type: "Makki" },
-      { number: 97, english: "Al-Qadr", meaning: "The Decree", arabic: "القدر", verses: 5, type: "Makki" },
-      { number: 98, english: "Al-Bayyinah", meaning: "The Clear Proof", arabic: "البينة", verses: 8, type: "Madani" },
-      { number: 99, english: "Az-Zalzalah", meaning: "The Earthquake", arabic: "الزلزلة", verses: 8, type: "Madani" },
-      { number: 100, english: "Al-ʿĀdiyāt", meaning: "The Charging Horses", arabic: "العاديات", verses: 11, type: "Makki" },
-      { number: 101, english: "Al-Qāriʿah", meaning: "The Striking Calamity", arabic: "القارعة", verses: 11, type: "Makki" },
-      { number: 102, english: "At-Takāthur", meaning: "Rivalry in Worldly Increase", arabic: "التكاثر", verses: 8, type: "Makki" },
-      { number: 103, english: "Al-ʿAṣr", meaning: "Time", arabic: "العصر", verses: 3, type: "Makki" },
-      { number: 104, english: "Al-Humazah", meaning: "The Slanderer", arabic: "الهمزة", verses: 9, type: "Makki" },
-      { number: 105, english: "Al-Fīl", meaning: "The Elephant", arabic: "الفيل", verses: 5, type: "Makki" },
-      { number: 106, english: "Quraysh", meaning: "Quraysh", arabic: "قريش", verses: 4, type: "Makki" },
-      { number: 107, english: "Al-Māʿūn", meaning: "Small Kindnesses", arabic: "الماعون", verses: 7, type: "Makki" },
-      { number: 108, english: "Al-Kawthar", meaning: "Abundant Good", arabic: "الكوثر", verses: 3, type: "Makki" },
-      { number: 109, english: "Al-Kāfirūn", meaning: "The Disbelievers", arabic: "الكافرون", verses: 6, type: "Makki" },
-      { number: 110, english: "An-Naṣr", meaning: "Divine Help", arabic: "النصر", verses: 3, type: "Madani" },
-      { number: 111, english: "Al-Masad", meaning: "Palm Fibre", arabic: "المسد", verses: 5, type: "Makki" },
-      { number: 112, english: "Al-Ikhlāṣ", meaning: "Sincerity", arabic: "الإخلاص", verses: 4, type: "Makki" },
-      { number: 113, english: "Al-Falaq", meaning: "Daybreak", arabic: "الفلق", verses: 5, type: "Makki" },
-      { number: 114, english: "An-Nās", meaning: "Mankind", arabic: "الناس", verses: 6, type: "Makki" }
-    ];
-
-    const juzData = [
-      { juz: 1, start: { surah: 1, verse: 1 }, end: { surah: 2, verse: 141 } },
-      { juz: 2, start: { surah: 2, verse: 142 }, end: { surah: 2, verse: 252 } },
-      { juz: 3, start: { surah: 2, verse: 253 }, end: { surah: 3, verse: 92 } },
-      { juz: 4, start: { surah: 3, verse: 93 }, end: { surah: 4, verse: 23 } },
-      { juz: 5, start: { surah: 4, verse: 24 }, end: { surah: 4, verse: 147 } },
-      { juz: 6, start: { surah: 4, verse: 148 }, end: { surah: 5, verse: 81 } },
-      { juz: 7, start: { surah: 5, verse: 82 }, end: { surah: 6, verse: 110 } },
-      { juz: 8, start: { surah: 6, verse: 111 }, end: { surah: 7, verse: 87 } },
-      { juz: 9, start: { surah: 7, verse: 88 }, end: { surah: 8, verse: 40 } },
-      { juz: 10, start: { surah: 8, verse: 41 }, end: { surah: 9, verse: 92 } },
-      { juz: 11, start: { surah: 9, verse: 93 }, end: { surah: 11, verse: 5 } },
-      { juz: 12, start: { surah: 11, verse: 6 }, end: { surah: 12, verse: 52 } },
-      { juz: 13, start: { surah: 12, verse: 53 }, end: { surah: 14, verse: 52 } },
-      { juz: 14, start: { surah: 15, verse: 1 }, end: { surah: 16, verse: 128 } },
-      { juz: 15, start: { surah: 17, verse: 1 }, end: { surah: 18, verse: 74 } },
-      { juz: 16, start: { surah: 18, verse: 75 }, end: { surah: 20, verse: 135 } },
-      { juz: 17, start: { surah: 21, verse: 1 }, end: { surah: 22, verse: 78 } },
-      { juz: 18, start: { surah: 23, verse: 1 }, end: { surah: 25, verse: 20 } },
-      { juz: 19, start: { surah: 25, verse: 21 }, end: { surah: 27, verse: 55 } },
-      { juz: 20, start: { surah: 27, verse: 56 }, end: { surah: 29, verse: 45 } },
-      { juz: 21, start: { surah: 29, verse: 46 }, end: { surah: 33, verse: 30 } },
-      { juz: 22, start: { surah: 33, verse: 31 }, end: { surah: 36, verse: 27 } },
-      { juz: 23, start: { surah: 36, verse: 28 }, end: { surah: 39, verse: 31 } },
-      { juz: 24, start: { surah: 39, verse: 32 }, end: { surah: 41, verse: 46 } },
-      { juz: 25, start: { surah: 41, verse: 47 }, end: { surah: 45, verse: 37 } },
-      { juz: 26, start: { surah: 46, verse: 1 }, end: { surah: 51, verse: 30 } },
-      { juz: 27, start: { surah: 51, verse: 31 }, end: { surah: 57, verse: 29 } },
-      { juz: 28, start: { surah: 58, verse: 1 }, end: { surah: 66, verse: 12 } },
-      { juz: 29, start: { surah: 67, verse: 1 }, end: { surah: 77, verse: 50 } },
-      { juz: 30, start: { surah: 78, verse: 1 }, end: { surah: 114, verse: 6 } }
-    ];
-
-    const juzStartSurahNumbers = new Set(juzData.map(item => item.start.surah));
-
-    const searchInput = document.getElementById("searchInput");
-    const clearSearchButton = document.getElementById("clearSearchButton");
-    const surahFilter = document.getElementById("surahFilter");
-    const verseFilter = document.getElementById("verseFilter");
-    const juzFilter = document.getElementById("juzFilter");
-    const surahGrid = document.getElementById("surahGrid");
-    const juzGrid = document.getElementById("juzGrid");
-    const resultsCount = document.getElementById("resultsCount");
-    const emptyState = document.getElementById("emptyState");
-    const filterPills = document.querySelectorAll(".pill");
-    const themeToggle = document.getElementById("themeToggle");
-
-    const continueReadingSection = document.getElementById("continueReadingSection");
-    const continueReadingCard = document.getElementById("continueReadingCard");
-    const continueReadingText = document.getElementById("continueReadingText");
-    const continueReadingLink = document.getElementById("continueReadingLink");
-    const clearReadingButton = document.getElementById("clearReadingButton");
-
-    const contactPurpose = document.getElementById("contactPurpose");
-    const contactMessage = document.getElementById("contactMessage");
-    const messageFieldWrap = document.getElementById("messageFieldWrap");
-    const messageHelp = document.getElementById("messageHelp");
-
-    const startListeningToggle = document.getElementById("startListeningToggle");
-    const listenSurahPanel = document.getElementById("listenSurahPanel");
-    const closeListeningPanel = document.getElementById("closeListeningPanel");
-    const listenSurahList = document.getElementById("listenSurahList");
-    const listenSurahSearch = document.getElementById("listenSurahSearch");
-
-    const startReadingToggleMiddle = document.getElementById("startReadingToggleMiddle");
-    const readSurahPanel = document.getElementById("readSurahPanel");
-    const closeReadingPanel = document.getElementById("closeReadingPanel");
-    const readSurahList = document.getElementById("readSurahList");
-    const readSurahSearch = document.getElementById("readSurahSearch");
-
-    let activeQuickFilter = "all";
-
-    function getSurahLink(number) {
-      return `surah-${number}.html`;
-    }
-
-    function getListeningLink(number) {
-      return `surah-${number}.html?reciter=sudais&view=synced&autoplay=1`;
-    }
-
-    function getVerseLink(number, verse) {
-      return `surah-${number}.html?ayah=${verse}#ayah-${verse}`;
-    }
-
-    function getSurah(number) {
-      return surahs.find((surah) => surah.number === number);
-    }
-
-    function normaliseText(value) {
-      return value
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[ʿʾʻ’‘]/g, "")
-        .replace(/[^a-z0-9:\s-]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    function applyTheme(theme) {
-      document.documentElement.setAttribute("data-theme", theme);
-      themeToggle.textContent = theme === "light" ? "Dark" : "Light";
-      try {
-        localStorage.setItem("quranIndexTheme", theme);
-      } catch (error) {}
-    }
-
-    function bindThemeToggle() {
-      themeToggle.addEventListener("click", () => {
-        const current = document.documentElement.getAttribute("data-theme") || "light";
-        applyTheme(current === "light" ? "dark" : "light");
-      });
-
-      try {
-        applyTheme(localStorage.getItem("quranIndexTheme") || "light");
-      } catch (error) {
-        applyTheme("light");
-      }
-    }
-
-    function openSurah(number) {
-      window.location.assign(getSurahLink(number));
-    }
-
-    function openVerse(number, verse) {
-      const safeVerse = Number(verse);
-      if (!safeVerse || safeVerse < 1) return;
-      window.location.assign(getVerseLink(number, safeVerse));
-    }
-
-    function parseVerseReference(rawValue) {
-      const query = normaliseText(rawValue);
-      if (!query) return null;
-
-      const exact = query.match(/^(\d{1,3})\s*[:.]\s*(\d{1,3})$/);
-      if (exact) {
-        const surahNumber = Number(exact[1]);
-        const verseNumber = Number(exact[2]);
-        const surah = getSurah(surahNumber);
-        if (surah && verseNumber >= 1 && verseNumber <= surah.verses) {
-          return { surahNumber, verseNumber };
-        }
-      }
-
-      const trailing = query.match(/^(.*?)(\d{1,3})$/);
-      if (trailing) {
-        const surahPart = trailing[1].trim();
-        const verseNumber = Number(trailing[2]);
-        if (!surahPart) return null;
-
-        const matchedSurah = surahs.find((surah) => {
-          const english = normaliseText(surah.english);
-          const meaning = normaliseText(surah.meaning);
-          const combined = `${english} ${surah.number}`;
-          return (
-            english === surahPart ||
-            english.includes(surahPart) ||
-            meaning === surahPart ||
-            meaning.includes(surahPart) ||
-            combined === surahPart
-          );
-        });
-
-        if (matchedSurah && verseNumber >= 1 && verseNumber <= matchedSurah.verses) {
-          return { surahNumber: matchedSurah.number, verseNumber };
-        }
-      }
-
-      return null;
-    }
-
-    function parseJuzReference(rawValue) {
-      const query = normaliseText(rawValue);
-      const match = query.match(/^juz\s*(\d{1,2})$/) || query.match(/^part\s*(\d{1,2})$/);
-      if (!match) return null;
-      const juz = Number(match[1]);
-      if (juz >= 1 && juz <= 30) return juz;
-      return null;
-    }
-
-    function getJuzContainingSurah(surahNumber) {
-      return juzData
-        .filter((item) => item.start.surah <= surahNumber && item.end.surah >= surahNumber)
-        .map((item) => item.juz);
-    }
-
-    function getSurahMatchesQuery(surah, rawQuery) {
-      const query = normaliseText(rawQuery);
-      if (!query) return true;
-
-      const verseReference = parseVerseReference(rawQuery);
-      if (verseReference) return surah.number === verseReference.surahNumber;
-
-      const juzReference = parseJuzReference(rawQuery);
-      if (juzReference) {
-        const juzItem = juzData.find((item) => item.juz === juzReference);
-        return surah.number >= juzItem.start.surah && surah.number <= juzItem.end.surah;
-      }
-
-      return (
-        surah.number.toString() === query ||
-        surah.number.toString().includes(query) ||
-        normaliseText(surah.english).includes(query) ||
-        normaliseText(surah.meaning).includes(query) ||
-        surah.arabic.includes(rawQuery.trim())
-      );
-    }
-
-    function filterByJuz(items, selectedJuz) {
-      if (selectedJuz === "all") return items;
-
-      const juzItem = juzData.find((item) => item.juz === Number(selectedJuz));
-      if (!juzItem) return items;
-
-      return items.filter((surah) => surah.number >= juzItem.start.surah && surah.number <= juzItem.end.surah);
-    }
-
-    function applyQuickFilter(items) {
-      if (activeQuickFilter === "Makki" || activeQuickFilter === "Madani") {
-        return items.filter((surah) => surah.type === activeQuickFilter);
-      }
-      if (activeQuickFilter === "short") {
-        return items.filter((surah) => surah.verses <= 30);
-      }
-      if (activeQuickFilter === "long") {
-        return items.filter((surah) => surah.verses > 30);
-      }
-      if (activeQuickFilter === "juz-start") {
-        return items.filter((surah) => juzStartSurahNumbers.has(surah.number));
-      }
-      return items;
-    }
-
-    function populateSurahFilter() {
-      surahs.forEach((surah) => {
-        const option = document.createElement("option");
-        option.value = surah.number;
-        option.textContent = `${surah.number}. ${surah.english}`;
-        surahFilter.appendChild(option);
-      });
-    }
-
-    function populateVerseFilter(surahNumber) {
-      verseFilter.innerHTML = "";
-
-      if (!surahNumber || surahNumber === "all") {
-        verseFilter.disabled = true;
-        const option = document.createElement("option");
-        option.value = "all";
-        option.textContent = "Select surah first";
-        verseFilter.appendChild(option);
-        return;
-      }
-
-      const surah = getSurah(Number(surahNumber));
-      if (!surah) return;
-
-      verseFilter.disabled = false;
-
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "all";
-      defaultOption.textContent = `All ${surah.verses} verses`;
-      verseFilter.appendChild(defaultOption);
-
-      for (let verse = 1; verse <= surah.verses; verse += 1) {
-        const option = document.createElement("option");
-        option.value = verse;
-        option.textContent = `Verse ${verse}`;
-        verseFilter.appendChild(option);
-      }
-    }
-
-    function populateJuzFilter() {
-      juzData.forEach((item) => {
-        const option = document.createElement("option");
-        option.value = item.juz;
-        option.textContent = `Juz ${item.juz}`;
-        juzFilter.appendChild(option);
-      });
-    }
-
-    function renderSurahs() {
-      let items = [...surahs];
-      const query = searchInput.value.trim();
-      const selectedSurah = surahFilter.value;
-      const selectedJuz = juzFilter.value;
-
-      if (query) {
-        items = items.filter((surah) => getSurahMatchesQuery(surah, query));
-      }
-
-      if (selectedSurah !== "all") {
-        items = items.filter((surah) => surah.number === Number(selectedSurah));
-      }
-
-      items = filterByJuz(items, selectedJuz);
-      items = applyQuickFilter(items);
-      items.sort((a, b) => a.number - b.number);
-
-      resultsCount.textContent = `${items.length} surah${items.length === 1 ? "" : "s"}`;
-
-      if (!items.length) {
-        surahGrid.innerHTML = "";
-        emptyState.style.display = "block";
-        return;
-      }
-
-      emptyState.style.display = "none";
-
-      surahGrid.innerHTML = items.map((surah) => {
-        const juzList = getJuzContainingSurah(surah.number);
-
-        return `
-          <div class="surah-card">
-            <div class="surah-top">
-              <div class="surah-number">${surah.number}</div>
-              <div class="surah-arabic" lang="ar">${surah.arabic}</div>
-            </div>
-            <div class="surah-main">
-              <h4>${surah.english}</h4>
-              <p>${surah.meaning}</p>
-            </div>
-            <div class="surah-meta">
-              <span class="tag">${surah.type}</span>
-              <span class="tag">${surah.verses} verses</span>
-              <span class="tag">Juz ${juzList.join(", ")}</span>
-            </div>
-            <div class="surah-actions">
-              <button class="mini-button surah-open-button" type="button" data-surah-open="${surah.number}">Read Surah</button>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      bindRenderedInteractions();
-    }
-
-    function renderJuz() {
-      juzGrid.innerHTML = juzData.map((item) => {
-        const startSurah = getSurah(item.start.surah);
-        const endSurah = getSurah(item.end.surah);
-        return `
-          <div class="juz-card">
-            <div class="juz-top">
-              <div class="juz-number">${item.juz}</div>
-              <div class="juz-main">
-                <h4>Juz ${item.juz}</h4>
-                <p>Starts: ${startSurah.english} ${item.start.surah}:${item.start.verse}</p>
-              </div>
-            </div>
-            <div class="juz-meta">
-              <span class="tag">Ends: ${endSurah.english} ${item.end.surah}:${item.end.verse}</span>
-            </div>
-            <div class="juz-actions">
-              <button class="mini-button juz-open-button" type="button" data-juz-start-surah="${item.start.surah}" data-juz-start-verse="${item.start.verse}">Open Juz</button>
-              <a class="mini-button" href="#surahs" data-juz-open="${item.juz}">View Surahs</a>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      document.querySelectorAll("[data-juz-open]").forEach((link) => {
-        link.addEventListener("click", (event) => {
-          event.preventDefault();
-          juzFilter.value = link.getAttribute("data-juz-open");
-          surahFilter.value = "all";
-          populateVerseFilter("all");
-          document.getElementById("surahs").scrollIntoView({ behavior: "smooth" });
-          renderSurahs();
-        });
-      });
-
-      document.querySelectorAll(".juz-open-button").forEach((button) => {
-        button.addEventListener("click", () => {
-          const surahNumber = Number(button.getAttribute("data-juz-start-surah"));
-          const verseNumber = Number(button.getAttribute("data-juz-start-verse"));
-          openVerse(surahNumber, verseNumber);
-        });
-      });
-    }
-
-    function bindRenderedInteractions() {
-      document.querySelectorAll(".surah-open-button").forEach((button) => {
-        button.addEventListener("click", () => {
-          openSurah(Number(button.getAttribute("data-surah-open")));
-        });
-      });
-    }
-
-    function openDirectMatch() {
-      const verseReference = parseVerseReference(searchInput.value);
-      if (verseReference) {
-        openVerse(verseReference.surahNumber, verseReference.verseNumber);
-        return;
-      }
-
-      const juzReference = parseJuzReference(searchInput.value);
-      if (juzReference) {
-        const juzItem = juzData.find((item) => item.juz === juzReference);
-        if (juzItem) {
-          openVerse(juzItem.start.surah, juzItem.start.verse);
-          return;
-        }
-      }
-
-      const query = normaliseText(searchInput.value);
-      if (!query) return;
-
-      const matchedSurah = surahs.find((surah) => {
-        return (
-          surah.number.toString() === query ||
-          normaliseText(surah.english) === query ||
-          normaliseText(surah.meaning) === query
-        );
-      });
-
-      if (matchedSurah) {
-        openSurah(matchedSurah.number);
-        return;
-      }
-
-      const firstVisibleButton = document.querySelector(".surah-open-button");
-      if (firstVisibleButton) {
-        openSurah(Number(firstVisibleButton.getAttribute("data-surah-open")));
-      }
-    }
-
-    function bindQuickFilters() {
-      filterPills.forEach((pill) => {
-        pill.addEventListener("click", () => {
-          activeQuickFilter = pill.getAttribute("data-filter");
-          filterPills.forEach((item) => item.classList.remove("active"));
-          pill.classList.add("active");
-          renderSurahs();
-        });
-      });
-    }
-
-    function updateContactFormState() {
-      const isSubscriptionOnly = contactPurpose.value === "Subscription only";
-      contactMessage.required = !isSubscriptionOnly;
-      messageFieldWrap.style.opacity = isSubscriptionOnly ? "0.78" : "1";
-      messageHelp.textContent = isSubscriptionOnly
-        ? "A message is optional when you choose Subscription only."
-        : "Please write your message here.";
-    }
-
-    function bindContactFormLogic() {
-      contactPurpose.addEventListener("change", updateContactFormState);
-      updateContactFormState();
-    }
-
-    function readContinueReading() {
-      const candidateKeys = [
-        "quranContinueReading",
-        "quran_continue_reading",
-        "quranLastRead",
-        "quran_last_read"
-      ];
-
-      for (const key of candidateKeys) {
-        try {
-          const raw = localStorage.getItem(key);
-          if (!raw) continue;
-          const parsed = JSON.parse(raw);
-          if (parsed && parsed.surahNumber && parsed.verseNumber) {
-            return parsed;
-          }
-        } catch (error) {}
-      }
-
-      return null;
-    }
-
-    function renderContinueReading() {
-      const saved = readContinueReading();
-      if (!saved) {
-        continueReadingSection.style.display = "none";
-        continueReadingCard.style.display = "none";
-        return;
-      }
-
-      const surah = getSurah(Number(saved.surahNumber));
-      if (!surah) {
-        continueReadingSection.style.display = "none";
-        continueReadingCard.style.display = "none";
-        return;
-      }
-
-      const verseNumber = Number(saved.verseNumber);
-      const label = saved.surahName || surah.english;
-      continueReadingText.textContent = `Resume from ${label}, verse ${verseNumber}.`;
-      continueReadingLink.href = getVerseLink(surah.number, verseNumber);
-      continueReadingSection.style.display = "block";
-      continueReadingCard.style.display = "flex";
-    }
-
-    function clearContinueReading() {
-      const candidateKeys = [
-        "quranContinueReading",
-        "quran_continue_reading",
-        "quranLastRead",
-        "quran_last_read"
-      ];
-
-      candidateKeys.forEach((key) => {
-        try {
-          localStorage.removeItem(key);
-        } catch (error) {}
-      });
-
-      continueReadingSection.style.display = "none";
-      continueReadingCard.style.display = "none";
-    }
-
-    function renderListenSurahList(filteredSurahs = surahs) {
-      if (!filteredSurahs.length) {
-        listenSurahList.innerHTML = `<div class="surah-panel-empty">No surahs matched your search.</div>`;
-        return;
-      }
-
-      listenSurahList.innerHTML = filteredSurahs.map((surah) => {
-        return `
-          <a class="surah-panel-link" href="${getListeningLink(surah.number)}">
-            <span class="surah-panel-number">${surah.number}</span>
-            <span class="surah-panel-name">${surah.english}</span>
-          </a>
-        `;
-      }).join("");
-    }
-
-    function renderReadSurahList(filteredSurahs = surahs) {
-      if (!filteredSurahs.length) {
-        readSurahList.innerHTML = `<div class="surah-panel-empty">No surahs matched your search.</div>`;
-        return;
-      }
-
-      readSurahList.innerHTML = filteredSurahs.map((surah) => {
-        return `
-          <a class="surah-panel-link" href="${getSurahLink(surah.number)}">
-            <span class="surah-panel-number">${surah.number}</span>
-            <span class="surah-panel-name">${surah.english}</span>
-          </a>
-        `;
-      }).join("");
-    }
-
-    function openListeningPanel() {
-      listenSurahPanel.hidden = false;
-      startListeningToggle.setAttribute("aria-expanded", "true");
-      renderListenSurahList();
-      requestAnimationFrame(() => listenSurahSearch.focus());
-    }
-
-    function closeListeningPanelFn() {
-      listenSurahPanel.hidden = true;
-      startListeningToggle.setAttribute("aria-expanded", "false");
-      listenSurahSearch.value = "";
-      renderListenSurahList();
-    }
-
-    function openReadingPanel() {
-      readSurahPanel.hidden = false;
-      startReadingToggleMiddle.setAttribute("aria-expanded", "true");
-      renderReadSurahList();
-      requestAnimationFrame(() => readSurahSearch.focus());
-    }
-
-    function closeReadingPanelFn() {
-      readSurahPanel.hidden = true;
-      startReadingToggleMiddle.setAttribute("aria-expanded", "false");
-      readSurahSearch.value = "";
-      renderReadSurahList();
-    }
-
-    function bindListeningPanel() {
-      renderListenSurahList();
-      renderReadSurahList();
-
-      startListeningToggle.addEventListener("click", () => {
-        if (listenSurahPanel.hidden) {
-          closeReadingPanelFn();
-          openListeningPanel();
-        } else {
-          closeListeningPanelFn();
-        }
-      });
-
-      closeListeningPanel.addEventListener("click", closeListeningPanelFn);
-
-      listenSurahSearch.addEventListener("input", () => {
-        const query = normaliseText(listenSurahSearch.value);
-        if (!query) {
-          renderListenSurahList();
-          return;
-        }
-
-        const filtered = surahs.filter((surah) => {
-          return (
-            surah.number.toString().includes(query) ||
-            normaliseText(surah.english).includes(query) ||
-            surah.arabic.includes(listenSurahSearch.value.trim())
-          );
-        });
-
-        renderListenSurahList(filtered);
-      });
-
-      startReadingToggleMiddle.addEventListener("click", () => {
-        if (readSurahPanel.hidden) {
-          closeListeningPanelFn();
-          openReadingPanel();
-        } else {
-          closeReadingPanelFn();
-        }
-      });
-
-      closeReadingPanel.addEventListener("click", closeReadingPanelFn);
-
-      readSurahSearch.addEventListener("input", () => {
-        const query = normaliseText(readSurahSearch.value);
-        if (!query) {
-          renderReadSurahList();
-          return;
-        }
-
-        const filtered = surahs.filter((surah) => {
-          return (
-            surah.number.toString().includes(query) ||
-            normaliseText(surah.english).includes(query) ||
-            surah.arabic.includes(readSurahSearch.value.trim())
-          );
-        });
-
-        renderReadSurahList(filtered);
-      });
-
-      document.addEventListener("click", (event) => {
-        const withinListenPanel = listenSurahPanel.contains(event.target);
-        const withinListenToggle = startListeningToggle.contains(event.target);
-        const withinReadPanel = readSurahPanel.contains(event.target);
-        const withinReadToggle = startReadingToggleMiddle.contains(event.target);
-
-        if (!listenSurahPanel.hidden && !withinListenPanel && !withinListenToggle) {
-          closeListeningPanelFn();
-        }
-
-        if (!readSurahPanel.hidden && !withinReadPanel && !withinReadToggle) {
-          closeReadingPanelFn();
-        }
-      });
-
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-          if (!listenSurahPanel.hidden) {
-            closeListeningPanelFn();
-          }
-          if (!readSurahPanel.hidden) {
-            closeReadingPanelFn();
-          }
-        }
-      });
-    }
-
-    function clearSearchAndFilters() {
-      searchInput.value = "";
-      surahFilter.value = "all";
-      juzFilter.value = "all";
-      activeQuickFilter = "all";
-      filterPills.forEach((item) => item.classList.remove("active"));
-      document.querySelector('.pill[data-filter="all"]').classList.add("active");
-      populateVerseFilter("all");
-      renderSurahs();
-      searchInput.focus();
-    }
-
-    clearReadingButton.addEventListener("click", clearContinueReading);
-    clearSearchButton.addEventListener("click", clearSearchAndFilters);
-
-    searchInput.addEventListener("input", renderSurahs);
-
-    surahFilter.addEventListener("change", () => {
-      populateVerseFilter(surahFilter.value);
-      renderSurahs();
-    });
-
-    verseFilter.addEventListener("change", () => {
-      if (surahFilter.value !== "all" && verseFilter.value !== "all") {
-        openVerse(Number(surahFilter.value), Number(verseFilter.value));
-        return;
-      }
-      renderSurahs();
-    });
-
-    juzFilter.addEventListener("change", renderSurahs);
-
-    searchInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        openDirectMatch();
-      }
-    });
-
-    populateSurahFilter();
-    populateVerseFilter("all");
-    populateJuzFilter();
-    bindQuickFilters();
-    bindThemeToggle();
-    bindContactFormLogic();
-    bindListeningPanel();
-    renderContinueReading();
-    renderSurahs();
-    renderJuz();
-  </script>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">ق</div>
+        <div class="brand-text">
+          <h1>The English Qur’an</h1>
+          <p>Clear, faithful and modern English</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="#surahs">Surahs</a>
+        <a href="#juz">Juz</a>
+        <a href="#about">About</a>
+        <a href="#book">Book</a>
+        <a href="#contact">Contact</a>
+        <a class="cta" href="surah-1.html">Start Reading</a>
+        <button class="theme-toggle" type="button" id="themeToggle">Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-card">
+            <div class="eyebrow">A clear and modern reading experience</div>
+            <h2>The English Qur’an<span class="tm-mark">TM</span></h2>
+            <p class="subtitle">
+              Read the Qur’an in a clean, calm and accessible format, with the original Arabic placed before each English verse, presented with clarity, dignity and ease for today’s reader.
+            </p>
+
+            <div style="margin: 18px 0 0; padding: 12px 16px; background: var(--surface-soft); border-radius: 12px; display: inline-block;">
+              <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--text);">
+                We have made the Qur’an easy to remember. <span style="font-size: 0.9rem; color: var(--muted); margin-left: 6px;">(Qur’an 54:17)</span>
+              </p>
+            </div>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="surah-1.html">Start Reading</a>
+
+              <div class="listen-picker-wrap">
+                <button
+                  class="button button-secondary"
+                  id="startListeningToggle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="listenSurahPanel"
+                >
+                  Start Listening
+                </button>
+
+                <div id="listenSurahPanel" class="listen-surah-panel" hidden>
+                  <div class="listen-surah-panel-inner">
+                    <div class="listen-panel-head">
+                      <h3>Select a Surah</h3>
+                      <button id="closeListeningPanel" class="listen-close-btn" type="button" aria-label="Close surah list">×</button>
+                    </div>
+
+                    <div class="listen-panel-search">
+                      <input
+                        id="listenSurahSearch"
+                        type="text"
+                        placeholder="Search by surah name or number"
+                        autocomplete="off"
+                      />
+                    </div>
+
+                    <div id="listenSurahList" class="listen-surah-list"></div>
+                  </div>
+                </div>
+              </div>
+
+              <a class="button button-secondary" href="#surahs">Browse Surahs</a>
+              <a class="button button-secondary" href="#juz">Browse Juz</a>
+              <a class="button button-secondary" href="#book">Get the Book</a>
+              <a class="button button-secondary" href="#about">About the Translation</a>
+            </div>
+
+            <ul class="hero-points">
+              <li>Go straight to any surah, verse, or part of the Qur’an with clean direct navigation.</li>
+              <li>Search works without diacritics, so readers can type naturally and still reach the right result.</li>
+              <li>Read at your own pace, or listen with synced recitation from the beginning of any surah.</li>
+            </ul>
+          </div>
+
+          <aside class="info-card">
+            <div class="info-block">
+              <h3>Go straight to a surah</h3>
+              <p>Every surah is listed with its English name, Arabic title, verse count, and direct reading link.</p>
+            </div>
+
+            <div class="info-block">
+              <h3>Choose a verse quickly</h3>
+              <p>Select any surah from the main list, then choose the verse number from the verses box.</p>
+            </div>
+
+            <div class="info-block">
+              <h3>Read or listen clearly</h3>
+              <p>Open the Qur’an for reading, or begin from the start in synced recitation mode with your selected reciter.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="new-reader-section">
+          <div class="section-head">
+            <div>
+              <h3>New to the Qur’an?</h3>
+              <p>A simple place to begin for first time readers, returning readers, and anyone exploring the Qur’an in English.</p>
+            </div>
+          </div>
+
+          <div class="new-reader-grid">
+            <div class="feature-card">
+              <h4>Start with Al Fātiḥah</h4>
+              <p>Begin with the opening surah, short, central, and foundational to the Qur’an’s message.</p>
+            </div>
+
+            <div class="feature-card">
+              <h4>Continue into Al Baqarah</h4>
+              <p>Move into the longest surah for sustained reading, guidance, and a fuller introduction to the Qur’an.</p>
+            </div>
+
+            <div class="feature-card">
+              <h4>Explore freely</h4>
+              <p>You may also browse any surah, verse, or Juz directly, according to your interest or study plan.</p>
+            </div>
+          </div>
+
+          <p class="section-note">This site is designed to make beginning easy, without losing seriousness, clarity, or structure.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="continueReadingSection" style="display:none;">
+      <div class="container">
+        <div class="continue-card" id="continueReadingCard">
+          <div class="continue-copy">
+            <h3>Continue Reading</h3>
+            <p id="continueReadingText">Resume from your last saved place.</p>
+          </div>
+          <div class="continue-actions">
+            <a class="button button-primary" id="continueReadingLink" href="surah-1.html">Continue</a>
+            <button class="button button-secondary" type="button" id="clearReadingButton">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="quick-grid">
+          <a class="quick-card" href="#surahs">
+            <strong>114</strong>
+            <span>Browse all surahs</span>
+          </a>
+          <a class="quick-card" href="#juz">
+            <strong>30</strong>
+            <span>Browse all Juz</span>
+          </a>
+          <a class="quick-card" href="#surahs">
+            <strong id="makkiCount">86</strong>
+            <span>Makki surahs</span>
+          </a>
+          <a class="quick-card" href="#surahs">
+            <strong id="madaniCount">28</strong>
+            <span>Madani surahs</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="surahs">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h3>Browse the Surahs</h3>
+            <p>Select any surah from the structured list below. Search by surah name, surah number, verse reference, Juz number, Arabic name, transliterated name, or meaning.</p>
+          </div>
+        </div>
+
+        <div class="search-panel">
+          <div class="search-grid">
+            <div class="smart-search-field">
+              <label for="searchInput">Smart search</label>
+              <div class="smart-search-input-wrap">
+                <input id="searchInput" type="text" placeholder="Try: Al Baqarah, 2, 2:255, Juz 30, Ya Sin 58" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="surahFilter">Surahs</label>
+              <select id="surahFilter">
+                <option value="all">List all 114 surahs</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="verseFilter">Verses</label>
+              <select id="verseFilter" disabled>
+                <option value="all">Select surah first</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="juzFilter">Juz</label>
+              <select id="juzFilter">
+                <option value="all">All Juz</option>
+              </select>
+            </div>
+
+            <div class="field search-clear-field">
+              <button class="mini-button" type="button" id="clearSearchButton">Clear</button>
+            </div>
+          </div>
+
+          <p class="search-help">No diacritic typing is needed. Enter can open a direct result such as 19:16, 36:58, Al Baqarah 255, or Juz 5.</p>
+
+          <div class="quick-nav">
+            <button class="pill active" type="button" data-filter="all">All</button>
+            <button class="pill" type="button" data-filter="Makki">Makki</button>
+            <button class="pill" type="button" data-filter="Madani">Madani</button>
+            <button class="pill" type="button" data-filter="short">Short surahs</button>
+            <button class="pill" type="button" data-filter="long">Long surahs</button>
+            <button class="pill" type="button" data-filter="juz-start">Starts a Juz</button>
+          </div>
+        </div>
+
+        <div class="surah-section">
+          <div class="results-bar">
+            <div class="results-note" id="resultsCount">114 surahs</div>
+          </div>
+          <div class="surah-grid" id="surahGrid"></div>
+          <div class="empty-state" id="emptyState" style="display:none;">No surahs matched your search. Try another surah name, number, verse reference, or Juz.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="juz">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h3>Browse by Juz</h3>
+            <p>Each Juz shows its exact start and end point and opens from the correct place for structured reading.</p>
+          </div>
+        </div>
+
+        <div class="juz-section">
+          <div class="juz-grid" id="juzGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="listen">
+      <div class="container">
+        <div class="listen-section">
+          <div class="section-head">
+            <div>
+              <h3>Listen to the Qur’an</h3>
+              <p>Choose a reciter, follow synced recitation, and navigate through the Qur’an with a calm and structured listening experience.</p>
+            </div>
+          </div>
+
+          <div class="listen-grid">
+            <div class="feature-card">
+              <h4>Choose your reciter</h4>
+              <p>Start listening from the homepage, then select your surah and use the reciter options available in the recitation view.</p>
+            </div>
+
+            <div class="feature-card">
+              <h4>Begin from the start</h4>
+              <p>Each selected surah opens directly in synced recitation mode from the beginning, so listening starts cleanly and naturally.</p>
+            </div>
+
+            <div class="feature-card">
+              <h4>Follow as you listen</h4>
+              <p>Use the recitation view to stay with the surah as it plays, making navigation, replay, and continuation easier throughout the Qur’an.</p>
+            </div>
+          </div>
+
+          <p class="section-note">The listening flow is built into the main site, so reading and recitation remain part of one clear Qur’an experience.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="book">
+      <div class="container">
+        <div class="book-section">
+          <div class="section-head">
+            <div>
+              <h3>Get the Book</h3>
+              <p>Available globally in print through trusted platforms.</p>
+            </div>
+          </div>
+
+          <div class="book-grid">
+            <div class="book-copy">
+              <h4>The English Qur’an in print</h4>
+              <p>Access the printed edition through the available global platforms below.</p>
+            </div>
+
+            <div class="book-links">
+              <a class="book-link" href="https://amzn.eu/d/0dRT7lMW" target="_blank" rel="noopener noreferrer">Amazon</a>
+              <a class="book-link" href="https://shop.ingramspark.com/b/084?params=xzqr7rCaEWWzms7j5zNG5JFyoRQ0VFb3vLMBreZw2qr" target="_blank" rel="noopener noreferrer">IngramSpark</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="container">
+        <div class="about-section">
+          <div class="section-head">
+            <div>
+              <h3>About this translation</h3>
+              <p>This website follows the manuscript of The English Qur’an and presents the translation within a clear and disciplined reading environment.</p>
+            </div>
+          </div>
+
+          <div class="about-grid">
+            <div class="about-card">
+              <h4>The importance of this translation</h4>
+              <p>This translation was produced in response to a pressing need, to present the Qur’an in English that is faithful, precise, intellectually honest, and still natural and readable for the modern reader. It serves readers who seek guidance but struggle with archaic language, younger generations raised in English speaking settings, and thoughtful non Muslims who wish to approach the Qur’an without unnecessary barriers.</p>
+            </div>
+
+            <div class="about-card">
+              <h4>Translation method and conventions</h4>
+              <p>The method is simple and disciplined, to let the Qur’an speak without commentary, embellishment, or distancing language. Wherever possible, the translation remains close to the Arabic wording. Where English requires adjustment, it does so carefully and transparently. The aim is faithful communication, clarity, and direct engagement with the Qur’anic voice.</p>
+            </div>
+
+            <div class="about-card">
+              <h4>About the translator</h4>
+              <p>A. K. Khan is a UK based Islamic educator, author, and researcher whose work is devoted to restoring direct and intelligible engagement with the Qur’an for modern English readers. His background combines early Qur’anic study, advanced English academic training, and sustained study of classical Arabic, allowing him to approach Qur’anic translation with clarity, discipline, and fidelity to meaning.</p>
+            </div>
+
+            <div class="about-card">
+              <h4>Mission and vision</h4>
+              <p>The mission of this work is service, service to the reader, service to understanding, and service to the Qur’an itself by conveying its message clearly without unnecessary intrusion. This website also stands within a wider vision, by Allah’s permission, to expand this work into every language so that more people across the world may approach the Qur’an with clarity, seriousness, and trust.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="contact-section">
+          <div class="contact-intro">
+            <h3>Get in touch</h3>
+            <p>Share a message, a reflection, or connect with the project. You may also choose to receive updates as new information on our Qur’an project becomes available, along with future releases.</p>
+          </div>
+
+          <form action="https://formspree.io/f/mreokljn" method="POST" id="contactForm">
+            <div class="contact-grid">
+              <div class="field">
+                <label for="contactName">Your name</label>
+                <input id="contactName" name="name" type="text" placeholder="Enter your name" required />
+              </div>
+
+              <div class="field">
+                <label for="contactEmail">Your email</label>
+                <input id="contactEmail" name="email" type="email" placeholder="Enter your email address" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="contactPurpose">What is this about?</label>
+              <select id="contactPurpose" name="purpose" required>
+                <option value="" selected disabled>Select an option</option>
+                <option value="General enquiry">General enquiry</option>
+                <option value="Feedback or correction">Feedback or correction</option>
+                <option value="Partnership or collaboration">Partnership or collaboration</option>
+                <option value="Subscription only">Subscription only</option>
+              </select>
+            </div>
+
+            <div class="field" id="messageFieldWrap">
+              <label for="contactMessage">Your message</label>
+              <textarea id="contactMessage" name="message" placeholder="Write your message here…" required></textarea>
+            </div>
+
+            <p class="contact-help" id="messageHelp">Please write your message here.</p>
+
+            <label class="contact-check" for="contactSubscribe">
+              <input id="contactSubscribe" name="subscribe" type="checkbox" value="Yes" />
+              <span>Receive new information, updates, and future releases</span>
+            </label>
+
+            <input type="hidden" name="_subject" value="New website message - The English Qur’an" />
+            <input type="hidden" name="_next" value="thank-you.html" />
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;" />
+
+            <div class="contact-actions">
+              <button class="button button-primary" type="submit">Send message</button>
+              <span class="contact-note">Your message will be sent securely through the website form.</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="support">
+      <div class="container">
+        <div class="support-section">
+          <div class="section-head">
+            <div>
+              <h3>Support the English Qur’an Project</h3>
+              <p>This work is freely open to readers. If you would like to support its continuation, you may do so here.</p>
+            </div>
+          </div>
+
+          <div class="support-copy">
+            <div class="support-card">
+              <h4>Support this project</h4>
+              <p>Your support helps sustain the website, publication work, and wider development of The English Qur’an for readers around the world.</p>
+            </div>
+
+            <div class="support-actions">
+              <a class="button button-primary" href="https://www.paypal.com/donate/?hosted_button_id=TRXETFJ2KKWQE" target="_blank" rel="noopener noreferrer">Donate with PayPal</a>
+              <span class="support-note">The English Qur’an Project is part of Al-Hikmah School CIO (Charity Incorporated Organisation) based in the UK and is published by Al-Hikmah Publishing UK.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-copy">
+        <p>© 2015–2026 Al-Hikmah Publishing UK. All Rights Reserved.</p>
+        <p>The English Qur’an™, translated by Dr A K Khan.</p>
+      </div>
+
+      <div class="footer-nav-wrap">
+        <div class="footer-links">
+          <a href="#surahs">Browse Surahs</a>
+          <a href="#juz">Browse Juz</a>
+          <a href="#listen">Listen</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+          <a href="#support">Support</a>
+        </div>
+        <div class="legal-links">
+          <a href="terms-and-conditions.html">Terms</a>
+          <a href="privacy-policy.html">Privacy</a>
+          <a href="sitemap.html">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const surahs = [
+      { number: 1, english: "Al-Fātiḥah", meaning: "The Opening", arabic: "الفاتحة", verses: 7, type: "Makki" },
+      { number: 2, english: "Al-Baqarah", meaning: "The Cow", arabic: "البقرة", verses: 286, type: "Madani" },
+      { number: 3, english: "Āl ʿImrān", meaning: "The Family of ʿImrān", arabic: "آل عمران", verses: 200, type: "Madani" },
+      { number: 4, english: "An-Nisāʾ", meaning: "The Women", arabic: "النساء", verses: 176, type: "Madani" },
+      { number: 5, english: "Al-Māʾidah", meaning: "The Table Spread", arabic: "المائدة", verses: 120, type: "Madani" },
+      { number: 6, english: "Al-Anʿām", meaning: "The Cattle", arabic: "الأنعام", verses: 165, type: "Makki" },
+      { number: 7, english: "Al-Aʿrāf", meaning: "The Heights", arabic: "الأعراف", verses: 206, type: "Makki" },
+      { number: 8, english: "Al-Anfāl", meaning: "The Spoils of War", arabic: "الأنفال", verses: 75, type: "Madani" },
+      { number: 9, english: "At-Tawbah", meaning: "Repentance", arabic: "التوبة", verses: 129, type: "Madani" },
+      { number: 10, english: "Yūnus", meaning: "Jonah", arabic: "يونس", verses: 109, type: "Makki" },
+      { number: 11, english: "Hūd", meaning: "Hud", arabic: "هود", verses: 123, type: "Makki" },
+      { number: 12, english: "Yūsuf", meaning: "Joseph", arabic: "يوسف", verses: 111, type: "Makki" },
+      { number: 13, english: "Ar-Raʿd", meaning: "Thunder", arabic: "الرعد", verses: 43, type: "Madani" },
+      { number: 14, english: "Ibrāhīm", meaning: "Abraham", arabic: "إبراهيم", verses: 52, type: "Makki" },
+      { number: 15, english: "Al-Ḥijr", meaning: "The Rocky Tract", arabic: "الحجر", verses: 99, type: "Makki" },
+      { number: 16, english: "An-Naḥl", meaning: "The Bee", arabic: "النحل", verses: 128, type: "Makki" },
+      { number: 17, english: "Al-Isrāʾ", meaning: "The Night Journey", arabic: "الإسراء", verses: 111, type: "Makki" },
+      { number: 18, english: "Al-Kahf", meaning: "The Cave", arabic: "الكهف", verses: 110, type: "Makki" },
+      { number: 19, english: "Maryam", meaning: "Mary", arabic: "مريم", verses: 98, type: "Makki" },
+      { number: 20, english: "Ṭā Hā", meaning: "Ṭā Hā", arabic: "طه", verses: 135, type: "Makki" },
+      { number: 21, english: "Al-Anbiyāʾ", meaning: "The Prophets", arabic: "الأنبياء", verses: 112, type: "Makki" },
+      { number: 22, english: "Al-Ḥajj", meaning: "The Pilgrimage", arabic: "الحج", verses: 78, type: "Madani" },
+      { number: 23, english: "Al-Muʾminūn", meaning: "The Believers", arabic: "المؤمنون", verses: 118, type: "Makki" },
+      { number: 24, english: "An-Nūr", meaning: "The Light", arabic: "النور", verses: 64, type: "Madani" },
+      { number: 25, english: "Al-Furqān", meaning: "The Criterion", arabic: "الفرقان", verses: 77, type: "Makki" },
+      { number: 26, english: "Ash-Shuʿarāʾ", meaning: "The Poets", arabic: "الشعراء", verses: 227, type: "Makki" },
+      { number: 27, english: "An-Naml", meaning: "The Ant", arabic: "النمل", verses: 93, type: "Makki" },
+      { number: 28, english: "Al-Qaṣaṣ", meaning: "The Stories", arabic: "القصص", verses: 88, type: "Makki" },
+      { number: 29, english: "Al-ʿAnkabūt", meaning: "The Spider", arabic: "العنكبوت", verses: 69, type: "Makki" },
+      { number: 30, english: "Ar-Rūm", meaning: "The Romans", arabic: "الروم", verses: 60, type: "Makki" },
+      { number: 31, english: "Luqmān", meaning: "Luqman", arabic: "لقمان", verses: 34, type: "Makki" },
+      { number: 32, english: "As-Sajdah", meaning: "The Prostration", arabic: "السجدة", verses: 30, type: "Makki" },
+      { number: 33, english: "Al-Aḥzāb", meaning: "The Confederates", arabic: "الأحزاب", verses: 73, type: "Madani" },
+      { number: 34, english: "Sabaʾ", meaning: "Sheba", arabic: "سبأ", verses: 54, type: "Makki" },
+      { number: 35, english: "Fāṭir", meaning: "Originator", arabic: "فاطر", verses: 45, type: "Makki" },
+      { number: 36, english: "Yā Sīn", meaning: "Yā Sīn", arabic: "يس", verses: 83, type: "Makki" },
+      { number: 37, english: "Aṣ-Ṣāffāt", meaning: "Those Lined Up", arabic: "الصافات", verses: 182, type: "Makki" },
+      { number: 38, english: "Ṣād", meaning: "Ṣād", arabic: "ص", verses: 88, type: "Makki" },
+      { number: 39, english: "Az-Zumar", meaning: "The Groups", arabic: "الزمر", verses: 75, type: "Makki" },
+      { number: 40, english: "Ghāfir", meaning: "The Forgiver", arabic: "غافر", verses: 85, type: "Makki" },
+      { number: 41, english: "Fuṣṣilat", meaning: "Explained in Detail", arabic: "فصلت", verses: 54, type: "Makki" },
+      { number: 42, english: "Ash-Shūrā", meaning: "Consultation", arabic: "الشورى", verses: 53, type: "Makki" },
+      { number: 43, english: "Az-Zukhruf", meaning: "Ornaments of Gold", arabic: "الزخرف", verses: 89, type: "Makki" },
+      { number: 44, english: "Ad-Dukhān", meaning: "The Smoke", arabic: "الدخان", verses: 59, type: "Makki" },
+      { number: 45, english: "Al-Jāthiyah", meaning: "The Kneeling", arabic: "الجاثية", verses: 37, type: "Makki" },
+      { number: 46, english: "Al-Aḥqāf", meaning: "The Sand Dunes", arabic: "الأحقاف", verses: 35, type: "Makki" },
+      { number: 47, english: "Muhammad", meaning: "Muhammad", arabic: "محمد", verses: 38, type: "Madani" },
+      { number: 48, english: "Al-Fatḥ", meaning: "The Victory", arabic: "الفتح", verses: 29, type: "Madani" },
+      { number: 49, english: "Al-Ḥujurāt", meaning: "The Chambers", arabic: "الحجرات", verses: 18, type: "Madani" },
+      { number: 50, english: "Qāf", meaning: "Qāf", arabic: "ق", verses: 45, type: "Makki" },
+      { number: 51, english: "Adh-Dhāriyāt", meaning: "Those That Scatter", arabic: "الذاريات", verses: 60, type: "Makki" },
+      { number: 52, english: "Aṭ-Ṭūr", meaning: "The Mount", arabic: "الطور", verses: 49, type: "Makki" },
+      { number: 53, english: "An-Najm", meaning: "The Star", arabic: "النجم", verses: 62, type: "Makki" },
+      { number: 54, english: "Al-Qamar", meaning: "The Moon", arabic: "القمر", verses: 55, type: "Makki" },
+      { number: 55, english: "Ar-Raḥmān", meaning: "The Most Merciful", arabic: "الرحمن", verses: 78, type: "Madani" },
+      { number: 56, english: "Al-Wāqiʿah", meaning: "The Inevitable Event", arabic: "الواقعة", verses: 96, type: "Makki" },
+      { number: 57, english: "Al-Ḥadīd", meaning: "Iron", arabic: "الحديد", verses: 29, type: "Madani" },
+      { number: 58, english: "Al-Mujādilah", meaning: "The Woman Who Pleaded", arabic: "المجادلة", verses: 22, type: "Madani" },
+      { number: 59, english: "Al-Ḥashr", meaning: "The Gathering", arabic: "الحشر", verses: 24, type: "Madani" },
+      { number: 60, english: "Al-Mumtaḥanah", meaning: "The Woman to Be Examined", arabic: "الممتحنة", verses: 13, type: "Madani" },
+      { number: 61, english: "Aṣ-Ṣaff", meaning: "The Row", arabic: "الصف", verses: 14, type: "Madani" },
+      { number: 62, english: "Al-Jumuʿah", meaning: "Friday", arabic: "الجمعة", verses: 11, type: "Madani" },
+      { number: 63, english: "Al-Munāfiqūn", meaning: "The Hypocrites", arabic: "المنافقون", verses: 11, type: "Madani" },
+      { number: 64, english: "At-Taghābun", meaning: "Mutual Loss and Gain", arabic: "التغابن", verses: 18, type: "Madani" },
+      { number: 65, english: "Aṭ-Ṭalāq", meaning: "Divorce", arabic: "الطلاق", verses: 12, type: "Madani" },
+      { number: 66, english: "At-Taḥrīm", meaning: "Prohibition", arabic: "التحريم", verses: 12, type: "Madani" },
+      { number: 67, english: "Al-Mulk", meaning: "Sovereignty", arabic: "الملك", verses: 30, type: "Makki" },
+      { number: 68, english: "Al-Qalam", meaning: "The Pen", arabic: "القلم", verses: 52, type: "Makki" },
+      { number: 69, english: "Al-Ḥāqqah", meaning: "The Inevitable Reality", arabic: "الحاقة", verses: 52, type: "Makki" },
+      { number: 70, english: "Al-Maʿārij", meaning: "The Ways of Ascent", arabic: "المعارج", verses: 44, type: "Makki" },
+      { number: 71, english: "Nūḥ", meaning: "Noah", arabic: "نوح", verses: 28, type: "Makki" },
+      { number: 72, english: "Al-Jinn", meaning: "The Jinn", arabic: "الجن", verses: 28, type: "Makki" },
+      { number: 73, english: "Al-Muzzammil", meaning: "The One Wrapped Up", arabic: "المزمل", verses: 20, type: "Makki" },
+      { number: 74, english: "Al-Muddaththir", meaning: "The One Covered Up", arabic: "المدثر", verses: 56, type: "Makki" },
+      { number: 75, english: "Al-Qiyāmah", meaning: "The Resurrection", arabic: "القيامة", verses: 40, type: "Makki" },
+      { number: 76, english: "Al-Insān", meaning: "The Human Being", arabic: "الإنسان", verses: 31, type: "Madani" },
+      { number: 77, english: "Al-Mursalāt", meaning: "Those Sent Forth", arabic: "المرسلات", verses: 50, type: "Makki" },
+      { number: 78, english: "An-Nabaʾ", meaning: "The Great News", arabic: "النبأ", verses: 40, type: "Makki" },
+      { number: 79, english: "An-Nāziʿāt", meaning: "Those Who Pull Out", arabic: "النازعات", verses: 46, type: "Makki" },
+      { number: 80, english: "ʿAbasa", meaning: "He Frowned", arabic: "عبس", verses: 42, type: "Makki" },
+      { number: 81, english: "At-Takwīr", meaning: "The Folding Up", arabic: "التكوير", verses: 29, type: "Makki" },
+      { number: 82, english: "Al-Infiṭār", meaning: "The Splitting Open", arabic: "الإنفطار", verses: 19, type: "Makki" },
+      { number: 83, english: "Al-Muṭaffifīn", meaning: "Those Who Give Less", arabic: "المطففين", verses: 36, type: "Makki" },
+      { number: 84, english: "Al-Inshiqāq", meaning: "The Tearing Apart", arabic: "الإنشقاق", verses: 25, type: "Makki" },
+      { number: 85, english: "Al-Burūj", meaning: "The Constellations", arabic: "البروج", verses: 22, type: "Makki" },
+      { number: 86, english: "Aṭ-Ṭāriq", meaning: "The Night Visitor", arabic: "الطارق", verses: 17, type: "Makki" },
+      { number: 87, english: "Al-Aʿlā", meaning: "The Most High", arabic: "الأعلى", verses: 19, type: "Makki" },
+      { number: 88, english: "Al-Ghāshiyah", meaning: "The Overwhelming Event", arabic: "الغاشية", verses: 26, type: "Makki" },
+      { number: 89, english: "Al-Fajr", meaning: "The Dawn", arabic: "الفجر", verses: 30, type: "Makki" },
+      { number: 90, english: "Al-Balad", meaning: "The City", arabic: "البلد", verses: 20, type: "Makki" },
+      { number: 91, english: "Ash-Shams", meaning: "The Sun", arabic: "الشمس", verses: 15, type: "Makki" },
+      { number: 92, english: "Al-Layl", meaning: "The Night", arabic: "الليل", verses: 21, type: "Makki" },
+      { number: 93, english: "Aḍ-Ḍuḥā", meaning: "The Morning Brightness", arabic: "الضحى", verses: 11, type: "Makki" },
+      { number: 94, english: "Ash-Sharḥ", meaning: "The Expansion", arabic: "الشرح", verses: 8, type: "Makki" },
+      { number: 95, english: "At-Tīn", meaning: "The Fig", arabic: "التين", verses: 8, type: "Makki" },
+      { number: 96, english: "Al-ʿAlaq", meaning: "The Clinging Substance", arabic: "العلق", verses: 19, type: "Makki" },
+      { number: 97, english: "Al-Qadr", meaning: "The Decree", arabic: "القدر", verses: 5, type: "Makki" },
+      { number: 98, english: "Al-Bayyinah", meaning: "The Clear Proof", arabic: "البينة", verses: 8, type: "Madani" },
+      { number: 99, english: "Az-Zalzalah", meaning: "The Earthquake", arabic: "الزلزلة", verses: 8, type: "Madani" },
+      { number: 100, english: "Al-ʿĀdiyāt", meaning: "The Charging Horses", arabic: "العاديات", verses: 11, type: "Makki" },
+      { number: 101, english: "Al-Qāriʿah", meaning: "The Striking Calamity", arabic: "القارعة", verses: 11, type: "Makki" },
+      { number: 102, english: "At-Takāthur", meaning: "Rivalry in Worldly Increase", arabic: "التكاثر", verses: 8, type: "Makki" },
+      { number: 103, english: "Al-ʿAṣr", meaning: "Time", arabic: "العصر", verses: 3, type: "Makki" },
+      { number: 104, english: "Al-Humazah", meaning: "The Slanderer", arabic: "الهمزة", verses: 9, type: "Makki" },
+      { number: 105, english: "Al-Fīl", meaning: "The Elephant", arabic: "الفيل", verses: 5, type: "Makki" },
+      { number: 106, english: "Quraysh", meaning: "Quraysh", arabic: "قريش", verses: 4, type: "Makki" },
+      { number: 107, english: "Al-Māʿūn", meaning: "Small Kindnesses", arabic: "الماعون", verses: 7, type: "Makki" },
+      { number: 108, english: "Al-Kawthar", meaning: "Abundant Good", arabic: "الكوثر", verses: 3, type: "Makki" },
+      { number: 109, english: "Al-Kāfirūn", meaning: "The Disbelievers", arabic: "الكافرون", verses: 6, type: "Makki" },
+      { number: 110, english: "An-Naṣr", meaning: "Divine Help", arabic: "النصر", verses: 3, type: "Madani" },
+      { number: 111, english: "Al-Masad", meaning: "Palm Fibre", arabic: "المسد", verses: 5, type: "Makki" },
+      { number: 112, english: "Al-Ikhlāṣ", meaning: "Sincerity", arabic: "الإخلاص", verses: 4, type: "Makki" },
+      { number: 113, english: "Al-Falaq", meaning: "Daybreak", arabic: "الفلق", verses: 5, type: "Makki" },
+      { number: 114, english: "An-Nās", meaning: "Mankind", arabic: "الناس", verses: 6, type: "Makki" }
+    ];
+
+    const juzData = [
+      { juz: 1, start: { surah: 1, verse: 1 }, end: { surah: 2, verse: 141 } },
+      { juz: 2, start: { surah: 2, verse: 142 }, end: { surah: 2, verse: 252 } },
+      { juz: 3, start: { surah: 2, verse: 253 }, end: { surah: 3, verse: 92 } },
+      { juz: 4, start: { surah: 3, verse: 93 }, end: { surah: 4, verse: 23 } },
+      { juz: 5, start: { surah: 4, verse: 24 }, end: { surah: 4, verse: 147 } },
+      { juz: 6, start: { surah: 4, verse: 148 }, end: { surah: 5, verse: 81 } },
+      { juz: 7, start: { surah: 5, verse: 82 }, end: { surah: 6, verse: 110 } },
+      { juz: 8, start: { surah: 6, verse: 111 }, end: { surah: 7, verse: 87 } },
+      { juz: 9, start: { surah: 7, verse: 88 }, end: { surah: 8, verse: 40 } },
+      { juz: 10, start: { surah: 8, verse: 41 }, end: { surah: 9, verse: 92 } },
+      { juz: 11, start: { surah: 9, verse: 93 }, end: { surah: 11, verse: 5 } },
+      { juz: 12, start: { surah: 11, verse: 6 }, end: { surah: 12, verse: 52 } },
+      { juz: 13, start: { surah: 12, verse: 53 }, end: { surah: 14, verse: 52 } },
+      { juz: 14, start: { surah: 15, verse: 1 }, end: { surah: 16, verse: 128 } },
+      { juz: 15, start: { surah: 17, verse: 1 }, end: { surah: 18, verse: 74 } },
+      { juz: 16, start: { surah: 18, verse: 75 }, end: { surah: 20, verse: 135 } },
+      { juz: 17, start: { surah: 21, verse: 1 }, end: { surah: 22, verse: 78 } },
+      { juz: 18, start: { surah: 23, verse: 1 }, end: { surah: 25, verse: 20 } },
+      { juz: 19, start: { surah: 25, verse: 21 }, end: { surah: 27, verse: 55 } },
+      { juz: 20, start: { surah: 27, verse: 56 }, end: { surah: 29, verse: 45 } },
+      { juz: 21, start: { surah: 29, verse: 46 }, end: { surah: 33, verse: 30 } },
+      { juz: 22, start: { surah: 33, verse: 31 }, end: { surah: 36, verse: 27 } },
+      { juz: 23, start: { surah: 36, verse: 28 }, end: { surah: 39, verse: 31 } },
+      { juz: 24, start: { surah: 39, verse: 32 }, end: { surah: 41, verse: 46 } },
+      { juz: 25, start: { surah: 41, verse: 47 }, end: { surah: 45, verse: 37 } },
+      { juz: 26, start: { surah: 46, verse: 1 }, end: { surah: 51, verse: 30 } },
+      { juz: 27, start: { surah: 51, verse: 31 }, end: { surah: 57, verse: 29 } },
+      { juz: 28, start: { surah: 58, verse: 1 }, end: { surah: 66, verse: 12 } },
+      { juz: 29, start: { surah: 67, verse: 1 }, end: { surah: 77, verse: 50 } },
+      { juz: 30, start: { surah: 78, verse: 1 }, end: { surah: 114, verse: 6 } }
+    ];
+
+    const juzStartSurahNumbers = new Set(juzData.map(item => item.start.surah));
+
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchButton = document.getElementById("clearSearchButton");
+    const surahFilter = document.getElementById("surahFilter");
+    const verseFilter = document.getElementById("verseFilter");
+    const juzFilter = document.getElementById("juzFilter");
+    const surahGrid = document.getElementById("surahGrid");
+    const juzGrid = document.getElementById("juzGrid");
+    const resultsCount = document.getElementById("resultsCount");
+    const emptyState = document.getElementById("emptyState");
+    const filterPills = document.querySelectorAll(".pill");
+    const themeToggle = document.getElementById("themeToggle");
+
+    const continueReadingSection = document.getElementById("continueReadingSection");
+    const continueReadingCard = document.getElementById("continueReadingCard");
+    const continueReadingText = document.getElementById("continueReadingText");
+    const continueReadingLink = document.getElementById("continueReadingLink");
+    const clearReadingButton = document.getElementById("clearReadingButton");
+
+    const contactPurpose = document.getElementById("contactPurpose");
+    const contactMessage = document.getElementById("contactMessage");
+    const messageFieldWrap = document.getElementById("messageFieldWrap");
+    const messageHelp = document.getElementById("messageHelp");
+
+    const startListeningToggle = document.getElementById("startListeningToggle");
+    const listenSurahPanel = document.getElementById("listenSurahPanel");
+    const closeListeningPanel = document.getElementById("closeListeningPanel");
+    const listenSurahList = document.getElementById("listenSurahList");
+    const listenSurahSearch = document.getElementById("listenSurahSearch");
+
+    let activeQuickFilter = "all";
+
+    function getSurahLink(number) {
+      return `surah-${number}.html`;
+    }
+
+    function getListeningLink(number) {
+      return `surah-${number}.html?reciter=sudais&view=synced&autoplay=1`;
+    }
+
+    function getVerseLink(number, verse) {
+      return `surah-${number}.html?ayah=${verse}#ayah-${verse}`;
+    }
+
+    function getSurah(number) {
+      return surahs.find((surah) => surah.number === number);
+    }
+
+    function normaliseText(value) {
+      return value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[ʿʾʻ’‘]/g, "")
+        .replace(/[^a-z0-9:\s-]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      themeToggle.textContent = theme === "light" ? "Dark" : "Light";
+      try {
+        localStorage.setItem("quranIndexTheme", theme);
+      } catch (error) {}
+    }
+
+    function bindThemeToggle() {
+      themeToggle.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme") || "light";
+        applyTheme(current === "light" ? "dark" : "light");
+      });
+
+      try {
+        applyTheme(localStorage.getItem("quranIndexTheme") || "light");
+      } catch (error) {
+        applyTheme("light");
+      }
+    }
+
+    function openSurah(number) {
+      window.location.assign(getSurahLink(number));
+    }
+
+    function openVerse(number, verse) {
+      const safeVerse = Number(verse);
+      if (!safeVerse || safeVerse < 1) return;
+      window.location.assign(getVerseLink(number, safeVerse));
+    }
+
+    function parseVerseReference(rawValue) {
+      const query = normaliseText(rawValue);
+      if (!query) return null;
+
+      const exact = query.match(/^(\d{1,3})\s*[:.]\s*(\d{1,3})$/);
+      if (exact) {
+        const surahNumber = Number(exact[1]);
+        const verseNumber = Number(exact[2]);
+        const surah = getSurah(surahNumber);
+        if (surah && verseNumber >= 1 && verseNumber <= surah.verses) {
+          return { surahNumber, verseNumber };
+        }
+      }
+
+      const trailing = query.match(/^(.*?)(\d{1,3})$/);
+      if (trailing) {
+        const surahPart = trailing[1].trim();
+        const verseNumber = Number(trailing[2]);
+        if (!surahPart) return null;
+
+        const matchedSurah = surahs.find((surah) => {
+          const english = normaliseText(surah.english);
+          const meaning = normaliseText(surah.meaning);
+          const combined = `${english} ${surah.number}`;
+          return (
+            english === surahPart ||
+            english.includes(surahPart) ||
+            meaning === surahPart ||
+            meaning.includes(surahPart) ||
+            combined === surahPart
+          );
+        });
+
+        if (matchedSurah && verseNumber >= 1 && verseNumber <= matchedSurah.verses) {
+          return { surahNumber: matchedSurah.number, verseNumber };
+        }
+      }
+
+      return null;
+    }
+
+    function parseJuzReference(rawValue) {
+      const query = normaliseText(rawValue);
+      const match = query.match(/^juz\s*(\d{1,2})$/) || query.match(/^part\s*(\d{1,2})$/);
+      if (!match) return null;
+      const juz = Number(match[1]);
+      if (juz >= 1 && juz <= 30) return juz;
+      return null;
+    }
+
+    function getJuzContainingSurah(surahNumber) {
+      return juzData
+        .filter((item) => item.start.surah <= surahNumber && item.end.surah >= surahNumber)
+        .map((item) => item.juz);
+    }
+
+    function getSurahMatchesQuery(surah, rawQuery) {
+      const query = normaliseText(rawQuery);
+      if (!query) return true;
+
+      const verseReference = parseVerseReference(rawQuery);
+      if (verseReference) return surah.number === verseReference.surahNumber;
+
+      const juzReference = parseJuzReference(rawQuery);
+      if (juzReference) {
+        const juzItem = juzData.find((item) => item.juz === juzReference);
+        return surah.number >= juzItem.start.surah && surah.number <= juzItem.end.surah;
+      }
+
+      return (
+        surah.number.toString() === query ||
+        surah.number.toString().includes(query) ||
+        normaliseText(surah.english).includes(query) ||
+        normaliseText(surah.meaning).includes(query) ||
+        surah.arabic.includes(rawQuery.trim())
+      );
+    }
+
+    function filterByJuz(items, selectedJuz) {
+      if (selectedJuz === "all") return items;
+
+      const juzItem = juzData.find((item) => item.juz === Number(selectedJuz));
+      if (!juzItem) return items;
+
+      return items.filter((surah) => surah.number >= juzItem.start.surah && surah.number <= juzItem.end.surah);
+    }
+
+    function applyQuickFilter(items) {
+      if (activeQuickFilter === "Makki" || activeQuickFilter === "Madani") {
+        return items.filter((surah) => surah.type === activeQuickFilter);
+      }
+      if (activeQuickFilter === "short") {
+        return items.filter((surah) => surah.verses <= 30);
+      }
+      if (activeQuickFilter === "long") {
+        return items.filter((surah) => surah.verses > 30);
+      }
+      if (activeQuickFilter === "juz-start") {
+        return items.filter((surah) => juzStartSurahNumbers.has(surah.number));
+      }
+      return items;
+    }
+
+    function populateSurahFilter() {
+      surahs.forEach((surah) => {
+        const option = document.createElement("option");
+        option.value = surah.number;
+        option.textContent = `${surah.number}. ${surah.english}`;
+        surahFilter.appendChild(option);
+      });
+    }
+
+    function populateVerseFilter(surahNumber) {
+      verseFilter.innerHTML = "";
+
+      if (!surahNumber || surahNumber === "all") {
+        verseFilter.disabled = true;
+        const option = document.createElement("option");
+        option.value = "all";
+        option.textContent = "Select surah first";
+        verseFilter.appendChild(option);
+        return;
+      }
+
+      const surah = getSurah(Number(surahNumber));
+      if (!surah) return;
+
+      verseFilter.disabled = false;
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "all";
+      defaultOption.textContent = `All ${surah.verses} verses`;
+      verseFilter.appendChild(defaultOption);
+
+      for (let verse = 1; verse <= surah.verses; verse += 1) {
+        const option = document.createElement("option");
+        option.value = verse;
+        option.textContent = `Verse ${verse}`;
+        verseFilter.appendChild(option);
+      }
+    }
+
+    function populateJuzFilter() {
+      juzData.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.juz;
+        option.textContent = `Juz ${item.juz}`;
+        juzFilter.appendChild(option);
+      });
+    }
+
+    function renderSurahs() {
+      let items = [...surahs];
+      const query = searchInput.value.trim();
+      const selectedSurah = surahFilter.value;
+      const selectedJuz = juzFilter.value;
+
+      if (query) {
+        items = items.filter((surah) => getSurahMatchesQuery(surah, query));
+      }
+
+      if (selectedSurah !== "all") {
+        items = items.filter((surah) => surah.number === Number(selectedSurah));
+      }
+
+      items = filterByJuz(items, selectedJuz);
+      items = applyQuickFilter(items);
+      items.sort((a, b) => a.number - b.number);
+
+      resultsCount.textContent = `${items.length} surah${items.length === 1 ? "" : "s"}`;
+
+      if (!items.length) {
+        surahGrid.innerHTML = "";
+        emptyState.style.display = "block";
+        return;
+      }
+
+      emptyState.style.display = "none";
+
+      surahGrid.innerHTML = items.map((surah) => {
+        const juzList = getJuzContainingSurah(surah.number);
+
+        return `
+          <div class="surah-card">
+            <div class="surah-top">
+              <div class="surah-number">${surah.number}</div>
+              <div class="surah-arabic" lang="ar">${surah.arabic}</div>
+            </div>
+            <div class="surah-main">
+              <h4>${surah.english}</h4>
+              <p>${surah.meaning}</p>
+            </div>
+            <div class="surah-meta">
+              <span class="tag">${surah.type}</span>
+              <span class="tag">${surah.verses} verses</span>
+              <span class="tag">Juz ${juzList.join(", ")}</span>
+            </div>
+            <div class="surah-actions">
+              <button class="mini-button surah-open-button" type="button" data-surah-open="${surah.number}">Read Surah</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      bindRenderedInteractions();
+    }
+
+    function renderJuz() {
+      juzGrid.innerHTML = juzData.map((item) => {
+        const startSurah = getSurah(item.start.surah);
+        const endSurah = getSurah(item.end.surah);
+        return `
+          <div class="juz-card">
+            <div class="juz-top">
+              <div class="juz-number">${item.juz}</div>
+              <div class="juz-main">
+                <h4>Juz ${item.juz}</h4>
+                <p>Starts: ${startSurah.english} ${item.start.surah}:${item.start.verse}</p>
+              </div>
+            </div>
+            <div class="juz-meta">
+              <span class="tag">Ends: ${endSurah.english} ${item.end.surah}:${item.end.verse}</span>
+            </div>
+            <div class="juz-actions">
+              <button class="mini-button juz-open-button" type="button" data-juz-start-surah="${item.start.surah}" data-juz-start-verse="${item.start.verse}">Open Juz</button>
+              <a class="mini-button" href="#surahs" data-juz-open="${item.juz}">View Surahs</a>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-juz-open]").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          juzFilter.value = link.getAttribute("data-juz-open");
+          surahFilter.value = "all";
+          populateVerseFilter("all");
+          document.getElementById("surahs").scrollIntoView({ behavior: "smooth" });
+          renderSurahs();
+        });
+      });
+
+      document.querySelectorAll(".juz-open-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          const surahNumber = Number(button.getAttribute("data-juz-start-surah"));
+          const verseNumber = Number(button.getAttribute("data-juz-start-verse"));
+          openVerse(surahNumber, verseNumber);
+        });
+      });
+    }
+
+    function bindRenderedInteractions() {
+      document.querySelectorAll(".surah-open-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          openSurah(Number(button.getAttribute("data-surah-open")));
+        });
+      });
+    }
+
+    function openDirectMatch() {
+      const verseReference = parseVerseReference(searchInput.value);
+      if (verseReference) {
+        openVerse(verseReference.surahNumber, verseReference.verseNumber);
+        return;
+      }
+
+      const juzReference = parseJuzReference(searchInput.value);
+      if (juzReference) {
+        const juzItem = juzData.find((item) => item.juz === juzReference);
+        if (juzItem) {
+          openVerse(juzItem.start.surah, juzItem.start.verse);
+          return;
+        }
+      }
+
+      const query = normaliseText(searchInput.value);
+      if (!query) return;
+
+      const matchedSurah = surahs.find((surah) => {
+        return (
+          surah.number.toString() === query ||
+          normaliseText(surah.english) === query ||
+          normaliseText(surah.meaning) === query
+        );
+      });
+
+      if (matchedSurah) {
+        openSurah(matchedSurah.number);
+        return;
+      }
+
+      const firstVisibleButton = document.querySelector(".surah-open-button");
+      if (firstVisibleButton) {
+        openSurah(Number(firstVisibleButton.getAttribute("data-surah-open")));
+      }
+    }
+
+    function bindQuickFilters() {
+      filterPills.forEach((pill) => {
+        pill.addEventListener("click", () => {
+          activeQuickFilter = pill.getAttribute("data-filter");
+          filterPills.forEach((item) => item.classList.remove("active"));
+          pill.classList.add("active");
+          renderSurahs();
+        });
+      });
+    }
+
+    function updateContactFormState() {
+      const isSubscriptionOnly = contactPurpose.value === "Subscription only";
+      contactMessage.required = !isSubscriptionOnly;
+      messageFieldWrap.style.opacity = isSubscriptionOnly ? "0.78" : "1";
+      messageHelp.textContent = isSubscriptionOnly
+        ? "A message is optional when you choose Subscription only."
+        : "Please write your message here.";
+    }
+
+    function bindContactFormLogic() {
+      contactPurpose.addEventListener("change", updateContactFormState);
+      updateContactFormState();
+    }
+
+    function readContinueReading() {
+      const candidateKeys = [
+        "quranContinueReading",
+        "quran_continue_reading",
+        "quranLastRead",
+        "quran_last_read"
+      ];
+
+      for (const key of candidateKeys) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.surahNumber && parsed.verseNumber) {
+            return parsed;
+          }
+        } catch (error) {}
+      }
+
+      return null;
+    }
+
+    function renderContinueReading() {
+      const saved = readContinueReading();
+      if (!saved) {
+        continueReadingSection.style.display = "none";
+        continueReadingCard.style.display = "none";
+        return;
+      }
+
+      const surah = getSurah(Number(saved.surahNumber));
+      if (!surah) {
+        continueReadingSection.style.display = "none";
+        continueReadingCard.style.display = "none";
+        return;
+      }
+
+      const verseNumber = Number(saved.verseNumber);
+      const label = saved.surahName || surah.english;
+      continueReadingText.textContent = `Resume from ${label}, verse ${verseNumber}.`;
+      continueReadingLink.href = getVerseLink(surah.number, verseNumber);
+      continueReadingSection.style.display = "block";
+      continueReadingCard.style.display = "flex";
+    }
+
+    function clearContinueReading() {
+      const candidateKeys = [
+        "quranContinueReading",
+        "quran_continue_reading",
+        "quranLastRead",
+        "quran_last_read"
+      ];
+
+      candidateKeys.forEach((key) => {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {}
+      });
+
+      continueReadingSection.style.display = "none";
+      continueReadingCard.style.display = "none";
+    }
+
+    function renderListenSurahList(filteredSurahs = surahs) {
+      if (!filteredSurahs.length) {
+        listenSurahList.innerHTML = `<div class="listen-empty">No surahs matched your search.</div>`;
+        return;
+      }
+
+      listenSurahList.innerHTML = filteredSurahs.map((surah) => {
+        return `
+          <a class="listen-surah-link" href="${getListeningLink(surah.number)}">
+            <span class="listen-surah-number">${surah.number}</span>
+            <span class="listen-surah-name">${surah.english}</span>
+          </a>
+        `;
+      }).join("");
+    }
+
+    function openListeningPanel() {
+      listenSurahPanel.hidden = false;
+      startListeningToggle.setAttribute("aria-expanded", "true");
+      renderListenSurahList();
+      requestAnimationFrame(() => listenSurahSearch.focus());
+    }
+
+    function closeListeningPanelFn() {
+      listenSurahPanel.hidden = true;
+      startListeningToggle.setAttribute("aria-expanded", "false");
+      listenSurahSearch.value = "";
+      renderListenSurahList();
+    }
+
+    function bindListeningPanel() {
+      renderListenSurahList();
+
+      startListeningToggle.addEventListener("click", () => {
+        if (listenSurahPanel.hidden) {
+          openListeningPanel();
+        } else {
+          closeListeningPanelFn();
+        }
+      });
+
+      closeListeningPanel.addEventListener("click", closeListeningPanelFn);
+
+      listenSurahSearch.addEventListener("input", () => {
+        const query = normaliseText(listenSurahSearch.value);
+        if (!query) {
+          renderListenSurahList();
+          return;
+        }
+
+        const filtered = surahs.filter((surah) => {
+          return (
+            surah.number.toString().includes(query) ||
+            normaliseText(surah.english).includes(query) ||
+            surah.arabic.includes(listenSurahSearch.value.trim())
+          );
+        });
+
+        renderListenSurahList(filtered);
+      });
+
+      document.addEventListener("click", (event) => {
+        const withinPanel = listenSurahPanel.contains(event.target);
+        const withinToggle = startListeningToggle.contains(event.target);
+
+        if (!listenSurahPanel.hidden && !withinPanel && !withinToggle) {
+          closeListeningPanelFn();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !listenSurahPanel.hidden) {
+          closeListeningPanelFn();
+        }
+      });
+    }
+
+    function clearSearchAndFilters() {
+      searchInput.value = "";
+      surahFilter.value = "all";
+      juzFilter.value = "all";
+      activeQuickFilter = "all";
+      filterPills.forEach((item) => item.classList.remove("active"));
+      document.querySelector('.pill[data-filter="all"]').classList.add("active");
+      populateVerseFilter("all");
+      renderSurahs();
+      searchInput.focus();
+    }
+
+    clearReadingButton.addEventListener("click", clearContinueReading);
+    clearSearchButton.addEventListener("click", clearSearchAndFilters);
+
+    searchInput.addEventListener("input", renderSurahs);
+
+    surahFilter.addEventListener("change", () => {
+      populateVerseFilter(surahFilter.value);
+      renderSurahs();
+    });
+
+    verseFilter.addEventListener("change", () => {
+      if (surahFilter.value !== "all" && verseFilter.value !== "all") {
+        openVerse(Number(surahFilter.value), Number(verseFilter.value));
+        return;
+      }
+      renderSurahs();
+    });
+
+    juzFilter.addEventListener("change", renderSurahs);
+
+    searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        openDirectMatch();
+      }
+    });
+
+    populateSurahFilter();
+    populateVerseFilter("all");
+    populateJuzFilter();
+    bindQuickFilters();
+    bindThemeToggle();
+    bindContactFormLogic();
+    bindListeningPanel();
+    renderContinueReading();
+    renderSurahs();
+    renderJuz();
+  </script>
 </body>
 </html>
