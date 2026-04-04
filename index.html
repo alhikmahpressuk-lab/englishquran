@@ -2,11 +2,11 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>The English Qur’an</title>
   <meta
     name="description"
-    content="The English Qur’an, a clear, faithful and modern English translation by Dr A K Khan, presented in a clean and accessible reading experience."
+    content="The English Qur’an, a clear, faithful and modern English translation, presented in a clean and accessible reading experience."
   />
   <style>
     :root {
@@ -23,6 +23,7 @@
       --radius: 20px;
       --radius-sm: 14px;
       --max: 1240px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     html[data-theme="dark"] {
@@ -41,10 +42,13 @@
 
     * {
       box-sizing: border-box;
+      min-width: 0;
     }
 
     html {
       scroll-behavior: smooth;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
@@ -53,6 +57,8 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
+      overflow-x: hidden;
+      width: 100%;
     }
 
     a {
@@ -71,6 +77,12 @@
       resize: vertical;
     }
 
+    img,
+    svg,
+    iframe {
+      max-width: 100%;
+    }
+
     .container {
       width: min(var(--max), calc(100% - 32px));
       margin: 0 auto;
@@ -81,6 +93,7 @@
       top: 0;
       z-index: 100;
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       background: color-mix(in srgb, var(--bg) 88%, transparent);
       border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
     }
@@ -204,7 +217,10 @@
     .juz-section,
     .book-section,
     .about-section,
-    .contact-section {
+    .contact-section,
+    .listen-section,
+    .new-reader-section,
+    .support-section {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -214,7 +230,8 @@
     .hero-card {
       padding: 34px;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+      isolation: isolate;
     }
 
     .hero-card::before {
@@ -225,6 +242,7 @@
       height: 260px;
       background: radial-gradient(circle, rgba(30,107,92,0.12) 0%, rgba(30,107,92,0) 72%);
       pointer-events: none;
+      z-index: -1;
     }
 
     .eyebrow {
@@ -262,16 +280,6 @@
       font-size: 1.15rem;
       color: color-mix(in srgb, var(--text) 82%, white 18%);
       max-width: 62ch;
-    }
-
-    .hero-card .translator {
-      margin: 22px 0 0;
-      font-size: 1rem;
-      color: var(--muted);
-    }
-
-    .hero-card .translator strong {
-      color: var(--text);
     }
 
     .hero-actions,
@@ -315,6 +323,139 @@
 
     .button-secondary:hover {
       background: color-mix(in srgb, var(--surface-soft) 85%, var(--accent-soft) 15%);
+    }
+
+    .panel-picker-wrap {
+      position: relative;
+    }
+
+    .surah-panel {
+      position: absolute;
+      top: calc(100% + 12px);
+      left: 0;
+      width: min(420px, calc(100vw - 48px));
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(16, 24, 40, 0.16);
+      z-index: 40;
+      overflow: hidden;
+    }
+
+    .surah-panel-inner {
+      display: flex;
+      flex-direction: column;
+      max-height: 520px;
+    }
+
+    .surah-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 90%, var(--accent-soft) 10%);
+    }
+
+    .surah-panel-head h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .surah-close-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .surah-close-btn:hover {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: rgba(30, 107, 92, 0.28);
+    }
+
+    .surah-panel-search {
+      padding: 14px 18px 0;
+    }
+
+    .surah-panel-search input {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .surah-panel-search input:focus {
+      border-color: rgba(30, 107, 92, 0.55);
+      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
+    }
+
+    .surah-panel-list {
+      padding: 14px;
+      overflow-y: auto;
+      display: grid;
+      gap: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .surah-panel-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+    }
+
+    .surah-panel-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(30, 107, 92, 0.28);
+      background: color-mix(in srgb, var(--surface-soft) 82%, var(--accent-soft) 18%);
+    }
+
+    .surah-panel-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--accent-deep);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .surah-panel-name {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .surah-panel-empty {
+      padding: 18px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.94rem;
     }
 
     .hero-points {
@@ -392,7 +533,10 @@
     .search-panel,
     .surah-section,
     .juz-section,
-    .contact-section {
+    .contact-section,
+    .listen-section,
+    .new-reader-section,
+    .support-section {
       padding: 26px;
       margin-bottom: 24px;
     }
@@ -459,19 +603,108 @@
       flex-shrink: 0;
     }
 
+    .new-reader-grid,
+    .listen-grid,
     .search-grid,
     .contact-grid {
       display: grid;
       gap: 14px;
     }
 
+    .new-reader-grid,
+    .listen-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .search-grid {
-      grid-template-columns: 1.55fr 0.95fr 0.85fr 0.85fr;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.95fr) minmax(0, 0.85fr) minmax(0, 0.85fr);
+      align-items: end;
+    }
+
+    .smart-search-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .smart-search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .smart-search-input-wrap input {
+      flex: 1 1 auto;
+      width: 100%;
+      min-height: 52px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .smart-search-input-wrap input:focus {
+      border-color: rgba(30, 107, 92, 0.55);
+      box-shadow: 0 0 0 4px rgba(30, 107, 92, 0.12);
+    }
+
+    .search-clear-field {
+      display: flex;
+      align-items: flex-end;
+      grid-column: 4;
+    }
+
+    .search-clear-field .mini-button {
+      width: 100%;
+      min-height: 52px;
     }
 
     .contact-grid {
       grid-template-columns: 1fr 1fr;
       margin-bottom: 14px;
+    }
+
+    .feature-card,
+    .support-card {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .feature-card h4,
+    .support-card h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .feature-card p,
+    .support-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .support-copy {
+      display: grid;
+      gap: 16px;
+    }
+
+    .support-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .support-note {
+      color: var(--muted);
+      font-size: 0.92rem;
     }
 
     .field label {
@@ -514,7 +747,8 @@
     }
 
     .search-help,
-    .contact-help {
+    .contact-help,
+    .section-note {
       margin: 12px 0 0;
       color: var(--muted);
       font-size: 0.92rem;
@@ -735,7 +969,7 @@
     .footer {
       border-top: 1px solid var(--line);
       background: var(--surface);
-      padding: 26px 0 40px;
+      padding: 26px 0 calc(40px + var(--safe-bottom));
       margin-top: 28px;
     }
 
@@ -834,12 +1068,18 @@
       .surah-grid,
       .juz-grid,
       .about-grid,
-      .book-grid {
+      .book-grid,
+      .new-reader-grid,
+      .listen-grid {
         grid-template-columns: 1fr 1fr;
       }
 
       .hero-points {
         grid-template-columns: 1fr;
+      }
+
+      .search-clear-field {
+        grid-column: auto;
       }
     }
 
@@ -877,7 +1117,9 @@
       .juz-grid,
       .about-grid,
       .book-grid,
-      .contact-grid {
+      .contact-grid,
+      .new-reader-grid,
+      .listen-grid {
         grid-template-columns: 1fr;
       }
 
@@ -894,8 +1136,22 @@
       .juz-section,
       .book-section,
       .about-section,
-      .contact-section {
+      .contact-section,
+      .listen-section,
+      .new-reader-section,
+      .support-section {
         padding: 22px;
+      }
+
+      .surah-panel {
+        position: static;
+        width: 100%;
+        margin-top: 12px;
+        box-shadow: var(--shadow);
+      }
+
+      .search-clear-field {
+        grid-column: auto;
       }
     }
 
@@ -931,11 +1187,17 @@
         width: 100%;
       }
 
+      .smart-search-input-wrap {
+        flex-direction: row;
+        align-items: center;
+      }
+
       .surah-actions,
       .juz-actions,
       .book-links,
       .continue-actions,
-      .contact-actions {
+      .contact-actions,
+      .support-actions {
         flex-direction: column;
         align-items: stretch;
       }
@@ -944,6 +1206,14 @@
       .legal-links {
         flex-direction: row;
         align-items: center;
+      }
+
+      .panel-picker-wrap {
+        width: 100%;
+      }
+
+      .surah-panel {
+        width: 100%;
       }
     }
   </style>
@@ -955,7 +1225,7 @@
         <div class="brand-mark">ق</div>
         <div class="brand-text">
           <h1>The English Qur’an</h1>
-          <p>Translated by Dr A K Khan</p>
+          <p>Clear, faithful and modern English</p>
         </div>
       </div>
 
@@ -981,10 +1251,80 @@
             <p class="subtitle">
               Read the Qur’an in a clean, calm and accessible format, with the original Arabic placed before each English verse, presented with clarity, dignity and ease for today’s reader.
             </p>
-            <p class="translator">Translation by <strong>Dr A K Khan</strong></p>
+
+            <div style="margin: 18px 0 0; padding: 12px 16px; background: var(--surface-soft); border-radius: 12px; display: inline-block;">
+              <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--text);">
+                We have made the Qur’an easy to remember. <span style="font-size: 0.9rem; color: var(--muted); margin-left: 6px;">(Qur’an 54:17)</span>
+              </p>
+            </div>
 
             <div class="hero-actions">
               <a class="button button-primary" href="surah-1.html">Start Reading</a>
+
+              <div class="panel-picker-wrap">
+                <button
+                  class="button button-secondary"
+                  id="startListeningToggle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="listenSurahPanel"
+                >
+                  Start Listening
+                </button>
+
+                <div id="listenSurahPanel" class="surah-panel" hidden>
+                  <div class="surah-panel-inner">
+                    <div class="surah-panel-head">
+                      <h3>Select a Surah</h3>
+                      <button id="closeListeningPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
+                    </div>
+
+                    <div class="surah-panel-search">
+                      <input
+                        id="listenSurahSearch"
+                        type="text"
+                        placeholder="Search by surah name or number"
+                        autocomplete="off"
+                      />
+                    </div>
+
+                    <div id="listenSurahList" class="surah-panel-list"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel-picker-wrap">
+                <button
+                  class="button button-secondary"
+                  id="startReadingToggleMiddle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="readSurahPanel"
+                >
+                  Start Reading
+                </button>
+
+                <div id="readSurahPanel" class="surah-panel" hidden>
+                  <div class="surah-panel-inner">
+                    <div class="surah-panel-head">
+                      <h3>Select a Surah</h3>
+                      <button id="closeReadingPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
+                    </div>
+
+                    <div class="surah-panel-search">
+                      <input
+                        id="readSurahSearch"
+                        type="text"
+                        placeholder="Search by surah name or number"
+                        autocomplete="off"
+                      />
+                    </div>
+
+                    <div id="readSurahList" class="surah-panel-list"></div>
+                  </div>
+                </div>
+              </div>
+
               <a class="button button-secondary" href="#surahs">Browse Surahs</a>
               <a class="button button-secondary" href="#juz">Browse Juz</a>
               <a class="button button-secondary" href="#book">Get the Book</a>
@@ -994,14 +1334,14 @@
             <ul class="hero-points">
               <li>Go straight to any surah, verse, or part of the Qur’an with clean direct navigation.</li>
               <li>Search works without diacritics, so readers can type naturally and still reach the right result.</li>
-              <li>Built as a calm homepage for both first time readers and serious regular study.</li>
+              <li>Read at your own pace, or listen with synced recitation from the beginning of any surah.</li>
             </ul>
           </div>
 
           <aside class="info-card">
             <div class="info-block">
               <h3>Go straight to a surah</h3>
-              <p>Every surah is listed with its original English name, Arabic title, verse count, and direct reading link.</p>
+              <p>Every surah is listed with its English name, Arabic title, verse count, and direct reading link.</p>
             </div>
 
             <div class="info-block">
@@ -1010,10 +1350,42 @@
             </div>
 
             <div class="info-block">
-              <h3>Browse by Juz</h3>
-              <p>Each Juz includes its correct starting point, ending point, and a direct opening route for structured reading.</p>
+              <h3>Read or listen clearly</h3>
+              <p>Open the Qur’an for reading, or begin from the start in synced recitation mode with your selected reciter.</p>
             </div>
           </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="new-reader-section">
+          <div class="section-head">
+            <div>
+              <h3>New to the Qur’an?</h3>
+              <p>A simple place to begin for first time readers, returning readers, and anyone exploring the Qur’an in English.</p>
+            </div>
+          </div>
+
+          <div class="new-reader-grid">
+            <div class="feature-card">
+              <h4>Start with Al Fātiḥah</h4>
+              <p>Begin with the opening surah, short, central, and foundational to the Qur’an’s message.</p>
+            </div>
+
+            <div class="feature-card">
+              <h4>Continue into Al Baqarah</h4>
+              <p>Move into the longest surah for sustained reading, guidance, and a fuller introduction to the Qur’an.</p>
+            </div>
+
+            <div class="feature-card">
+              <h4>Explore freely</h4>
+              <p>You may also browse any surah, verse, or Juz directly, according to your interest or study plan.</p>
+            </div>
+          </div>
+
+          <p class="section-note">This site is designed to make beginning easy, without losing seriousness, clarity, or structure.</p>
         </div>
       </div>
     </section>
@@ -1067,9 +1439,11 @@
 
         <div class="search-panel">
           <div class="search-grid">
-            <div class="field">
+            <div class="smart-search-field">
               <label for="searchInput">Smart search</label>
-              <input id="searchInput" type="text" placeholder="Try: Al Baqarah, 2, 2:255, Juz 30, Ya Sin 58" autocomplete="off" />
+              <div class="smart-search-input-wrap">
+                <input id="searchInput" type="text" placeholder="Try: Al Baqarah, 2, 2:255, Juz 30, Ya Sin 58" autocomplete="off" />
+              </div>
             </div>
 
             <div class="field">
@@ -1091,6 +1465,10 @@
               <select id="juzFilter">
                 <option value="all">All Juz</option>
               </select>
+            </div>
+
+            <div class="field search-clear-field">
+              <button class="mini-button" type="button" id="clearSearchButton">Clear</button>
             </div>
           </div>
 
@@ -1127,6 +1505,38 @@
 
         <div class="juz-section">
           <div class="juz-grid" id="juzGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="listen">
+      <div class="container">
+        <div class="listen-section">
+          <div class="section-head">
+            <div>
+              <h3>Listen to the Qur’an</h3>
+              <p>Choose a reciter, follow synced recitation, and navigate through the Qur’an with a calm and structured listening experience.</p>
+            </div>
+          </div>
+
+          <div class="listen-grid">
+            <div class="feature-card">
+              <h4>Choose your reciter</h4>
+              <p>Start listening from the homepage, then select your surah and use the reciter options available in the recitation view.</p>
+            </div>
+
+            <div class="feature-card">
+              <h4>Begin from the start</h4>
+              <p>Each selected surah opens directly in synced recitation mode from the beginning, so listening starts cleanly and naturally.</p>
+            </div>
+
+            <div class="feature-card">
+              <h4>Follow as you listen</h4>
+              <p>Use the recitation view to stay with the surah as it plays, making navigation, replay, and continuation easier throughout the Qur’an.</p>
+            </div>
+          </div>
+
+          <p class="section-note">The listening flow is built into the main site, so reading and recitation remain part of one clear Qur’an experience.</p>
         </div>
       </div>
     </section>
@@ -1247,12 +1657,37 @@
         </div>
       </div>
     </section>
+
+    <section class="section" id="support">
+      <div class="container">
+        <div class="support-section">
+          <div class="section-head">
+            <div>
+              <h3>Support the English Qur’an Project</h3>
+              <p>This work is freely open to readers. If you would like to support its continuation, you may do so here.</p>
+            </div>
+          </div>
+
+          <div class="support-copy">
+            <div class="support-card">
+              <h4>Support this project</h4>
+              <p>Your support helps sustain the website, publication work, and wider development of The English Qur’an for readers around the world.</p>
+            </div>
+
+            <div class="support-actions">
+              <a class="button button-primary" href="https://www.paypal.com/donate/?hosted_button_id=TRXETFJ2KKWQE" target="_blank" rel="noopener noreferrer">Donate with PayPal</a>
+              <span class="support-note">The English Qur’an Project is part of Al-Hikmah School CIO (Charity Incorporated Organisation) based in the UK and is published by Al-Hikmah Publishing UK.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-copy">
-        <p>© 2015–2026 Al-Hikmah Publishing UK </p>
+        <p>© 2015–2026 Al-Hikmah Publishing UK. All Rights Reserved.</p>
         <p>The English Qur’an™, translated by Dr A K Khan.</p>
       </div>
 
@@ -1260,9 +1695,10 @@
         <div class="footer-links">
           <a href="#surahs">Browse Surahs</a>
           <a href="#juz">Browse Juz</a>
+          <a href="#listen">Listen</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
-          <a href="surah-1.html">Read Surah 1</a>
+          <a href="#support">Support</a>
         </div>
         <div class="legal-links">
           <a href="terms-and-conditions.html">Terms</a>
@@ -1427,6 +1863,7 @@
     const juzStartSurahNumbers = new Set(juzData.map(item => item.start.surah));
 
     const searchInput = document.getElementById("searchInput");
+    const clearSearchButton = document.getElementById("clearSearchButton");
     const surahFilter = document.getElementById("surahFilter");
     const verseFilter = document.getElementById("verseFilter");
     const juzFilter = document.getElementById("juzFilter");
@@ -1448,10 +1885,26 @@
     const messageFieldWrap = document.getElementById("messageFieldWrap");
     const messageHelp = document.getElementById("messageHelp");
 
+    const startListeningToggle = document.getElementById("startListeningToggle");
+    const listenSurahPanel = document.getElementById("listenSurahPanel");
+    const closeListeningPanel = document.getElementById("closeListeningPanel");
+    const listenSurahList = document.getElementById("listenSurahList");
+    const listenSurahSearch = document.getElementById("listenSurahSearch");
+
+    const startReadingToggleMiddle = document.getElementById("startReadingToggleMiddle");
+    const readSurahPanel = document.getElementById("readSurahPanel");
+    const closeReadingPanel = document.getElementById("closeReadingPanel");
+    const readSurahList = document.getElementById("readSurahList");
+    const readSurahSearch = document.getElementById("readSurahSearch");
+
     let activeQuickFilter = "all";
 
     function getSurahLink(number) {
       return `surah-${number}.html`;
+    }
+
+    function getListeningLink(number) {
+      return `surah-${number}.html?reciter=sudais&view=synced&autoplay=1`;
     }
 
     function getVerseLink(number, verse) {
@@ -1889,7 +2342,169 @@
       continueReadingCard.style.display = "none";
     }
 
+    function renderListenSurahList(filteredSurahs = surahs) {
+      if (!filteredSurahs.length) {
+        listenSurahList.innerHTML = `<div class="surah-panel-empty">No surahs matched your search.</div>`;
+        return;
+      }
+
+      listenSurahList.innerHTML = filteredSurahs.map((surah) => {
+        return `
+          <a class="surah-panel-link" href="${getListeningLink(surah.number)}">
+            <span class="surah-panel-number">${surah.number}</span>
+            <span class="surah-panel-name">${surah.english}</span>
+          </a>
+        `;
+      }).join("");
+    }
+
+    function renderReadSurahList(filteredSurahs = surahs) {
+      if (!filteredSurahs.length) {
+        readSurahList.innerHTML = `<div class="surah-panel-empty">No surahs matched your search.</div>`;
+        return;
+      }
+
+      readSurahList.innerHTML = filteredSurahs.map((surah) => {
+        return `
+          <a class="surah-panel-link" href="${getSurahLink(surah.number)}">
+            <span class="surah-panel-number">${surah.number}</span>
+            <span class="surah-panel-name">${surah.english}</span>
+          </a>
+        `;
+      }).join("");
+    }
+
+    function openListeningPanel() {
+      listenSurahPanel.hidden = false;
+      startListeningToggle.setAttribute("aria-expanded", "true");
+      renderListenSurahList();
+      requestAnimationFrame(() => listenSurahSearch.focus());
+    }
+
+    function closeListeningPanelFn() {
+      listenSurahPanel.hidden = true;
+      startListeningToggle.setAttribute("aria-expanded", "false");
+      listenSurahSearch.value = "";
+      renderListenSurahList();
+    }
+
+    function openReadingPanel() {
+      readSurahPanel.hidden = false;
+      startReadingToggleMiddle.setAttribute("aria-expanded", "true");
+      renderReadSurahList();
+      requestAnimationFrame(() => readSurahSearch.focus());
+    }
+
+    function closeReadingPanelFn() {
+      readSurahPanel.hidden = true;
+      startReadingToggleMiddle.setAttribute("aria-expanded", "false");
+      readSurahSearch.value = "";
+      renderReadSurahList();
+    }
+
+    function bindListeningPanel() {
+      renderListenSurahList();
+      renderReadSurahList();
+
+      startListeningToggle.addEventListener("click", () => {
+        if (listenSurahPanel.hidden) {
+          closeReadingPanelFn();
+          openListeningPanel();
+        } else {
+          closeListeningPanelFn();
+        }
+      });
+
+      closeListeningPanel.addEventListener("click", closeListeningPanelFn);
+
+      listenSurahSearch.addEventListener("input", () => {
+        const query = normaliseText(listenSurahSearch.value);
+        if (!query) {
+          renderListenSurahList();
+          return;
+        }
+
+        const filtered = surahs.filter((surah) => {
+          return (
+            surah.number.toString().includes(query) ||
+            normaliseText(surah.english).includes(query) ||
+            surah.arabic.includes(listenSurahSearch.value.trim())
+          );
+        });
+
+        renderListenSurahList(filtered);
+      });
+
+      startReadingToggleMiddle.addEventListener("click", () => {
+        if (readSurahPanel.hidden) {
+          closeListeningPanelFn();
+          openReadingPanel();
+        } else {
+          closeReadingPanelFn();
+        }
+      });
+
+      closeReadingPanel.addEventListener("click", closeReadingPanelFn);
+
+      readSurahSearch.addEventListener("input", () => {
+        const query = normaliseText(readSurahSearch.value);
+        if (!query) {
+          renderReadSurahList();
+          return;
+        }
+
+        const filtered = surahs.filter((surah) => {
+          return (
+            surah.number.toString().includes(query) ||
+            normaliseText(surah.english).includes(query) ||
+            surah.arabic.includes(readSurahSearch.value.trim())
+          );
+        });
+
+        renderReadSurahList(filtered);
+      });
+
+      document.addEventListener("click", (event) => {
+        const withinListenPanel = listenSurahPanel.contains(event.target);
+        const withinListenToggle = startListeningToggle.contains(event.target);
+        const withinReadPanel = readSurahPanel.contains(event.target);
+        const withinReadToggle = startReadingToggleMiddle.contains(event.target);
+
+        if (!listenSurahPanel.hidden && !withinListenPanel && !withinListenToggle) {
+          closeListeningPanelFn();
+        }
+
+        if (!readSurahPanel.hidden && !withinReadPanel && !withinReadToggle) {
+          closeReadingPanelFn();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          if (!listenSurahPanel.hidden) {
+            closeListeningPanelFn();
+          }
+          if (!readSurahPanel.hidden) {
+            closeReadingPanelFn();
+          }
+        }
+      });
+    }
+
+    function clearSearchAndFilters() {
+      searchInput.value = "";
+      surahFilter.value = "all";
+      juzFilter.value = "all";
+      activeQuickFilter = "all";
+      filterPills.forEach((item) => item.classList.remove("active"));
+      document.querySelector('.pill[data-filter="all"]').classList.add("active");
+      populateVerseFilter("all");
+      renderSurahs();
+      searchInput.focus();
+    }
+
     clearReadingButton.addEventListener("click", clearContinueReading);
+    clearSearchButton.addEventListener("click", clearSearchAndFilters);
 
     searchInput.addEventListener("input", renderSurahs);
 
@@ -1920,6 +2535,7 @@
     bindQuickFilters();
     bindThemeToggle();
     bindContactFormLogic();
+    bindListeningPanel();
     renderContinueReading();
     renderSurahs();
     renderJuz();
