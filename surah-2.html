@@ -1767,7 +1767,21 @@
     const userAgent = navigator.userAgent || "";
     const platform = navigator.platform || "";
     const isIOSDevice = /iPhone|iPad|iPod/i.test(userAgent) || (platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    const requiresManualAutoplayStart = shouldAutoplay && isIOSDevice;nt.getElementById("listenPanel");
+    const requiresManualAutoplayStart = shouldAutoplay && isIOSDevice;
+
+    const versesContainer = document.getElementById("versesContainer");
+    const loadingState = document.getElementById("loadingState");
+    const errorState = document.getElementById("errorState");
+    const noteState = document.getElementById("noteState");
+    const bookmarkState = document.getElementById("bookmarkState");
+    const listenNote = document.getElementById("listenNote");
+
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+
+    const modePanel = document.getElementById("modePanel");
+    const versePanel = document.getElementById("versePanel");
+    const listenPanel = document.getElementById("listenPanel");
 
     const modeButtons = document.querySelectorAll(".mode-button");
     const audioViewButtons = document.querySelectorAll(".audio-view-button");
@@ -2599,7 +2613,23 @@
 
       const promptMessage = requiresManualAutoplayStart
         ? "On iPhone and iPad, Safari requires one tap before audible recitation can begin. Tap once and Bismillah will be recited, then the surah will continue automatically."
-        : "Bismillah will be recited once, then Surah Al-Baqarah will continue automatically.";
+        : "Tap once to begin recitation with Bismillah, then the surah will continue automatically.";
+
+      const startPlayback = async () => {
+        hidePrompt();
+        autoplayFallbackVisible = false;
+        document.removeEventListener("click", handleAutoplayRescue, true);
+        document.removeEventListener("touchend", handleAutoplayRescue, true);
+        await playIntroBismillahThenStart(1);
+      };
+
+      const handleAutoplayRescue = async () => {
+        if (!autoplayFallbackVisible) return;
+        await startPlayback();
+      };
+
+      document.addEventListener("click", handleAutoplayRescue, true);
+      document.addEventListener("touchend", handleAutoplayRescue, true);
 
       showPrompt(
         "Tap to begin recitation",
@@ -2608,11 +2638,7 @@
           {
             label: "Play with Bismillah",
             primary: true,
-            onClick: async () => {
-              hidePrompt();
-              autoplayFallbackVisible = false;
-              await playIntroBismillahThenStart(1);
-            }
+            onClick: startPlayback
           }
         ]
       );
@@ -3008,7 +3034,7 @@
       gentleScrollToElement(document.getElementById("content"), { center: false, duration: 560 });
     }
 
-    async async function triggerAutoplayStart() {
+    async function triggerAutoplayStart() {
       if (!pendingAutoplayStart || autoplayAttempted) return;
       if (!currentAudioUrl || !syncByVerse[1]) return;
 
@@ -3064,6 +3090,12 @@
         surahAudioPlayer.addEventListener("canplay", triggerAutoplayStart, { once: true });
         surahAudioPlayer.addEventListener("loadeddata", triggerAutoplayStart, { once: true });
       }
+
+      setTimeout(async () => {
+        if (!autoplayAttempted && pendingAutoplayStart) {
+          await triggerAutoplayStart();
+        }
+      }, 1200);
     }
 
     tabButtons.forEach((button) => {
@@ -3151,6 +3183,7 @@
 
       hidePrompt();
       autoplayFallbackVisible = false;
+      document.dispatchEvent(new CustomEvent("teq-audio-manual-start"));
 
       if (introBismillahPlaying) {
         introAudio.pause();
@@ -3275,6 +3308,10 @@
       if (currentAudioView === "synced" && !singleVerseMode) {
         showNextSurahPrompt();
       }
+    });
+
+    document.addEventListener("teq-audio-manual-start", () => {
+      autoplayFallbackVisible = false;
     });
 
     document.addEventListener("visibilitychange", async () => {
