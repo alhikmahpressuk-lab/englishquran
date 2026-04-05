@@ -1371,9 +1371,7 @@
             <div class="listen-controls">
               <div class="listen-field">
                 <label for="reciterSelect" translate="no">Reciter</label>
-                <select id="reciterSelect" aria-label="Select reciter" translate="no">
-                  <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
-                  <option value="shuraim" selected>Sheikh Saud ash-Shuraym</option>
+                <select id="reciterSelect" aria-label="Select reciter" translate="no">                  <option value="shuraim" selected>Sheikh Saud ash-Shuraym</option>
                   <option value="dussary">Yasser Ad-Dussary</option>
                   <option value="ali-jaber">Sheikh Ali Jaber</option>
                   <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
@@ -1641,12 +1639,9 @@
     const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
-    function reciterUsesWordStamping() {
-      return reciterSelect && reciterSelect.value !== "sudais";
-    }
+        const defaultReciterKey = "shuraim";
 
     const reciters = {
-      sudais: { name: "Sheikh Abdur-Rahman as-Sudais", id: 3 },
       shuraim: { name: "Sheikh Saud ash-Shuraym", id: 10 },
       dussary: { name: "Yasser Ad-Dussary", id: 174 },
       "ali-jaber": { name: "Sheikh Ali Jaber", id: 158 },
@@ -2446,15 +2441,6 @@
       highlightVerse(active.verseNumber, true);
       setCurrentVisibleVerse(active.verseNumber, true);
 
-      if (!reciterUsesWordStamping()) {
-        if (activeWordKey) {
-          const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
-          if (oldWord) oldWord.classList.remove("word-active");
-          activeWordKey = null;
-        }
-        return;
-      }
-
       if (Array.isArray(active.segments) && active.segments.length) {
         const activeSegment = active.segments.find((segment) => {
           const start = Number(segment[1]);
@@ -2830,12 +2816,6 @@
     reciterSelect.addEventListener("change", () => {
       const reciter = reciters[reciterSelect.value];
       if (reciter) audioMeta.textContent = `Selected reciter: ${reciter.name}`;
-
-      if (!reciterUsesWordStamping() && activeWordKey) {
-        const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
-        if (oldWord) oldWord.classList.remove("word-active");
-        activeWordKey = null;
-      }
     });
 
     syncPlayPause.addEventListener("click", async () => {
@@ -2991,6 +2971,13 @@
         console.error(error);
         loadingState.style.display = "none";
         errorState.style.display = "block";
+      }
+    }
+
+    if (reciterSelect) {
+      reciterSelect.value = defaultReciterKey;
+      if (reciters[defaultReciterKey]) {
+        audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
       }
     }
 
