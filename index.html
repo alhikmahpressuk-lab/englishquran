@@ -1241,124 +1241,245 @@
     </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <div class="container">
-        <div class="hero-grid">
-          <div class="hero-card">
-            <div class="eyebrow">A clear and modern reading experience</div>
-            <h2>The English Qur’an<span class="tm-mark">TM</span></h2>
-            <p class="subtitle">
-              Read the Qur’an in a clean, calm and accessible format, with the original Arabic placed before each English verse, presented with clarity, dignity and ease for today’s reader.
-            </p>
+  <section class="hero">
+  <div class="container">
+    <div class="hero-grid">
 
-            <div style="margin: 18px 0 0; padding: 12px 16px; background: var(--surface-soft); border-radius: 12px; display: inline-block;">
-              <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--text);">
-                We have made the Qur’an easy to remember. <span style="font-size: 0.9rem; color: var(--muted); margin-left: 6px;">(Qur’an 54:17)</span>
-              </p>
-            </div>
+      <!-- LEFT: MAIN HERO -->
+      <div class="hero-card">
 
-            <div class="hero-actions">
-              <a class="button button-primary" href="surah-1.html">Start Reading</a>
+        <div class="eyebrow">Read • Reflect • Listen</div>
 
-              <div class="panel-picker-wrap">
-                <button
-                  class="button button-secondary"
-                  id="startListeningToggle"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="listenSurahPanel"
-                >
-                  Start Listening
-                </button>
+        <h2>
+          The English Qur’an<span class="tm-mark">™</span>
+        </h2>
 
-                <div id="listenSurahPanel" class="surah-panel" hidden>
-                  <div class="surah-panel-inner">
-                    <div class="surah-panel-head">
-                      <h3>Select a Surah</h3>
-                      <button id="closeListeningPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
-                    </div>
+        <p class="subtitle">
+          A clear, faithful, and modern English rendering of the Qur’an,
+          designed for deep understanding, reflection, and daily reading.
+        </p>
 
-                    <div class="surah-panel-search">
-                      <input
-                        id="listenSurahSearch"
-                        type="text"
-                        placeholder="Search by surah name or number"
-                        autocomplete="off"
-                      />
-                    </div>
+        <!-- ACTION BUTTONS -->
+        <div class="hero-actions">
 
-                    <div id="listenSurahList" class="surah-panel-list"></div>
-                  </div>
+          <!-- TOP Start Reading (DIRECT TO SURAH 1) -->
+          <a href="surah-1.html" class="button button-secondary">
+            Start Reading
+          </a>
+
+          <!-- MIDDLE Start Reading (TOGGLE LIST) -->
+          <div class="panel-picker-wrap">
+            <button class="button button-primary" id="startReadingToggle">
+              Start Reading
+            </button>
+
+            <div class="surah-panel" id="readingPanel" hidden>
+              <div class="surah-panel-inner">
+
+                <div class="surah-panel-head">
+                  <h3>Select a Surah</h3>
+                  <button class="surah-close-btn" data-close="readingPanel">×</button>
                 </div>
-              </div>
 
-              <div class="panel-picker-wrap">
-                <button
-                  class="button button-secondary"
-                  id="startReadingToggleMiddle"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="readSurahPanel"
-                >
-                  Start Reading
-                </button>
-
-                <div id="readSurahPanel" class="surah-panel" hidden>
-                  <div class="surah-panel-inner">
-                    <div class="surah-panel-head">
-                      <h3>Select a Surah</h3>
-                      <button id="closeReadingPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
-                    </div>
-
-                    <div class="surah-panel-search">
-                      <input
-                        id="readSurahSearch"
-                        type="text"
-                        placeholder="Search by surah name or number"
-                        autocomplete="off"
-                      />
-                    </div>
-
-                    <div id="readSurahList" class="surah-panel-list"></div>
-                  </div>
+                <div class="surah-panel-search">
+                  <input type="text" placeholder="Search surah..." id="readingSearch" />
                 </div>
+
+                <div class="surah-panel-list" id="readingList">
+                  <!-- SAME 114 SURAH LIST WILL BE CONNECTED HERE -->
+                </div>
+
               </div>
-
-              <a class="button button-secondary" href="#surahs">Browse Surahs</a>
-              <a class="button button-secondary" href="#juz">Browse Juz</a>
-              <a class="button button-secondary" href="#book">Get the Book</a>
-              <a class="button button-secondary" href="#about">About the Translation</a>
             </div>
-
-            <ul class="hero-points">
-              <li>Go straight to any surah, verse, or part of the Qur’an with clean direct navigation.</li>
-              <li>Search works without diacritics, so readers can type naturally and still reach the right result.</li>
-              <li>Read at your own pace, or listen with synced recitation from the beginning of any surah.</li>
-            </ul>
           </div>
 
-          <aside class="info-card">
-            <div class="info-block">
-              <h3>Go straight to a surah</h3>
-              <p>Every surah is listed with its English name, Arabic title, verse count, and direct reading link.</p>
-            </div>
+          <!-- START LISTENING (TOGGLE + AUTOPLAY) -->
+          <div class="panel-picker-wrap">
+            <button class="button button-primary" id="startListeningToggle">
+              Start Listening
+            </button>
 
-            <div class="info-block">
-              <h3>Choose a verse quickly</h3>
-              <p>Select any surah from the main list, then choose the verse number from the verses box.</p>
-            </div>
+            <div class="surah-panel" id="listeningPanel" hidden>
+              <div class="surah-panel-inner">
 
-            <div class="info-block">
-              <h3>Read or listen clearly</h3>
-              <p>Open the Qur’an for reading, or begin from the start in synced recitation mode with your selected reciter.</p>
+                <div class="surah-panel-head">
+                  <h3>Listen to a Surah</h3>
+                  <button class="surah-close-btn" data-close="listeningPanel">×</button>
+                </div>
+
+                <div class="surah-panel-search">
+                  <input type="text" placeholder="Search surah..." id="listeningSearch" />
+                </div>
+
+                <div class="surah-panel-list" id="listeningList">
+                  <!-- SAME 114 SURAH LIST (SYNC AUDIO MODE) -->
+                </div>
+
+              </div>
             </div>
-          </aside>
+          </div>
+
         </div>
-      </div>
-    </section>
 
-    <section class="section">
+        <!-- HERO POINTS -->
+        <ul class="hero-points">
+          <li>Read every surah in a clean and focused layout</li>
+          <li>Listen with smooth synced recitation and flow</li>
+          <li>Search and navigate the Qur’an with ease</li>
+        </ul>
+
+      </div>
+
+      <!-- RIGHT: INFO CARD -->
+      <div class="info-card">
+
+        <div class="info-block">
+          <h3>Clear and faithful</h3>
+          <p>
+            A carefully written English rendering that prioritises clarity,
+            accuracy, and natural modern expression.
+          </p>
+        </div>
+
+        <div class="info-block">
+          <h3>Built for reflection</h3>
+          <p>
+            Designed for daily reading, deep reflection, and a calm,
+            distraction-free experience.
+          </p>
+        </div>
+
+        <div class="info-block">
+          <h3>Read and listen</h3>
+          <p>
+            Seamlessly move between reading and listening, with full
+            surah navigation and smooth playback.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+  <section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-card">
+        <div class="eyebrow">A clear and modern reading experience</div>
+        <h2>The English Qur’an<span class="tm-mark">TM</span></h2>
+        <p class="subtitle">
+          Read the Qur’an in a clean, calm and accessible format, with the original Arabic placed before each English verse, presented with clarity, dignity and ease for today’s reader.
+        </p>
+
+        <div style="margin: 18px 0 0; padding: 12px 16px; background: var(--surface-soft); border-radius: 12px; display: inline-block;">
+          <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--text);">
+            We have made the Qur’an easy to remember. <span style="font-size: 0.9rem; color: var(--muted); margin-left: 6px;">(Qur’an 54:17)</span>
+          </p>
+        </div>
+
+        <div class="hero-actions">
+          <a class="button button-secondary" href="surah-1.html">Start Reading</a>
+
+          <div class="panel-picker-wrap">
+            <button
+              class="button button-primary"
+              id="startReadingToggleMiddle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="readSurahPanel"
+            >
+              Start Reading
+            </button>
+
+            <div id="readSurahPanel" class="surah-panel" hidden>
+              <div class="surah-panel-inner">
+                <div class="surah-panel-head">
+                  <h3>Select a Surah</h3>
+                  <button id="closeReadingPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
+                </div>
+
+                <div class="surah-panel-search">
+                  <input
+                    id="readSurahSearch"
+                    type="text"
+                    placeholder="Search by surah name or number"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div id="readSurahList" class="surah-panel-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-picker-wrap">
+            <button
+              class="button button-secondary"
+              id="startListeningToggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="listenSurahPanel"
+            >
+              Start Listening
+            </button>
+
+            <div id="listenSurahPanel" class="surah-panel" hidden>
+              <div class="surah-panel-inner">
+                <div class="surah-panel-head">
+                  <h3>Select a Surah</h3>
+                  <button id="closeListeningPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
+                </div>
+
+                <div class="surah-panel-search">
+                  <input
+                    id="listenSurahSearch"
+                    type="text"
+                    placeholder="Search by surah name or number"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div id="listenSurahList" class="surah-panel-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <a class="button button-secondary" href="#surahs">Browse Surahs</a>
+          <a class="button button-secondary" href="#juz">Browse Juz</a>
+          <a class="button button-secondary" href="#book">Get the Book</a>
+          <a class="button button-secondary" href="#about">About the Translation</a>
+        </div>
+
+        <ul class="hero-points">
+          <li>Go straight to any surah, verse, or part of the Qur’an with clean direct navigation.</li>
+          <li>Search works without diacritics, so readers can type naturally and still reach the right result.</li>
+          <li>Read at your own pace, or listen with synced recitation from the beginning of any surah.</li>
+        </ul>
+      </div>
+
+      <aside class="info-card">
+        <div class="info-block">
+          <h3>Go straight to a surah</h3>
+          <p>Every surah is listed with its English name, Arabic title, verse count, and direct reading link.</p>
+        </div>
+
+        <div class="info-block">
+          <h3>Choose a verse quickly</h3>
+          <p>Select any surah from the main list, then choose the verse number from the verses box.</p>
+        </div>
+
+        <div class="info-block">
+          <h3>Read or listen clearly</h3>
+          <p>Open the Qur’an for reading, or begin from the start in synced recitation mode with your selected reciter.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+  <section class="section">
       <div class="container">
         <div class="new-reader-section">
           <div class="section-head">
@@ -2542,3 +2663,5 @@
   </script>
 </body>
 </html>
+
+  
