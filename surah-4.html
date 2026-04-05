@@ -1384,11 +1384,10 @@
               <div class="listen-field">
                 <label for="reciterSelect" translate="no">Reciter</label>
                 <select id="reciterSelect" aria-label="Select reciter" translate="no">
-                  <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
+                  <option value="abdul-basit" selected>Sheikh Abdul Basit Abdul Samad</option>
                   <option value="shuraim">Sheikh Saud ash-Shuraym</option>
                   <option value="dussary">Yasser Ad-Dussary</option>
                   <option value="ali-jaber">Sheikh Ali Jaber</option>
-                  <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
                 </select>
               </div>
 
@@ -1396,7 +1395,7 @@
             </div>
 
             <div class="audio-card">
-              <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
+              <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdul Basit Abdul Samad</div>
               <audio id="surahAudioPlayer" controls preload="auto"></audio>
               <div class="listen-note" id="listenNote" translate="no">Choose any reciter, then listen and read comfortably in any mode you select.</div>
             </div>
@@ -1726,11 +1725,10 @@
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
     const reciters = {
-      sudais: { name: "Sheikh Abdur-Rahman as-Sudais", id: 3 },
+      "abdul-basit": { name: "Sheikh Abdul Basit Abdul Samad", id: 2 },
       shuraim: { name: "Sheikh Saud ash-Shuraym", id: 10 },
       dussary: { name: "Yasser Ad-Dussary", id: 174 },
-      "ali-jaber": { name: "Sheikh Ali Jaber", id: 158 },
-      "abdul-basit": { name: "Sheikh Abdul Basit Abdul Samad", id: 2 }
+      "ali-jaber": { name: "Sheikh Ali Jaber", id: 158 }
     };
 
     const introBismillahRecitationId = 7;
@@ -1775,55 +1773,20 @@
       if (reciterSelect && reciters[reciterSelect.value]) {
         return reciterSelect.value;
       }
-      return "sudais";
+      return "abdul-basit";
     }
 
     function getSyncConfig() {
-      const activeReciter = getActiveReciterKey();
-      const isSudais = activeReciter === "sudais";
-
       return {
-        snapThresholdMs: isSudais ? 420 : 650,
-        seekLeadMs: isSudais ? 180 : 110,
-        playheadLeadMs: isSudais ? 140 : 70,
-        singleVerseEndTrimMs: isSudais ? 180 : 120,
-        endClampMs: isSudais ? 140 : 90
+        snapThresholdMs: 650,
+        seekLeadMs: 110,
+        playheadLeadMs: 70,
+        singleVerseEndTrimMs: 120,
+        endClampMs: 90
       };
     }
 
-    const reciterTimingProfiles = {
-      sudais: {
-        defaultOffsetMs: 0,
-        rangeOffsets: [
-          { from: 1, to: 20, offsetMs: -10 },
-          { from: 21, to: 60, offsetMs: -16 },
-          { from: 61, to: 100, offsetMs: -22 },
-          { from: 101, to: 140, offsetMs: -26 },
-          { from: 141, to: 176, offsetMs: -30 }
-        ],
-        verseOffsets: {
-          1: -16,
-          2: -12,
-          10: -18,
-          34: -22,
-          43: -18,
-          58: -16,
-          69: -22,
-          75: -20,
-          94: -18,
-          100: -22,
-          105: -18,
-          127: -20,
-          135: -18,
-          157: -28,
-          171: -22,
-          176: -14
-        },
-        segmentLeadMs: 44,
-        segmentTailMs: 34,
-        seekExtraLeadMs: 24
-      }
-    };
+    const reciterTimingProfiles = {};
 
     function getReciterTimingProfile(reciterKey) {
       return reciterTimingProfiles[reciterKey] || null;
