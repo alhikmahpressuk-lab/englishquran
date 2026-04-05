@@ -1771,6 +1771,236 @@
     let autoplayAttempted = false;
     let autoplayFallbackVisible = false;
 
+    function getActiveReciterKey() {
+      if (reciterSelect && reciters[reciterSelect.value]) {
+        return reciterSelect.value;
+      }
+      return "sudais";
+    }
+
+    function getSyncConfig() {
+      const activeReciter = getActiveReciterKey();
+      const isSudais = activeReciter === "sudais";
+
+      return {
+        snapThresholdMs: isSudais ? 420 : 650,
+        seekLeadMs: isSudais ? 180 : 110,
+        playheadLeadMs: isSudais ? 140 : 70,
+        singleVerseEndTrimMs: isSudais ? 180 : 120,
+        endClampMs: isSudais ? 140 : 90
+      };
+    }
+
+    const reciterTimingProfiles = {
+      sudais: {
+        defaultOffsetMs: 0,
+        rangeOffsets: [
+          { from: 1, to: 20, offsetMs: -10 },
+          { from: 21, to: 60, offsetMs: -16 },
+          { from: 61, to: 100, offsetMs: -22 },
+          { from: 101, to: 140, offsetMs: -26 },
+          { from: 141, to: 176, offsetMs: -30 }
+        ],
+        verseOffsets: {
+          1: -16,
+          2: -12,
+          10: -18,
+          34: -22,
+          43: -18,
+          58: -16,
+          69: -22,
+          75: -20,
+          94: -18,
+          100: -22,
+          105: -18,
+          127: -20,
+          135: -18,
+          157: -28,
+          171: -22,
+          176: -14
+        },
+        segmentLeadMs: 44,
+        segmentTailMs: 34,
+        seekExtraLeadMs: 24
+      }
+    };
+
+    function getReciterTimingProfile(reciterKey) {
+      return reciterTimingProfiles[reciterKey] || null;
+    }
+
+    function getManualVerseOffsetMs(reciterKey, verseNumber) {
+      const profile = getReciterTimingProfile(reciterKey);
+      if (!profile) return 0;
+
+      if (profile.verseOffsets && Object.prototype.hasOwnProperty.call(profile.verseOffsets, verseNumber)) {
+        return Number(profile.verseOffsets[verseNumber]) || 0;
+      }
+
+      const rangeMatch = Array.isArray(profile.rangeOffsets)
+        ? profile.rangeOffsets.find((range) => verseNumber >= range.from && verseNumber <= range.to)
+        : null;
+
+      if (rangeMatch) {
+        return Number(rangeMatch.offsetMs) || 0;
+      }
+
+      return Number(profile.defaultOffsetMs) || 0;
+    }
+
+    function clampNumber(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function buildVerseTimingWindow(item, reciterKey) {
+      const profile = getReciterTimingProfile(reciterKey);
+      const manualOffsetMs = getManualVerseOffsetMs(reciterKey, item.verseNumber);
+      const segments = Array.isArray(item.segments) ? item.segments : [];
+
+      const firstSegmentStart = segments.length ? Number(segments[0][1]) : NaN;
+      const lastSegmentEnd = segments.length ? Number(segments[segments.length - 1][2]) : NaN;
+
+      const earlyFloor = Math.max(0, item.timestampFrom - 220);
+      const lateCeiling = item.timestampTo + 220;
+
+      let syncFromMs = item.timestampFrom;
+      let syncToMs = item.timestampTo;
+
+      if (Number.isFinite(firstSegmentStart)) {
+        syncFromMs = clampNumber(
+          firstSegmentStart - (profile?.segmentLeadMs || 0),
+          earlyFloor,
+          lateCeiling
+        );
+      }
+
+      if (Number.isFinite(lastSegmentEnd)) {
+        syncToMs = clampNumber(
+          lastSegmentEnd + (profile?.segmentTailMs || 0),
+          syncFromMs,
+          lateCeiling
+        );
+      }
+
+      syncFromMs = clampNumber(syncFromMs + manualOffsetMs, 0, lateCeiling);
+      syncToMs = clampNumber(Math.max(syncFromMs, syncToMs + manualOffsetMs), syncFromMs, lateCeiling);
+
+      const seekFromMs = Math.max(0, syncFromMs - (profile?.seekExtraLeadMs || 0));
+      const stopAtMs = Math.max(syncFromMs, Math.min(item.timestampTo + 160, syncToMs));
+
+      return {
+        ...item,
+        syncFromMs,
+        syncToMs,
+        seekFromMs,
+        stopAtMs
+      };
+    }
+
+    function sanitiseSegmentTriplets(segments, verseStart, verseEnd) {
+      if (!Array.isArray(segments) || !segments.length) return [];
+
+      const valid = segments
+        .filter((segment) => Array.isArray(segment) && segment.length >= 3)
+        .map((segment) => ({
+          index: Number(segment[0]),
+          start: Number(segment[1]),
+          end: Number(segment[2])
+        }))
+        .filter((segment) =>
+          Number.isFinite(segment.index) &&
+          Number.isFinite(segment.start) &&
+          Number.isFinite(segment.end)
+        )
+        .sort((a, b) => a.start - b.start || a.index - b.index);
+
+      if (!valid.length) return [];
+
+      const zeroBased = valid.some((segment) => segment.index === 0);
+      const cleaned = [];
+      let previousEnd = verseStart;
+
+      valid.forEach((segment) => {
+        const safeIndex = zeroBased ? segment.index + 1 : segment.index;
+        if (!Number.isFinite(safeIndex) || safeIndex < 1) return;
+
+        const start = Math.max(verseStart, Math.min(segment.start, verseEnd));
+        const end = Math.max(start, Math.min(segment.end, verseEnd));
+        const clampedStart = cleaned.length ? Math.max(start, previousEnd) : start;
+        const clampedEnd = Math.max(clampedStart, end);
+
+        previousEnd = clampedEnd;
+        cleaned.push([safeIndex, clampedStart, clampedEnd]);
+      });
+
+      return cleaned;
+    }
+
+    function normaliseTimingItems(rawTimestamps, reciterKey) {
+      if (!Array.isArray(rawTimestamps)) return [];
+
+      const sorted = rawTimestamps
+        .filter((item) =>
+          item &&
+          Number.isFinite(item.verseNumber) &&
+          Number.isFinite(item.timestampFrom)
+        )
+        .sort((a, b) => a.verseNumber - b.verseNumber || a.timestampFrom - b.timestampFrom);
+
+      return sorted.map((item, index) => {
+        const next = sorted[index + 1] || null;
+        const start = Math.max(0, Number(item.timestampFrom));
+        const nextStart = next && Number.isFinite(next.timestampFrom) ? Number(next.timestampFrom) : null;
+        const rawEnd = Number.isFinite(item.timestampTo) ? Number(item.timestampTo) : null;
+        const durationMs = Number.isFinite(item.duration) ? Math.abs(Number(item.duration)) : null;
+
+        let end = rawEnd;
+
+        if (nextStart !== null && nextStart > start) {
+          const nextBoundary = nextStart - 1;
+          end = end === null ? nextBoundary : Math.min(end, nextBoundary);
+        }
+
+        if (!Number.isFinite(end)) {
+          end = durationMs && durationMs > 0 ? start + durationMs : start + 400;
+        }
+
+        end = Math.max(start, end);
+
+        return buildVerseTimingWindow(
+          {
+            ...item,
+            timestampFrom: start,
+            timestampTo: end,
+            segments: sanitiseSegmentTriplets(item.segments, start, end)
+          },
+          reciterKey
+        );
+      });
+    }
+
+    function findNearestTimingItem(currentMs) {
+      let nearest = null;
+      let nearestDistance = Infinity;
+
+      for (const item of syncTimestamps) {
+        const windowStart = Number.isFinite(item.syncFromMs) ? item.syncFromMs : item.timestampFrom;
+        const windowEnd = Number.isFinite(item.syncToMs) ? item.syncToMs : item.timestampTo;
+        const distance = currentMs < windowStart
+          ? windowStart - currentMs
+          : currentMs > windowEnd
+            ? currentMs - windowEnd
+            : 0;
+
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearest = item;
+        }
+      }
+
+      return nearestDistance <= getSyncConfig().snapThresholdMs ? nearest : null;
+    }
+
     function escapeHtml(text) {
       return String(text)
         .replace(/&/g, "&amp;")
@@ -1917,11 +2147,15 @@
           });
         }
       } else {
+        if (introBismillahPlaying) {
+          introAudio.pause();
+          introBismillahPlaying = false;
+        }
+
         listenNote.textContent = "Choose any reciter, then listen and read comfortably in any mode you select.";
         singleVerseMode = false;
         singleVerseNumber = null;
         continueVerseNumber = null;
-        introBismillahPlaying = false;
         introHasPlayedInCurrentRun = false;
         recitationStartAtBeginning = true;
         markBismillahReciting(false);
@@ -2255,7 +2489,7 @@
       verseElements.forEach((element) => readingObserver.observe(element));
     }
 
-    async function fetchReciterAudio(reciterId) {
+    async function fetchReciterAudio(reciterKey, reciterId) {
       const response = await fetch(`https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${surahNumber}?segments=true`);
       if (!response.ok) {
         throw new Error("Could not load chapter recitation audio.");
@@ -2271,20 +2505,17 @@
       const audioUrl = normaliseAudioUrl(audioFile.audio_url);
       const rawTimestamps = Array.isArray(audioFile.timestamps) ? audioFile.timestamps : [];
 
-      const timestamps = rawTimestamps
-        .map((item) => ({
+      const timestamps = normaliseTimingItems(
+        rawTimestamps.map((item) => ({
           verseKey: item.verse_key,
           verseNumber: Number(String(item.verse_key).split(":")[1]),
           timestampFrom: Number(item.timestamp_from),
           timestampTo: Number(item.timestamp_to),
+          duration: Number(item.duration),
           segments: Array.isArray(item.segments) ? item.segments : []
-        }))
-        .filter((item) =>
-          Number.isFinite(item.verseNumber) &&
-          Number.isFinite(item.timestampFrom) &&
-          Number.isFinite(item.timestampTo)
-        )
-        .sort((a, b) => a.verseNumber - b.verseNumber);
+        })),
+        reciterKey
+      );
 
       const byVerse = {};
       timestamps.forEach((item) => {
@@ -2325,7 +2556,7 @@
 
       try {
         const [result] = await Promise.all([
-          fetchReciterAudio(reciter.id),
+          fetchReciterAudio(reciterKey, reciter.id),
           fetchIntroBismillahAudio()
         ]);
 
@@ -2366,31 +2597,18 @@
     function getActiveTimingItem(currentMs) {
       if (!syncTimestamps.length) return null;
 
+      const adjustedMs = currentMs + getSyncConfig().playheadLeadMs;
+
       for (const item of syncTimestamps) {
-        if (currentMs >= item.timestampFrom && currentMs <= item.timestampTo) {
+        const windowStart = Number.isFinite(item.syncFromMs) ? item.syncFromMs : item.timestampFrom;
+        const windowEnd = Number.isFinite(item.syncToMs) ? item.syncToMs : item.timestampTo;
+
+        if (adjustedMs >= windowStart && adjustedMs <= windowEnd) {
           return item;
         }
       }
 
-      let nearest = null;
-      let nearestDistance = Infinity;
-
-      for (const item of syncTimestamps) {
-        const distance = Math.min(
-          Math.abs(currentMs - item.timestampFrom),
-          Math.abs(currentMs - item.timestampTo)
-        );
-        if (distance < nearestDistance) {
-          nearestDistance = distance;
-          nearest = item;
-        }
-      }
-
-      if (nearestDistance <= 900) {
-        return nearest;
-      }
-
-      return null;
+      return findNearestTimingItem(adjustedMs);
     }
 
     function getVerseTiming(verseNumber) {
@@ -2401,8 +2619,11 @@
       const timing = getVerseTiming(verseNumber);
       if (!timing) return false;
 
+      const syncConfig = getSyncConfig();
+
       hidePrompt();
       markBismillahReciting(false);
+      lastAutoScrolledVerse = null;
 
       singleVerseMode = onceOnly;
       singleVerseNumber = onceOnly ? Number(verseNumber) : null;
@@ -2413,11 +2634,13 @@
 
       const applySeek = () => {
         try {
-          surahAudioPlayer.currentTime = Math.max(0, timing.timestampFrom / 1000);
+          const preferredSeekFromMs = Number.isFinite(timing.seekFromMs) ? timing.seekFromMs : timing.timestampFrom;
+          surahAudioPlayer.currentTime = Math.max(0, (preferredSeekFromMs - syncConfig.seekLeadMs) / 1000);
         } catch (error) {
           console.error(error);
         }
 
+        setCurrentVisibleVerse(Number(verseNumber), true);
         highlightVerse(Number(verseNumber), true);
         processSyncedPlayback();
 
@@ -2663,9 +2886,19 @@
       if (currentAudioView !== "synced") return;
       if (!syncTimestamps.length) return;
 
+      const syncConfig = getSyncConfig();
       const currentMs = Math.floor(surahAudioPlayer.currentTime * 1000);
+      const adjustedMs = currentMs + syncConfig.playheadLeadMs;
       const active = getActiveTimingItem(currentMs);
-      if (!active) return;
+
+      if (!active) {
+        if (activeWordKey) {
+          const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
+          if (oldWord) oldWord.classList.remove("word-active");
+          activeWordKey = null;
+        }
+        return;
+      }
 
       highlightVerse(active.verseNumber, true);
       setCurrentVisibleVerse(active.verseNumber, true);
@@ -2674,7 +2907,7 @@
         const activeSegment = active.segments.find((segment) => {
           const start = Number(segment[1]);
           const end = Number(segment[2]);
-          return Number.isFinite(start) && Number.isFinite(end) && currentMs >= start && currentMs <= end;
+          return Number.isFinite(start) && Number.isFinite(end) && adjustedMs >= start && adjustedMs <= end;
         });
 
         if (activeSegment) {
@@ -3151,10 +3384,13 @@
 
       if (singleVerseMode && singleVerseNumber) {
         const timing = getVerseTiming(singleVerseNumber);
-        if (timing && surahAudioPlayer.currentTime >= Math.max(0, (timing.timestampTo - 120) / 1000)) {
+        const endTrimMs = getSyncConfig().singleVerseEndTrimMs;
+        const preferredStopAtMs = timing && Number.isFinite(timing.stopAtMs) ? timing.stopAtMs : timing?.timestampTo;
+        if (timing && surahAudioPlayer.currentTime >= Math.max(0, (preferredStopAtMs - endTrimMs) / 1000)) {
           surahAudioPlayer.pause();
           try {
-            surahAudioPlayer.currentTime = Math.max(0, timing.timestampTo / 1000);
+            const stopTargetMs = Number.isFinite(timing.stopAtMs) ? timing.stopAtMs : timing.timestampTo;
+            surahAudioPlayer.currentTime = Math.max(0, stopTargetMs / 1000);
           } catch (error) {
             console.error(error);
           }
