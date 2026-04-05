@@ -1387,9 +1387,8 @@
               <div class="listen-field">
                 <label for="reciterSelect" translate="no">Reciter</label>
                 <select id="reciterSelect" aria-label="Select reciter" translate="no">
-                  <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
-                  <option value="shuraim">Sheikh Saud ash-Shuraym</option>
                   <option value="dussary">Yasser Ad-Dussary</option>
+                  <option value="shuraim">Sheikh Saud ash-Shuraym</option>
                   <option value="ali-jaber">Sheikh Ali Jaber</option>
                   <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
                 </select>
@@ -1399,7 +1398,7 @@
             </div>
 
             <div class="audio-card">
-              <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
+              <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Yasser Ad-Dussary</div>
               <audio id="surahAudioPlayer" controls preload="none"></audio>
               <div class="listen-note" id="listenNote" translate="no">Choose any reciter, then listen and read comfortably in any mode you select.</div>
             </div>
@@ -1736,16 +1735,14 @@
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
     const reciters = {
-      sudais: { name: "Sheikh Abdur-Rahman as-Sudais", id: 3 },
-      shuraim: { name: "Sheikh Saud ash-Shuraym", id: 10 },
       dussary: { name: "Yasser Ad-Dussary", id: 174 },
+      shuraim: { name: "Sheikh Saud ash-Shuraym", id: 10 },
       "ali-jaber": { name: "Sheikh Ali Jaber", id: 158 },
       "abdul-basit": { name: "Sheikh Abdul Basit Abdul Samad", id: 2 }
     };
 
     const reciterSyncCalibration = {
-      default: { verseLeadMs: 0, wordLeadMs: 0 },
-      sudais: { verseLeadMs: 180, wordLeadMs: 260 }
+      default: { verseLeadMs: 0, wordLeadMs: 0 }
     };
 
     const introBismillahRecitationId = 7;
