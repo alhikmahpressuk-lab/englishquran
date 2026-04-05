@@ -1665,7 +1665,7 @@
     const userAgent = navigator.userAgent || "";
     const platform = navigator.platform || "";
     const isIOSDevice = /iPhone|iPad|iPod/i.test(userAgent) || (platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    const requiresManualAutoplayStart = shouldAutoplay && isIOSDevice;
+    const requiresManualAutoplayStart = false;
 
     const versesContainer = document.getElementById("versesContainer");
     const loadingState = document.getElementById("loadingState");
@@ -2489,23 +2489,7 @@
     }
 
     async function fetchIntroBismillahAudio() {
-      if (surahNumber === 9) return "";
-      if (introBismillahUrl) return introBismillahUrl;
-
-      try {
-        const response = await fetch(`https://api.quran.com/api/v4/recitations/${introBismillahRecitationId}/by_ayah/1:1`);
-        if (!response.ok) {
-          throw new Error("Could not load Bismillah audio.");
-        }
-        const payload = await response.json();
-        const audioFiles = Array.isArray(payload.audio_files) ? payload.audio_files : [];
-        const firstFile = audioFiles[0];
-        introBismillahUrl = normaliseAudioUrl(firstFile?.url || "");
-        return introBismillahUrl;
-      } catch (error) {
-        console.error(error);
-        return "";
-      }
+      return "";
     }
 
     async function loadSelectedAudio() {
@@ -2518,10 +2502,7 @@
       loadAudioButton.textContent = "Loading...";
 
       try {
-        const [result] = await Promise.all([
-          fetchReciterAudio(reciterKey, reciter.id),
-          fetchIntroBismillahAudio()
-        ]);
+        const result = await fetchReciterAudio(reciterKey, reciter.id);
 
         currentAudioUrl = result.audioUrl;
         syncTimestamps = result.timestamps;
@@ -2632,21 +2613,6 @@
     }
 
     async function playIntroBismillahThenStart(verseNumber = 1) {
-      if (surahNumber === 9) {
-        introHasPlayedInCurrentRun = true;
-        recitationStartAtBeginning = false;
-        beginSelectedRecitationFromVerse(verseNumber, true, false);
-        return true;
-      }
-
-      const url = await fetchIntroBismillahAudio();
-      if (!url) {
-        introHasPlayedInCurrentRun = true;
-        recitationStartAtBeginning = false;
-        beginSelectedRecitationFromVerse(verseNumber, true, false);
-        return true;
-      }
-
       hidePrompt();
       nextSurahPromptShown = false;
       autoplayFallbackVisible = false;
@@ -2657,76 +2623,27 @@
       singleVerseNumber = null;
       continueVerseNumber = null;
       lastAutoScrolledVerse = null;
-
-      surahAudioPlayer.pause();
-      try {
-        surahAudioPlayer.currentTime = 0;
-      } catch (error) {
-        console.error(error);
-      }
-
-      introAudio.src = url;
-      introAudio.currentTime = 0;
       introBismillahPlaying = false;
-      introHasPlayedInCurrentRun = false;
-      recitationStartAtBeginning = true;
-      markBismillahReciting(true);
-      gentleScrollToElement(document.getElementById("bismillah"), { center: false, duration: 620 });
-      updateSyncBarState();
+      introHasPlayedInCurrentRun = true;
+      recitationStartAtBeginning = false;
+      markBismillahReciting(false);
 
-      try {
-        await introAudio.play();
-        introBismillahPlaying = true;
-        introHasPlayedInCurrentRun = true;
-        recitationStartAtBeginning = false;
-        updateSyncBarState();
-        return true;
-      } catch (error) {
-        console.error(error);
-        introBismillahPlaying = false;
-        introHasPlayedInCurrentRun = false;
-        recitationStartAtBeginning = true;
-        markBismillahReciting(false);
-        updateSyncBarState();
-        return false;
+      if (verseNumber <= 1) {
+        try {
+          surahAudioPlayer.pause();
+          surahAudioPlayer.currentTime = 0;
+        } catch (error) {
+          console.error(error);
+        }
       }
+
+      beginSelectedRecitationFromVerse(verseNumber, true, false);
+      return true;
     }
 
     function showIndexAutoplayPrompt() {
-      if (autoplayFallbackVisible) return;
-      autoplayFallbackVisible = true;
-
-      const promptMessage = requiresManualAutoplayStart
-        ? "On iPhone and iPad, Safari requires one tap before audible recitation can begin. Tap once and Bismillah will be recited, then the surah will continue automatically."
-        : "Tap once to begin recitation with Bismillah, then the surah will continue automatically.";
-
-      const startPlayback = async () => {
-        hidePrompt();
-        autoplayFallbackVisible = false;
-        document.removeEventListener("click", handleAutoplayRescue, true);
-        document.removeEventListener("touchend", handleAutoplayRescue, true);
-        await playIntroBismillahThenStart(1);
-      };
-
-      const handleAutoplayRescue = async () => {
-        if (!autoplayFallbackVisible) return;
-        await startPlayback();
-      };
-
-      document.addEventListener("click", handleAutoplayRescue, true);
-      document.addEventListener("touchend", handleAutoplayRescue, true);
-
-      showPrompt(
-        "Tap to begin recitation",
-        promptMessage,
-        [
-          {
-            label: "Play with Bismillah",
-            primary: true,
-            onClick: startPlayback
-          }
-        ]
-      );
+      hidePrompt();
+      autoplayFallbackVisible = false;
     }
 
     function resetToBeginning() {
@@ -3172,14 +3089,7 @@
 
       await loadSelectedAudio();
 
-      if (requiresManualAutoplayStart) {
-        pendingAutoplayStart = false;
-        autoplayAttempted = true;
-        syncPlayPause.textContent = "Play";
-        updateSyncBarState();
-        showIndexAutoplayPrompt();
-        return;
-      }
+      
 
       if (surahAudioPlayer.readyState >= 2) {
         await triggerAutoplayStart();
@@ -3321,15 +3231,13 @@
     });
 
     introAudio.addEventListener("play", async () => {
-      introBismillahPlaying = true;
+      introBismillahPlaying = false;
       updateSyncBarState();
-      await requestWakeLock();
-      maintainWakeLock();
     });
 
     introAudio.addEventListener("pause", async () => {
       updateSyncBarState();
-      if (surahAudioPlayer.paused && !introBismillahPlaying) {
+      if (surahAudioPlayer.paused) {
         clearTimeout(wakeLockRefreshTimer);
         await releaseWakeLock();
       }
@@ -3339,7 +3247,6 @@
       introBismillahPlaying = false;
       markBismillahReciting(false);
       updateSyncBarState();
-      beginSelectedRecitationFromVerse(introAfterVerse, true, false);
     });
 
     surahAudioPlayer.addEventListener("timeupdate", () => {
