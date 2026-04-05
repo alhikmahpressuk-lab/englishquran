@@ -1259,7 +1259,37 @@
             </div>
 
             <div class="hero-actions">
-              <a class="button button-primary" href="surah-1.html">Start Reading</a>
+              <div class="panel-picker-wrap">
+                <button
+                  class="button button-primary"
+                  id="startReadingToggleMiddle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="readSurahPanel"
+                >
+                  Start Reading
+                </button>
+
+                <div id="readSurahPanel" class="surah-panel" hidden>
+                  <div class="surah-panel-inner">
+                    <div class="surah-panel-head">
+                      <h3>Select a Surah</h3>
+                      <button id="closeReadingPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
+                    </div>
+
+                    <div class="surah-panel-search">
+                      <input
+                        id="readSurahSearch"
+                        type="text"
+                        placeholder="Search by surah name or number"
+                        autocomplete="off"
+                      />
+                    </div>
+
+                    <div id="readSurahList" class="surah-panel-list"></div>
+                  </div>
+                </div>
+              </div>
 
               <div class="panel-picker-wrap">
                 <button
@@ -1289,38 +1319,6 @@
                     </div>
 
                     <div id="listenSurahList" class="surah-panel-list"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="panel-picker-wrap">
-                <button
-                  class="button button-secondary"
-                  id="startReadingToggleMiddle"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="readSurahPanel"
-                >
-                  Start Reading
-                </button>
-
-                <div id="readSurahPanel" class="surah-panel" hidden>
-                  <div class="surah-panel-inner">
-                    <div class="surah-panel-head">
-                      <h3>Select a Surah</h3>
-                      <button id="closeReadingPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
-                    </div>
-
-                    <div class="surah-panel-search">
-                      <input
-                        id="readSurahSearch"
-                        type="text"
-                        placeholder="Search by surah name or number"
-                        autocomplete="off"
-                      />
-                    </div>
-
-                    <div id="readSurahList" class="surah-panel-list"></div>
                   </div>
                 </div>
               </div>
