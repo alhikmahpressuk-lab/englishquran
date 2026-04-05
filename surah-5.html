@@ -1121,6 +1121,10 @@
         width: 100%;
         justify-content: flex-start;
       }
+
+      .sync-bar {
+        top: 128px;
+      }
     }
 
     @media (max-width: 680px) {
@@ -1229,6 +1233,19 @@
       .bookmark-mini-remove {
         flex: 1;
       }
+
+      .sync-bar {
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .sync-bar-text {
+        display: none;
+      }
+
+      .floating-prompt-actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -1251,12 +1268,6 @@
       </nav>
     </div>
   </header>
-
-  <div class="sync-bar notranslate" id="syncBar" translate="no" aria-live="polite">
-    <span class="sync-bar-text" id="syncText" translate="no">Recitation view is active.</span>
-    <button class="sync-mini-btn primary" type="button" id="syncPlayPause" translate="no">Play</button>
-    <button class="sync-mini-btn" type="button" id="syncBeginning" translate="no">Beginning</button>
-  </div>
 
   <div class="floating-prompt notranslate" id="floatingPrompt" translate="no" aria-live="polite">
     <div class="floating-prompt-title" id="promptTitle" translate="no"></div>
