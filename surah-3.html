@@ -1743,6 +1743,11 @@
       "abdul-basit": { name: "Sheikh Abdul Basit Abdul Samad", id: 2 }
     };
 
+    const reciterSyncCalibration = {
+      default: { verseLeadMs: 0, wordLeadMs: 0 },
+      sudais: { verseLeadMs: 180, wordLeadMs: 260 }
+    };
+
     const introBismillahRecitationId = 7;
 
     const introAudio = new Audio();
@@ -2380,11 +2385,17 @@
       }
     }
 
-    function getActiveTimingItem(currentMs) {
+    function getCurrentReciterSyncCalibration() {
+      return reciterSyncCalibration[reciterSelect.value] || reciterSyncCalibration.default;
+    }
+
+    function getActiveTimingItem(currentMs, leadMs = 0) {
       if (!syncTimestamps.length) return null;
 
+      const adjustedMs = currentMs + Math.max(0, Number(leadMs) || 0);
+
       for (const item of syncTimestamps) {
-        if (currentMs >= item.timestampFrom && currentMs <= item.timestampTo) {
+        if (adjustedMs >= item.timestampFrom && adjustedMs <= item.timestampTo) {
           return item;
         }
       }
@@ -2394,8 +2405,8 @@
 
       for (const item of syncTimestamps) {
         const distance = Math.min(
-          Math.abs(currentMs - item.timestampFrom),
-          Math.abs(currentMs - item.timestampTo)
+          Math.abs(adjustedMs - item.timestampFrom),
+          Math.abs(adjustedMs - item.timestampTo)
         );
         if (distance < nearestDistance) {
           nearestDistance = distance;
@@ -2742,17 +2753,19 @@
       if (!syncTimestamps.length) return;
 
       const currentMs = Math.floor(surahAudioPlayer.currentTime * 1000);
-      const active = getActiveTimingItem(currentMs);
+      const calibration = getCurrentReciterSyncCalibration();
+      const active = getActiveTimingItem(currentMs, calibration.verseLeadMs || 0);
       if (!active) return;
 
       highlightVerse(active.verseNumber, true);
       setCurrentVisibleVerse(active.verseNumber, true);
 
       if (Array.isArray(active.segments) && active.segments.length) {
+        const adjustedWordMs = currentMs + Math.max(0, Number(calibration.wordLeadMs) || 0);
         const activeSegment = active.segments.find((segment) => {
           const start = Number(segment[1]);
           const end = Number(segment[2]);
-          return Number.isFinite(start) && Number.isFinite(end) && currentMs >= start && currentMs <= end;
+          return Number.isFinite(start) && Number.isFinite(end) && adjustedWordMs >= start && adjustedWordMs <= end;
         });
 
         if (activeSegment) {
