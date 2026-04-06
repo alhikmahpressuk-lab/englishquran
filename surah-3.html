@@ -1088,11 +1088,13 @@
       background: var(--surface-soft);
     }
 
-    .hidden-arabic .arabic-wrap {
+    .hidden-arabic .arabic-wrap,
+    .hidden-arabic .bismillah-arabic {
       display: none;
     }
 
-    .hidden-english .english {
+    .hidden-english .english,
+    .hidden-english .bismillah-english {
       display: none;
     }
 
@@ -1775,7 +1777,8 @@
     let recitationStartAtBeginning = true;
     let pendingAutoplayStart = false;
     let autoplayAttempted = false;
-    let function escapeHtml(text) {
+
+    function escapeHtml(text) {
       return String(text)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -2475,7 +2478,8 @@
       }
 
       hidePrompt();
-      b("read");
+      clearAllHighlights();
+      setActiveTab("read");
       introAfterVerse = verseNumber;
       singleVerseMode = false;
       singleVerseNumber = null;
@@ -2534,7 +2538,9 @@
     async function applyAutoplayFromUrl() {
       if (!shouldAutoplay) return;
 
-      sessionStorage.removeItem(autopr && reciters[autoplayReciter]) {
+      sessionStorage.removeItem(autoplaySessionKey);
+
+      if (autoplayReciter && reciters[autoplayReciter]) {
         reciterSelect.value = autoplayReciter;
         audioMeta.textContent = `Selected reciter: ${reciters[autoplayReciter].name}`;
       }
@@ -2673,9 +2679,8 @@ if (surahAudioPlayer.readyState >= 2) {
 
     function goToNextSurahWithRecitation() {
       sessionStorage.setItem(autoplaySessionKey, "1");
-      localStorage.setItem("teq-audio-next-reciter", reciterSelect.value);
-      localStorage.setItem("teq-audio-next-view", "synced");
-      localStorage.setItem("teq-audio-next-autoplay", "true");
+      sessionStorage.setItem("teq-audio-next-reciter", reciterSelect.value);
+      sessionStorage.setItem("teq-audio-next-view", "synced");
       window.location.href = `${nextSurahFile}?reciter=${encodeURIComponent(reciterSelect.value)}&view=synced&autoplay=1`;
     }
 
@@ -2970,6 +2975,7 @@ if (surahAudioPlayer.readyState >= 2) {
       button.addEventListener("click", async () => {
         if (button.dataset.audioView === "synced") {
           applyAudioView("synced", true);
+          setActiveTab("read");
           if (!currentAudioUrl) {
             await loadSelectedAudio(false);
           }
