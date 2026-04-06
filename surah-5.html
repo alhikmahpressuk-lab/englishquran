@@ -1269,6 +1269,12 @@
     </div>
   </header>
 
+  <div class="sync-bar notranslate" id="syncBar" translate="no" aria-live="polite">
+    <span class="sync-bar-text" id="syncText" translate="no">Recitation view is active.</span>
+    <button class="sync-mini-btn primary" type="button" id="syncPlayPause" translate="no">Play</button>
+    <button class="sync-mini-btn" type="button" id="syncBeginning" translate="no">Beginning</button>
+  </div>
+
   <div class="floating-prompt notranslate" id="floatingPrompt" translate="no" aria-live="polite">
     <div class="floating-prompt-title" id="promptTitle" translate="no"></div>
     <div class="floating-prompt-text" id="promptText" translate="no"></div>
@@ -1589,10 +1595,6 @@
     const shouldAutoplay = urlParams.get("autoplay") === "1" || sessionStorage.getItem(autoplaySessionKey) === "1";
     const autoplayReciter = urlParams.get("reciter");
     const autoplayView = urlParams.get("view");
-    const userAgent = navigator.userAgent || "";
-    const platform = navigator.platform || "";
-    const isIOSDevice = userAgent.includes("iPhone") || userAgent.includes("iPad") || userAgent.includes("iPod") || (platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    const requiresManualAutoplayStart = shouldAutoplay && isIOSDevice;
 
     const versesContainer = document.getElementById("versesContainer");
     const loadingState = document.getElementById("loadingState");
@@ -1694,7 +1696,6 @@
 
     let pendingAutoplayStart = false;
     let autoplayAttempted = false;
-    let autoplayFallbackVisible = false;
 
     function escapeHtml(text) {
       return String(text)
@@ -2294,7 +2295,6 @@
 
       hidePrompt();
       nextSurahPromptShown = false;
-      autoplayFallbackVisible = false;
       clearAllHighlights();
       setActiveTab("read");
       introAfterVerse = verseNumber;
@@ -2337,34 +2337,7 @@
       }
     }
 
-    function showIndexAutoplayPrompt() {
-      if (autoplayFallbackVisible) return;
-      autoplayFallbackVisible = true;
-
-      const promptMessage = requiresManualAutoplayStart
-        ? "On iPhone and iPad, Safari requires one tap before audible recitation can begin. Tap once and Bismillah will be recited, then the surah will continue automatically."
-        : "Tap once to begin recitation with Bismillah, then the surah will continue automatically.";
-
-      const startPlayback = async () => {
-        hidePrompt();
-        autoplayFallbackVisible = false;
-        document.removeEventListener("click", handleAutoplayRescue, true);
-        document.removeEventListener("touchend", handleAutoplayRescue, true);
-        await playIntroBismillahThenStart(1);
-      };
-
-      const handleAutoplayRescue = async () => {
-        if (!autoplayFallbackVisible) return;
-        await startPlayback();
-      };
-
-      document.addEventListener("click", handleAutoplayRescue, true);
-      document.addEventListener("touchend", handleAutoplayRescue, true);
-
-      showPrompt("Tap to begin recitation", promptMessage, [
-        { label: "Play with Bismillah", primary: true, onClick: startPlayback }
-      ]);
-    }
+    
 
     function resetToBeginning() {
       hidePrompt();
@@ -2726,7 +2699,6 @@
       if (!started) {
         syncPlayPause.textContent = "Play";
         updateSyncBarState();
-        showIndexAutoplayPrompt();
       }
     }
 
@@ -2747,18 +2719,8 @@
 
       pendingAutoplayStart = true;
       autoplayAttempted = false;
-      autoplayFallbackVisible = false;
 
       await loadSelectedAudio();
-
-      if (requiresManualAutoplayStart) {
-        pendingAutoplayStart = false;
-        autoplayAttempted = true;
-        syncPlayPause.textContent = "Play";
-        updateSyncBarState();
-        showIndexAutoplayPrompt();
-        return;
-      }
 
       if (surahAudioPlayer.readyState >= 2) {
         await triggerAutoplayStart();
@@ -2833,8 +2795,6 @@
       if (!surahAudioPlayer.src && !currentAudioUrl) await loadSelectedAudio();
 
       hidePrompt();
-      autoplayFallbackVisible = false;
-      document.dispatchEvent(new CustomEvent("teq-audio-manual-start"));
 
       if (introBismillahPlaying) {
         introAudio.pause();
@@ -2944,9 +2904,7 @@
       if (currentAudioView === "synced" && !singleVerseMode) showNextSurahPrompt();
     });
 
-    document.addEventListener("teq-audio-manual-start", () => {
-      autoplayFallbackVisible = false;
-    });
+    
 
     document.addEventListener("visibilitychange", async () => {
       if (document.visibilityState === "visible" && (!surahAudioPlayer.paused || introBismillahPlaying)) {
@@ -2991,6 +2949,15 @@
         audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
       }
     }
+
+    function runSelfChecks() {
+      console.assert(syncBar, "syncBar is missing");
+      console.assert(syncPlayPause, "syncPlayPause is missing");
+      console.assert(syncBeginning, "syncBeginning is missing");
+      console.assert(englishVerses.length === totalVerses, "Verse count mismatch");
+    }
+
+    runSelfChecks();
 
     const savedTheme = localStorage.getItem("site-theme");
     applyTheme(savedTheme === "dark" ? "dark" : "light");
