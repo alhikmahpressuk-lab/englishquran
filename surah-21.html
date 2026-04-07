@@ -2836,17 +2836,17 @@
 
       sessionStorage.removeItem(autoplaySessionKey);
 
-      if (autoplayReciter && reciters[autoplayReciter]) {
-        reciterSelect.value = autoplayReciter;
-        audioMeta.textContent = `Selected reciter: ${reciters[autoplayReciter].name}`;
-      } else {
-        reciterSelect.value = defaultReciterKey;
-        audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
-      }
+      const isSyncedAutoplay = autoplayView === "synced" || !autoplayView;
+      const autoplayReciterKey = isSyncedAutoplay
+        ? defaultReciterKey
+        : (autoplayReciter && reciters[autoplayReciter] ? autoplayReciter : defaultReciterKey);
+
+      reciterSelect.value = autoplayReciterKey;
+      audioMeta.textContent = `Selected reciter: ${reciters[autoplayReciterKey].name}`;
 
       setCurrentVisibleVerse(1, false);
       setActiveTab("read");
-      applyAudioView(autoplayView === "synced" ? "synced" : "synced", true);
+      applyAudioView("synced", true);
       syncPlayPause.textContent = "Play";
       updateSyncBarState();
 
