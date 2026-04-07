@@ -1643,6 +1643,8 @@
     const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
 
+    const defaultReciterKey = "shuraim";
+
     const reciters = {
       sudais: { name: "Sheikh Abdur-Rahman as-Sudais", id: 3 },
       shuraim: { name: "Sheikh Saud ash-Shuraym", id: 10 },
@@ -2837,6 +2839,9 @@
       if (autoplayReciter && reciters[autoplayReciter]) {
         reciterSelect.value = autoplayReciter;
         audioMeta.textContent = `Selected reciter: ${reciters[autoplayReciter].name}`;
+      } else {
+        reciterSelect.value = defaultReciterKey;
+        audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
       }
 
       setCurrentVisibleVerse(1, false);
