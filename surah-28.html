@@ -636,7 +636,7 @@
                 <p class="read-tools-text" id="readToolsText" translate="no">Use Read for verse actions, notes, sharing, and word sounds. Listen and synced audio controls stay unchanged.</p>
               </div>
               <div class="read-tools-actions">
-                <button class="read-tools-btn" type="button" id="toggleWordSounds" translate="no">Word sounds</button>
+                <button class="read-tools-btn" type="button" id="toggleWordSounds" translate="no">Word sounds: Off</button>
                 <button class="read-tools-btn" type="button" id="openNotesList" translate="no">My notes</button>
               </div>
             </div>
@@ -1358,6 +1358,7 @@ ${getVerseShareUrl(ayahNumber)}`;
         const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
         if (oldWord) oldWord.classList.remove("word-active");
       }
+      document.querySelectorAll('.ayah-word.is-word-playing').forEach((node) => node.classList.remove('is-word-playing'));
       activeVerseNumber = null;
       activeWordKey = null;
       markBismillahReciting(false);
@@ -1749,7 +1750,10 @@ ${getVerseShareUrl(ayahNumber)}`;
         showReadToast('No notes yet', 'Open any verse actions menu in Read to add your first note.');
         return;
       }
-      const summary = entries.slice(0, 8).map(([ayah, note]) => `Verse ${ayah}: ${note.slice(0, 90)}${note.length > 90 ? '…' : ''}`).join('
+      const summary = entries
+        .slice(0, 8)
+        .map(([ayah, note]) => `Verse ${ayah}: ${note.slice(0, 90)}${note.length > 90 ? '…' : ''}`)
+        .join('
 
 ');
       showPrompt('My notes', summary, [{ label: 'Close', primary: false, onClick: () => hidePrompt() }]);
@@ -2010,6 +2014,7 @@ ${getVerseReference(verseNumber)}`, 'Verse copied', 'Arabic and English copied t
       closeBookmarkPanel();
       clearAllHighlights();
       hidePrompt();
+      stopWordPlayback(true);
       introAudio.pause();
       surahAudioPlayer.pause();
       try { introAudio.currentTime = 0; surahAudioPlayer.currentTime = 0; } catch (error) { console.error(error); }
@@ -2235,8 +2240,9 @@ ${getVerseReference(verseNumber)}`, 'Verse copied', 'Arabic and English copied t
       updateSyncBarState();
       clearTimeout(wakeLockRefreshTimer);
       await releaseWakeLock();
-      if (currentAudioView === "synced" && !singleVerseMode) showNextSurahPrompt();
+      if (currentAudioView === "synced" && !singleVerseMode && !singleWordPlayback) showNextSurahPrompt();
       clearAllHighlights();
+      stopWordPlayback(true);
       syncPlayPause.textContent = "Play";
       recitationStartAtBeginning = true;
       lastAutoScrolledVerse = null;
