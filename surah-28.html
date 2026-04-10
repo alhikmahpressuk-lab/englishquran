@@ -342,6 +342,25 @@
     .hidden-arabic .arabic-wrap, .hidden-arabic .bismillah-arabic { display: none; }
     .hidden-english .english, .hidden-english .bismillah-english { display: none; }
     .hidden-transliteration .transliteration-wrap { display: none; }
+    .read-tools {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;
+      padding: 14px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface-soft);
+    }
+    .read-tools-copy { flex: 1 1 260px; }
+    .read-tools-title { margin: 0 0 4px; font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; }
+    .read-tools-text { margin: 0; color: color-mix(in srgb, var(--text) 80%, white); font-size: 0.95rem; }
+    .read-tools-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .read-tools-btn {
+      appearance: none; min-height: 42px; padding: 0 14px; border-radius: 999px; cursor: pointer; font-weight: 600;
+      transition: 0.2s ease; display: inline-flex; align-items: center; justify-content: center; line-height: 1;
+      border: 1px solid var(--line); background: var(--surface); color: var(--text);
+    }
+    .read-tools-btn:hover { background: var(--surface-soft); }
+    @media (max-width: 680px) {
+      .read-tools { flex-direction: column; align-items: stretch; }
+      .read-tools-actions { width: 100%; }
+      .read-tools-btn { flex: 1; }
+    }
 
     @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
     @media (max-width: 760px) {
@@ -536,6 +555,16 @@
           </div>
 
           <div class="tab-panel active" id="read">
+            <div class="read-tools notranslate" translate="no">
+              <div class="read-tools-copy">
+                <div class="read-tools-title" translate="no">Reading tools</div>
+                <p class="read-tools-text" id="readToolsText" translate="no">Use Read for verse actions, notes, sharing, and word sounds. Listen and synced audio controls stay unchanged.</p>
+              </div>
+              <div class="read-tools-actions">
+                <button class="read-tools-btn" type="button" id="toggleWordSounds" translate="no">Word sounds</button>
+                <button class="read-tools-btn" type="button" id="openNotesList" translate="no">My notes</button>
+              </div>
+            </div>
             <div class="bookmark-state" id="bookmarkState" translate="no"></div>
             <div class="loading-state" id="loadingState" translate="no">Loading Surah An-Naml...</div>
             <div class="error-state" id="errorState" translate="no">The surah could not be loaded. Please refresh the page and try again.</div>
@@ -1393,7 +1422,7 @@
         `Verse ${safeVerse} finished`,
         hasNext
           ? `You have heard verse ${safeVerse}. You can replay this verse or continue the recitation from verse ${safeVerse + 1}.`
-          : `You have heard the final verse of Surah Ash-Shuʿarāʾ.`,
+          : `You have heard the final verse of Surah An-Naml.`,
         hasNext
           ? [
               { label: `Replay verse ${safeVerse}`, primary: false, onClick: () => beginSelectedRecitationFromVerse(safeVerse, true, true) },
@@ -1801,4 +1830,3 @@
   </script>
 </body>
 </html>
-
