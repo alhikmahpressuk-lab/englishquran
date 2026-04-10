@@ -394,7 +394,82 @@
       .bookmark-item-actions { width: 100%; }
       .bookmark-mini, .bookmark-mini-remove { flex: 1; }
     }
-  </style>
+      .verse-head {
+      display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;
+    }
+    .verse-meta-badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .verse-badge {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 10px; border-radius: 999px;
+      background: var(--surface-soft); border: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; font-weight: 700;
+    }
+    .verse-badge.is-active { background: var(--accent-soft); color: var(--accent-deep); border-color: color-mix(in srgb, var(--accent) 24%, var(--line)); }
+    .verse-actions { position: relative; flex-shrink: 0; }
+    .verse-menu-btn, .verse-action-btn, .note-save-btn, .note-cancel-btn {
+      appearance: none; min-height: 38px; padding: 0 12px; border-radius: 999px; cursor: pointer; font-weight: 600;
+      transition: 0.2s ease; display: inline-flex; align-items: center; justify-content: center; line-height: 1;
+    }
+    .verse-menu-btn, .note-save-btn {
+      border: none; background: var(--accent); color: #fff;
+    }
+    .verse-menu-btn:hover, .note-save-btn:hover { background: var(--accent-deep); }
+    .verse-menu {
+      position: absolute; top: calc(100% + 8px); right: 0; z-index: 90; min-width: 230px; display: none;
+      padding: 8px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow);
+    }
+    .verse-menu.active { display: grid; gap: 6px; }
+    .verse-action-btn {
+      width: 100%; justify-content: flex-start; border: 1px solid transparent; background: var(--surface); color: var(--text);
+    }
+    .verse-action-btn:hover { background: var(--surface-soft); border-color: var(--line); }
+    .ayah-word {
+      appearance: none; border: none; background: transparent; color: inherit; font: inherit; padding: 0.02em 0.12em;
+      border-radius: 8px; transition: background 0.14s ease, opacity 0.14s ease; display: inline-block;
+    }
+    .ayah-word.is-word-playable { cursor: pointer; }
+    .ayah-word.is-word-playable:hover, .ayah-word.is-word-focus { background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface)); }
+    .ayah-word.is-word-playing { background: color-mix(in srgb, var(--accent) 22%, white); }
+    .ayah-word.word-unavailable { opacity: 0.72; }
+    .verse-note-preview {
+      margin: 14px 0 0; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-soft);
+      color: color-mix(in srgb, var(--text) 86%, white); font-size: 0.94rem; display: none;
+    }
+    .verse-note-preview.active { display: block; }
+    .notes-modal {
+      position: fixed; inset: 0; z-index: 145; display: none; align-items: center; justify-content: center;
+      background: rgba(9, 14, 18, 0.42); padding: 16px;
+    }
+    .notes-modal.active { display: flex; }
+    .notes-card {
+      width: min(680px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); padding: 18px;
+    }
+    .notes-card-head { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .notes-card-head h3 { margin: 0; font-size: 1.1rem; letter-spacing: -0.02em; }
+    .notes-card-head p { margin: 6px 0 0; color: color-mix(in srgb, var(--text) 82%, white); }
+    .notes-textarea {
+      width: 100%; min-height: 180px; resize: vertical; border-radius: 18px; border: 1px solid var(--line); background: var(--surface-soft);
+      color: var(--text); padding: 14px 16px; font: inherit; line-height: 1.65; outline: none;
+    }
+    .notes-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 14px; }
+    .note-cancel-btn {
+      border: 1px solid var(--line); background: var(--surface); color: var(--text);
+    }
+    .note-cancel-btn:hover { background: var(--surface-soft); }
+    .read-toast {
+      position: fixed; right: 18px; bottom: 18px; z-index: 150; display: none; max-width: min(420px, calc(100% - 24px));
+      padding: 14px 16px; border-radius: 18px; background: color-mix(in srgb, var(--surface) 97%, transparent); border: 1px solid var(--line);
+      box-shadow: var(--shadow); backdrop-filter: blur(10px);
+    }
+    .read-toast.active { display: block; }
+    .read-toast-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .read-toast-text { font-size: 0.92rem; color: color-mix(in srgb, var(--text) 84%, white); }
+    @media (max-width: 680px) {
+      .verse-head { flex-direction: column; align-items: stretch; }
+      .verse-menu { left: 0; right: auto; width: min(260px, 100%); }
+      .notes-actions { flex-direction: column; }
+      .note-save-btn, .note-cancel-btn { width: 100%; }
+      .read-toast { right: 12px; left: 12px; bottom: 12px; max-width: none; }
+    }
+</style>
 </head>
 <body translate="no" class="notranslate">
   <header class="topbar notranslate" translate="no">
@@ -623,6 +698,28 @@
     </div>
   </footer>
 
+  <div class="notes-modal notranslate" id="notesModal" translate="no" aria-hidden="true">
+    <div class="notes-card">
+      <div class="notes-card-head">
+        <div>
+          <h3 id="notesModalTitle" translate="no">Verse note</h3>
+          <p id="notesModalMeta" translate="no">Add a note for this verse.</p>
+        </div>
+        <button class="note-cancel-btn" type="button" id="closeNotesModal" translate="no">Close</button>
+      </div>
+      <textarea class="notes-textarea" id="notesTextarea" placeholder="Write your reflection, memorisation cue, or reminder here..." translate="no"></textarea>
+      <div class="notes-actions">
+        <button class="note-cancel-btn" type="button" id="deleteNoteButton" translate="no">Delete note</button>
+        <button class="note-save-btn" type="button" id="saveNoteButton" translate="no">Save note</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="read-toast notranslate" id="readToast" translate="no" aria-live="polite">
+    <div class="read-toast-title" id="readToastTitle" translate="no"></div>
+    <div class="read-toast-text" id="readToastText" translate="no"></div>
+  </div>
+
   <script>
     const englishVerses = [
       "Ṭā Sīn. These are the verses of the Qur’an, a clear Book,",
@@ -769,6 +866,19 @@
     const promptTitle = document.getElementById("promptTitle");
     const promptText = document.getElementById("promptText");
     const promptActions = document.getElementById("promptActions");
+    const toggleWordSounds = document.getElementById("toggleWordSounds");
+    const openNotesList = document.getElementById("openNotesList");
+    const readToolsText = document.getElementById("readToolsText");
+    const notesModal = document.getElementById("notesModal");
+    const notesModalTitle = document.getElementById("notesModalTitle");
+    const notesModalMeta = document.getElementById("notesModalMeta");
+    const notesTextarea = document.getElementById("notesTextarea");
+    const closeNotesModal = document.getElementById("closeNotesModal");
+    const saveNoteButton = document.getElementById("saveNoteButton");
+    const deleteNoteButton = document.getElementById("deleteNoteButton");
+    const readToast = document.getElementById("readToast");
+    const readToastTitle = document.getElementById("readToastTitle");
+    const readToastText = document.getElementById("readToastText");
 
     const surahNumber = 27;
     const totalVerses = 93;
@@ -778,6 +888,8 @@
     const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
     const historyStorageKey = `teq-surah-${surahNumber}-history`;
     const historyLimit = 25;
+    const notesStorageKey = `teq-surah-${surahNumber}-notes-v1`;
+    const verseHighlightStorageKey = `teq-surah-${surahNumber}-highlights-v1`;
 
     const bismillahArabic = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
     const bismillahEnglish = "In the name of Allah, the Most-Merciful, the Ever-Merciful.";
@@ -822,6 +934,13 @@
     let autoplayAttempted = false;
     let wakeLock = null;
     let wakeLockRefreshTimer = null;
+    let wordSoundsEnabled = false;
+    let notesState = {};
+    let highlightState = {};
+    let activeMenuVerse = null;
+    let activeNoteVerse = null;
+    let singleWordPlayback = null;
+    let wordStopTimer = null;
 
     function escapeHtml(text) {
       return String(text)
@@ -830,6 +949,131 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+    }
+
+    function getStoredObject(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+      } catch { return {}; }
+    }
+
+    function saveStoredObject(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function showReadToast(title, text) {
+      readToastTitle.textContent = title;
+      readToastText.textContent = text;
+      readToast.classList.add("active");
+      clearTimeout(showReadToast.timer);
+      showReadToast.timer = setTimeout(() => readToast.classList.remove("active"), 2200);
+    }
+
+    function getVerseReference(ayahNumber) {
+      return `Surah An-Naml 27:${ayahNumber}`;
+    }
+
+    function getVerseShareUrl(ayahNumber) {
+      return `${window.location.origin}${window.location.pathname}?ayah=${ayahNumber}#ayah-${ayahNumber}`;
+    }
+
+    function getVerseEnglish(ayahNumber) {
+      return englishVerses[Number(ayahNumber) - 1] || "";
+    }
+
+    function getVerseNote(ayahNumber) {
+      return notesState[String(ayahNumber)] || "";
+    }
+
+    function setVerseNote(ayahNumber, value) {
+      const key = String(ayahNumber);
+      const trimmed = String(value || "").trim();
+      if (trimmed) notesState[key] = trimmed;
+      else delete notesState[key];
+      saveStoredObject(notesStorageKey, notesState);
+    }
+
+    function hasVerseHighlight(ayahNumber) {
+      return Boolean(highlightState[String(ayahNumber)]);
+    }
+
+    function toggleVerseHighlight(ayahNumber) {
+      const key = String(ayahNumber);
+      if (highlightState[key]) delete highlightState[key];
+      else highlightState[key] = { savedAt: new Date().toISOString() };
+      saveStoredObject(verseHighlightStorageKey, highlightState);
+      applyVerseMetaState(ayahNumber);
+      showReadToast(hasVerseHighlight(ayahNumber) ? `Verse ${ayahNumber} saved` : `Verse ${ayahNumber} unsaved`, "Saved state updates instantly in Read.");
+    }
+
+    function applyVerseMetaState(ayahNumber) {
+      const verse = document.getElementById(`ayah-${ayahNumber}`);
+      if (!verse) return;
+      const noteBadge = verse.querySelector('[data-note-badge]');
+      const saveBadge = verse.querySelector('[data-save-badge]');
+      const notePreview = verse.querySelector('.verse-note-preview');
+      const note = getVerseNote(ayahNumber);
+      if (noteBadge) noteBadge.classList.toggle('is-active', Boolean(note));
+      if (saveBadge) saveBadge.classList.toggle('is-active', hasVerseHighlight(ayahNumber));
+      if (notePreview) {
+        notePreview.textContent = note;
+        notePreview.classList.toggle('active', Boolean(note));
+      }
+    }
+
+    function updateWordSoundButton() {
+      toggleWordSounds.textContent = `Word sounds: ${wordSoundsEnabled ? "On" : "Off"}`;
+      readToolsText.textContent = wordSoundsEnabled
+        ? "Use Read to tap Arabic words while synced recitation is active. Listen controls stay unchanged."
+        : "Use Read for verse actions, notes, sharing, and word sounds. Listen and synced audio controls stay unchanged.";
+    }
+
+    function openNoteEditor(ayahNumber) {
+      activeNoteVerse = Number(ayahNumber);
+      notesModalTitle.textContent = `Verse ${activeNoteVerse} note`;
+      notesModalMeta.textContent = getVerseReference(activeNoteVerse);
+      notesTextarea.value = getVerseNote(activeNoteVerse);
+      notesModal.classList.add('active');
+      notesModal.setAttribute('aria-hidden', 'false');
+      setTimeout(() => notesTextarea.focus(), 0);
+    }
+
+    function closeNoteEditor() {
+      activeNoteVerse = null;
+      notesModal.classList.remove('active');
+      notesModal.setAttribute('aria-hidden', 'true');
+      notesTextarea.value = '';
+    }
+
+    async function copyTextToClipboard(text, successTitle, successText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showReadToast(successTitle, successText);
+      } catch {
+        showReadToast('Copy failed', 'Your browser blocked clipboard access.');
+      }
+    }
+
+    function closeVerseMenus() {
+      document.querySelectorAll('.verse-menu.active').forEach((menu) => menu.classList.remove('active'));
+      document.querySelectorAll('[data-menu-button]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
+      activeMenuVerse = null;
+    }
+
+    async function shareVerse(ayahNumber) {
+      const shareText = `${getVerseReference(ayahNumber)}
+${getVerseEnglish(ayahNumber)}
+${getVerseShareUrl(ayahNumber)}`;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: getVerseReference(ayahNumber), text: shareText, url: getVerseShareUrl(ayahNumber) });
+          return;
+        } catch {}
+      }
+      await copyTextToClipboard(shareText, `Verse ${ayahNumber} copied`, 'Share text copied to your clipboard.');
     }
 
     function toArabicDigits(num) {
@@ -934,6 +1178,7 @@
       currentAudioView = view;
       audioViewButtons.forEach((button) => button.classList.toggle("active", button.dataset.audioView === view));
       updateVerseClickability();
+      updateWordAvailability();
 
       if (view === "synced") {
         listenNote.textContent = "Synced recitation view is active. Pause and click any verse to hear that verse once, then replay it or continue the recitation.";
@@ -954,6 +1199,7 @@
         recitationStartAtBeginning = true;
         markBismillahReciting(false);
         clearAllHighlights();
+        stopWordPlayback(true);
         hidePrompt();
         updateSyncBarState();
       }
@@ -1226,6 +1472,7 @@
         surahAudioPlayer.src = currentAudioUrl;
         surahAudioPlayer.load();
         clearAllHighlights();
+        stopWordPlayback(true);
         singleVerseMode = false;
         singleVerseNumber = null;
         nextSurahPromptShown = false;
@@ -1236,12 +1483,14 @@
         audioMeta.textContent = `Selected reciter: ${reciter.name}`;
         syncPlayPause.textContent = "Play";
         updateSyncBarState();
+        updateWordAvailability();
       } catch (error) {
         console.error(error);
         currentAudioUrl = "";
         syncTimestamps = [];
         syncByVerse = {};
         clearAllHighlights();
+        stopWordPlayback(true);
         audioMeta.textContent = `Could not load recitation for ${reciter.name}. Please try another reciter.`;
       } finally {
         loadAudioButton.disabled = false;
@@ -1302,6 +1551,7 @@
       hidePrompt();
       nextSurahPromptShown = false;
       markBismillahReciting(false);
+      stopWordPlayback(true);
       singleVerseMode = onceOnly;
       singleVerseNumber = onceOnly ? Number(verseNumber) : null;
       introBismillahPlaying = false;
@@ -1398,6 +1648,7 @@
     function resetToBeginning() {
       hidePrompt();
       clearAllHighlights();
+      stopWordPlayback(true);
       introAudio.pause();
       surahAudioPlayer.pause();
       try { introAudio.currentTime = 0; surahAudioPlayer.currentTime = 0; } catch (error) { console.error(error); }
@@ -1477,6 +1728,7 @@
     }
 
     function handleVerseClickForSyncedMode(event) {
+      if (event.target.closest('.ayah-word') || event.target.closest('.verse-actions')) return;
       const verseNumber = Number(event.currentTarget.dataset.ayahNumber);
       if (currentAudioView !== "synced" || !syncByVerse[verseNumber]) return;
       setActiveTab("read");
@@ -1485,8 +1737,63 @@
       history.replaceState(null, "", `?ayah=${verseNumber}#ayah-${verseNumber}`);
     }
 
+    function getVerseArabicText(ayahNumber) {
+      const verse = document.getElementById(`ayah-${ayahNumber}`);
+      const wordNodes = verse ? Array.from(verse.querySelectorAll('.ayah-word')) : [];
+      return wordNodes.map((node) => node.textContent.trim()).join(' ').trim();
+    }
+
+    function openNotesSummary() {
+      const entries = Object.entries(notesState).sort((a, b) => Number(a[0]) - Number(b[0]));
+      if (!entries.length) {
+        showReadToast('No notes yet', 'Open any verse actions menu in Read to add your first note.');
+        return;
+      }
+      const summary = entries.slice(0, 8).map(([ayah, note]) => `Verse ${ayah}: ${note.slice(0, 90)}${note.length > 90 ? '…' : ''}`).join('
+
+');
+      showPrompt('My notes', summary, [{ label: 'Close', primary: false, onClick: () => hidePrompt() }]);
+    }
+
+    async function handleVerseAction(action, ayahNumber) {
+      const verseNumber = Number(ayahNumber);
+      closeVerseMenus();
+      if (!verseNumber) return;
+      if (action === 'play-verse') {
+        applyAudioView('synced', false);
+        if (!currentAudioUrl) await loadSelectedAudio();
+        beginSelectedRecitationFromVerse(verseNumber, true, true);
+        return;
+      }
+      if (action === 'play-from-here') {
+        applyAudioView('synced', false);
+        if (!currentAudioUrl) await loadSelectedAudio();
+        beginSelectedRecitationFromVerse(verseNumber, true, false);
+        return;
+      }
+      if (action === 'share') return shareVerse(verseNumber);
+      if (action === 'copy-link') return copyTextToClipboard(getVerseShareUrl(verseNumber), 'Link copied', `Verse ${verseNumber} link is ready to share.`);
+      if (action === 'copy-arabic') return copyTextToClipboard(getVerseArabicText(verseNumber), 'Arabic copied', getVerseReference(verseNumber));
+      if (action === 'copy-english') return copyTextToClipboard(getVerseEnglish(verseNumber), 'English copied', getVerseReference(verseNumber));
+      if (action === 'copy-both') return copyTextToClipboard(`${getVerseArabicText(verseNumber)}
+
+${getVerseEnglish(verseNumber)}
+
+${getVerseReference(verseNumber)}`, 'Verse copied', 'Arabic and English copied together.');
+      if (action === 'note') return openNoteEditor(verseNumber);
+      if (action === 'save') return toggleVerseHighlight(verseNumber);
+    }
+
     function attachVerseClickHandlers() {
-      document.querySelectorAll(".verse").forEach((verse) => verse.addEventListener("click", handleVerseClickForSyncedMode));
+      document.querySelectorAll('.verse').forEach((verse) => verse.addEventListener('click', handleVerseClickForSyncedMode));
+      document.querySelectorAll('.ayah-word').forEach((word) => {
+        word.addEventListener('click', (event) => {
+          event.stopPropagation();
+          playWordSnippet(Number(word.dataset.ayahNumber), Number(word.dataset.wordIndex));
+        });
+        word.addEventListener('focus', () => word.classList.add('is-word-focus'));
+        word.addEventListener('blur', () => word.classList.remove('is-word-focus'));
+      });
       updateVerseClickability();
     }
 
@@ -1528,8 +1835,79 @@
     }
 
     function splitArabicWords(arabicText, verseNumber) {
-      const words = String(arabicText).trim().split(/\s+/);
-      return words.map((word, index) => `<span class="ayah-word notranslate" data-word-key="${verseNumber}-${index + 1}" translate="no">${escapeHtml(word)}</span>`).join(" ");
+      const words = String(arabicText).trim().split(" ").filter(Boolean);
+      return words.map((word, index) => `
+        <button
+          class="ayah-word notranslate"
+          type="button"
+          data-word-key="${verseNumber}-${index + 1}"
+          data-word-index="${index + 1}"
+          data-ayah-number="${verseNumber}"
+          aria-label="Word ${index + 1} from verse ${verseNumber}"
+          translate="no"
+        >${escapeHtml(word)}</button>`).join(" ");
+    }
+
+    function getWordSegment(ayahNumber, wordIndex) {
+      const timing = getVerseTiming(ayahNumber);
+      if (!timing || !Array.isArray(timing.segments) || !timing.segments.length) return null;
+      const segment = timing.segments.find((item) => Number(item[0]) === Number(wordIndex));
+      if (!segment) return null;
+      const start = Number(segment[1]);
+      const end = Number(segment[2]);
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return null;
+      return { start, end };
+    }
+
+    function stopWordPlayback(resetUi = true) {
+      clearTimeout(wordStopTimer);
+      wordStopTimer = null;
+      singleWordPlayback = null;
+      if (resetUi) document.querySelectorAll('.ayah-word.is-word-playing').forEach((node) => node.classList.remove('is-word-playing'));
+    }
+
+    function updateWordAvailability() {
+      document.querySelectorAll('.ayah-word').forEach((wordNode) => {
+        const ayahNumber = Number(wordNode.dataset.ayahNumber);
+        const wordIndex = Number(wordNode.dataset.wordIndex);
+        const hasSegment = Boolean(getWordSegment(ayahNumber, wordIndex));
+        const available = wordSoundsEnabled && currentAudioView === 'synced' && hasSegment;
+        wordNode.classList.toggle('is-word-playable', available);
+        wordNode.classList.toggle('word-unavailable', wordSoundsEnabled && currentAudioView === 'synced' && !hasSegment);
+      });
+    }
+
+    function playWordSnippet(ayahNumber, wordIndex) {
+      if (!wordSoundsEnabled || currentAudioView !== 'synced') {
+        showReadToast('Turn on word sounds', 'Use Read while synced recitation is active, then tap a word.');
+        return;
+      }
+      const segment = getWordSegment(ayahNumber, wordIndex);
+      if (!segment || !currentAudioUrl) {
+        showReadToast('Word timing unavailable', 'This reciter does not expose a usable word segment here.');
+        return;
+      }
+      const startSec = Math.max(0, (segment.start - 40) / 1000);
+      const endSec = Math.max(startSec + 0.08, (segment.end + 70) / 1000);
+      stopWordPlayback(true);
+      surahAudioPlayer.pause();
+      introAudio.pause();
+      introBismillahPlaying = false;
+      singleVerseMode = false;
+      singleVerseNumber = null;
+      recitationStartAtBeginning = false;
+      singleWordPlayback = { ayahNumber, wordIndex, startSec, endSec };
+      const node = document.querySelector(`[data-word-key="${ayahNumber}-${wordIndex}"]`);
+      if (node) node.classList.add('is-word-playing');
+      try { surahAudioPlayer.currentTime = startSec; } catch (error) { console.error(error); }
+      highlightVerse(ayahNumber, false);
+      highlightWord(ayahNumber, wordIndex);
+      surahAudioPlayer.play().catch(() => {});
+      wordStopTimer = setTimeout(() => {
+        surahAudioPlayer.pause();
+        try { surahAudioPlayer.currentTime = endSec; } catch (error) { console.error(error); }
+        stopWordPlayback(true);
+      }, Math.max(120, (endSec - startSec) * 1000));
     }
 
     async function fetchArabicAndTransliteration() {
@@ -1560,8 +1938,31 @@
         const transliterationBlock = verse.transliteration
           ? `<div class="transliteration-wrap notranslate" translate="no">${escapeHtml(verse.transliteration)}</div>`
           : `<div class="transliteration-wrap notranslate" translate="no">Transliteration not available for this verse.</div>`;
+        const note = getVerseNote(verse.number);
+        const saved = hasVerseHighlight(verse.number);
         return `
           <article class="verse notranslate" id="ayah-${verse.number}" data-ayah-number="${verse.number}" tabindex="-1" translate="no">
+            <div class="verse-head">
+              <div class="verse-meta-badges">
+                <span class="verse-badge" translate="no">Verse ${verse.number}</span>
+                <span class="verse-badge ${note ? 'is-active' : ''}" data-note-badge translate="no">Note</span>
+                <span class="verse-badge ${saved ? 'is-active' : ''}" data-save-badge translate="no">Saved</span>
+              </div>
+              <div class="verse-actions">
+                <button class="verse-menu-btn" type="button" data-menu-button="${verse.number}" aria-expanded="false" translate="no">Verse actions</button>
+                <div class="verse-menu" data-verse-menu="${verse.number}">
+                  <button class="verse-action-btn" type="button" data-action="play-verse" data-ayah-number="${verse.number}" translate="no">Play this verse</button>
+                  <button class="verse-action-btn" type="button" data-action="play-from-here" data-ayah-number="${verse.number}" translate="no">Play from here</button>
+                  <button class="verse-action-btn" type="button" data-action="share" data-ayah-number="${verse.number}" translate="no">Share verse</button>
+                  <button class="verse-action-btn" type="button" data-action="copy-link" data-ayah-number="${verse.number}" translate="no">Copy verse link</button>
+                  <button class="verse-action-btn" type="button" data-action="copy-arabic" data-ayah-number="${verse.number}" translate="no">Copy Arabic</button>
+                  <button class="verse-action-btn" type="button" data-action="copy-english" data-ayah-number="${verse.number}" translate="no">Copy English</button>
+                  <button class="verse-action-btn" type="button" data-action="copy-both" data-ayah-number="${verse.number}" translate="no">Copy Arabic + English</button>
+                  <button class="verse-action-btn" type="button" data-action="note" data-ayah-number="${verse.number}" translate="no">Add or edit note</button>
+                  <button class="verse-action-btn" type="button" data-action="save" data-ayah-number="${verse.number}" translate="no">Save verse</button>
+                </div>
+              </div>
+            </div>
             <div class="arabic-wrap notranslate" translate="no">
               <div class="arabic-ayah notranslate" lang="ar" translate="no">${splitArabicWords(verse.arabic, verse.number)} <span class="notranslate" translate="no">﴿${toArabicDigits(verse.number)}﴾</span></div>
             </div>
@@ -1570,11 +1971,13 @@
               <div class="english-number notranslate" translate="no">${verse.number}.</div>
               <div class="english-text notranslate" translate="no">${escapeHtml(english)}</div>
             </div>
+            <div class="verse-note-preview ${note ? 'active' : ''}" translate="no">${escapeHtml(note)}</div>
           </article>
         `;
       }).join("");
       versesContainer.innerHTML = bismillahBlock + versesHtml;
       attachVerseClickHandlers();
+      updateWordAvailability();
     }
 
     async function requestWakeLock() {
@@ -1703,6 +2106,58 @@
       if (reciter) audioMeta.textContent = `Selected reciter: ${reciter.name}`;
     });
 
+    toggleWordSounds.addEventListener('click', () => {
+      wordSoundsEnabled = !wordSoundsEnabled;
+      updateWordSoundButton();
+      updateWordAvailability();
+      if (wordSoundsEnabled && currentAudioView !== 'synced') {
+        showReadToast('Word sounds armed', 'Switch to synced recitation when you want tap-to-hear word playback.');
+      }
+    });
+    openNotesList.addEventListener('click', openNotesSummary);
+    closeNotesModal.addEventListener('click', closeNoteEditor);
+    saveNoteButton.addEventListener('click', () => {
+      if (!activeNoteVerse) return;
+      setVerseNote(activeNoteVerse, notesTextarea.value);
+      applyVerseMetaState(activeNoteVerse);
+      closeNoteEditor();
+      showReadToast(`Verse ${activeNoteVerse} note saved`, 'Your note is stored on this device.');
+    });
+    deleteNoteButton.addEventListener('click', () => {
+      if (!activeNoteVerse) return;
+      setVerseNote(activeNoteVerse, '');
+      applyVerseMetaState(activeNoteVerse);
+      closeNoteEditor();
+      showReadToast(`Verse ${activeNoteVerse} note removed`, 'The saved note was deleted.');
+    });
+
+    versesContainer.addEventListener('click', (event) => {
+      const menuButton = event.target.closest('[data-menu-button]');
+      if (menuButton) {
+        event.stopPropagation();
+        const ayahNumber = Number(menuButton.dataset.menuButton);
+        const menu = document.querySelector(`[data-verse-menu="${ayahNumber}"]`);
+        const isOpen = Boolean(menu && menu.classList.contains('active'));
+        closeVerseMenus();
+        if (menu && !isOpen) {
+          menu.classList.add('active');
+          menuButton.setAttribute('aria-expanded', 'true');
+          activeMenuVerse = ayahNumber;
+        }
+        return;
+      }
+      const actionButton = event.target.closest('[data-action]');
+      if (actionButton) {
+        event.stopPropagation();
+        handleVerseAction(actionButton.dataset.action, actionButton.dataset.ayahNumber);
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.verse-actions')) closeVerseMenus();
+      if (event.target === notesModal) closeNoteEditor();
+    });
+
     syncPlayPause.addEventListener("click", async () => {
       if (!surahAudioPlayer.src && !currentAudioUrl) await loadSelectedAudio();
       hidePrompt();
@@ -1746,6 +2201,11 @@
     });
 
     surahAudioPlayer.addEventListener("timeupdate", () => {
+      if (singleWordPlayback && surahAudioPlayer.currentTime >= singleWordPlayback.endSec) {
+        surahAudioPlayer.pause();
+        stopWordPlayback(true);
+        return;
+      }
       processSyncedPlayback();
       if (singleVerseMode && singleVerseNumber) {
         const timing = getVerseTiming(singleVerseNumber);
@@ -1819,6 +2279,10 @@
         errorState.style.display = "block";
       }
     }
+
+    notesState = getStoredObject(notesStorageKey);
+    highlightState = getStoredObject(verseHighlightStorageKey);
+    updateWordSoundButton();
 
     const savedTheme = localStorage.getItem("site-theme");
     applyTheme(savedTheme === "dark" ? "dark" : "light");
