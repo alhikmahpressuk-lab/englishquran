@@ -832,6 +832,7 @@
       </div>
       <div class="page-nav">
         <button class="tajweed-mini-btn primary" type="button" id="tajweedMiniPlayPause" translate="no">Pause</button>
+        <button class="tajweed-mini-btn" type="button" id="tajweedMiniContinueAll" translate="no">Continue all</button>
         <button class="tajweed-mini-btn" type="button" id="tajweedMiniStop" translate="no">Stop</button>
       </div>
     </div>
@@ -1247,6 +1248,7 @@
     const tajweedMiniTitle = document.getElementById('tajweedMiniTitle');
     const tajweedMiniText = document.getElementById('tajweedMiniText');
     const tajweedMiniPlayPause = document.getElementById('tajweedMiniPlayPause');
+    const tajweedMiniContinueAll = document.getElementById('tajweedMiniContinueAll');
     const tajweedMiniStop = document.getElementById('tajweedMiniStop');
 
     const shareType = document.getElementById('shareType');
@@ -1313,6 +1315,7 @@
     let tajweedWordIndex = null;
     let tajweedEndMs = null;
     let tajweedWordStopTimer = null;
+    let tajweedContinueAllActive = false;
     let apiDegraded = false;
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
@@ -1699,9 +1702,12 @@
       tajweedVerse = null;
       tajweedWordIndex = null;
       tajweedEndMs = null;
+      tajweedContinueAllActive = false;
       if (resetUI) {
         tajweedMini.classList.remove('active');
         tajweedMiniPlayPause.textContent = 'Pause';
+        tajweedMiniContinueAll.textContent = 'Continue all';
+        tajweedMiniContinueAll.classList.remove('primary');
         tajweedMiniText.textContent = 'Ready';
       }
     }
@@ -2388,6 +2394,8 @@
       tajweedMiniText.textContent = text;
       tajweedMini.classList.toggle('active', isActive && tajweedMode !== 'word');
       tajweedMiniPlayPause.textContent = tajweedAudio.paused ? 'Play' : 'Pause';
+      tajweedMiniContinueAll.textContent = tajweedContinueAllActive ? 'Continuing all' : 'Continue all';
+      tajweedMiniContinueAll.classList.toggle('primary', tajweedContinueAllActive);
     }
 
     function loadAudioAtTime(audio, src, startSeconds = 0) {
@@ -2472,9 +2480,13 @@
       tajweedWordIndex = null;
       tajweedEndMs = null;
       tajweedActive = true;
+      tajweedContinueAllActive = mode === 'continue-all';
       try {
         await loadAudioAtTime(tajweedAudio, verseAudio.url, 0);
-        updateTajweedMini(mode === 'repeat' ? `Repeat verse ${ayah}` : `Tajweed verse ${ayah}`, 'Playing verse audio');
+        updateTajweedMini(
+          mode === 'repeat' ? `Repeat verse ${ayah}` : mode === 'continue-all' ? `Continuing from verse ${ayah}` : `Tajweed verse ${ayah}`,
+          mode === 'continue-all' ? `Playing verse ${ayah} and continuing to the end` : 'Playing verse audio'
+        );
         await tajweedAudio.play();
         tajweedMiniPlayPause.textContent = 'Pause';
       } catch {
@@ -3218,6 +3230,15 @@
         tajweedMiniPlayPause.textContent = 'Play';
       }
     });
+    tajweedMiniContinueAll.addEventListener('click', async () => {
+      if (!tajweedVerse || tajweedMode === 'word') return;
+      tajweedContinueAllActive = true;
+      tajweedMode = 'continue-all';
+      updateTajweedMini(`Continuing from verse ${tajweedVerse}`, `Playing verse ${tajweedVerse} and continuing to the end`, true);
+      if (tajweedAudio.paused) {
+        try { await tajweedAudio.play(); } catch {}
+      }
+    });
     tajweedMiniStop.addEventListener('click', () => stopTajweedPlayback(true));
 
     introAudio.addEventListener('play', () => {
@@ -3258,7 +3279,7 @@
       }
       if (tajweedMini.classList.contains('active')) tajweedMiniPlayPause.textContent = 'Play';
     });
-    tajweedAudio.addEventListener('ended', () => {
+    tajweedAudio.addEventListener('ended', async () => {
       clearTimeout(tajweedWordStopTimer);
       tajweedWordStopTimer = null;
       if (tajweedMode === 'word') {
@@ -3266,7 +3287,48 @@
         return;
       }
       tajweedMiniPlayPause.textContent = 'Play';
-      if (tajweedMode === 'verse' || tajweedMode === 'repeat') {
+
+      if (tajweedContinueAllActive && tajweedVerse < totalVerses) {
+        await playVerseTajweed(tajweedVerse + 1, 'continue-all');
+        return;
+      }
+
+      if (tajweedContinueAllActive && tajweedVerse === totalVerses) {
+        tajweedContinueAllActive = false;
+        updateTajweedMini('Tajweed sequence finished', 'All remaining verses have been played', true);
+        showPrompt(
+          'Tajweed sequence finished',
+          'All remaining verses have now been played to the end of the surah.',
+          [
+            { label: 'Close', primary: false, onClick: () => hidePrompt() },
+            { label: 'Replay last verse', primary: true, onClick: () => playVerseTajweed(totalVerses, 'repeat') }
+          ]
+        );
+        return;
+      }
+
+      if (tajweedMode === 'verse') {
+        tajweedMiniText.textContent = `Verse ${tajweedVerse} finished`;
+        showPrompt(
+          `Verse ${tajweedVerse} finished`,
+          tajweedVerse < totalVerses
+            ? 'You can replay this verse, stop here, or continue all remaining verses to the end.'
+            : 'You can replay this verse or close the prompt.',
+          tajweedVerse < totalVerses
+            ? [
+                { label: 'Close', primary: false, onClick: () => hidePrompt() },
+                { label: 'Continue all', primary: false, onClick: () => playVerseTajweed(tajweedVerse + 1, 'continue-all') },
+                { label: 'Replay verse', primary: true, onClick: () => playVerseTajweed(tajweedVerse, 'repeat') }
+              ]
+            : [
+                { label: 'Close', primary: false, onClick: () => hidePrompt() },
+                { label: 'Replay verse', primary: true, onClick: () => playVerseTajweed(tajweedVerse, 'repeat') }
+              ]
+        );
+        return;
+      }
+
+      if (tajweedMode === 'repeat') {
         tajweedMiniText.textContent = `Verse ${tajweedVerse} finished`;
         showPrompt(
           `Verse ${tajweedVerse} finished`,
