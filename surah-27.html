@@ -134,7 +134,6 @@
     .bookmark-remove,
     .bookmark-mini,
     .bookmark-mini-remove,
-    .menu-item-btn,
     .note-save-btn,
     .note-clear-btn,
     .note-share-btn,
@@ -169,7 +168,6 @@
     .mode-button,
     .audio-view-button,
     .wordmode-button,
-    .menu-item-btn,
     .note-copy-btn,
     .note-share-btn,
     .note-close-btn,
@@ -190,7 +188,6 @@
     .mode-button:hover,
     .audio-view-button:hover,
     .wordmode-button:hover,
-    .menu-item-btn:hover,
     .note-copy-btn:hover,
     .note-share-btn:hover,
     .note-close-btn:hover,
@@ -550,7 +547,7 @@
       transition: 0.2s ease;
     }
     .icon-btn:hover,
-    .icon-btn.active { background: var(--surface); color: var(--accent); }
+    .icon-btn.active { background: var(--surface); color: var(--accent); border-color: var(--line); }
     .icon-btn svg,
     .menu-item-btn svg {
       width: 20px;
@@ -567,7 +564,7 @@
       position: absolute;
       top: calc(100% + 10px);
       left: 0;
-      min-width: 250px;
+      min-width: 260px;
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -578,15 +575,30 @@
     }
     .verse-menu.active { display: block; }
     .menu-item-btn {
+      appearance: none;
       width: 100%;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.94rem;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
       justify-content: flex-start;
       gap: 10px;
-      min-height: 44px;
-      padding: 0 12px;
-      font-size: 0.95rem;
-      border-radius: 14px;
-      margin-bottom: 4px;
-      border-color: transparent;
+      line-height: 1;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+    .menu-item-btn:hover {
+      background: var(--surface-soft);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      color: var(--text);
     }
     .menu-item-btn:last-child { margin-bottom: 0; }
     .menu-item-btn.active {
@@ -594,10 +606,21 @@
       color: var(--accent-deep);
       border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
     }
-    .menu-item-btn.just-did {
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent) inset;
+    html[data-theme="dark"] .menu-item-btn.active {
+      color: #d8fff4;
     }
-    .menu-item-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+    .menu-item-btn.just-did {
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent) inset;
+    }
+    .menu-item-btn[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .menu-item-btn[disabled]:hover {
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--text);
+    }
 
     .verse-note-panel { display: none; margin-top: 14px; padding: 14px; border-radius: 16px; background: var(--surface-soft); border: 1px solid var(--line); }
     .verse-note-panel.active { display: block; }
