@@ -145,6 +145,7 @@
     .share-contact-btn,
     .prompt-btn,
     .prompt-btn-secondary {
+      appearance: none;
       padding: 10px 14px;
       border-radius: 999px;
       font-size: 0.94rem;
@@ -236,9 +237,15 @@
     .bookmark-remove,
     .bookmark-mini-remove,
     .note-clear-btn {
-      border-color: color-mix(in srgb, var(--danger) 30%, var(--line));
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
       background: var(--danger-soft);
       color: var(--danger);
+    }
+
+    .bookmark-remove:hover,
+    .bookmark-mini-remove:hover,
+    .note-clear-btn:hover {
+      filter: brightness(0.98);
     }
 
     .bookmark-open.has-last {
@@ -246,6 +253,10 @@
       color: var(--accent-deep);
       border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
       font-weight: 700;
+    }
+
+    html[data-theme="dark"] .bookmark-open.has-last {
+      color: #d8fff4;
     }
 
     .hero { padding: 34px 0 18px; }
@@ -536,7 +547,7 @@
     .icon-btn {
       width: 38px;
       height: 38px;
-      border: none;
+      border: 1px solid transparent;
       background: transparent;
       color: var(--muted);
       border-radius: 999px;
@@ -547,7 +558,11 @@
       transition: 0.2s ease;
     }
     .icon-btn:hover,
-    .icon-btn.active { background: var(--surface); color: var(--accent); border-color: var(--line); }
+    .icon-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+    }
     .icon-btn svg,
     .menu-item-btn svg {
       width: 20px;
@@ -623,6 +638,14 @@
     }
 
     .verse-note-panel { display: none; margin-top: 14px; padding: 14px; border-radius: 16px; background: var(--surface-soft); border: 1px solid var(--line); }
+    .note-panel-actions .note-save-btn,
+    .note-panel-actions .note-clear-btn,
+    .note-panel-actions .note-share-btn,
+    .note-panel-actions .note-copy-btn,
+    .note-panel-actions .note-close-btn {
+      min-height: 40px;
+      padding: 0 14px;
+    }
     .verse-note-panel.active { display: block; }
     .note-preview-title { font-size: 0.88rem; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
     .note-preview-text { font-size: 0.96rem; color: color-mix(in srgb, var(--text) 88%, white); }
@@ -654,6 +677,13 @@
       border-radius: 18px;
       border: 1px solid var(--line);
       background: var(--surface);
+    }
+    .share-row .share-main-btn,
+    .share-row .share-copy-btn,
+    .share-row .share-download-btn,
+    .share-row .share-contact-btn {
+      min-height: 44px;
+      padding: 0 14px;
     }
     .audio-meta { margin-bottom: 12px; font-weight: 600; color: color-mix(in srgb, var(--text) 88%, white); }
     #surahAudioPlayer { width: 100%; min-height: 52px; }
