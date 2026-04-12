@@ -2557,8 +2557,8 @@
       document.querySelectorAll('.word-meaning-panel').forEach((panel) => panel.classList.remove('active'));
     }
 
-    function showWordMeaning(ayah, wordElement) {
-      if (!wordModeEnabled) return;
+    function showWordMeaning(ayah, wordElement, forceOpen = false) {
+      if (!wordModeEnabled && !forceOpen) return;
       const panel = document.getElementById(`word-panel-${ayah}`);
       if (!panel || !wordElement) return;
       document.querySelectorAll('.word-meaning-panel').forEach((item) => {
@@ -2722,15 +2722,14 @@
         const wordIndex = Number(activeSegment[0]);
         if (Number.isFinite(wordIndex) && wordIndex >= 1) {
           highlightWordByVerseIndex(safeAyah, wordIndex);
-          if (wordModeEnabled) {
-            const activeWordElement = document.querySelector(`[data-word-key="${safeAyah}-${wordIndex}"]`);
-            if (activeWordElement) showWordMeaning(safeAyah, activeWordElement);
-          }
+          const activeWordElement = document.querySelector(`[data-word-key="${safeAyah}-${wordIndex}"]`);
+          if (activeWordElement) showWordMeaning(safeAyah, activeWordElement, true);
           return;
         }
       }
 
       clearActiveWordOnly();
+      clearWordMeaningPanels();
     }
 
     function updateTajweedMini(title, text, isActive = true) {
