@@ -2311,12 +2311,13 @@
 
     async function ensureTajweedVerseAudio(ayah) {
       if (tajweedCache[ayah]) return tajweedCache[ayah];
-      const payload = await fetchJson(`https://api.quran.com/api/v4/recitations/${tajweedRecitationId}/by_ayah/${surahNumber}:${ayah}`);
+      const payload = await fetchJson(`https://api.quran.com/api/v4/recitations/${tajweedRecitationId}/by_ayah/${surahNumber}:${ayah}?fields=url,segments,duration`);
       const file = Array.isArray(payload.audio_files) ? payload.audio_files[0] : null;
       if (!file?.url) throw new Error('Tajweed audio not available.');
       const item = {
         url: normaliseAudioUrl(file.url),
-        segments: Array.isArray(file.segments) ? file.segments : []
+        segments: Array.isArray(file.segments) ? file.segments : [],
+        duration: Number(file.duration || 0)
       };
       tajweedCache[ayah] = item;
       return item;
@@ -2397,18 +2398,55 @@
       tajweedMiniPlayPause.textContent = tajweedAudio.paused ? 'Play' : 'Pause';
     }
 
+    function loadAudioAtTime(audio, src, startSeconds = 0) {
+      return new Promise((resolve, reject) => {
+        const onReady = () => {
+          cleanup();
+          try {
+            audio.currentTime = Math.max(0, startSeconds);
+          } catch {}
+          resolve();
+        };
+        const onError = () => {
+          cleanup();
+          reject(new Error('Audio could not be loaded.'));
+        };
+        const cleanup = () => {
+          audio.removeEventListener('loadedmetadata', onReady);
+          audio.removeEventListener('canplay', onReady);
+          audio.removeEventListener('error', onError);
+        };
+
+        audio.addEventListener('loadedmetadata', onReady);
+        audio.addEventListener('canplay', onReady);
+        audio.addEventListener('error', onError);
+
+        if (audio.src !== src) {
+          audio.src = src;
+          audio.load();
+          return;
+        }
+
+        if (audio.readyState >= 1) {
+          onReady();
+        }
+      });
+    }
+
     async function playWordByTiming(ayah, wordIndex, wordElement) {
       if (!wordModeEnabled || currentAudioView === 'synced') return;
       stopSyncedPlayback(false);
       const verseAudio = await ensureTajweedVerseAudio(ayah);
       const segment = verseAudio.segments.find((item) => Number(item[0]) === Number(wordIndex));
       if (!segment) throw new Error('Word timing not available.');
+
       const start = Number(segment[1]);
       const end = Number(segment[2]);
-      if (!Number.isFinite(start) || !Number.isFinite(end)) throw new Error('Word timing not available.');
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+        throw new Error('Word timing not available.');
+      }
 
       tajweedAudio.pause();
-      tajweedAudio.src = verseAudio.url;
       tajweedMode = 'word';
       tajweedVerse = ayah;
       tajweedWordIndex = wordIndex;
@@ -2419,12 +2457,13 @@
         const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
         if (oldWord) oldWord.classList.remove('word-active');
       }
+
       const nextKey = `${ayah}-${wordIndex}`;
       wordElement.classList.add('word-active');
       activeWordKey = nextKey;
       showWordMeaning(ayah, wordElement);
 
-      try { tajweedAudio.currentTime = Math.max(0, start / 1000); } catch {}
+      await loadAudioAtTime(tajweedAudio, verseAudio.url, start / 1000);
       updateTajweedMini(`Word by word · Verse ${ayah}`, `Word ${wordIndex}`);
       await tajweedAudio.play();
       tajweedMiniPlayPause.textContent = 'Pause';
@@ -2435,14 +2474,13 @@
       stopSyncedPlayback(false);
       const verseAudio = await ensureTajweedVerseAudio(ayah);
       tajweedAudio.pause();
-      tajweedAudio.src = verseAudio.url;
       tajweedMode = mode;
       tajweedVerse = ayah;
       tajweedWordIndex = null;
       tajweedEndMs = null;
       tajweedActive = true;
+      await loadAudioAtTime(tajweedAudio, verseAudio.url, 0);
       updateTajweedMini(mode === 'repeat' ? `Repeat verse ${ayah}` : `Tajweed verse ${ayah}`, 'Playing verse audio');
-      try { tajweedAudio.currentTime = 0; } catch {}
       await tajweedAudio.play();
       tajweedMiniPlayPause.textContent = 'Pause';
     }
@@ -2789,27 +2827,6 @@
       refreshInlineStates();
       applyMode(currentMode);
       observeReadingProgress();
-    });
-      mushafPages = [...pageMap.entries()].sort((a, b) => a[0] - b[0]).map(([pageNumber, verses]) => ({ pageNumber, verses }));
-      mushafPageIndex = 0;
-      renderMushafPage();
-    }
-      const page = mushafPages[mushafPageIndex];
-      const content = page.verses.map((verse) => {
-        const text = stripEmbeddedVerseMarkers(mushafStyle === 'indopak' ? verse.arabicIndopak : verse.arabic);
-        return `<p class="page-arabic ${mushafStyle === 'indopak' ? 'indopak' : ''}" translate="no">${escapeHtml(text)} ﴿${toArabicDigits(verse.number)}﴾</p>`;
-      }).join('\n');
-      mushafStage.innerHTML = `
-        <section class="page-card notranslate" translate="no">
-          <div class="page-card-head">
-            <div class="page-card-title">${mushafStyle === 'indopak' ? 'Indo Pak Mushaf' : 'Uthmani Mushaf'} page ${page.pageNumber}</div>
-            <div class="page-card-meta">Surah An-Naml</div>
-          </div>
-          <div class="page-arabic-wrap">${content}</div>
-        </section>
-      `;
-      mushafPrev.disabled = mushafPageIndex === 0;
-      mushafNext.disabled = mushafPageIndex === mushafPages.length - 1;
     }
 
     function observeReadingProgress() {
@@ -3177,6 +3194,10 @@
       if (tajweedMode === 'word' && Number.isFinite(tajweedEndMs)) {
         if ((tajweedAudio.currentTime * 1000) >= tajweedEndMs) {
           tajweedAudio.pause();
+          try {
+            tajweedAudio.currentTime = Math.max(0, tajweedEndMs / 1000);
+          } catch {}
+          tajweedMiniText.textContent = `Word ${tajweedWordIndex} finished`;
           tajweedMiniPlayPause.textContent = 'Play';
         }
       }
@@ -3192,6 +3213,7 @@
     tajweedAudio.addEventListener('ended', () => {
       tajweedMiniPlayPause.textContent = 'Play';
       if (tajweedMode === 'verse' || tajweedMode === 'repeat') {
+        tajweedMiniText.textContent = `Verse ${tajweedVerse} finished`;
         showPrompt(
           `Verse ${tajweedVerse} finished`,
           'You can replay this verse or close the prompt.',
