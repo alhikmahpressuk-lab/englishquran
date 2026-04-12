@@ -123,32 +123,11 @@
 
     .nav a,
     .theme-toggle,
-    .bookmark-open,
-    .bookmark-close,
-    .tab-button,
-    .mode-button,
-    .audio-view-button,
-    .wordmode-button,
-    .jump-button,
-    .bookmark-action,
-    .bookmark-remove,
-    .bookmark-mini,
-    .bookmark-mini-remove,
-    .note-save-btn,
-    .note-clear-btn,
-    .note-share-btn,
-    .note-copy-btn,
-    .note-close-btn,
-    .share-main-btn,
-    .share-copy-btn,
-    .share-download-btn,
-    .share-contact-btn,
-    .prompt-btn,
-    .prompt-btn-secondary {
-      appearance: none;
+    .bookmark-open {
       padding: 10px 14px;
       border-radius: 999px;
       font-size: 0.94rem;
+      color: var(--muted);
       transition: 0.2s ease;
       border: 1px solid transparent;
       background: transparent;
@@ -161,91 +140,25 @@
       line-height: 1;
     }
 
-    .nav a,
-    .theme-toggle,
-    .bookmark-open,
-    .bookmark-close,
-    .tab-button,
-    .mode-button,
-    .audio-view-button,
-    .wordmode-button,
-    .note-copy-btn,
-    .note-share-btn,
-    .note-close-btn,
-    .share-copy-btn,
-    .share-download-btn,
-    .share-contact-btn,
-    .prompt-btn-secondary {
-      color: var(--muted);
-      border-color: transparent;
-      background: transparent;
-    }
-
     .nav a:hover,
     .theme-toggle:hover,
-    .bookmark-open:hover,
-    .bookmark-close:hover,
-    .tab-button:hover,
-    .mode-button:hover,
-    .audio-view-button:hover,
-    .wordmode-button:hover,
-    .note-copy-btn:hover,
-    .note-share-btn:hover,
-    .note-close-btn:hover,
-    .share-copy-btn:hover,
-    .share-download-btn:hover,
-    .share-contact-btn:hover,
-    .prompt-btn-secondary:hover {
+    .bookmark-open:hover {
       background: var(--surface);
       color: var(--text);
       border-color: var(--line);
     }
 
-    .nav .cta,
-    .tab-button.active,
-    .mode-button.active,
-    .audio-view-button.active,
-    .wordmode-button.active,
-    .bookmark-action,
-    .bookmark-mini,
-    .jump-button,
-    .note-save-btn,
-    .share-main-btn,
-    .prompt-btn {
+    .nav .cta {
       background: var(--accent);
       color: #fff;
-      border-color: var(--accent);
       font-weight: 600;
+      border-color: var(--accent);
     }
 
-    .nav .cta:hover,
-    .tab-button.active:hover,
-    .mode-button.active:hover,
-    .audio-view-button.active:hover,
-    .wordmode-button.active:hover,
-    .bookmark-action:hover,
-    .bookmark-mini:hover,
-    .jump-button:hover,
-    .note-save-btn:hover,
-    .share-main-btn:hover,
-    .prompt-btn:hover {
+    .nav .cta:hover {
       background: var(--accent-deep);
       color: #fff;
       border-color: var(--accent-deep);
-    }
-
-    .bookmark-remove,
-    .bookmark-mini-remove,
-    .note-clear-btn {
-      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
-      background: var(--danger-soft);
-      color: var(--danger);
-    }
-
-    .bookmark-remove:hover,
-    .bookmark-mini-remove:hover,
-    .note-clear-btn:hover {
-      filter: brightness(0.98);
     }
 
     .bookmark-open.has-last {
@@ -257,6 +170,259 @@
 
     html[data-theme="dark"] .bookmark-open.has-last {
       color: #d8fff4;
+    }
+
+    .bookmark-close {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-close:hover {
+      background: var(--surface-soft);
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .tab-button:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: var(--surface-soft);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .mode-button,
+    .audio-view-button,
+    .wordmode-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .mode-button:hover,
+    .audio-view-button:hover,
+    .wordmode-button:hover {
+      background: var(--surface-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+
+    .mode-button.active,
+    .audio-view-button.active,
+    .wordmode-button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .jump-button {
+      appearance: none;
+      border: none;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .jump-button:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-action,
+    .bookmark-remove {
+      appearance: none;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-action {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-action:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .bookmark-remove:hover {
+      filter: brightness(0.98);
+    }
+
+    .bookmark-mini,
+    .bookmark-mini-remove {
+      appearance: none;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bookmark-mini {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .bookmark-mini:hover {
+      background: var(--accent-deep);
+    }
+
+    .bookmark-mini-remove {
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .bookmark-mini-remove:hover {
+      filter: brightness(0.98);
+    }
+
+    .note-save-btn,
+    .share-main-btn,
+    .prompt-btn {
+      appearance: none;
+      border: none;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .note-save-btn:hover,
+    .share-main-btn:hover,
+    .prompt-btn:hover {
+      background: var(--accent-deep);
+    }
+
+    .note-copy-btn,
+    .note-share-btn,
+    .note-close-btn,
+    .share-copy-btn,
+    .share-download-btn,
+    .share-contact-btn,
+    .prompt-btn-secondary {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .note-copy-btn:hover,
+    .note-share-btn:hover,
+    .note-close-btn:hover,
+    .share-copy-btn:hover,
+    .share-download-btn:hover,
+    .share-contact-btn:hover,
+    .prompt-btn-secondary:hover {
+      background: var(--surface-soft);
+    }
+
+    .note-clear-btn {
+      appearance: none;
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .note-clear-btn:hover {
+      filter: brightness(0.98);
     }
 
     .hero { padding: 34px 0 18px; }
@@ -610,11 +776,12 @@
       margin-bottom: 8px;
       text-align: left;
     }
+
     .menu-item-btn:hover {
       background: var(--surface-soft);
       border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-      color: var(--text);
     }
+
     .menu-item-btn:last-child { margin-bottom: 0; }
     .menu-item-btn.active {
       background: var(--accent-soft);
@@ -740,16 +907,19 @@
       line-height: 1;
       transition: 0.2s ease;
     }
+
     .sync-mini-btn:hover,
     .tajweed-mini-btn:hover {
       background: var(--surface-soft);
     }
+
     .sync-mini-btn.primary,
     .tajweed-mini-btn.primary {
       border-color: var(--accent);
       background: var(--accent);
       color: #fff;
     }
+
     .sync-mini-btn.primary:hover,
     .tajweed-mini-btn.primary:hover {
       background: var(--accent-deep);
