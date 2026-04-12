@@ -1166,7 +1166,7 @@
                 <label for="reciterSelect" translate="no">Reciter</label>
                 <select id="reciterSelect" aria-label="Select reciter" translate="no">
                   <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
-                  <option value="shuraim">Sheikh Saud ash-Shuraym</option>
+                  <option value="shuraim" selected>Sheikh Saud ash-Shuraym</option>
                   <option value="dussary">Yasser Ad-Dussary</option>
                   <option value="ali-jaber">Sheikh Ali Jaber</option>
                   <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
@@ -1175,7 +1175,7 @@
               <button class="jump-button" type="button" id="loadAudioButton" translate="no">Load recitation</button>
             </div>
             <div class="audio-card">
-              <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
+              <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Saud ash-Shuraym</div>
               <audio id="surahAudioPlayer" controls preload="none"></audio>
               <div class="listen-note" id="listenNote" translate="no">Choose any reciter, then listen and read comfortably in any mode you select.</div>
             </div>
@@ -1392,7 +1392,7 @@
     const introBismillahRecitationId = 7;
     const tajweedRecitationId = 1;
     const autoplaySessionKey = 'teq-index-autoplay';
-    const defaultReciterKey = 'sudais';
+    const defaultReciterKey = 'shuraim';
 
     const reciters = {
       sudais: { name: 'Sheikh Abdur-Rahman as-Sudais', id: 3 },
@@ -2144,21 +2144,206 @@
       showBookmarkMessage(`Verse ${ayah} ready to share.`);
     }
 
+    function sanitiseFileName(value) {
+      let output = String(value || 'surah-an-naml').toLowerCase().replace(/[^a-z0-9]+/gi, '-');
+      while (output.startsWith('-')) output = output.slice(1);
+      while (output.endsWith('-')) output = output.slice(0, -1);
+      return output || 'surah-an-naml';
+    }
+
+    function createExportHtml(payload) {
+      return [
+        '<!DOCTYPE html>',
+        '<html lang="en">',
+        '<head>',
+        '<meta charset="UTF-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+        '<title>' + escapeHtml(payload.title) + '</title>',
+        '<style>',
+        'body{font-family:Inter,Arial,sans-serif;margin:0;padding:32px;color:#182128;background:#ffffff;line-height:1.75;}',
+        '.wrap{max-width:900px;margin:0 auto;}',
+        '.brand{font-size:14px;color:#1e6b5c;font-weight:700;margin-bottom:12px;}',
+        'h1{margin:0 0 18px;font-size:28px;line-height:1.2;}',
+        '.content{white-space:pre-wrap;font-size:16px;}',
+        '.foot{margin-top:24px;font-size:13px;color:#66727d;}',
+        '@page{size:A4;margin:18mm;}',
+        '</style>',
+        '</head>',
+        '<body>',
+        '<div class="wrap">',
+        '<div class="brand">The English Qur’an</div>',
+        '<h1>' + escapeHtml(payload.title) + '</h1>',
+        '<div class="content">' + escapeHtml(payload.text) + '</div>',
+        '<div class="foot">englishquran.uk</div>',
+        '</div>',
+        '</body>',
+        '</html>'
+      ].join('');
+    }
+
+    function triggerBlobDownload(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () {
+        URL.revokeObjectURL(url);
+      }, 1000);
+    }
+
+    function openPdfPrintView(payload) {
+      const popup = window.open('', '_blank', 'noopener,noreferrer,width=960,height=1100');
+      if (!popup) throw new Error('Please allow popups to export PDF.');
+      popup.document.open();
+      popup.document.write(createExportHtml(payload));
+      popup.document.close();
+      popup.focus();
+      setTimeout(function () {
+        try { popup.print(); } catch (error) {}
+      }, 300);
+    }
+
+    function exportShareAsWord(payload) {
+      const html = createExportHtml(payload);
+      const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
+      triggerBlobDownload(blob, sanitiseFileName(payload.title) + '.doc');
+    }
+
+    function buildCanvasLines(ctx, text, maxWidth) {
+      const paragraphs = String(text || '').split(String.fromCharCode(10));
+      const lines = [];
+      paragraphs.forEach(function (paragraph, paragraphIndex) {
+        const words = paragraph.split(' ').filter(Boolean);
+        if (!words.length) {
+          lines.push('');
+        } else {
+          let line = '';
+          words.forEach(function (word) {
+            const testLine = line ? line + ' ' + word : word;
+            if (ctx.measureText(testLine).width <= maxWidth) {
+              line = testLine;
+            } else {
+              if (line) lines.push(line);
+              line = word;
+            }
+          });
+          if (line) lines.push(line);
+        }
+        if (paragraphIndex < paragraphs.length - 1) lines.push('');
+      });
+      return lines;
+    }
+
+    function exportShareAsImage(payload) {
+      const width = 1600;
+      const padding = 96;
+      const contentWidth = width - (padding * 2);
+      const probeCanvas = document.createElement('canvas');
+      const probeCtx = probeCanvas.getContext('2d');
+      probeCtx.font = '400 42px Inter, Arial, sans-serif';
+      const titleLines = buildCanvasLines(probeCtx, payload.title, contentWidth);
+      probeCtx.font = '400 30px Inter, Arial, sans-serif';
+      const bodyLines = buildCanvasLines(probeCtx, payload.text, contentWidth);
+      const height = Math.max(1200, padding + 70 + (titleLines.length * 58) + 40 + (bodyLines.length * 44) + 120);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#1e6b5c';
+      ctx.font = '700 28px Inter, Arial, sans-serif';
+      ctx.fillText('The English Qur’an', padding, padding);
+      let y = padding + 72;
+      ctx.fillStyle = '#182128';
+      ctx.font = '700 48px Inter, Arial, sans-serif';
+      titleLines.forEach(function (line) {
+        ctx.fillText(line, padding, y);
+        y += 58;
+      });
+      y += 12;
+      ctx.font = '400 30px Inter, Arial, sans-serif';
+      bodyLines.forEach(function (line) {
+        if (!line) {
+          y += 24;
+          return;
+        }
+        ctx.fillText(line, padding, y);
+        y += 44;
+      });
+      ctx.fillStyle = '#66727d';
+      ctx.font = '400 24px Inter, Arial, sans-serif';
+      ctx.fillText('englishquran.uk', padding, height - 42);
+      canvas.toBlob(function (blob) {
+        if (!blob) {
+          shareFeedback.classList.add('active');
+          shareFeedback.textContent = 'Image export could not be created.';
+          return;
+        }
+        triggerBlobDownload(blob, sanitiseFileName(payload.title) + '.png');
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = 'Image download started.';
+      }, 'image/png');
+    }
+
     async function downloadShareSelection() {
       try {
         const payload = getSharePayload();
-        const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${escapeHtml(payload.title)}</title><style>body{font-family:Arial,sans-serif;padding:32px;line-height:1.7;white-space:pre-wrap}h1{margin-top:0}</style></head><body><h1>${escapeHtml(payload.title)}</h1><div>${escapeHtml(payload.text)}</div></body></html>`;
-        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${payload.title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()}.html`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        shareFeedback.classList.add('active');
-        shareFeedback.textContent = 'Download started.';
+        showPrompt('Download selection', 'Choose a format for your current share selection.', [
+          {
+            label: 'PDF',
+            primary: true,
+            onClick: function () {
+              hidePrompt();
+              try {
+                openPdfPrintView(payload);
+                shareFeedback.classList.add('active');
+                shareFeedback.textContent = 'Print view opened. Use Save as PDF.';
+              } catch (error) {
+                shareFeedback.classList.add('active');
+                shareFeedback.textContent = error.message;
+              }
+            }
+          },
+          {
+            label: 'Word',
+            primary: false,
+            onClick: function () {
+              hidePrompt();
+              try {
+                exportShareAsWord(payload);
+                shareFeedback.classList.add('active');
+                shareFeedback.textContent = 'Word download started.';
+              } catch (error) {
+                shareFeedback.classList.add('active');
+                shareFeedback.textContent = error.message;
+              }
+            }
+          },
+          {
+            label: 'Image',
+            primary: false,
+            onClick: function () {
+              hidePrompt();
+              try {
+                exportShareAsImage(payload);
+              } catch (error) {
+                shareFeedback.classList.add('active');
+                shareFeedback.textContent = error.message;
+              }
+            }
+          },
+          {
+            label: 'Close',
+            primary: false,
+            onClick: function () {
+              hidePrompt();
+            }
+          }
+        ]);
       } catch (error) {
         shareFeedback.classList.add('active');
         shareFeedback.textContent = error.message;
@@ -3056,7 +3241,10 @@
       const tests = [];
       tests.push(['Verse count', englishVerses.length === totalVerses]);
       tests.push(['Selectors exist', Boolean(versesContainer && surahAudioPlayer && sharePreview)]);
-      tests.push(['No repeated soft message', !sharePreview.textContent.includes('A gentle reminder from The English Qur’an.\n\nA gentle reminder from The English Qur’an.')] );
+      tests.push(['No repeated soft message', !sharePreview.textContent.includes('A gentle reminder from The English Qur’an.
+
+A gentle reminder from The English Qur’an.')]);
+      tests.push(['Download handler exists', typeof downloadShareSelection === 'function']);
       console.table(tests.map(([name, pass]) => ({ test: name, pass })));
     }
 
@@ -3083,7 +3271,7 @@
 
         if (shouldAutoplay) {
           sessionStorage.removeItem(autoplaySessionKey);
-          if (autoplayReciter && reciters[autoplayReciter]) reciterSelect.value = autoplayReciter;
+          reciterSelect.value = (autoplayReciter && reciters[autoplayReciter]) ? autoplayReciter : defaultReciterKey;
           await loadSelectedAudio();
           applyAudioView('synced', true);
         } else {
