@@ -657,6 +657,10 @@
     .word-mode-active .ayah-word:hover,
     .word-mode-active .ayah-word:focus-visible { background: var(--word-hover); outline: none; }
     .ayah-word.word-active { background: var(--word-active); }
+    .ayah-end-marker {
+      display: inline;
+      white-space: nowrap;
+    }
 
     .word-meaning-panel {
       display: none;
@@ -1525,6 +1529,7 @@
     let tajweedVerse = null;
     let tajweedWordIndex = null;
     let tajweedEndMs = null;
+    let tajweedWordStopTimer = null;
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
     function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
@@ -1898,6 +1903,8 @@
     }
 
     function stopTajweedPlayback(resetUI = true) {
+      clearTimeout(tajweedWordStopTimer);
+      tajweedWordStopTimer = null;
       tajweedAudio.pause();
       try { tajweedAudio.currentTime = 0; } catch {}
       tajweedActive = false;
@@ -2394,7 +2401,7 @@
     function updateTajweedMini(title, text, isActive = true) {
       tajweedMiniTitle.textContent = title;
       tajweedMiniText.textContent = text;
-      tajweedMini.classList.toggle('active', isActive);
+      tajweedMini.classList.toggle('active', isActive && tajweedMode !== 'word');
       tajweedMiniPlayPause.textContent = tajweedAudio.paused ? 'Play' : 'Pause';
     }
 
@@ -2436,6 +2443,9 @@
     async function playWordByTiming(ayah, wordIndex, wordElement) {
       if (!wordModeEnabled || currentAudioView === 'synced') return;
       stopSyncedPlayback(false);
+      clearTimeout(tajweedWordStopTimer);
+      tajweedWordStopTimer = null;
+
       const verseAudio = await ensureTajweedVerseAudio(ayah);
       const segment = verseAudio.segments.find((item) => Number(item[0]) === Number(wordIndex));
       if (!segment) throw new Error('Word timing not available.');
@@ -2452,6 +2462,7 @@
       tajweedWordIndex = wordIndex;
       tajweedEndMs = end;
       tajweedActive = true;
+      tajweedMini.classList.remove('active');
 
       if (activeWordKey) {
         const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
@@ -2464,13 +2475,25 @@
       showWordMeaning(ayah, wordElement);
 
       await loadAudioAtTime(tajweedAudio, verseAudio.url, start / 1000);
-      updateTajweedMini(`Word by word · Verse ${ayah}`, `Word ${wordIndex}`);
+      try {
+        tajweedAudio.currentTime = Math.max(0, start / 1000);
+      } catch {}
       await tajweedAudio.play();
-      tajweedMiniPlayPause.textContent = 'Pause';
+
+      const durationMs = Math.max(120, end - start + 40);
+      tajweedWordStopTimer = setTimeout(() => {
+        if (tajweedMode !== 'word') return;
+        tajweedAudio.pause();
+        try {
+          tajweedAudio.currentTime = Math.max(0, end / 1000);
+        } catch {}
+      }, durationMs);
     }
 
     async function playVerseTajweed(ayah, mode = 'verse') {
       if (currentAudioView === 'synced') return;
+      clearTimeout(tajweedWordStopTimer);
+      tajweedWordStopTimer = null;
       stopSyncedPlayback(false);
       const verseAudio = await ensureTajweedVerseAudio(ayah);
       tajweedAudio.pause();
@@ -2733,6 +2756,7 @@
 
     function buildWordSpan(word, verseNumber) {
       const cleanArabic = stripEmbeddedVerseMarkers(word.text_uthmani);
+      if (!cleanArabic) return '';
       return `
         <span
           class="ayah-word notranslate"
@@ -2751,6 +2775,7 @@
       const english = englishVerses[verse.number - 1] || '';
       const cleanVerseArabic = stripEmbeddedVerseMarkers(verse.arabic);
       const notes = getVerseNotes();
+      const wordsHtml = verse.words.map((word) => buildWordSpan(word, verse.number)).filter(Boolean).join(' ');
       const existingNote = notes[String(verse.number)] || '';
       const transliterationBlock = verse.transliteration
         ? `<div class="transliteration-wrap notranslate" translate="no">${escapeHtml(verse.transliteration)}</div>`
@@ -2759,7 +2784,7 @@
       return `
         <article class="verse notranslate" id="ayah-${verse.number}" data-ayah-number="${verse.number}" tabindex="-1" translate="no">
           <div class="arabic-wrap notranslate" translate="no">
-            <div class="arabic-ayah notranslate" lang="ar" translate="no">${verse.words.length ? verse.words.map((word) => buildWordSpan(word, verse.number)).join(' ') : escapeHtml(cleanVerseArabic)} <span class="notranslate" translate="no">﴿${toArabicDigits(verse.number)}﴾</span></div>
+            <div class="arabic-ayah notranslate" lang="ar" translate="no">${wordsHtml || escapeHtml(cleanVerseArabic)} <span class="ayah-end-marker notranslate" translate="no">﴿${toArabicDigits(verse.number)}﴾</span></div>
           </div>
 
           <div class="word-meaning-panel notranslate" id="word-panel-${verse.number}" translate="no">
@@ -3193,24 +3218,38 @@
       if (!tajweedActive) return;
       if (tajweedMode === 'word' && Number.isFinite(tajweedEndMs)) {
         if ((tajweedAudio.currentTime * 1000) >= tajweedEndMs) {
+          clearTimeout(tajweedWordStopTimer);
+          tajweedWordStopTimer = null;
           tajweedAudio.pause();
           try {
             tajweedAudio.currentTime = Math.max(0, tajweedEndMs / 1000);
           } catch {}
-          tajweedMiniText.textContent = `Word ${tajweedWordIndex} finished`;
-          tajweedMiniPlayPause.textContent = 'Play';
         }
       }
     });
     tajweedAudio.addEventListener('play', () => {
       tajweedActive = true;
+      if (tajweedMode === 'word') {
+        tajweedMini.classList.remove('active');
+        return;
+      }
       updateTajweedMini(tajweedMiniTitle.textContent, tajweedMiniText.textContent, true);
       tajweedMiniPlayPause.textContent = 'Pause';
     });
     tajweedAudio.addEventListener('pause', () => {
+      if (tajweedMode === 'word') {
+        tajweedMini.classList.remove('active');
+        return;
+      }
       if (tajweedMini.classList.contains('active')) tajweedMiniPlayPause.textContent = 'Play';
     });
     tajweedAudio.addEventListener('ended', () => {
+      clearTimeout(tajweedWordStopTimer);
+      tajweedWordStopTimer = null;
+      if (tajweedMode === 'word') {
+        tajweedMini.classList.remove('active');
+        return;
+      }
       tajweedMiniPlayPause.textContent = 'Play';
       if (tajweedMode === 'verse' || tajweedMode === 'repeat') {
         tajweedMiniText.textContent = `Verse ${tajweedVerse} finished`;
