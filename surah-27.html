@@ -2003,6 +2003,8 @@
       tajweedContinueAllActive = false;
       lastAutoScrolledVerse = null;
       clearAllHighlights();
+      clearWordMeaningPanels();
+      clearWordMeaningPanels();
       if (resetUI) {
         tajweedMini.classList.remove('active');
         tajweedMiniPlayPause.textContent = 'Pause';
@@ -2094,7 +2096,7 @@
         applyAudioView('standard', false);
       }
       if (!wordModeEnabled) {
-        document.querySelectorAll('.word-meaning-panel').forEach((panel) => panel.classList.remove('active'));
+        clearWordMeaningPanels();
         if (tajweedMode === 'word') stopTajweedPlayback(true);
       }
       refreshInlineStates();
@@ -2551,6 +2553,10 @@
       showBookmarkMessage(`Note cleared for verse ${ayah}.`);
     }
 
+    function clearWordMeaningPanels() {
+      document.querySelectorAll('.word-meaning-panel').forEach((panel) => panel.classList.remove('active'));
+    }
+
     function showWordMeaning(ayah, wordElement) {
       if (!wordModeEnabled) return;
       const panel = document.getElementById(`word-panel-${ayah}`);
@@ -2687,6 +2693,7 @@
       }
 
       clearActiveWordOnly();
+      if (wordModeEnabled) clearWordMeaningPanels();
     }
 
     function processTajweedPlayback() {
@@ -2715,6 +2722,10 @@
         const wordIndex = Number(activeSegment[0]);
         if (Number.isFinite(wordIndex) && wordIndex >= 1) {
           highlightWordByVerseIndex(safeAyah, wordIndex);
+          if (wordModeEnabled) {
+            const activeWordElement = document.querySelector(`[data-word-key="${safeAyah}-${wordIndex}"]`);
+            if (activeWordElement) showWordMeaning(safeAyah, activeWordElement);
+          }
           return;
         }
       }
