@@ -35,7 +35,6 @@
       --reciting-border: rgba(30, 107, 92, 0.34);
       --word-active: rgba(30, 107, 92, 0.16);
       --word-hover: rgba(30, 107, 92, 0.08);
-      --page-bg: #fffef8;
     }
 
     html[data-theme="dark"] {
@@ -59,7 +58,6 @@
       --reciting-border: rgba(56, 161, 137, 0.42);
       --word-active: rgba(56, 161, 137, 0.20);
       --word-hover: rgba(56, 161, 137, 0.12);
-      --page-bg: #171d22;
     }
 
     * { box-sizing: border-box; }
@@ -85,9 +83,7 @@
       border-bottom: 1px solid color-mix(in srgb, var(--line) 95%, transparent);
     }
 
-    .topbar-inner,
-    .container,
-    .footer-inner {
+    .topbar-inner, .container, .footer-inner {
       width: min(var(--max), calc(100% - 28px));
       margin: 0 auto;
     }
@@ -100,13 +96,7 @@
       gap: 16px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      min-width: 0;
-    }
-
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
     .brand-mark {
       width: 48px;
       height: 48px;
@@ -120,19 +110,8 @@
       box-shadow: var(--shadow);
       flex-shrink: 0;
     }
-
-    .brand-text h1 {
-      margin: 0;
-      font-size: 1.05rem;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
-
-    .brand-text p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
+    .brand-text h1 { margin: 0; font-size: 1.05rem; line-height: 1.1; letter-spacing: -0.02em; }
+    .brand-text p { margin: 4px 0 0; color: var(--muted); font-size: 0.92rem; }
 
     .nav {
       display: flex;
@@ -144,11 +123,34 @@
 
     .nav a,
     .theme-toggle,
-    .bookmark-open {
+    .bookmark-open,
+    .bookmark-close,
+    .tab-button,
+    .mode-button,
+    .audio-view-button,
+    .wordmode-button,
+    .jump-button,
+    .bookmark-action,
+    .bookmark-remove,
+    .bookmark-mini,
+    .bookmark-mini-remove,
+    .menu-item-btn,
+    .note-save-btn,
+    .note-clear-btn,
+    .note-share-btn,
+    .note-copy-btn,
+    .note-close-btn,
+    .share-main-btn,
+    .share-copy-btn,
+    .share-download-btn,
+    .share-contact-btn,
+    .sync-mini-btn,
+    .tajweed-mini-btn,
+    .prompt-btn,
+    .prompt-btn-secondary {
       padding: 10px 14px;
       border-radius: 999px;
       font-size: 0.94rem;
-      color: var(--muted);
       transition: 0.2s ease;
       border: 1px solid transparent;
       background: transparent;
@@ -161,25 +163,95 @@
       line-height: 1;
     }
 
+    .nav a,
+    .theme-toggle,
+    .bookmark-open,
+    .bookmark-close,
+    .tab-button,
+    .mode-button,
+    .audio-view-button,
+    .wordmode-button,
+    .menu-item-btn,
+    .note-copy-btn,
+    .note-share-btn,
+    .note-close-btn,
+    .share-copy-btn,
+    .share-download-btn,
+    .share-contact-btn,
+    .sync-mini-btn,
+    .tajweed-mini-btn,
+    .prompt-btn-secondary {
+      color: var(--muted);
+      border-color: transparent;
+      background: transparent;
+    }
+
     .nav a:hover,
     .theme-toggle:hover,
-    .bookmark-open:hover {
+    .bookmark-open:hover,
+    .bookmark-close:hover,
+    .tab-button:hover,
+    .mode-button:hover,
+    .audio-view-button:hover,
+    .wordmode-button:hover,
+    .menu-item-btn:hover,
+    .note-copy-btn:hover,
+    .note-share-btn:hover,
+    .note-close-btn:hover,
+    .share-copy-btn:hover,
+    .share-download-btn:hover,
+    .share-contact-btn:hover,
+    .sync-mini-btn:hover,
+    .tajweed-mini-btn:hover,
+    .prompt-btn-secondary:hover {
       background: var(--surface);
       color: var(--text);
       border-color: var(--line);
     }
 
-    .nav .cta {
+    .nav .cta,
+    .tab-button.active,
+    .mode-button.active,
+    .audio-view-button.active,
+    .wordmode-button.active,
+    .bookmark-action,
+    .bookmark-mini,
+    .jump-button,
+    .note-save-btn,
+    .share-main-btn,
+    .sync-mini-btn.primary,
+    .tajweed-mini-btn.primary,
+    .prompt-btn {
       background: var(--accent);
       color: #fff;
-      font-weight: 600;
       border-color: var(--accent);
+      font-weight: 600;
     }
 
-    .nav .cta:hover {
+    .nav .cta:hover,
+    .tab-button.active:hover,
+    .mode-button.active:hover,
+    .audio-view-button.active:hover,
+    .wordmode-button.active:hover,
+    .bookmark-action:hover,
+    .bookmark-mini:hover,
+    .jump-button:hover,
+    .note-save-btn:hover,
+    .share-main-btn:hover,
+    .sync-mini-btn.primary:hover,
+    .tajweed-mini-btn.primary:hover,
+    .prompt-btn:hover {
       background: var(--accent-deep);
       color: #fff;
       border-color: var(--accent-deep);
+    }
+
+    .bookmark-remove,
+    .bookmark-mini-remove,
+    .note-clear-btn {
+      border-color: color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+      color: var(--danger);
     }
 
     .bookmark-open.has-last {
@@ -189,14 +261,8 @@
       font-weight: 700;
     }
 
-    html[data-theme="dark"] .bookmark-open.has-last { color: #d8fff4; }
-
     .hero { padding: 34px 0 18px; }
-
-    .hero-card,
-    .content-card,
-    .bookmark-panel,
-    .tajweed-mini {
+    .hero-card, .content-card, .bookmark-panel, .tajweed-mini {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -219,10 +285,6 @@
       height: 250px;
       background: radial-gradient(circle, rgba(30, 107, 92, 0.13) 0%, rgba(30, 107, 92, 0) 72%);
       pointer-events: none;
-    }
-
-    html[data-theme="dark"] .hero-card::after {
-      background: radial-gradient(circle, rgba(56, 161, 137, 0.18) 0%, rgba(56, 161, 137, 0) 72%);
     }
 
     .crumb {
@@ -251,234 +313,49 @@
       line-height: 1.04;
       letter-spacing: -0.045em;
     }
-
-    .hero-copy .meaning {
-      margin: 14px 0 0;
-      color: color-mix(in srgb, var(--text) 78%, white);
-      font-size: 1rem;
-    }
-
-    .hero-copy .summary {
-      margin: 18px 0 0;
-      color: color-mix(in srgb, var(--text) 80%, white);
-      font-size: 1rem;
-      max-width: 58ch;
-      line-height: 1.8;
-    }
+    .hero-copy .meaning { margin: 14px 0 0; color: color-mix(in srgb, var(--text) 78%, white); font-size: 1rem; }
+    .hero-copy .summary { margin: 18px 0 0; color: color-mix(in srgb, var(--text) 80%, white); font-size: 1rem; max-width: 58ch; line-height: 1.8; }
 
     .hero-meta { display: grid; gap: 14px; }
-
     .meta-box {
       background: var(--surface-soft);
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
       padding: 18px;
     }
-
-    .meta-label {
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
+    .meta-label { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
     .meta-value { font-size: 1.02rem; font-weight: 600; color: var(--text); }
-    .meta-value.ar {
-      direction: rtl;
-      text-align: right;
-      font-family: "Amiri Quran", serif;
-      font-size: 1.2rem;
-      line-height: 1.8;
-    }
+    .meta-value.ar { direction: rtl; text-align: right; font-family: "Amiri Quran", serif; font-size: 1.2rem; line-height: 1.8; }
 
     .section { padding: 12px 0 36px; }
     .bookmark-panel { display: none; margin-bottom: 16px; padding: 18px; }
     .bookmark-panel.active { display: block; }
 
-    .bookmark-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .bookmark-header h3 { margin: 0; font-size: 1.12rem; letter-spacing: -0.02em; }
-    .bookmark-header p { margin: 6px 0 0; color: color-mix(in srgb, var(--text) 80%, white); font-size: 0.96rem; }
-
-    .bookmark-close,
-    .tab-button,
-    .mode-button,
-    .audio-view-button,
-    .mushaf-button,
-    .wordmode-button,
-    .jump-button,
-    .bookmark-action,
-    .bookmark-remove,
-    .bookmark-mini,
-    .bookmark-mini-remove,
-    .prompt-btn,
-    .prompt-btn-secondary,
-    .menu-item-btn,
-    .note-save-btn,
-    .note-clear-btn,
-    .note-share-btn,
-    .note-copy-btn,
-    .note-close-btn,
-    .share-main-btn,
-    .share-copy-btn,
-    .share-download-btn,
-    .share-contact-btn,
-    .sync-mini-btn,
-    .tajweed-mini-btn,
-    .page-nav-btn {
-      appearance: none;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
-
-    .bookmark-close,
-    .tab-button,
-    .mode-button,
-    .audio-view-button,
-    .mushaf-button,
-    .wordmode-button,
-    .menu-item-btn,
-    .prompt-btn-secondary,
-    .note-copy-btn,
-    .note-share-btn,
-    .note-close-btn,
-    .share-copy-btn,
-    .share-download-btn,
-    .share-contact-btn,
-    .sync-mini-btn,
-    .tajweed-mini-btn,
-    .page-nav-btn {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-    }
-
-    .bookmark-close:hover,
-    .tab-button:hover,
-    .mode-button:hover,
-    .audio-view-button:hover,
-    .mushaf-button:hover,
-    .wordmode-button:hover,
-    .menu-item-btn:hover,
-    .prompt-btn-secondary:hover,
-    .note-copy-btn:hover,
-    .note-share-btn:hover,
-    .note-close-btn:hover,
-    .share-copy-btn:hover,
-    .share-download-btn:hover,
-    .share-contact-btn:hover,
-    .sync-mini-btn:hover,
-    .tajweed-mini-btn:hover,
-    .page-nav-btn:hover {
-      background: var(--surface-soft);
-      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-    }
-
-    .tab-button.active,
-    .mode-button.active,
-    .audio-view-button.active,
-    .mushaf-button.active,
-    .wordmode-button.active,
-    .bookmark-action,
-    .bookmark-mini,
-    .jump-button,
-    .prompt-btn,
-    .note-save-btn,
-    .share-main-btn,
-    .sync-mini-btn.primary,
-    .tajweed-mini-btn.primary {
-      border: none;
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .tab-button.active:hover,
-    .mode-button.active:hover,
-    .audio-view-button.active:hover,
-    .mushaf-button.active:hover,
-    .wordmode-button.active:hover,
-    .bookmark-action:hover,
-    .bookmark-mini:hover,
-    .jump-button:hover,
-    .prompt-btn:hover,
-    .note-save-btn:hover,
-    .share-main-btn:hover,
-    .sync-mini-btn.primary:hover,
-    .tajweed-mini-btn.primary:hover {
-      background: var(--accent-deep);
-    }
-
-    .bookmark-remove,
-    .bookmark-mini-remove,
-    .note-clear-btn {
-      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
-      background: var(--danger-soft);
-      color: var(--danger);
-    }
-
-    .controls,
+    .bookmark-header,
     .bookmark-card-row,
     .bookmark-item-actions,
+    .controls,
     .mode-options,
     .audio-view-options,
-    .mushaf-options,
     .verse-selector-row,
     .listen-controls,
     .share-row,
     .note-panel-actions,
-    .page-nav,
-    .floating-prompt-actions {
+    .floating-prompt-actions,
+    .page-nav {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
 
+    .bookmark-header { align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .bookmark-header h3 { margin: 0; font-size: 1.12rem; letter-spacing: -0.02em; }
+    .bookmark-header p { margin: 6px 0 0; color: color-mix(in srgb, var(--text) 80%, white); font-size: 0.96rem; }
     .controls { margin-bottom: 16px; }
-
-    .bookmark-action,
-    .bookmark-remove,
-    .bookmark-close,
-    .note-save-btn,
-    .note-clear-btn,
-    .note-share-btn,
-    .note-copy-btn,
-    .note-close-btn,
-    .share-main-btn,
-    .share-copy-btn,
-    .share-download-btn,
-    .share-contact-btn { min-height: 40px; padding: 0 14px; }
-
-    .bookmark-mini,
-    .bookmark-mini-remove,
-    .menu-item-btn { min-height: 38px; padding: 0 12px; }
-    .tab-button { min-height: 46px; padding: 0 18px; }
-    .mode-button,
-    .audio-view-button,
-    .mushaf-button,
-    .wordmode-button { min-height: 44px; padding: 0 16px; }
-    .jump-button { min-height: 46px; padding: 0 18px; }
-    .sync-mini-btn { min-height: 32px; padding: 0 10px; font-size: 0.8rem; }
-    .tajweed-mini-btn,
-    .page-nav-btn { min-height: 36px; padding: 0 12px; }
 
     .content-card { padding: 18px; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-
     .subpanel {
       display: none;
       margin-bottom: 16px;
@@ -498,7 +375,6 @@
       flex: 1;
       min-width: 220px;
     }
-
     .verse-selector-row label,
     .listen-field label,
     .share-field label { font-weight: 600; }
@@ -518,46 +394,32 @@
       padding: 12px 14px;
       outline: none;
     }
-
     .share-field textarea,
     .verse-note-panel textarea { min-height: 110px; resize: vertical; }
-    .verse-selector-row select,
-    .listen-field select { min-width: 180px; padding: 0 14px; }
 
     .bookmark-state,
     .loading-state,
     .error-state,
-    .note-state {
-      padding: 18px 16px;
-      border-radius: 18px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      color: color-mix(in srgb, var(--text) 82%, white);
-      font-size: 1rem;
-      margin-bottom: 16px;
-    }
-    .bookmark-state,
-    .error-state,
-    .note-state { display: none; }
-
+    .note-state,
     .bookmark-empty,
     .share-preview,
     .share-help,
     .reflection-card,
-    .page-card,
     .word-meaning-panel,
-    .tajweed-mini {
+    .tajweed-mini,
+    .note-preview {
       padding: 16px;
       border-radius: 16px;
       border: 1px solid var(--line);
       background: var(--surface-soft);
-      color: color-mix(in srgb, var(--text) 86%, white);
     }
 
+    .bookmark-state,
+    .error-state,
+    .note-state { display: none; margin-bottom: 16px; }
     .bookmark-list-wrap { margin-top: 8px; }
     .bookmark-list-title { margin: 0 0 10px; font-size: 1rem; letter-spacing: -0.02em; }
     .bookmark-list { display: grid; gap: 10px; }
-
     .bookmark-item {
       display: flex;
       align-items: center;
@@ -615,20 +477,10 @@
       text-align: center;
     }
     html[data-theme="dark"] .bismillah-arabic { color: #f8fbfd; }
-    .bismillah-english {
-      font-size: 1rem;
-      color: color-mix(in srgb, var(--text) 88%, white);
-      text-align: center;
-    }
+    .bismillah-english { font-size: 1rem; color: color-mix(in srgb, var(--text) 88%, white); text-align: center; }
 
-    .arabic-wrap {
-      text-align: right;
-      direction: rtl;
-      margin-bottom: 18px;
-    }
-
-    .arabic-ayah,
-    .page-arabic {
+    .arabic-wrap { text-align: right; direction: rtl; margin-bottom: 18px; }
+    .arabic-ayah {
       font-family: "Amiri Quran", "Amiri", serif;
       font-size: clamp(1.55rem, 2.15vw, 1.95rem);
       line-height: 2.15;
@@ -637,44 +489,19 @@
       letter-spacing: 0;
       display: inline;
     }
-
-    .page-arabic.indopak,
-    .arabic-ayah.indopak {
-      font-family: "Amiri Quran", serif;
-      line-height: 2.25;
-    }
-
-    html[data-theme="dark"] .arabic-ayah,
-    html[data-theme="dark"] .page-arabic { color: #f8fbfd; }
-
-    .ayah-word {
-      display: inline-block;
-      padding: 0.02em 0.12em;
-      border-radius: 8px;
-      transition: background 0.14s ease;
-    }
+    html[data-theme="dark"] .arabic-ayah { color: #f8fbfd; }
+    .ayah-word { display: inline-block; padding: 0.02em 0.12em; border-radius: 8px; transition: background 0.14s ease; }
     .word-mode-active .ayah-word { cursor: pointer; }
     .word-mode-active .ayah-word:hover,
     .word-mode-active .ayah-word:focus-visible { background: var(--word-hover); outline: none; }
     .ayah-word.word-active { background: var(--word-active); }
-    .ayah-end-marker {
-      display: inline;
-      white-space: nowrap;
-    }
+    .ayah-end-marker { display: inline; white-space: nowrap; }
 
-    .word-meaning-panel {
-      display: none;
-      margin: 0 0 16px;
-    }
+    .word-meaning-panel { display: none; margin: 0 0 16px; }
     .word-meaning-panel.active { display: block; }
-    .word-meaning-arabic {
-      font-family: "Amiri Quran", serif;
-      font-size: 1.4rem;
-      direction: rtl;
-      text-align: right;
-      margin-bottom: 6px;
-    }
+    .word-meaning-arabic { font-family: "Amiri Quran", serif; font-size: 1.4rem; direction: rtl; text-align: right; margin-bottom: 6px; }
     .word-meaning-translit { color: var(--muted); font-style: italic; margin-bottom: 6px; }
+    .word-meaning-gloss { color: color-mix(in srgb, var(--text) 88%, white); }
 
     .transliteration-wrap {
       margin: 0 0 16px;
@@ -688,11 +515,7 @@
       font-style: italic;
     }
 
-    .english {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-    }
+    .english { display: flex; align-items: flex-start; gap: 14px; }
     .english-number {
       min-width: 48px;
       width: 48px;
@@ -709,18 +532,9 @@
       line-height: 1;
       text-align: center;
     }
-    .english-text {
-      font-size: 1rem;
-      color: color-mix(in srgb, var(--text) 88%, white);
-      padding-top: 2px;
-    }
+    .english-text { font-size: 1rem; color: color-mix(in srgb, var(--text) 88%, white); padding-top: 2px; }
 
-    .verse-toolbar-wrap {
-      display: flex;
-      justify-content: flex-start;
-      margin-top: 14px;
-    }
-
+    .verse-toolbar-wrap { display: flex; justify-content: flex-start; margin-top: 14px; }
     .verse-toolbar {
       display: inline-flex;
       align-items: center;
@@ -731,7 +545,6 @@
       border-radius: 999px;
       position: relative;
     }
-
     .icon-btn {
       width: 38px;
       height: 38px;
@@ -759,7 +572,6 @@
       stroke-linejoin: round;
       flex-shrink: 0;
     }
-
     .verse-menu {
       position: absolute;
       top: calc(100% + 10px);
@@ -783,6 +595,7 @@
       font-size: 0.95rem;
       border-radius: 14px;
       margin-bottom: 4px;
+      border-color: transparent;
     }
     .menu-item-btn:last-child { margin-bottom: 0; }
     .menu-item-btn.active {
@@ -795,16 +608,8 @@
     }
     .menu-item-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
 
-    .verse-note-panel {
-      display: none;
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 16px;
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-    }
+    .verse-note-panel { display: none; margin-top: 14px; padding: 14px; border-radius: 16px; background: var(--surface-soft); border: 1px solid var(--line); }
     .verse-note-panel.active { display: block; }
-    .note-preview { margin-bottom: 12px; background: var(--surface); }
     .note-preview-title { font-size: 0.88rem; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
     .note-preview-text { font-size: 0.96rem; color: color-mix(in srgb, var(--text) 88%, white); }
     .note-warning {
@@ -829,15 +634,13 @@
 
     .audio-card,
     .share-builder,
-    .reflection-card,
-    .mushaf-card {
+    .reflection-card {
       margin-top: 16px;
       padding: 16px;
       border-radius: 18px;
       border: 1px solid var(--line);
       background: var(--surface);
     }
-
     .audio-meta { margin-bottom: 12px; font-weight: 600; color: color-mix(in srgb, var(--text) 88%, white); }
     #surahAudioPlayer { width: 100%; min-height: 52px; }
     .listen-note {
@@ -851,23 +654,9 @@
       line-height: 1.7;
     }
 
-    .share-preview { margin-top: 14px; white-space: pre-wrap; line-height: 1.7; }
+    .share-preview { margin-top: 14px; white-space: pre-wrap; line-height: 1.7; color: color-mix(in srgb, var(--text) 90%, white); }
     .share-feedback { display: none; margin-top: 10px; font-size: 0.92rem; color: var(--muted); }
     .share-feedback.active { display: block; }
-    .share-help { margin-bottom: 14px; }
-
-    .mushaf-stage { margin-top: 14px; }
-    .page-card { background: var(--page-bg); }
-    .page-card-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .page-card-title { font-weight: 700; letter-spacing: -0.02em; }
-    .page-card-meta { color: var(--muted); font-size: 0.92rem; }
-    .page-arabic-wrap { direction: rtl; text-align: right; }
 
     .sync-bar {
       position: fixed;
@@ -901,13 +690,7 @@
       padding: 12px 14px;
     }
     .tajweed-mini.active { display: block; }
-    .tajweed-mini-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
+    .tajweed-mini-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
     .tajweed-mini-title { font-size: 0.92rem; font-weight: 700; }
     .tajweed-mini-text { font-size: 0.88rem; color: var(--muted); }
 
@@ -929,7 +712,6 @@
     .floating-prompt.active { display: block; }
     .floating-prompt-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
     .floating-prompt-text { font-size: 0.95rem; color: color-mix(in srgb, var(--text) 84%, white); margin-bottom: 12px; line-height: 1.6; }
-    .prompt-btn, .prompt-btn-secondary { min-height: 42px; padding: 0 14px; }
 
     .footer { padding: 0 0 34px; }
     .footer-inner {
@@ -985,10 +767,10 @@
       .bismillah-block { padding: 20px 12px 24px; }
       .english-number { min-width: 42px; width: 42px; height: 42px; border-radius: 12px; font-size: 0.96rem; }
       .overview p, .overview li { font-size: 1rem; }
-      .arabic-ayah, .page-arabic { font-size: 1.42rem; line-height: 2.05; }
+      .arabic-ayah { font-size: 1.42rem; line-height: 2.05; }
       .bismillah-arabic { font-size: 1.9rem; line-height: 1.95; }
-      .mode-options, .audio-view-options, .mushaf-options { flex-direction: column; }
-      .mode-button, .audio-view-button, .mushaf-button, .wordmode-button { width: 100%; }
+      .mode-options, .audio-view-options { flex-direction: column; }
+      .mode-button, .audio-view-button, .wordmode-button { width: 100%; }
       .nav a, .theme-toggle, .bookmark-open { min-height: 42px; }
       .sync-bar { padding: 8px; gap: 6px; }
       .sync-bar-text { display: none; }
@@ -999,8 +781,8 @@
     @media (max-width: 520px) {
       .nav { gap: 8px; }
       .nav a, .theme-toggle, .bookmark-open { padding: 10px 12px; font-size: 0.9rem; }
-      .verse-selector-row, .listen-controls, .share-row, .page-nav { flex-direction: column; align-items: stretch; }
-      .verse-selector-row select, .jump-button, .bookmark-action, .bookmark-remove, .bookmark-close, .listen-field, #loadAudioButton, .prompt-btn, .prompt-btn-secondary, .share-main-btn, .share-copy-btn, .share-download-btn, .share-contact-btn, .page-nav-btn { width: 100%; }
+      .verse-selector-row, .listen-controls, .share-row { flex-direction: column; align-items: stretch; }
+      .verse-selector-row select, .jump-button, .bookmark-action, .bookmark-remove, .bookmark-close, .listen-field, #loadAudioButton, .prompt-btn, .prompt-btn-secondary, .share-main-btn, .share-copy-btn, .share-download-btn, .share-contact-btn { width: 100%; }
       .bookmark-item { align-items: flex-start; }
       .bookmark-item-actions { width: 100%; }
       .bookmark-mini, .bookmark-mini-remove { flex: 1; }
@@ -1385,6 +1167,7 @@
       "And say, “All praise belongs to Allah. He will show you His signs, and you will recognise them.” And your Lord is not unaware of what you do."
     ];
 
+    const fallbackArabicVerses = Array.from({ length: englishVerses.length }, (_, index) => `الآية ${index + 1}`);
     const surahNumber = 27;
     const totalVerses = 93;
     const nextSurahFile = 'surah-28.html';
@@ -1530,6 +1313,7 @@
     let tajweedWordIndex = null;
     let tajweedEndMs = null;
     let tajweedWordStopTimer = null;
+    let apiDegraded = false;
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
     function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
@@ -1564,12 +1348,15 @@
       return blockedPatterns.some((pattern) => pattern.test(String(value || '')));
     }
 
-    async function fetchJson(url) {
-      const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
+    async function safeFetchJson(url) {
+      try {
+        const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        console.warn('Fetch failed:', url, error);
+        return null;
       }
-      return response.json();
     }
 
     function buildVerseSelector() {
@@ -1898,7 +1685,7 @@
 
     function updateVerseClickability() {
       document.querySelectorAll('.verse').forEach((verse) => {
-        verse.classList.toggle('is-clickable-sync', currentAudioView === 'synced');
+        verse.classList.toggle('is-clickable-sync', currentAudioView === 'synced' && !apiDegraded);
       });
     }
 
@@ -1937,7 +1724,9 @@
       updateVerseClickability();
       if (view === 'synced') {
         stopTajweedPlayback(true);
-        listenNote.textContent = 'Synced recitation view is active. Pause and click any verse to hear that verse once, then replay it or continue the recitation.';
+        listenNote.textContent = apiDegraded
+          ? 'Recitation view is temporarily unavailable while verse timing data is unavailable.'
+          : 'Synced recitation view is active. Pause and click any verse to hear that verse once, then replay it or continue the recitation.';
         syncText.textContent = 'Recitation view is active.';
         if (autoMove) {
           setActiveTab('read');
@@ -1957,6 +1746,7 @@
         hidePrompt();
       }
       updateSyncBarState();
+      refreshInlineStates();
     }
 
     function applyMode(mode) {
@@ -2448,12 +2238,20 @@
       panel.classList.add('active');
     }
 
+    function buildFallbackVerseData() {
+      return englishVerses.map((english, index) => ({
+        number: index + 1,
+        arabic: fallbackArabicVerses[index] || `الآية ${index + 1}`,
+        transliteration: '',
+        words: []
+      }));
+    }
+
     async function fetchAllVerseData() {
       const pages = [1, 2];
-      const results = await Promise.all(
-        pages.map((page) => fetchJson(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?words=true&per_page=50&page=${page}&fields=text_uthmani,text_indopak,page_number&word_fields=text_uthmani,text_indopak,transliteration,translation,audio_url,char_type_name,page_number,line_number`))
-      );
-      const combined = results.flatMap((payload) => Array.isArray(payload.verses) ? payload.verses : []);
+      const results = await Promise.all(pages.map((page) => safeFetchJson(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?words=true&per_page=50&page=${page}&fields=text_uthmani&word_fields=text_uthmani,transliteration,translation,audio_url,char_type_name`)));
+      const combined = results.flatMap((payload) => payload && Array.isArray(payload.verses) ? payload.verses : []);
+      if (!combined.length) return null;
       return combined
         .filter((verse) => verse.verse_number)
         .sort((a, b) => a.verse_number - b.verse_number)
@@ -2461,29 +2259,24 @@
           const words = Array.isArray(verse.words) ? verse.words : [];
           return {
             number: verse.verse_number,
-            pageNumber: Number(verse.page_number || words[0]?.page_number || 0),
-            arabic: verse.text_uthmani || '',
-            arabicIndopak: verse.text_indopak || verse.text_uthmani || '',
+            arabic: verse.text_uthmani || fallbackArabicVerses[verse.verse_number - 1] || `الآية ${verse.verse_number}`,
             transliteration: words.map((word) => word.transliteration?.text || '').filter(Boolean).join(' '),
             words: words.map((word, index) => ({
               position: Number(word.position || index + 1),
               text_uthmani: word.text_uthmani || '',
-              text_indopak: word.text_indopak || word.text_uthmani || '',
               transliteration: word.transliteration?.text || '',
               translation: word.translation?.text || '',
               audio_url: word.audio_url || '',
-              char_type_name: word.char_type_name || '',
-              page_number: Number(word.page_number || verse.page_number || 0),
-              line_number: Number(word.line_number || 0)
+              char_type_name: word.char_type_name || ''
             }))
           };
         });
     }
 
     async function fetchReciterAudio(reciterId) {
-      const payload = await fetchJson(`https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${surahNumber}?segments=true`);
+      const payload = await safeFetchJson(`https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${surahNumber}?segments=true`);
       const audioFile = payload?.audio_file;
-      if (!audioFile?.audio_url) throw new Error('Audio file not available.');
+      if (!audioFile?.audio_url) return null;
       const audioUrl = normaliseAudioUrl(audioFile.audio_url);
       const rawTimestamps = Array.isArray(audioFile.timestamps) ? audioFile.timestamps : [];
       const timestamps = rawTimestamps
@@ -2502,21 +2295,17 @@
 
     async function fetchIntroBismillahAudio() {
       if (introBismillahUrl) return introBismillahUrl;
-      try {
-        const payload = await fetchJson(`https://api.quran.com/api/v4/recitations/${introBismillahRecitationId}/by_ayah/1:1`);
-        const firstFile = Array.isArray(payload.audio_files) ? payload.audio_files[0] : null;
-        introBismillahUrl = normaliseAudioUrl(firstFile?.url || '');
-      } catch {
-        introBismillahUrl = '';
-      }
+      const payload = await safeFetchJson(`https://api.quran.com/api/v4/recitations/${introBismillahRecitationId}/by_ayah/1:1`);
+      const firstFile = Array.isArray(payload?.audio_files) ? payload.audio_files[0] : null;
+      introBismillahUrl = normaliseAudioUrl(firstFile?.url || '');
       return introBismillahUrl;
     }
 
     async function ensureTajweedVerseAudio(ayah) {
       if (tajweedCache[ayah]) return tajweedCache[ayah];
-      const payload = await fetchJson(`https://api.quran.com/api/v4/recitations/${tajweedRecitationId}/by_ayah/${surahNumber}:${ayah}?fields=url,segments,duration`);
-      const file = Array.isArray(payload.audio_files) ? payload.audio_files[0] : null;
-      if (!file?.url) throw new Error('Tajweed audio not available.');
+      const payload = await safeFetchJson(`https://api.quran.com/api/v4/recitations/${tajweedRecitationId}/by_ayah/${surahNumber}:${ayah}?fields=url,segments,duration`);
+      const file = Array.isArray(payload?.audio_files) ? payload.audio_files[0] : null;
+      if (!file?.url) return null;
       const item = {
         url: normaliseAudioUrl(file.url),
         segments: Array.isArray(file.segments) ? file.segments : [],
@@ -2605,9 +2394,7 @@
       return new Promise((resolve, reject) => {
         const onReady = () => {
           cleanup();
-          try {
-            audio.currentTime = Math.max(0, startSeconds);
-          } catch {}
+          try { audio.currentTime = Math.max(0, startSeconds); } catch {}
           resolve();
         };
         const onError = () => {
@@ -2619,20 +2406,15 @@
           audio.removeEventListener('canplay', onReady);
           audio.removeEventListener('error', onError);
         };
-
         audio.addEventListener('loadedmetadata', onReady);
         audio.addEventListener('canplay', onReady);
         audio.addEventListener('error', onError);
-
         if (audio.src !== src) {
           audio.src = src;
           audio.load();
           return;
         }
-
-        if (audio.readyState >= 1) {
-          onReady();
-        }
+        if (audio.readyState >= 1) onReady();
       });
     }
 
@@ -2643,7 +2425,10 @@
       tajweedWordStopTimer = null;
 
       const wordAudioUrl = getWordAudioUrl(ayah, wordIndex);
-      if (!wordAudioUrl) throw new Error('Word audio not available.');
+      if (!wordAudioUrl) {
+        showBookmarkMessage('Word audio is unavailable right now.');
+        return;
+      }
 
       tajweedAudio.pause();
       tajweedMode = 'word';
@@ -2663,8 +2448,12 @@
       activeWordKey = nextKey;
       showWordMeaning(ayah, wordElement);
 
-      await loadAudioAtTime(tajweedAudio, wordAudioUrl, 0);
-      await tajweedAudio.play();
+      try {
+        await loadAudioAtTime(tajweedAudio, wordAudioUrl, 0);
+        await tajweedAudio.play();
+      } catch {
+        showBookmarkMessage('Word audio could not be loaded.');
+      }
     }
 
     async function playVerseTajweed(ayah, mode = 'verse') {
@@ -2673,16 +2462,24 @@
       tajweedWordStopTimer = null;
       stopSyncedPlayback(false);
       const verseAudio = await ensureTajweedVerseAudio(ayah);
+      if (!verseAudio?.url) {
+        showBookmarkMessage('Verse audio is unavailable right now.');
+        return;
+      }
       tajweedAudio.pause();
       tajweedMode = mode;
       tajweedVerse = ayah;
       tajweedWordIndex = null;
       tajweedEndMs = null;
       tajweedActive = true;
-      await loadAudioAtTime(tajweedAudio, verseAudio.url, 0);
-      updateTajweedMini(mode === 'repeat' ? `Repeat verse ${ayah}` : `Tajweed verse ${ayah}`, 'Playing verse audio');
-      await tajweedAudio.play();
-      tajweedMiniPlayPause.textContent = 'Pause';
+      try {
+        await loadAudioAtTime(tajweedAudio, verseAudio.url, 0);
+        updateTajweedMini(mode === 'repeat' ? `Repeat verse ${ayah}` : `Tajweed verse ${ayah}`, 'Playing verse audio');
+        await tajweedAudio.play();
+        tajweedMiniPlayPause.textContent = 'Pause';
+      } catch {
+        showBookmarkMessage('Verse audio could not be loaded.');
+      }
     }
 
     function beginSelectedRecitationFromVerse(verseNumber, shouldPlay = true, onceOnly = false) {
@@ -2721,7 +2518,6 @@
         beginSelectedRecitationFromVerse(verseNumber, true, false);
         return true;
       }
-
       hidePrompt();
       nextSurahPromptShown = false;
       clearAllHighlights();
@@ -2731,7 +2527,6 @@
       singleVerseNumber = null;
       lastAutoScrolledVerse = null;
       stopTajweedPlayback(true);
-
       surahAudioPlayer.pause();
       try { surahAudioPlayer.currentTime = 0; } catch {}
       introAudio.src = url;
@@ -2762,6 +2557,7 @@
       if (!currentAudioUrl || !syncByVerse[1]) {
         syncPlayPause.textContent = 'Play';
         updateSyncBarState();
+        showBookmarkMessage('Recitation timing is unavailable right now.');
         return false;
       }
       setActiveTab('read');
@@ -2870,7 +2666,7 @@
       updateVerseClickability();
     }
 
-    function handleInitialVerseJump(skipHistoryUpdate = false) {
+    function handleInitialVerseJump() {
       if (shouldAutoplay) {
         setCurrentVisibleVerse(1, false);
         return;
@@ -2894,7 +2690,7 @@
         if (target) {
           setCurrentVisibleVerse(verseNumber, false);
           gentleScrollToElement(target, { center: false });
-          if (!skipHistoryUpdate) history.replaceState(null, '', `?ayah=${verseNumber}#ayah-${verseNumber}`);
+          history.replaceState(null, '', `?ayah=${verseNumber}#ayah-${verseNumber}`);
         }
       });
     }
@@ -3022,7 +2818,6 @@
           <div class="bismillah-english notranslate" translate="no">${escapeHtml(bismillahEnglish)}</div>
         </section>
       `;
-
       versesContainer.innerHTML = bismillahBlock + verseData.map((verse) => renderVerseArticle(verse)).join('');
       attachVerseClickHandlers();
       attachInteractiveHandlers();
@@ -3113,7 +2908,7 @@
             showBookmarkMessage('Tajweed verse playback is off while recitation view is active.');
             return;
           }
-          try { await playVerseTajweed(Number(button.getAttribute('data-play-ayah')), 'verse'); } catch { showBookmarkMessage('Verse audio could not be loaded.'); }
+          await playVerseTajweed(Number(button.getAttribute('data-play-ayah')), 'verse');
           showActionPulse(button);
         });
       });
@@ -3125,7 +2920,7 @@
             showBookmarkMessage('Repeat verse is off while recitation view is active.');
             return;
           }
-          try { await playVerseTajweed(Number(button.getAttribute('data-repeat-ayah')), 'repeat'); } catch { showBookmarkMessage('Verse audio could not be loaded.'); }
+          await playVerseTajweed(Number(button.getAttribute('data-repeat-ayah')), 'repeat');
           showActionPulse(button);
         });
       });
@@ -3134,6 +2929,10 @@
         button.addEventListener('click', (event) => {
           event.stopPropagation();
           const ayah = Number(button.getAttribute('data-start-ayah'));
+          if (apiDegraded) {
+            showBookmarkMessage('Synced verse start is unavailable right now.');
+            return;
+          }
           applyAudioView('synced', false);
           setActiveTab('read');
           beginSelectedRecitationFromVerse(ayah, true, false);
@@ -3194,7 +2993,7 @@
           const ayah = Number(word.closest('.verse')?.dataset.ayahNumber);
           const wordIndex = Number(word.getAttribute('data-word-index'));
           if (!ayah || !wordIndex) return;
-          try { await playWordByTiming(ayah, wordIndex, word); } catch { showBookmarkMessage('Word audio could not be loaded.'); }
+          await playWordByTiming(ayah, wordIndex, word);
         });
       });
     }
@@ -3208,21 +3007,29 @@
       try {
         const result = await fetchReciterAudio(reciter.id);
         await fetchIntroBismillahAudio();
-        currentAudioUrl = result.audioUrl;
-        syncTimestamps = result.timestamps;
-        syncByVerse = result.byVerse;
-        surahAudioPlayer.src = currentAudioUrl;
-        surahAudioPlayer.load();
-        clearAllHighlights();
-        singleVerseMode = false;
-        singleVerseNumber = null;
-        nextSurahPromptShown = false;
-        hidePrompt();
-        introBismillahPlaying = false;
-        recitationStartAtBeginning = true;
-        lastAutoScrolledVerse = null;
-        audioMeta.textContent = `Selected reciter: ${reciter.name}`;
-        syncPlayPause.textContent = 'Play';
+        if (!result?.audioUrl) {
+          currentAudioUrl = '';
+          syncTimestamps = [];
+          syncByVerse = {};
+          audioMeta.textContent = `Recitation is unavailable for ${reciter.name} right now.`;
+          showBookmarkMessage('Recitation is unavailable right now.');
+        } else {
+          currentAudioUrl = result.audioUrl;
+          syncTimestamps = result.timestamps;
+          syncByVerse = result.byVerse;
+          surahAudioPlayer.src = currentAudioUrl;
+          surahAudioPlayer.load();
+          clearAllHighlights();
+          singleVerseMode = false;
+          singleVerseNumber = null;
+          nextSurahPromptShown = false;
+          hidePrompt();
+          introBismillahPlaying = false;
+          recitationStartAtBeginning = true;
+          lastAutoScrolledVerse = null;
+          audioMeta.textContent = `Selected reciter: ${reciter.name}`;
+          syncPlayPause.textContent = 'Play';
+        }
         updateSyncBarState();
       } catch (error) {
         console.error(error);
@@ -3242,6 +3049,7 @@
         const tests = [];
         tests.push(['Verse count', englishVerses.length === totalVerses]);
         tests.push(['Selectors exist', Boolean(versesContainer && surahAudioPlayer && sharePreview)]);
+        tests.push(['Verse selector length', verseSelect.options.length === totalVerses]);
         tests.push(['Download handler exists', typeof downloadShareSelection === 'function']);
         console.table(tests.map(([name, pass]) => ({ test: name, pass })));
       } catch (error) {
@@ -3250,12 +3058,24 @@
     }
 
     async function loadSurah() {
+      loadingState.style.display = 'block';
+      errorState.style.display = 'none';
       try {
         const verseData = await fetchAllVerseData();
-        if (verseData.length !== englishVerses.length) throw new Error(`Verse count mismatch: Arabic ${verseData.length}, English ${englishVerses.length}`);
-        verseDataCache = verseData;
-        transliterationAvailable = verseData.some((verse) => verse.transliteration && verse.transliteration.trim());
-        renderVerses(verseDataCache);
+        if (!verseData || verseData.length !== englishVerses.length) {
+          apiDegraded = true;
+          verseDataCache = buildFallbackVerseData();
+          transliterationAvailable = false;
+          renderVerses(verseDataCache);
+          noteState.style.display = 'block';
+          noteState.textContent = 'Live Qur’an data is temporarily unavailable, so a fallback reading view has loaded.';
+        } else {
+          apiDegraded = false;
+          verseDataCache = verseData;
+          transliterationAvailable = verseData.some((verse) => verse.transliteration && verse.transliteration.trim());
+          renderVerses(verseDataCache);
+        }
+
         buildVerseSelector();
         applyMode('bilingual');
         applyWordMode(false);
@@ -3265,25 +3085,34 @@
         if (storedReflectionDraft) reflectionDraft.value = storedReflectionDraft;
         updateShareBuilder();
         loadingState.style.display = 'none';
-        errorState.style.display = 'none';
         observeReadingProgress();
         handleInitialVerseJump();
         renderSmokeTests();
 
-        if (shouldAutoplay) {
-          sessionStorage.removeItem(autoplaySessionKey);
-          reciterSelect.value = (autoplayReciter && reciters[autoplayReciter]) ? autoplayReciter : defaultReciterKey;
-          await loadSelectedAudio();
-          applyAudioView('synced', true);
-        } else {
-          reciterSelect.value = defaultReciterKey;
-          await loadSelectedAudio();
+        if (!apiDegraded) {
+          if (shouldAutoplay) {
+            sessionStorage.removeItem(autoplaySessionKey);
+            reciterSelect.value = (autoplayReciter && reciters[autoplayReciter]) ? autoplayReciter : defaultReciterKey;
+            await loadSelectedAudio();
+            if (currentAudioUrl && syncTimestamps.length) applyAudioView('synced', true);
+          } else {
+            reciterSelect.value = defaultReciterKey;
+          }
         }
       } catch (error) {
         console.error(error);
+        apiDegraded = true;
+        verseDataCache = buildFallbackVerseData();
+        renderVerses(verseDataCache);
+        buildVerseSelector();
+        applyMode('bilingual');
+        applyWordMode(false);
+        applyAudioView('standard', false);
+        updateBookmarkUI();
+        updateShareBuilder();
         loadingState.style.display = 'none';
         errorState.style.display = 'block';
-        errorState.textContent = 'The surah data could not be loaded right now. Please refresh the page and try again.';
+        errorState.textContent = 'The live surah data could not be loaded right now. A fallback reading view has been shown instead.';
       }
     }
 
@@ -3309,6 +3138,10 @@
     modeButtons.forEach((button) => button.addEventListener('click', () => { applyMode(button.dataset.mode); setActiveTab('read'); }));
     audioViewButtons.forEach((button) => button.addEventListener('click', async () => {
       if (button.dataset.audioView === 'synced') {
+        if (apiDegraded) {
+          showBookmarkMessage('Recitation view is unavailable while live timing data is unavailable.');
+          return;
+        }
         applyAudioView('synced', true);
         setActiveTab('read');
         if (!currentAudioUrl) await loadSelectedAudio();
@@ -3350,6 +3183,10 @@
     });
 
     syncPlayPause.addEventListener('click', async () => {
+      if (apiDegraded) {
+        showBookmarkMessage('Recitation timing is unavailable right now.');
+        return;
+      }
       if (!surahAudioPlayer.src && !currentAudioUrl) await loadSelectedAudio();
       hidePrompt();
       if (introBismillahPlaying) {
@@ -3402,9 +3239,7 @@
         clearTimeout(tajweedWordStopTimer);
         tajweedWordStopTimer = null;
         tajweedAudio.pause();
-        try {
-          tajweedAudio.currentTime = Math.max(0, tajweedEndMs / 1000);
-        } catch {}
+        try { tajweedAudio.currentTime = Math.max(0, tajweedEndMs / 1000); } catch {}
       }
     });
     tajweedAudio.addEventListener('play', () => {
