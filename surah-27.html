@@ -2047,6 +2047,26 @@
       refreshInlineStates();
     }
 
+    function resetToReadingView(scrollToContent = false) {
+      hidePrompt();
+      closeAllMenus();
+      closeBookmarkPanel();
+      stopTajweedPlayback(true);
+      stopSyncedPlayback(true);
+      clearAllHighlights();
+      singleVerseMode = false;
+      singleVerseNumber = null;
+      nextSurahPromptShown = false;
+      introBismillahPlaying = false;
+      recitationStartAtBeginning = true;
+      lastAutoScrolledVerse = null;
+      applyAudioView('standard', false);
+      setActiveTab('read');
+      if (scrollToContent) {
+        gentleScrollToElement(document.getElementById('content'), { center: false });
+      }
+    }
+
     function updateNoteIndicator(ayah) {
       const notes = getVerseNotes();
       const indicator = document.querySelector(`.note-indicator[data-note-indicator="${ayah}"]`);
@@ -3393,7 +3413,13 @@
     shareDownloadButton.addEventListener('click', downloadShareSelection);
     shareContactButton.addEventListener('click', openGetInTouch);
 
-    tabButtons.forEach((button) => button.addEventListener('click', () => setActiveTab(button.dataset.tab)));
+    tabButtons.forEach((button) => button.addEventListener('click', () => {
+      if (button.dataset.tab === 'read') {
+        resetToReadingView(false);
+        return;
+      }
+      setActiveTab(button.dataset.tab);
+    }));
     modeButtons.forEach((button) => button.addEventListener('click', () => { applyMode(button.dataset.mode); setActiveTab('read'); }));
     audioViewButtons.forEach((button) => button.addEventListener('click', async () => {
       if (button.dataset.audioView === 'synced') {
@@ -3420,9 +3446,7 @@
 
     readSurahButton.addEventListener('click', (event) => {
       event.preventDefault();
-      stopTajweedPlayback(true);
-      setActiveTab('read');
-      gentleScrollToElement(document.getElementById('content'), { center: false });
+      resetToReadingView(true);
     });
 
     bookmarkOpen.addEventListener('click', toggleBookmarkPanel);
