@@ -1879,6 +1879,57 @@
       markBismillahReciting(false);
     }
 
+    function keepVerseVisible(ayahNumber) {
+      if (lastAutoScrolledVerse === ayahNumber) return;
+      const verse = document.getElementById(`ayah-${ayahNumber}`);
+      if (!verse) return;
+      lastAutoScrolledVerse = ayahNumber;
+      gentleScrollToElement(verse, { center: true });
+    }
+
+    function highlightVerseByNumber(ayahNumber, autoScroll = false) {
+      const safeAyah = Number(ayahNumber);
+      if (!safeAyah) return;
+
+      if (activeVerseNumber !== null && activeVerseNumber !== safeAyah) {
+        const oldVerse = document.getElementById(`ayah-${activeVerseNumber}`);
+        if (oldVerse) oldVerse.classList.remove('is-reciting');
+      }
+
+      const verse = document.getElementById(`ayah-${safeAyah}`);
+      if (!verse) return;
+
+      verse.classList.add('is-reciting');
+      activeVerseNumber = safeAyah;
+
+      if (autoScroll) keepVerseVisible(safeAyah);
+    }
+
+    function highlightWordByVerseIndex(ayahNumber, wordIndex) {
+      const nextKey = `${ayahNumber}-${wordIndex}`;
+      if (activeWordKey === nextKey) return;
+
+      if (activeWordKey) {
+        const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
+        if (oldWord) oldWord.classList.remove('word-active');
+      }
+
+      const nextWord = document.querySelector(`[data-word-key="${nextKey}"]`);
+      if (nextWord) {
+        nextWord.classList.add('word-active');
+        activeWordKey = nextKey;
+      } else {
+        activeWordKey = null;
+      }
+    }
+
+    function clearActiveWordOnly() {
+      if (!activeWordKey) return;
+      const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
+      if (oldWord) oldWord.classList.remove('word-active');
+      activeWordKey = null;
+    }
+
     function markBismillahReciting(isReciting) {
       const bismillahBlock = document.getElementById('bismillah');
       if (!bismillahBlock) return;
@@ -1950,6 +2001,8 @@
       tajweedWordIndex = null;
       tajweedEndMs = null;
       tajweedContinueAllActive = false;
+      lastAutoScrolledVerse = null;
+      clearAllHighlights();
       if (resetUI) {
         tajweedMini.classList.remove('active');
         tajweedMiniPlayPause.textContent = 'Pause';
@@ -2615,23 +2668,7 @@
       const active = getActiveTimingItem(currentMs);
       if (!active) return;
 
-      if (activeVerseNumber !== active.verseNumber) {
-        if (activeVerseNumber !== null) {
-          const oldVerse = document.getElementById(`ayah-${activeVerseNumber}`);
-          if (oldVerse) oldVerse.classList.remove('is-reciting');
-        }
-        const newVerse = document.getElementById(`ayah-${active.verseNumber}`);
-        if (newVerse) newVerse.classList.add('is-reciting');
-        activeVerseNumber = active.verseNumber;
-        if (lastAutoScrolledVerse !== active.verseNumber) {
-          const target = document.getElementById(`ayah-${active.verseNumber}`);
-          if (target) {
-            lastAutoScrolledVerse = active.verseNumber;
-            gentleScrollToElement(target, { center: true });
-          }
-        }
-      }
-
+      highlightVerseByNumber(active.verseNumber, true);
       setCurrentVisibleVerse(active.verseNumber, true);
 
       if (Array.isArray(active.segments) && active.segments.length) {
@@ -2642,18 +2679,47 @@
         });
         if (segment) {
           const wordIndex = Number(segment[0]);
-          const nextKey = `${active.verseNumber}-${wordIndex}`;
-          if (activeWordKey !== nextKey) {
-            if (activeWordKey) {
-              const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
-              if (oldWord) oldWord.classList.remove('word-active');
-            }
-            const nextWord = document.querySelector(`[data-word-key="${nextKey}"]`);
-            if (nextWord) nextWord.classList.add('word-active');
-            activeWordKey = nextKey;
+          if (Number.isFinite(wordIndex) && wordIndex >= 1) {
+            highlightWordByVerseIndex(active.verseNumber, wordIndex);
+            return;
           }
         }
       }
+
+      clearActiveWordOnly();
+    }
+
+    function processTajweedPlayback() {
+      if (!tajweedActive || tajweedMode === 'word' || !tajweedVerse) return;
+      const safeAyah = Number(tajweedVerse);
+      if (!safeAyah) return;
+
+      highlightVerseByNumber(safeAyah, true);
+      setCurrentVisibleVerse(safeAyah, true);
+
+      const verseAudio = tajweedCache[safeAyah];
+      const segments = Array.isArray(verseAudio?.segments) ? verseAudio.segments : [];
+      if (!segments.length) {
+        clearActiveWordOnly();
+        return;
+      }
+
+      const currentMs = Math.floor(tajweedAudio.currentTime * 1000);
+      const activeSegment = segments.find((segment) => {
+        const start = Number(segment[1]);
+        const end = Number(segment[2]);
+        return Number.isFinite(start) && Number.isFinite(end) && currentMs >= start && currentMs <= end;
+      });
+
+      if (activeSegment) {
+        const wordIndex = Number(activeSegment[0]);
+        if (Number.isFinite(wordIndex) && wordIndex >= 1) {
+          highlightWordByVerseIndex(safeAyah, wordIndex);
+          return;
+        }
+      }
+
+      clearActiveWordOnly();
     }
 
     function updateTajweedMini(title, text, isActive = true) {
@@ -2748,8 +2814,13 @@
       tajweedEndMs = null;
       tajweedActive = true;
       tajweedContinueAllActive = mode === 'continue-all';
+      lastAutoScrolledVerse = null;
+      clearAllHighlights();
       try {
         await loadAudioAtTime(tajweedAudio, verseAudio.url, 0);
+        highlightVerseByNumber(ayah, true);
+        setCurrentVisibleVerse(ayah, true);
+        processTajweedPlayback();
         updateTajweedMini(
           mode === 'repeat' ? `Repeat verse ${ayah}` : mode === 'continue-all' ? `Continuing from verse ${ayah}` : `Tajweed verse ${ayah}`,
           mode === 'continue-all' ? `Playing verse ${ayah} and continuing to the end` : 'Playing verse audio'
@@ -3526,6 +3597,7 @@
 
     tajweedAudio.addEventListener('timeupdate', () => {
       if (!tajweedActive) return;
+      if (tajweedMode !== 'word') processTajweedPlayback();
       if (tajweedMode === 'word') return;
       if (Number.isFinite(tajweedEndMs) && (tajweedAudio.currentTime * 1000) >= tajweedEndMs) {
         clearTimeout(tajweedWordStopTimer);
@@ -3540,6 +3612,7 @@
         tajweedMini.classList.remove('active');
         return;
       }
+      processTajweedPlayback();
       updateTajweedMini(tajweedMiniTitle.textContent, tajweedMiniText.textContent, true);
       tajweedMiniPlayPause.textContent = 'Pause';
     });
@@ -3551,6 +3624,7 @@
       if (tajweedMini.classList.contains('active')) tajweedMiniPlayPause.textContent = 'Play';
     });
     tajweedAudio.addEventListener('ended', async () => {
+      clearActiveWordOnly();
       clearTimeout(tajweedWordStopTimer);
       tajweedWordStopTimer = null;
       if (tajweedMode === 'word') {
