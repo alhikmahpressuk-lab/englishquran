@@ -1122,7 +1122,6 @@
           <button class="tab-button" type="button" data-tab="mode" translate="no">Mode</button>
           <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
           <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
-          <button class="tab-button" type="button" data-tab="mushaf" translate="no">Mushaf</button>
           <button class="tab-button" type="button" data-tab="share" translate="no">Share</button>
         </div>
 
@@ -1175,22 +1174,6 @@
               <div class="audio-meta" id="audioMeta" translate="no">Selected reciter: Sheikh Abdur-Rahman as-Sudais</div>
               <audio id="surahAudioPlayer" controls preload="none"></audio>
               <div class="listen-note" id="listenNote" translate="no">Choose any reciter, then listen and read comfortably in any mode you select.</div>
-            </div>
-          </div>
-
-          <div class="subpanel" id="mushafPanel">
-            <h3 translate="no">Mushaf</h3>
-            <p translate="no">View Surah An-Naml in Arabic only as page style reading. Use the page options below and move through the surah page by page.</p>
-            <div class="mushaf-options" style="margin-bottom: 14px;">
-              <button class="mushaf-button active" type="button" data-mushaf="uthmani" translate="no">Uthmani script</button>
-              <button class="mushaf-button" type="button" data-mushaf="indopak" translate="no">Indo Pak script</button>
-            </div>
-            <div class="page-nav" style="margin-bottom: 14px;">
-              <button class="page-nav-btn" type="button" id="mushafPrev" translate="no">Previous page</button>
-              <button class="page-nav-btn" type="button" id="mushafNext" translate="no">Next page</button>
-            </div>
-            <div class="mushaf-card">
-              <div class="mushaf-stage" id="mushafStage" translate="no">Loading Mushaf pages...</div>
             </div>
           </div>
 
@@ -1284,7 +1267,6 @@
           <div class="tab-panel" id="mode"></div>
           <div class="tab-panel" id="verse"></div>
           <div class="tab-panel" id="listen"></div>
-          <div class="tab-panel" id="mushaf"></div>
           <div class="tab-panel" id="share"></div>
         </div>
       </div>
@@ -1438,12 +1420,10 @@
     const modePanel = document.getElementById('modePanel');
     const versePanel = document.getElementById('versePanel');
     const listenPanel = document.getElementById('listenPanel');
-    const mushafPanel = document.getElementById('mushafPanel');
     const sharePanel = document.getElementById('sharePanel');
 
     const modeButtons = document.querySelectorAll('.mode-button');
     const audioViewButtons = document.querySelectorAll('.audio-view-button');
-    const mushafButtons = document.querySelectorAll('.mushaf-button');
     const wordModeToggle = document.getElementById('wordModeToggle');
     const verseSelect = document.getElementById('verseSelect');
     const jumpButton = document.getElementById('jumpButton');
@@ -1481,10 +1461,6 @@
     const tajweedMiniText = document.getElementById('tajweedMiniText');
     const tajweedMiniPlayPause = document.getElementById('tajweedMiniPlayPause');
     const tajweedMiniStop = document.getElementById('tajweedMiniStop');
-
-    const mushafStage = document.getElementById('mushafStage');
-    const mushafPrev = document.getElementById('mushafPrev');
-    const mushafNext = document.getElementById('mushafNext');
 
     const shareType = document.getElementById('shareType');
     const shareSingleVerse = document.getElementById('shareSingleVerse');
@@ -1550,10 +1526,6 @@
     let tajweedWordIndex = null;
     let tajweedEndMs = null;
 
-    let mushafStyle = 'uthmani';
-    let mushafPages = [];
-    let mushafPageIndex = 0;
-
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
     function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
     function iconShare() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9c0-1.7 1.3-3 3-3h6l-2.5-2.5"></path><path d="M17 6l-2.5 2.5"></path><path d="M16 14c-1.2 2.4-3.7 4-6.5 4H7"></path></svg>`; }
@@ -1613,7 +1585,6 @@
       modePanel.classList.toggle('active', target === 'mode');
       versePanel.classList.toggle('active', target === 'verse');
       listenPanel.classList.toggle('active', target === 'listen');
-      mushafPanel.classList.toggle('active', target === 'mushaf');
       sharePanel.classList.toggle('active', target === 'share');
     }
 
@@ -2701,23 +2672,46 @@
       localStorage.setItem('site-theme', theme);
     }
 
+    function stripEmbeddedVerseMarkers(text) {
+      return String(text ?? '')
+        .split('۝').join('')
+        .split('﴿').join('')
+        .split('﴾').join('')
+        .split('؞').join('')
+        .split('۞').join('')
+        .split('۩').join('')
+        .split('٠').join('')
+        .split('١').join('')
+        .split('٢').join('')
+        .split('٣').join('')
+        .split('٤').join('')
+        .split('٥').join('')
+        .split('٦').join('')
+        .split('٧').join('')
+        .split('٨').join('')
+        .split('٩').join('')
+        .trim();
+    }
+
     function buildWordSpan(word, verseNumber) {
+      const cleanArabic = stripEmbeddedVerseMarkers(word.text_uthmani);
       return `
         <span
           class="ayah-word notranslate"
           data-word-key="${verseNumber}-${word.position}"
           data-word-index="${word.position}"
-          data-word-arabic="${escapeHtml(word.text_uthmani)}"
+          data-word-arabic="${escapeHtml(cleanArabic)}"
           data-word-translit="${escapeHtml(word.transliteration || '')}"
           data-word-gloss="${escapeHtml(word.translation || '')}"
           translate="no"
           tabindex="-1"
-        >${escapeHtml(word.text_uthmani)}</span>
+        >${escapeHtml(cleanArabic)}</span>
       `;
     }
 
     function renderVerseArticle(verse) {
       const english = englishVerses[verse.number - 1] || '';
+      const cleanVerseArabic = stripEmbeddedVerseMarkers(verse.arabic);
       const notes = getVerseNotes();
       const existingNote = notes[String(verse.number)] || '';
       const transliterationBlock = verse.transliteration
@@ -2727,7 +2721,7 @@
       return `
         <article class="verse notranslate" id="ayah-${verse.number}" data-ayah-number="${verse.number}" tabindex="-1" translate="no">
           <div class="arabic-wrap notranslate" translate="no">
-            <div class="arabic-ayah notranslate" lang="ar" translate="no">${verse.words.length ? verse.words.map((word) => buildWordSpan(word, verse.number)).join(' ') : escapeHtml(verse.arabic)} <span class="notranslate" translate="no">﴿${toArabicDigits(verse.number)}﴾</span></div>
+            <div class="arabic-ayah notranslate" lang="ar" translate="no">${verse.words.length ? verse.words.map((word) => buildWordSpan(word, verse.number)).join(' ') : escapeHtml(cleanVerseArabic)} <span class="notranslate" translate="no">﴿${toArabicDigits(verse.number)}﴾</span></div>
           </div>
 
           <div class="word-meaning-panel notranslate" id="word-panel-${verse.number}" translate="no">
@@ -2795,28 +2789,14 @@
       refreshInlineStates();
       applyMode(currentMode);
       observeReadingProgress();
-    }
-
-    function buildMushafPages() {
-      const pageMap = new Map();
-      verseDataCache.forEach((verse) => {
-        const pageNumber = verse.pageNumber || 0;
-        if (!pageMap.has(pageNumber)) pageMap.set(pageNumber, []);
-        pageMap.get(pageNumber).push(verse);
-      });
+    });
       mushafPages = [...pageMap.entries()].sort((a, b) => a[0] - b[0]).map(([pageNumber, verses]) => ({ pageNumber, verses }));
       mushafPageIndex = 0;
       renderMushafPage();
     }
-
-    function renderMushafPage() {
-      if (!mushafPages.length) {
-        mushafStage.textContent = 'Mushaf pages are not available.';
-        return;
-      }
       const page = mushafPages[mushafPageIndex];
       const content = page.verses.map((verse) => {
-        const text = mushafStyle === 'indopak' ? verse.arabicIndopak : verse.arabic;
+        const text = stripEmbeddedVerseMarkers(mushafStyle === 'indopak' ? verse.arabicIndopak : verse.arabic);
         return `<p class="page-arabic ${mushafStyle === 'indopak' ? 'indopak' : ''}" translate="no">${escapeHtml(text)} ﴿${toArabicDigits(verse.number)}﴾</p>`;
       }).join('\n');
       mushafStage.innerHTML = `
@@ -3053,7 +3033,6 @@
         verseDataCache = verseData;
         transliterationAvailable = verseData.some((verse) => verse.transliteration && verse.transliteration.trim());
         renderVerses(verseDataCache);
-        buildMushafPages();
         buildVerseSelector();
         applyMode('bilingual');
         applyWordMode(false);
@@ -3114,14 +3093,7 @@
         applyAudioView('standard', false);
       }
     }));
-    mushafButtons.forEach((button) => button.addEventListener('click', () => {
-      mushafStyle = button.dataset.mushaf;
-      mushafButtons.forEach((item) => item.classList.toggle('active', item === button));
-      renderMushafPage();
-    }));
     wordModeToggle.addEventListener('click', () => { applyWordMode(!wordModeEnabled); setActiveTab('read'); });
-    mushafPrev.addEventListener('click', () => { if (mushafPageIndex > 0) mushafPageIndex -= 1; renderMushafPage(); });
-    mushafNext.addEventListener('click', () => { if (mushafPageIndex < mushafPages.length - 1) mushafPageIndex += 1; renderMushafPage(); });
 
     jumpButton.addEventListener('click', () => jumpToVerse(verseSelect.value));
     verseSelect.addEventListener('change', () => { if (verseSelect.value) jumpToVerse(verseSelect.value); });
@@ -3269,4 +3241,3 @@
     loadSurah();
   </script>
 </body>
-
