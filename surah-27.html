@@ -3460,13 +3460,12 @@
         renderSmokeTests();
 
         if (!apiDegraded) {
+          reciterSelect.value = defaultReciterKey;
+          audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
           if (shouldAutoplay) {
             sessionStorage.removeItem(autoplaySessionKey);
-            reciterSelect.value = (autoplayReciter && reciters[autoplayReciter]) ? autoplayReciter : defaultReciterKey;
             await loadSelectedAudio();
             if (currentAudioUrl && syncTimestamps.length) applyAudioView('synced', true);
-          } else {
-            reciterSelect.value = defaultReciterKey;
           }
         }
       } catch (error) {
@@ -3555,6 +3554,8 @@
       const reciter = reciters[reciterSelect.value];
       if (reciter) audioMeta.textContent = `Selected reciter: ${reciter.name}`;
     });
+
+    
 
     syncPlayPause.addEventListener('click', async () => {
       if (apiDegraded) {
