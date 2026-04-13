@@ -1214,7 +1214,7 @@
           <div class="subpanel" id="sharePanel">
             <h3 translate="no">Share</h3>
             <p translate="no">Share the whole surah, one verse, or a verse range. You can also download a printable version for your current selection.</p>
-            <div class="share-help" translate="no">A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah. You can also send us reflections through Get in Touch for possible TEQ Insight publication.</div>
+            <div class="share-help" translate="no">A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.</div>
             <div class="share-builder">
               <div class="share-row" style="margin-bottom: 12px;">
                 <div class="share-field">
@@ -1256,7 +1256,7 @@
                 <button class="share-main-btn" type="button" id="shareNowButton" translate="no">Share now</button>
                 <button class="share-copy-btn" type="button" id="shareCopyButton" translate="no">Copy share text</button>
                 <button class="share-download-btn" type="button" id="shareDownloadButton" translate="no">Download</button>
-                <button class="share-contact-btn" type="button" id="shareContactButton" translate="no">Open Get in Touch</button>
+                <button class="share-copy-btn" type="button" id="shareClearButton" translate="no">Clear</button>
               </div>
               <div class="share-feedback" id="shareFeedback" translate="no"></div>
               <div class="share-preview" id="sharePreview" translate="no"></div>
@@ -1264,10 +1264,24 @@
             <div class="reflection-card">
               <div style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);margin-bottom:8px;" translate="no">TEQ Insight (Reflections)</div>
               <p translate="no" style="margin:0 0 10px;color:color-mix(in srgb, var(--text) 88%, white);">Share your reflections, surah thoughts, verse thoughts, or related benefit with us. If your view is beneficial for readers, we may polish it for public view on TEQ Insight.</p>
+              <div class="share-row" style="margin-bottom: 12px;">
+                <div class="share-field">
+                  <label for="reflectionName" translate="no">Your name</label>
+                  <input id="reflectionName" name="name" type="text" maxlength="80" autocomplete="name" translate="no" placeholder="Enter your name" />
+                </div>
+                <div class="share-field">
+                  <label for="reflectionEmail" translate="no">Your email</label>
+                  <input id="reflectionEmail" name="email" type="email" maxlength="120" autocomplete="email" translate="no" placeholder="Enter your email" />
+                </div>
+              </div>
               <div class="share-field">
                 <label for="reflectionDraft" translate="no">Reflection draft</label>
-                <textarea id="reflectionDraft" maxlength="800" translate="no" placeholder="Write your reflection here."></textarea>
+                <textarea id="reflectionDraft" name="message" maxlength="800" translate="no" placeholder="Write your reflection here."></textarea>
               </div>
+              <div class="share-row" style="margin-top: 12px;">
+                <button class="share-main-btn" type="button" id="reflectionSendButton" translate="no">Send reflection</button>
+              </div>
+              <div class="share-feedback" id="reflectionFeedback" translate="no"></div>
             </div>
           </div>
 
@@ -1431,6 +1445,8 @@
     const tajweedRecitationId = 1;
     const autoplaySessionKey = 'teq-index-autoplay';
     const defaultReciterKey = 'shuraim';
+    const formspreeEndpoint = 'https://formspree.io/f/mreokljn';
+    const exportAttribution = 'The English Qur’an | By: Dr A K Khan | englishquran.uk';
 
     const reciters = {
       sudais: { name: 'Sheikh Abdur-Rahman as-Sudais', id: 3 },
@@ -1519,16 +1535,22 @@
     const shareNowButton = document.getElementById('shareNowButton');
     const shareCopyButton = document.getElementById('shareCopyButton');
     const shareDownloadButton = document.getElementById('shareDownloadButton');
-    const shareContactButton = document.getElementById('shareContactButton');
+    const shareClearButton = document.getElementById('shareClearButton');
     const sharePreview = document.getElementById('sharePreview');
     const shareFeedback = document.getElementById('shareFeedback');
+    const reflectionName = document.getElementById('reflectionName');
+    const reflectionEmail = document.getElementById('reflectionEmail');
     const reflectionDraft = document.getElementById('reflectionDraft');
+    const reflectionSendButton = document.getElementById('reflectionSendButton');
+    const reflectionFeedback = document.getElementById('reflectionFeedback');
 
     const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
     const historyStorageKey = `teq-surah-${surahNumber}-history`;
     const pinnedStorageKey = `teq-surah-${surahNumber}-pinned`;
     const verseNotesStorageKey = `teq-surah-${surahNumber}-notes`;
     const reflectionDraftStorageKey = `teq-surah-${surahNumber}-reflection-draft`;
+    const reflectionNameStorageKey = `teq-surah-${surahNumber}-reflection-name`;
+    const reflectionEmailStorageKey = `teq-surah-${surahNumber}-reflection-email`;
     const historyLimit = 25;
 
     const bismillahArabic = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
@@ -2012,7 +2034,6 @@
       lastAutoScrolledVerse = null;
       clearAllHighlights();
       clearWordMeaningPanels();
-      clearWordMeaningPanels();
       if (resetUI) {
         tajweedMini.classList.remove('active');
         tajweedMiniPlayPause.textContent = 'Pause';
@@ -2171,11 +2192,83 @@
     function getVerseTextForCopy(ayah) {
       const verse = getVerseData(ayah);
       if (!verse) return '';
-      return `${verse.arabic}\n\n${ayah}. ${englishVerses[ayah - 1] || ''}\n\nSurah An-Naml, Ayah ${ayah}\nThe English Qur’an | englishquran.uk`;
+      return `${verse.arabic}
+
+${ayah}. ${englishVerses[ayah - 1] || ''}
+
+Surah An-Naml, Ayah ${ayah}
+${exportAttribution}`;
     }
 
     function getVerseUrl(ayah) {
       return `${window.location.origin}${window.location.pathname}?ayah=${ayah}#ayah-${ayah}`;
+    }
+
+    function getExportModeFlags() {
+      if (currentMode === 'arabic-only') {
+        return { arabic: true, transliteration: false, english: false };
+      }
+      if (currentMode === 'english-only') {
+        return { arabic: false, transliteration: false, english: true };
+      }
+      if (currentMode === 'transliteration') {
+        return { arabic: true, transliteration: true, english: true };
+      }
+      return { arabic: true, transliteration: false, english: true };
+    }
+
+    function getSelectionRange() {
+      const type = shareType.value;
+      if (type === 'single') {
+        const verse = Number(shareSingleVerse.value || 1);
+        return { start: verse, end: verse, type };
+      }
+      if (type === 'range') {
+        const from = Number(shareRangeFrom.value || 1);
+        const to = Number(shareRangeTo.value || from);
+        return { start: Math.min(from, to), end: Math.max(from, to), type };
+      }
+      return { start: 1, end: totalVerses, type };
+    }
+
+    function buildBismillahExport(flags) {
+      const parts = [];
+      if (flags.arabic) parts.push(bismillahArabic);
+      if (flags.english) parts.push(bismillahEnglish);
+      return parts.join('
+');
+    }
+
+    function buildVerseExportText(ayah, flags) {
+      const verse = getVerseData(ayah);
+      if (!verse) return '';
+      const parts = [];
+      if (flags.arabic) {
+        parts.push(`${stripEmbeddedVerseMarkers(verse.arabic || fallbackArabicVerses[ayah - 1] || `الآية ${ayah}`)} ﴿${toArabicDigits(ayah)}﴾`);
+      }
+      if (flags.transliteration && verse.transliteration) {
+        parts.push(verse.transliteration);
+      }
+      if (flags.english) {
+        parts.push(`${ayah}. ${englishVerses[ayah - 1] || ''}`);
+      }
+      return parts.filter(Boolean).join('
+');
+    }
+
+    function buildSelectionBodyText(range, flags) {
+      const pieces = [];
+      if (range.type === 'surah' && range.start === 1) {
+        const bismillahBlock = buildBismillahExport(flags);
+        if (bismillahBlock) pieces.push(bismillahBlock);
+      }
+      for (let verse = range.start; verse <= range.end; verse += 1) {
+        const verseText = buildVerseExportText(verse, flags);
+        if (verseText) pieces.push(verseText);
+      }
+      return pieces.join('
+
+');
     }
 
     function getSharePayload() {
@@ -2188,36 +2281,31 @@
         throw new Error('Please keep the text respectful and suitable for Qur’an sharing.');
       }
 
+      const range = getSelectionRange();
+      const flags = getExportModeFlags();
       const intro = ['A gentle reminder from The English Qur’an.', 'May these verses bring benefit, reflection, and remembrance of Allah.'].join(' ');
       const namedLine = [toName ? `For ${toName}.` : '', fromName ? `Shared by ${fromName}.` : ''].filter(Boolean).join(' ');
 
       let title = 'Surah An-Naml';
-      let body = '';
       let url = `${window.location.origin}${window.location.pathname}`;
 
-      if (type === 'surah') {
-        body = 'Surah An-Naml';
-      } else if (type === 'single') {
-        const ayah = Number(shareSingleVerse.value || 1);
-        title = `Surah An-Naml | Verse ${ayah}`;
-        body = getVerseTextForCopy(ayah);
-        url = getVerseUrl(ayah);
-      } else {
-        const from = Number(shareRangeFrom.value || 1);
-        const to = Number(shareRangeTo.value || from);
-        const start = Math.min(from, to);
-        const end = Math.max(from, to);
-        title = `Surah An-Naml | Verses ${start} to ${end}`;
-        const pieces = [];
-        for (let verse = start; verse <= end; verse += 1) {
-          pieces.push(getVerseTextForCopy(verse));
-        }
-        body = `${title}\n\n${pieces.join('\n\n')}`;
-        url = getVerseUrl(start);
+      if (type === 'single') {
+        title = `Surah An-Naml | Verse ${range.start}`;
+        url = getVerseUrl(range.start);
+      } else if (type === 'range') {
+        title = `Surah An-Naml | Verses ${range.start} to ${range.end}`;
+        url = getVerseUrl(range.start);
       }
 
-      const text = [namedLine, intro, body, message, url].filter(Boolean).join('\n\n');
-      return { title, text, url };
+      const body = buildSelectionBodyText(range, flags);
+      const shareText = [namedLine, intro, title, body, message, exportAttribution, url].filter(Boolean).join('
+
+');
+      const downloadText = [title, body, exportAttribution].filter(Boolean).join('
+
+');
+
+      return { title, text: shareText, downloadText, url, range };
     }
 
     function updateShareBuilder() {
@@ -2237,8 +2325,32 @@
       }
     }
 
+    function clearShareInputs(showMessage = true) {
+      shareType.value = 'surah';
+      shareSingleVerse.value = '1';
+      shareRangeFrom.value = '1';
+      shareRangeTo.value = String(totalVerses);
+      shareFromName.value = '';
+      shareToName.value = '';
+      shareMessage.value = '';
+      updateShareBuilder();
+      if (showMessage) {
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = 'Share fields cleared.';
+      }
+    }
+
     function persistReflectionDraft() {
       localStorage.setItem(reflectionDraftStorageKey, reflectionDraft.value || '');
+      localStorage.setItem(reflectionNameStorageKey, reflectionName.value || '');
+      localStorage.setItem(reflectionEmailStorageKey, reflectionEmail.value || '');
+    }
+
+    function isValidEmail(value) {
+      const email = String(value || '').trim();
+      const atIndex = email.indexOf('@');
+      const dotIndex = email.lastIndexOf('.');
+      return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1;
     }
 
     async function sharePayloadNow(payload) {
@@ -2279,6 +2391,7 @@
     }
 
     function createExportHtml(payload) {
+      const exportText = payload.downloadText || payload.text || '';
       return [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -2300,8 +2413,8 @@
         '<div class="wrap">',
         '<div class="brand">The English Qur’an</div>',
         '<h1>' + escapeHtml(payload.title) + '</h1>',
-        '<div class="content">' + escapeHtml(payload.text) + '</div>',
-        '<div class="foot">englishquran.uk</div>',
+        '<div class="content">' + escapeHtml(exportText) + '</div>',
+        '<div class="foot">' + escapeHtml(exportAttribution) + '</div>',
         '</div>',
         '</body>',
         '</html>'
@@ -2365,6 +2478,7 @@
     }
 
     function exportShareAsImage(payload) {
+      const exportText = payload.downloadText || payload.text || '';
       const width = 1600;
       const padding = 96;
       const contentWidth = width - (padding * 2);
@@ -2373,8 +2487,8 @@
       probeCtx.font = '400 42px Inter, Arial, sans-serif';
       const titleLines = buildCanvasLines(probeCtx, payload.title, contentWidth);
       probeCtx.font = '400 30px Inter, Arial, sans-serif';
-      const bodyLines = buildCanvasLines(probeCtx, payload.text, contentWidth);
-      const height = Math.max(1200, padding + 70 + (titleLines.length * 58) + 40 + (bodyLines.length * 44) + 120);
+      const bodyLines = buildCanvasLines(probeCtx, exportText, contentWidth);
+      const height = Math.max(1200, padding + 70 + (titleLines.length * 58) + 40 + (bodyLines.length * 44) + 140);
       const canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
@@ -2403,7 +2517,7 @@
       });
       ctx.fillStyle = '#66727d';
       ctx.font = '400 24px Inter, Arial, sans-serif';
-      ctx.fillText('englishquran.uk', padding, height - 42);
+      ctx.fillText(exportAttribution, padding, height - 42);
       canvas.toBlob(function (blob) {
         if (!blob) {
           shareFeedback.classList.add('active');
@@ -2477,17 +2591,134 @@
       }
     }
 
-    async function openGetInTouch() {
-      const draft = reflectionDraft.value.trim();
-      const message = shareMessage.value.trim();
-      if (containsBlockedContent(draft) || containsBlockedContent(message)) {
-        shareFeedback.classList.add('active');
-        shareFeedback.textContent = 'Please keep the text respectful before sending it forward.';
+    function getReflectionSelectionLabel() {
+      const type = shareType.value;
+      if (type === 'single') {
+        return `Verse ${Number(shareSingleVerse.value || 1)}`;
+      }
+      if (type === 'range') {
+        const from = Number(shareRangeFrom.value || 1);
+        const to = Number(shareRangeTo.value || from);
+        return `Verses ${Math.min(from, to)} to ${Math.max(from, to)}`;
+      }
+      return 'Whole surah';
+    }
+
+    async function submitReflection() {
+      const reflection = reflectionDraft.value.trim();
+      const note = shareMessage.value.trim();
+      const fromName = shareFromName.value.trim();
+      const toName = shareToName.value.trim();
+      const senderName = reflectionName.value.trim();
+      const senderEmail = reflectionEmail.value.trim();
+
+      if (!senderName) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please enter your name before sending.';
+        reflectionName.focus();
         return;
       }
-      sessionStorage.setItem('teq-contact-reflection-draft', draft);
-      sessionStorage.setItem('teq-contact-share-draft', message);
-      window.location.href = 'index.html#get-in-touch';
+
+      if (!senderEmail) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please enter your email before sending.';
+        reflectionEmail.focus();
+        return;
+      }
+
+      if (!isValidEmail(senderEmail)) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please enter a valid email address.';
+        reflectionEmail.focus();
+        return;
+      }
+
+      if (!reflection) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please write a reflection before sending.';
+        reflectionDraft.focus();
+        return;
+      }
+
+      if (
+        containsBlockedContent(reflection) ||
+        containsBlockedContent(note) ||
+        containsBlockedContent(fromName) ||
+        containsBlockedContent(toName) ||
+        containsBlockedContent(senderName)
+      ) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please keep the reflection respectful and suitable for a Qur’an reading space.';
+        return;
+      }
+
+      reflectionSendButton.disabled = true;
+      reflectionSendButton.textContent = 'Sending...';
+      reflectionFeedback.classList.remove('active');
+      reflectionFeedback.textContent = '';
+
+      const message = [
+        `Name: ${senderName}`,
+        `Email: ${senderEmail}`,
+        `Surah: Surah ${surahNumber} | An-Naml`,
+        `Selection: ${getReflectionSelectionLabel()}`,
+        fromName ? `From name: ${fromName}` : '',
+        toName ? `To name: ${toName}` : '',
+        note ? `Share note: ${note}` : '',
+        '',
+        'Reflection:',
+        reflection,
+        '',
+        `Page: ${window.location.href}`
+      ].filter(Boolean).join('\n');
+
+      const formData = new FormData();
+      formData.append('name', senderName);
+      formData.append('email', senderEmail);
+      formData.append('message', message);
+      formData.append('_subject', `TEQ Reflection | Surah ${surahNumber} | An-Naml`);
+      formData.append('source_page', window.location.href);
+      formData.append('source_surah', `Surah ${surahNumber} | An-Naml`);
+      formData.append('selection_type', shareType.value);
+      formData.append('selection_label', getReflectionSelectionLabel());
+      formData.append('from_name', fromName);
+      formData.append('to_name', toName);
+      formData.append('share_note', note);
+      formData.append('reflection', reflection);
+
+      try {
+        const response = await fetch(formspreeEndpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json'
+          },
+          body: formData
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          const firstError = Array.isArray(result?.errors) && result.errors.length
+            ? (result.errors[0].message || result.errors[0].field || 'Reflection could not be sent right now.')
+            : 'Reflection could not be sent right now.';
+          throw new Error(firstError);
+        }
+
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Reflection sent. Thank you for sharing your thoughts with us.';
+        localStorage.removeItem(reflectionDraftStorageKey);
+        localStorage.removeItem(reflectionNameStorageKey);
+        localStorage.removeItem(reflectionEmailStorageKey);
+        reflectionName.value = '';
+        reflectionEmail.value = '';
+        reflectionDraft.value = '';
+      } catch (error) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = error.message || 'Reflection could not be sent right now.';
+      } finally {
+        reflectionSendButton.disabled = false;
+        reflectionSendButton.textContent = 'Send reflection';
+      }
     }
 
     function validateNoteInput(value, panel) {
@@ -3427,6 +3658,8 @@
         tests.push(['Selectors exist', Boolean(versesContainer && surahAudioPlayer && sharePreview)]);
         tests.push(['Verse selector length', verseSelect.options.length === totalVerses]);
         tests.push(['Download handler exists', typeof downloadShareSelection === 'function']);
+        tests.push(['Reflection fields exist', Boolean(reflectionName && reflectionEmail && reflectionDraft && reflectionSendButton)]);
+        tests.push(['Default reciter is Shuraym', reciterSelect.value === defaultReciterKey]);
         console.table(tests.map(([name, pass]) => ({ test: name, pass })));
       } catch (error) {
         console.warn('Smoke tests skipped.', error);
@@ -3458,8 +3691,16 @@
         updateShareBuilder();
 
         const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
+        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
+        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
         if (savedReflectionDraft !== null) {
           reflectionDraft.value = savedReflectionDraft;
+        }
+        if (savedReflectionName !== null) {
+          reflectionName.value = savedReflectionName;
+        }
+        if (savedReflectionEmail !== null) {
+          reflectionEmail.value = savedReflectionEmail;
         }
 
         loadingState.style.display = 'none';
@@ -3511,8 +3752,16 @@
         updateShareBuilder();
 
         const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
+        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
+        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
         if (savedReflectionDraft !== null) {
           reflectionDraft.value = savedReflectionDraft;
+        }
+        if (savedReflectionName !== null) {
+          reflectionName.value = savedReflectionName;
+        }
+        if (savedReflectionEmail !== null) {
+          reflectionEmail.value = savedReflectionEmail;
         }
 
         loadingState.style.display = 'none';
@@ -3528,16 +3777,35 @@
     shareFromName.addEventListener('input', updateShareBuilder);
     shareToName.addEventListener('input', updateShareBuilder);
     shareMessage.addEventListener('input', updateShareBuilder);
+    reflectionName.addEventListener('input', persistReflectionDraft);
+    reflectionEmail.addEventListener('input', persistReflectionDraft);
     reflectionDraft.addEventListener('input', persistReflectionDraft);
 
     shareNowButton.addEventListener('click', async () => {
-      try { await sharePayloadNow(getSharePayload()); } catch (error) { shareFeedback.classList.add('active'); shareFeedback.textContent = error.message; }
+      try {
+        await sharePayloadNow(getSharePayload());
+        clearShareInputs(false);
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = 'Share completed. Fields cleared.';
+      } catch (error) {
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = error.message || 'Share could not be completed.';
+      }
     });
     shareCopyButton.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(getSharePayload().text); shareFeedback.classList.add('active'); shareFeedback.textContent = 'Share text copied.'; } catch (error) { shareFeedback.classList.add('active'); shareFeedback.textContent = error.message; }
+      try {
+        const payload = getSharePayload();
+        await navigator.clipboard.writeText(payload.text);
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = 'Share text copied.';
+      } catch (error) {
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = error.message || 'Share text could not be copied.';
+      }
     });
     shareDownloadButton.addEventListener('click', downloadShareSelection);
-    shareContactButton.addEventListener('click', openGetInTouch);
+    shareClearButton.addEventListener('click', () => clearShareInputs(true));
+    reflectionSendButton.addEventListener('click', submitReflection);
 
     tabButtons.forEach((button) => button.addEventListener('click', () => {
       if (button.dataset.tab === 'read') {
@@ -3776,4 +4044,3 @@
   </script>
 </body>
 </html>
-
