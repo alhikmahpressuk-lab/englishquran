@@ -2863,10 +2863,15 @@
       introBismillahPlaying = false;
       recitationStartAtBeginning = false;
       stopTajweedPlayback(true);
+      introAudio.pause();
+      surahAudioPlayer.pause();
 
       const applySeek = () => {
         try { surahAudioPlayer.currentTime = Math.max(0, timing.timestampFrom / 1000); } catch {}
-        if (shouldPlay) surahAudioPlayer.play().catch(() => {});
+        processSyncedPlayback();
+        if (shouldPlay) {
+          surahAudioPlayer.play().catch(() => {});
+        }
       };
 
       if (!surahAudioPlayer.src && currentAudioUrl) {
@@ -3020,7 +3025,7 @@
     }
 
     function handleVerseClickForSyncedMode(event) {
-      if (event.target.closest('.ayah-word') || event.target.closest('.verse-toolbar') || event.target.closest('.verse-note-panel')) return;
+      if (event.target.closest('.verse-toolbar') || event.target.closest('.verse-note-panel')) return;
       const verseNumber = Number(event.currentTarget.dataset.ayahNumber);
       if (currentAudioView !== 'synced' || !syncByVerse[verseNumber]) return;
       setActiveTab('read');
@@ -3358,8 +3363,8 @@
 
       document.querySelectorAll('.ayah-word').forEach((word) => {
         word.addEventListener('click', async (event) => {
-          event.stopPropagation();
           if (!wordModeEnabled || currentAudioView === 'synced') return;
+          event.stopPropagation();
           const ayah = Number(word.closest('.verse')?.dataset.ayahNumber);
           const wordIndex = Number(word.getAttribute('data-word-index'));
           if (!ayah || !wordIndex) return;
