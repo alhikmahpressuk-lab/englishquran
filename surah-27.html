@@ -3433,12 +3433,50 @@
       }
     }
 
-            if (!apiDegraded) {
+    async function loadSurah() {
+      try {
+        const verseData = await fetchAllVerseData();
+
+        if (!verseData || !verseData.length) {
+          throw new Error('Live verse data unavailable.');
+        }
+
+        if (verseData.length !== englishVerses.length) {
+          throw new Error(`Verse count mismatch: Arabic ${verseData.length}, English ${englishVerses.length}`);
+        }
+
+        apiDegraded = false;
+        verseDataCache = verseData;
+        transliterationAvailable = verseData.some((verse) => verse.transliteration && verse.transliteration.trim());
+
+        renderVerses(verseDataCache);
+        buildVerseSelector();
+        applyMode('bilingual');
+        applyWordMode(false);
+        applyAudioView('standard', false);
+        updateBookmarkUI();
+        updateShareBuilder();
+
+        const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
+        if (savedReflectionDraft !== null) {
+          reflectionDraft.value = savedReflectionDraft;
+        }
+
+        loadingState.style.display = 'none';
+        errorState.style.display = 'none';
+        noteState.style.display = 'none';
+
+        handleInitialVerseJump();
+        renderSmokeTests();
+
+        if (!apiDegraded) {
           reciterSelect.value = defaultReciterKey;
           audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
+
           if (shouldAutoplay) {
             sessionStorage.removeItem(autoplaySessionKey);
             await loadSelectedAudio();
+
             const wantsSynced = autoplayView === 'synced';
             if (wantsSynced && currentAudioUrl && syncTimestamps.length) {
               applyAudioView('synced', true);
@@ -3463,6 +3501,7 @@
         console.error(error);
         apiDegraded = true;
         verseDataCache = buildFallbackVerseData();
+        transliterationAvailable = false;
         renderVerses(verseDataCache);
         buildVerseSelector();
         applyMode('bilingual');
@@ -3470,6 +3509,12 @@
         applyAudioView('standard', false);
         updateBookmarkUI();
         updateShareBuilder();
+
+        const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
+        if (savedReflectionDraft !== null) {
+          reflectionDraft.value = savedReflectionDraft;
+        }
+
         loadingState.style.display = 'none';
         errorState.style.display = 'block';
         errorState.textContent = 'The live surah data could not be loaded right now. A fallback reading view has been shown instead.';
