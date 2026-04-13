@@ -1256,6 +1256,7 @@
                 <button class="share-main-btn" type="button" id="shareNowButton" translate="no">Share now</button>
                 <button class="share-copy-btn" type="button" id="shareCopyButton" translate="no">Copy share text</button>
                 <button class="share-download-btn" type="button" id="shareDownloadButton" translate="no">Download</button>
+                <button class="share-copy-btn" type="button" id="shareClearButton" translate="no">Clear</button>
               </div>
               <div class="share-feedback" id="shareFeedback" translate="no"></div>
               <div class="share-preview" id="sharePreview" translate="no"></div>
@@ -1266,16 +1267,16 @@
               <div class="share-row" style="margin-bottom: 12px;">
                 <div class="share-field">
                   <label for="reflectionName" translate="no">Your name</label>
-                  <input id="reflectionName" type="text" maxlength="80" autocomplete="name" translate="no" placeholder="Enter your name" />
+                  <input id="reflectionName" name="name" type="text" maxlength="80" autocomplete="name" translate="no" placeholder="Enter your name" />
                 </div>
                 <div class="share-field">
                   <label for="reflectionEmail" translate="no">Your email</label>
-                  <input id="reflectionEmail" type="email" maxlength="120" autocomplete="email" translate="no" placeholder="Enter your email" />
+                  <input id="reflectionEmail" name="email" type="email" maxlength="120" autocomplete="email" translate="no" placeholder="Enter your email" />
                 </div>
               </div>
               <div class="share-field">
                 <label for="reflectionDraft" translate="no">Reflection draft</label>
-                <textarea id="reflectionDraft" maxlength="800" translate="no" placeholder="Write your reflection here."></textarea>
+                <textarea id="reflectionDraft" name="message" maxlength="800" translate="no" placeholder="Write your reflection here."></textarea>
               </div>
               <div class="share-row" style="margin-top: 12px;">
                 <button class="share-main-btn" type="button" id="reflectionSendButton" translate="no">Send reflection</button>
@@ -1533,6 +1534,7 @@
     const shareNowButton = document.getElementById('shareNowButton');
     const shareCopyButton = document.getElementById('shareCopyButton');
     const shareDownloadButton = document.getElementById('shareDownloadButton');
+    const shareClearButton = document.getElementById('shareClearButton');
     const sharePreview = document.getElementById('sharePreview');
     const shareFeedback = document.getElementById('shareFeedback');
     const reflectionName = document.getElementById('reflectionName');
@@ -2255,6 +2257,21 @@
       }
     }
 
+    function clearShareInputs(showMessage = true) {
+      shareType.value = 'surah';
+      shareSingleVerse.value = '1';
+      shareRangeFrom.value = '1';
+      shareRangeTo.value = String(totalVerses);
+      shareFromName.value = '';
+      shareToName.value = '';
+      shareMessage.value = '';
+      updateShareBuilder();
+      if (showMessage) {
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = 'Share fields cleared.';
+      }
+    }
+
     function persistReflectionDraft() {
       localStorage.setItem(reflectionDraftStorageKey, reflectionDraft.value || '');
       localStorage.setItem(reflectionNameStorageKey, reflectionName.value || '');
@@ -2566,49 +2583,55 @@
       }
 
       reflectionSendButton.disabled = true;
+      reflectionSendButton.textContent = 'Sending...';
       reflectionFeedback.classList.remove('active');
       reflectionFeedback.textContent = '';
 
-      const payload = {
-        name: senderName,
-        email: senderEmail,
-        subject: `TEQ Reflection | Surah ${surahNumber} | An-Naml`,
-        source_page: window.location.href,
-        source_surah: `Surah ${surahNumber} | An-Naml`,
-        selection_type: shareType.value,
-        selection_label: getReflectionSelectionLabel(),
-        from_name: fromName,
-        to_name: toName,
-        share_note: note,
+      const message = [
+        `Name: ${senderName}`,
+        `Email: ${senderEmail}`,
+        `Surah: Surah ${surahNumber} | An-Naml`,
+        `Selection: ${getReflectionSelectionLabel()}`,
+        fromName ? `From name: ${fromName}` : '',
+        toName ? `To name: ${toName}` : '',
+        note ? `Share note: ${note}` : '',
+        '',
+        'Reflection:',
         reflection,
-        message: [
-          `Name: ${senderName}`,
-          `Email: ${senderEmail}`,
-          `Surah: Surah ${surahNumber} | An-Naml`,
-          `Selection: ${getReflectionSelectionLabel()}`,
-          fromName ? `From name: ${fromName}` : '',
-          toName ? `To name: ${toName}` : '',
-          note ? `Share note: ${note}` : '',
-          '',
-          'Reflection:',
-          reflection,
-          '',
-          `Page: ${window.location.href}`
-        ].filter(Boolean).join('\n')
-      };
+        '',
+        `Page: ${window.location.href}`
+      ].filter(Boolean).join('\n');
+
+      const formData = new FormData();
+      formData.append('name', senderName);
+      formData.append('email', senderEmail);
+      formData.append('message', message);
+      formData.append('_subject', `TEQ Reflection | Surah ${surahNumber} | An-Naml`);
+      formData.append('source_page', window.location.href);
+      formData.append('source_surah', `Surah ${surahNumber} | An-Naml`);
+      formData.append('selection_type', shareType.value);
+      formData.append('selection_label', getReflectionSelectionLabel());
+      formData.append('from_name', fromName);
+      formData.append('to_name', toName);
+      formData.append('share_note', note);
+      formData.append('reflection', reflection);
 
       try {
         const response = await fetch(formspreeEndpoint, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify(payload)
+          body: formData
         });
 
+        const result = await response.json().catch(() => ({}));
+
         if (!response.ok) {
-          throw new Error('Reflection could not be sent right now.');
+          const firstError = Array.isArray(result?.errors) && result.errors.length
+            ? (result.errors[0].message || result.errors[0].field || 'Reflection could not be sent right now.')
+            : 'Reflection could not be sent right now.';
+          throw new Error(firstError);
         }
 
         reflectionFeedback.classList.add('active');
@@ -2621,9 +2644,10 @@
         reflectionDraft.value = '';
       } catch (error) {
         reflectionFeedback.classList.add('active');
-        reflectionFeedback.textContent = error.message;
+        reflectionFeedback.textContent = error.message || 'Reflection could not be sent right now.';
       } finally {
         reflectionSendButton.disabled = false;
+        reflectionSendButton.textContent = 'Send reflection';
       }
     }
 
@@ -3690,6 +3714,9 @@
     shareNowButton.addEventListener('click', async () => {
       try {
         await sharePayloadNow(getSharePayload());
+        clearShareInputs(false);
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = 'Share completed. Fields cleared.';
       } catch (error) {
         shareFeedback.classList.add('active');
         shareFeedback.textContent = error.message || 'Share could not be completed.';
@@ -3707,6 +3734,7 @@
       }
     });
     shareDownloadButton.addEventListener('click', downloadShareSelection);
+    shareClearButton.addEventListener('click', () => clearShareInputs(true));
     reflectionSendButton.addEventListener('click', submitReflection);
 
     tabButtons.forEach((button) => button.addEventListener('click', () => {
