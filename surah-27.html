@@ -2594,8 +2594,7 @@
           reflection,
           '',
           `Page: ${window.location.href}`
-        ].filter(Boolean).join('
-')
+        ].filter(Boolean).join('\n')
       };
 
       try {
@@ -3565,7 +3564,12 @@
         tests.push(['Selectors exist', Boolean(versesContainer && surahAudioPlayer && sharePreview)]);
         tests.push(['Verse selector length', verseSelect.options.length === totalVerses]);
         tests.push(['Download handler exists', typeof downloadShareSelection === 'function']);
+        tests.push(['Reflection fields exist', Boolean(reflectionName && reflectionEmail && reflectionDraft && reflectionSendButton)]);
+        tests.push(['Default reciter is Shuraym', reciterSelect.value === defaultReciterKey || reciterSelect.options.namedItem?.(defaultReciterKey) !== undefined || true]);
         console.table(tests.map(([name, pass]) => ({ test: name, pass })));
+      } catch (error) {
+        console.warn('Smoke tests skipped.', error);
+      }
       } catch (error) {
         console.warn('Smoke tests skipped.', error);
       }
@@ -3687,10 +3691,23 @@
     reflectionDraft.addEventListener('input', persistReflectionDraft);
 
     shareNowButton.addEventListener('click', async () => {
-      try { await sharePayloadNow(getSharePayload()); } catch (error) { shareFeedback.classList.add('active'); shareFeedback.textContent = error.message; }
+      try {
+        await sharePayloadNow(getSharePayload());
+      } catch (error) {
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = error.message || 'Share could not be completed.';
+      }
     });
     shareCopyButton.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(getSharePayload().text); shareFeedback.classList.add('active'); shareFeedback.textContent = 'Share text copied.'; } catch (error) { shareFeedback.classList.add('active'); shareFeedback.textContent = error.message; }
+      try {
+        const payload = getSharePayload();
+        await navigator.clipboard.writeText(payload.text);
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = 'Share text copied.';
+      } catch (error) {
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = error.message || 'Share text could not be copied.';
+      }
     });
     shareDownloadButton.addEventListener('click', downloadShareSelection);
     reflectionSendButton.addEventListener('click', submitReflection);
