@@ -2233,14 +2233,15 @@ ${exportAttribution}`;
 
     function buildBismillahExport(flags) {
       const parts = [];
+      const lineBreak = '\n';
       if (flags.arabic) parts.push(bismillahArabic);
       if (flags.english) parts.push(bismillahEnglish);
-      return parts.join('
-');
+      return parts.join(lineBreak);
     }
 
     function buildVerseExportText(ayah, flags) {
       const verse = getVerseData(ayah);
+      const lineBreak = '\n';
       if (!verse) return '';
       const parts = [];
       if (flags.arabic) {
@@ -2252,12 +2253,12 @@ ${exportAttribution}`;
       if (flags.english) {
         parts.push(`${ayah}. ${englishVerses[ayah - 1] || ''}`);
       }
-      return parts.filter(Boolean).join('
-');
+      return parts.filter(Boolean).join(lineBreak);
     }
 
     function buildSelectionBodyText(range, flags) {
       const pieces = [];
+      const blockBreak = '\n\n';
       if (range.type === 'surah' && range.start === 1) {
         const bismillahBlock = buildBismillahExport(flags);
         if (bismillahBlock) pieces.push(bismillahBlock);
@@ -2266,9 +2267,7 @@ ${exportAttribution}`;
         const verseText = buildVerseExportText(verse, flags);
         if (verseText) pieces.push(verseText);
       }
-      return pieces.join('
-
-');
+      return pieces.join(blockBreak);
     }
 
     function getSharePayload() {
@@ -2298,12 +2297,10 @@ ${exportAttribution}`;
       }
 
       const body = buildSelectionBodyText(range, flags);
-      const shareText = [namedLine, intro, title, body, message, exportAttribution, url].filter(Boolean).join('
-
-');
-      const downloadText = [title, body, exportAttribution].filter(Boolean).join('
-
-');
+      const shareTextParts = [namedLine, intro, title, body, message, exportAttribution, url].filter(Boolean);
+      const shareText = shareTextParts.join('\n\n');
+      const downloadTextParts = [title, body, exportAttribution].filter(Boolean);
+      const downloadText = downloadTextParts.join('\n\n');
 
       return { title, text: shareText, downloadText, url, range };
     }
