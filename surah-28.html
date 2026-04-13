@@ -2330,8 +2330,8 @@ ${message}` : '';
       }
 
       const shareParts = type === 'surah'
-        ? [intro, namedLine, title, senderNote, url, exportAttribution]
-        : [intro, namedLine, title, shareVerseText, senderNote, url, exportAttribution];
+        ? [intro, namedLine, title, senderNote, url]
+        : [intro, namedLine, title, shareVerseText, senderNote, url];
 
       const shareText = shareParts.filter(Boolean).join(sectionBreak);
       const downloadText = body;
@@ -2408,11 +2408,7 @@ ${message}` : '';
     async function shareVerse(ayah) {
       await sharePayloadNow({
         title: `Surah An-Naml | Verse ${ayah}`,
-        text: `${getVerseTextForShare(ayah)}
-
-${getVerseUrl(ayah)}
-
-${exportAttribution}`,
+        text: `${getVerseTextForShare(ayah)}\n\n${getVerseUrl(ayah)}`,
         url: getVerseUrl(ayah)
       });
       showBookmarkMessage(`Verse ${ayah} ready to share.`);
@@ -2893,14 +2889,7 @@ ${exportAttribution}`,
       }
       await sharePayloadNow({
         title: `Surah An-Naml | Verse ${ayah} note`,
-        text: `${getVerseTextForShare(ayah)}
-
-Personal note from sender:
-${note}
-
-${getVerseUrl(ayah)}
-
-${exportAttribution}`,
+        text: `${getVerseTextForShare(ayah)}\n\nPersonal note from sender:\n${note}\n\n${getVerseUrl(ayah)}`,
         url: getVerseUrl(ayah)
       });
       showBookmarkMessage(`Verse ${ayah} note ready to share.`);
