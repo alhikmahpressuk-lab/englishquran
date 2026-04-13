@@ -1213,14 +1213,13 @@
 
           <div class="subpanel" id="sharePanel">
             <h3 translate="no">Share</h3>
-            <p translate="no">Share the whole surah, one verse, or a verse range. You can also download a printable version for your current selection.</p>
+            <p translate="no">Share one verse or a verse range. You can also download a clean document for your current selection.</p>
             <div class="share-help" translate="no">A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.</div>
             <div class="share-builder">
               <div class="share-row" style="margin-bottom: 12px;">
                 <div class="share-field">
                   <label for="shareType" translate="no">Share type</label>
                   <select id="shareType" translate="no">
-                    <option value="surah">Whole surah</option>
                     <option value="single">Single verse</option>
                     <option value="range">Verse range</option>
                   </select>
@@ -1446,7 +1445,8 @@
     const autoplaySessionKey = 'teq-index-autoplay';
     const defaultReciterKey = 'shuraim';
     const formspreeEndpoint = 'https://formspree.io/f/mreokljn';
-    const exportAttribution = 'The English Qur’an | By: Dr A K Khan | englishquran.uk';
+    const exportAttribution = 'The English Qur’an | By: Dr A K Khan';
+    const jsPdfCdn = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
 
     const reciters = {
       sudais: { name: 'Sheikh Abdur-Rahman as-Sudais', id: 3 },
@@ -1594,6 +1594,7 @@
     let tajweedWordStopTimer = null;
     let tajweedContinueAllActive = false;
     let apiDegraded = false;
+    let jsPdfLoaderPromise = null;
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
     function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
@@ -2219,55 +2220,56 @@ ${exportAttribution}`;
 
     function getSelectionRange() {
       const type = shareType.value;
-      if (type === 'single') {
-        const verse = Number(shareSingleVerse.value || 1);
-        return { start: verse, end: verse, type };
-      }
       if (type === 'range') {
         const from = Number(shareRangeFrom.value || 1);
         const to = Number(shareRangeTo.value || from);
-        return { start: Math.min(from, to), end: Math.max(from, to), type };
+        return { start: Math.min(from, to), end: Math.max(from, to), type: 'range' };
       }
-      return { start: 1, end: totalVerses, type };
+      const verse = Number(shareSingleVerse.value || 1);
+      return { start: verse, end: verse, type: 'single' };
     }
 
-    function buildBismillahExport(flags) {
-      const parts = [];
-      const lineBreak = '\n';
-      if (flags.arabic) parts.push(bismillahArabic);
-      if (flags.english) parts.push(bismillahEnglish);
-      return parts.join(lineBreak);
+    function buildSelectionBlocks(range, flags) {
+      const blocks = [];
+      if (range.start === 1) {
+        blocks.push({
+          kind: 'bismillah',
+          arabic: flags.arabic ? bismillahArabic : '',
+          transliteration: '',
+          english: flags.english ? bismillahEnglish : ''
+        });
+      }
+
+      for (let verseNumber = range.start; verseNumber <= range.end; verseNumber += 1) {
+        const verse = getVerseData(verseNumber);
+        if (!verse) continue;
+        blocks.push({
+          kind: 'verse',
+          verseNumber,
+          arabic: flags.arabic ? `${stripEmbeddedVerseMarkers(verse.arabic || fallbackArabicVerses[verseNumber - 1] || `الآية ${verseNumber}`)} ﴿${toArabicDigits(verseNumber)}﴾` : '',
+          transliteration: flags.transliteration && verse.transliteration ? verse.transliteration : '',
+          english: flags.english ? `${verseNumber}. ${englishVerses[verseNumber - 1] || ''}` : ''
+        });
+      }
+
+      return blocks;
     }
 
-    function buildVerseExportText(ayah, flags) {
-      const verse = getVerseData(ayah);
-      const lineBreak = '\n';
-      if (!verse) return '';
-      const parts = [];
-      if (flags.arabic) {
-        parts.push(`${stripEmbeddedVerseMarkers(verse.arabic || fallbackArabicVerses[ayah - 1] || `الآية ${ayah}`)} ﴿${toArabicDigits(ayah)}﴾`);
-      }
-      if (flags.transliteration && verse.transliteration) {
-        parts.push(verse.transliteration);
-      }
-      if (flags.english) {
-        parts.push(`${ayah}. ${englishVerses[ayah - 1] || ''}`);
-      }
-      return parts.filter(Boolean).join(lineBreak);
-    }
+    function buildSelectionBodyText(blocks) {
+      return blocks.map((block) => {
+        const parts = [];
+        if (block.kind === 'verse') {
+          parts.push(`Verse ${block.verseNumber}`);
+        }
+        if (block.arabic) parts.push(block.arabic);
+        if (block.transliteration) parts.push(block.transliteration);
+        if (block.english) parts.push(block.english);
+        return parts.join('
+');
+      }).filter(Boolean).join('
 
-    function buildSelectionBodyText(range, flags) {
-      const pieces = [];
-      const blockBreak = '\n\n';
-      if (range.type === 'surah' && range.start === 1) {
-        const bismillahBlock = buildBismillahExport(flags);
-        if (bismillahBlock) pieces.push(bismillahBlock);
-      }
-      for (let verse = range.start; verse <= range.end; verse += 1) {
-        const verseText = buildVerseExportText(verse, flags);
-        if (verseText) pieces.push(verseText);
-      }
-      return pieces.join(blockBreak);
+
+');
     }
 
     function getSharePayload() {
@@ -2282,27 +2284,23 @@ ${exportAttribution}`;
 
       const range = getSelectionRange();
       const flags = getExportModeFlags();
-      const intro = ['A gentle reminder from The English Qur’an.', 'May these verses bring benefit, reflection, and remembrance of Allah.'].join(' ');
+      const blocks = buildSelectionBlocks(range, flags);
+      const body = buildSelectionBodyText(blocks);
+      const intro = 'A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.';
       const namedLine = [toName ? `For ${toName}.` : '', fromName ? `Shared by ${fromName}.` : ''].filter(Boolean).join(' ');
 
-      let title = 'Surah An-Naml';
-      let url = `${window.location.origin}${window.location.pathname}`;
-
-      if (type === 'single') {
-        title = `Surah An-Naml | Verse ${range.start}`;
-        url = getVerseUrl(range.start);
-      } else if (type === 'range') {
+      let title = `Surah An-Naml | Verse ${range.start}`;
+      let url = getVerseUrl(range.start);
+      if (type === 'range') {
         title = `Surah An-Naml | Verses ${range.start} to ${range.end}`;
-        url = getVerseUrl(range.start);
       }
 
-      const body = buildSelectionBodyText(range, flags);
-      const shareTextParts = [namedLine, intro, title, body, message, exportAttribution, url].filter(Boolean);
-      const shareText = shareTextParts.join('\n\n');
-      const downloadTextParts = [title, body, exportAttribution].filter(Boolean);
-      const downloadText = downloadTextParts.join('\n\n');
+      const shareText = [namedLine, intro, title, body, message, exportAttribution, url].filter(Boolean).join('
 
-      return { title, text: shareText, downloadText, url, range };
+');
+      const downloadText = body;
+
+      return { title, text: shareText, downloadText, url, range, blocks };
     }
 
     function updateShareBuilder() {
@@ -2323,7 +2321,7 @@ ${exportAttribution}`;
     }
 
     function clearShareInputs(showMessage = true) {
-      shareType.value = 'surah';
+      shareType.value = 'single';
       shareSingleVerse.value = '1';
       shareRangeFrom.value = '1';
       shareRangeTo.value = String(totalVerses);
@@ -2388,30 +2386,55 @@ ${exportAttribution}`;
     }
 
     function createExportHtml(payload) {
-      const exportText = payload.downloadText || payload.text || '';
+      const blocksHtml = payload.blocks.map((block) => {
+        if (block.kind === 'bismillah') {
+          return [
+            '<section class="export-block export-bismillah">',
+            block.arabic ? `<div class="export-arabic export-arabic-center">${escapeHtml(block.arabic)}</div>` : '',
+            block.english ? `<div class="export-english export-english-center">${escapeHtml(block.english)}</div>` : '',
+            '</section>'
+          ].join('');
+        }
+        return [
+          '<section class="export-block">',
+          `<div class="export-label">Verse ${block.verseNumber}</div>`,
+          block.arabic ? `<div class="export-arabic">${escapeHtml(block.arabic)}</div>` : '',
+          block.transliteration ? `<div class="export-transliteration">${escapeHtml(block.transliteration)}</div>` : '',
+          block.english ? `<div class="export-english">${escapeHtml(block.english)}</div>` : '',
+          '</section>'
+        ].join('');
+      }).join('');
+
       return [
         '<!DOCTYPE html>',
         '<html lang="en">',
         '<head>',
         '<meta charset="UTF-8">',
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-        '<title>' + escapeHtml(payload.title) + '</title>',
+        `<title>${escapeHtml(payload.title)}</title>`,
         '<style>',
         'body{font-family:Inter,Arial,sans-serif;margin:0;padding:32px;color:#182128;background:#ffffff;line-height:1.75;}',
         '.wrap{max-width:900px;margin:0 auto;}',
         '.brand{font-size:14px;color:#1e6b5c;font-weight:700;margin-bottom:12px;}',
         'h1{margin:0 0 18px;font-size:28px;line-height:1.2;}',
-        '.content{white-space:pre-wrap;font-size:16px;}',
-        '.foot{margin-top:24px;font-size:13px;color:#66727d;}',
-        '@page{size:A4;margin:18mm;}',
+        '.export-block{padding:0 0 28px;margin:0 0 28px;border-bottom:1px solid #e3e8ec;}',
+        '.export-block:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0;}',
+        '.export-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#66727d;margin-bottom:12px;}',
+        '.export-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:30px;line-height:2;text-align:right;direction:rtl;margin-bottom:14px;}',
+        '.export-arabic-center{text-align:center;}',
+        '.export-transliteration{font-size:15px;line-height:1.9;font-style:italic;color:#66727d;margin-bottom:12px;}',
+        '.export-english{font-size:16px;line-height:1.85;}',
+        '.export-english-center{text-align:center;}',
+        '.foot{margin-top:28px;padding-top:18px;border-top:1px solid #e3e8ec;font-size:13px;color:#66727d;}',
+        '@page{size:A4;margin:16mm;}',
         '</style>',
         '</head>',
         '<body>',
         '<div class="wrap">',
         '<div class="brand">The English Qur’an</div>',
-        '<h1>' + escapeHtml(payload.title) + '</h1>',
-        '<div class="content">' + escapeHtml(exportText) + '</div>',
-        '<div class="foot">' + escapeHtml(exportAttribution) + '</div>',
+        `<h1>${escapeHtml(payload.title)}</h1>`,
+        blocksHtml,
+        `<div class="foot">${escapeHtml(exportAttribution)}</div>`,
         '</div>',
         '</body>',
         '</html>'
@@ -2423,12 +2446,28 @@ ${exportAttribution}`;
       const a = document.createElement('a');
       a.href = url;
       a.download = fileName;
+      a.rel = 'noopener';
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(function () {
-        URL.revokeObjectURL(url);
-      }, 1000);
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }
+
+    function ensureJsPdf() {
+      if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
+      if (jsPdfLoaderPromise) return jsPdfLoaderPromise;
+      jsPdfLoaderPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = jsPdfCdn;
+        script.async = true;
+        script.onload = () => {
+          if (window.jspdf && window.jspdf.jsPDF) resolve(window.jspdf.jsPDF);
+          else reject(new Error('PDF export library could not be loaded.'));
+        };
+        script.onerror = () => reject(new Error('PDF export library could not be loaded.'));
+        document.head.appendChild(script);
+      });
+      return jsPdfLoaderPromise;
     }
 
     function openPdfPrintView(payload) {
@@ -2438,28 +2477,23 @@ ${exportAttribution}`;
       popup.document.write(createExportHtml(payload));
       popup.document.close();
       popup.focus();
-      setTimeout(function () {
-        try { popup.print(); } catch (error) {}
-      }, 300);
-    }
-
-    function exportShareAsWord(payload) {
-      const html = createExportHtml(payload);
-      const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
-      triggerBlobDownload(blob, sanitiseFileName(payload.title) + '.doc');
+      setTimeout(() => {
+        try { popup.print(); } catch {}
+      }, 350);
     }
 
     function buildCanvasLines(ctx, text, maxWidth) {
-      const paragraphs = String(text || '').split(String.fromCharCode(10));
+      const paragraphs = String(text || '').split('
+');
       const lines = [];
-      paragraphs.forEach(function (paragraph, paragraphIndex) {
+      paragraphs.forEach((paragraph, paragraphIndex) => {
         const words = paragraph.split(' ').filter(Boolean);
         if (!words.length) {
           lines.push('');
         } else {
           let line = '';
-          words.forEach(function (word) {
-            const testLine = line ? line + ' ' + word : word;
+          words.forEach((word) => {
+            const testLine = line ? `${line} ${word}` : word;
             if (ctx.measureText(testLine).width <= maxWidth) {
               line = testLine;
             } else {
@@ -2474,57 +2508,126 @@ ${exportAttribution}`;
       return lines;
     }
 
-    function exportShareAsImage(payload) {
-      const exportText = payload.downloadText || payload.text || '';
+    function buildCanvasPages(payload) {
       const width = 1600;
+      const height = 2100;
       const padding = 96;
+      const footerGap = 90;
       const contentWidth = width - (padding * 2);
       const probeCanvas = document.createElement('canvas');
+      probeCanvas.width = width;
+      probeCanvas.height = height;
       const probeCtx = probeCanvas.getContext('2d');
-      probeCtx.font = '400 42px Inter, Arial, sans-serif';
+      probeCtx.font = '700 48px Inter, Arial, sans-serif';
       const titleLines = buildCanvasLines(probeCtx, payload.title, contentWidth);
       probeCtx.font = '400 30px Inter, Arial, sans-serif';
-      const bodyLines = buildCanvasLines(probeCtx, exportText, contentWidth);
-      const height = Math.max(1200, padding + 70 + (titleLines.length * 58) + 40 + (bodyLines.length * 44) + 140);
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = '#1e6b5c';
-      ctx.font = '700 28px Inter, Arial, sans-serif';
-      ctx.fillText('The English Qur’an', padding, padding);
-      let y = padding + 72;
-      ctx.fillStyle = '#182128';
-      ctx.font = '700 48px Inter, Arial, sans-serif';
-      titleLines.forEach(function (line) {
-        ctx.fillText(line, padding, y);
-        y += 58;
+      const bodyLines = buildCanvasLines(probeCtx, payload.downloadText || '', contentWidth);
+
+      const firstPageSlots = 28;
+      const laterPageSlots = 34;
+      const pages = [];
+      let cursor = 0;
+      pages.push({ titleLines, bodyLines: bodyLines.slice(cursor, cursor + firstPageSlots), continued: false });
+      cursor += firstPageSlots;
+      while (cursor < bodyLines.length) {
+        pages.push({ titleLines: buildCanvasLines(probeCtx, `${payload.title} | Continued`, contentWidth), bodyLines: bodyLines.slice(cursor, cursor + laterPageSlots), continued: true });
+        cursor += laterPageSlots;
+      }
+
+      return pages.map((page, pageIndex) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = '#1e6b5c';
+        ctx.font = '700 28px Inter, Arial, sans-serif';
+        ctx.fillText('The English Qur’an', padding, padding);
+
+        let y = padding + 70;
+        ctx.fillStyle = '#182128';
+        ctx.font = '700 48px Inter, Arial, sans-serif';
+        page.titleLines.forEach((line) => {
+          ctx.fillText(line, padding, y);
+          y += 58;
+        });
+        y += 10;
+
+        ctx.font = '400 30px Inter, Arial, sans-serif';
+        page.bodyLines.forEach((line) => {
+          if (!line) {
+            y += 28;
+            return;
+          }
+          ctx.fillText(line, padding, y);
+          y += 42;
+        });
+
+        ctx.fillStyle = '#66727d';
+        ctx.font = '400 24px Inter, Arial, sans-serif';
+        ctx.fillText(exportAttribution, padding, height - 44);
+        ctx.textAlign = 'right';
+        ctx.fillText(`Page ${pageIndex + 1} of ${pages.length}`, width - padding, height - 44);
+        ctx.textAlign = 'left';
+        return canvas;
       });
-      y += 12;
-      ctx.font = '400 30px Inter, Arial, sans-serif';
-      bodyLines.forEach(function (line) {
-        if (!line) {
-          y += 24;
-          return;
-        }
-        ctx.fillText(line, padding, y);
-        y += 44;
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Image export could not be created.'));
+        }, 'image/png');
       });
-      ctx.fillStyle = '#66727d';
-      ctx.font = '400 24px Inter, Arial, sans-serif';
-      ctx.fillText(exportAttribution, padding, height - 42);
-      canvas.toBlob(function (blob) {
-        if (!blob) {
-          shareFeedback.classList.add('active');
-          shareFeedback.textContent = 'Image export could not be created.';
-          return;
-        }
-        triggerBlobDownload(blob, sanitiseFileName(payload.title) + '.png');
+    }
+
+    async function exportShareAsPdf(payload) {
+      try {
+        const JsPdf = await ensureJsPdf();
+        const canvases = buildCanvasPages(payload);
+        const doc = new JsPdf({ orientation: 'p', unit: 'pt', format: 'a4' });
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 18;
+        const imageWidth = pageWidth - (margin * 2);
+        const imageHeight = pageHeight - (margin * 2);
+
+        canvases.forEach((canvas, index) => {
+          if (index > 0) doc.addPage();
+          const imageData = canvas.toDataURL('image/png', 1);
+          doc.addImage(imageData, 'PNG', margin, margin, imageWidth, imageHeight, undefined, 'FAST');
+        });
+
+        doc.save(`${sanitiseFileName(payload.title)}.pdf`);
         shareFeedback.classList.add('active');
-        shareFeedback.textContent = 'Image download started.';
-      }, 'image/png');
+        shareFeedback.textContent = 'PDF download started.';
+      } catch (error) {
+        openPdfPrintView(payload);
+        shareFeedback.classList.add('active');
+        shareFeedback.textContent = 'Print view opened. Use Save as PDF.';
+      }
+    }
+
+    function exportShareAsWord(payload) {
+      const html = createExportHtml(payload);
+      const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
+      triggerBlobDownload(blob, `${sanitiseFileName(payload.title)}.doc`);
+      shareFeedback.classList.add('active');
+      shareFeedback.textContent = 'Word download started.';
+    }
+
+    async function exportShareAsImage(payload) {
+      const canvases = buildCanvasPages(payload);
+      for (let index = 0; index < canvases.length; index += 1) {
+        const blob = await canvasToBlob(canvases[index]);
+        const suffix = canvases.length > 1 ? `-${index + 1}` : '';
+        triggerBlobDownload(blob, `${sanitiseFileName(payload.title)}${suffix}.png`);
+      }
+      shareFeedback.classList.add('active');
+      shareFeedback.textContent = canvases.length > 1 ? 'Image downloads started.' : 'Image download started.';
     }
 
     async function downloadShareSelection() {
@@ -2534,71 +2637,47 @@ ${exportAttribution}`;
           {
             label: 'PDF',
             primary: true,
-            onClick: function () {
+            onClick: async () => {
               hidePrompt();
-              try {
-                openPdfPrintView(payload);
-                shareFeedback.classList.add('active');
-                shareFeedback.textContent = 'Print view opened. Use Save as PDF.';
-              } catch (error) {
-                shareFeedback.classList.add('active');
-                shareFeedback.textContent = error.message;
-              }
+              await exportShareAsPdf(payload);
             }
           },
           {
             label: 'Word',
             primary: false,
-            onClick: function () {
+            onClick: () => {
               hidePrompt();
-              try {
-                exportShareAsWord(payload);
-                shareFeedback.classList.add('active');
-                shareFeedback.textContent = 'Word download started.';
-              } catch (error) {
-                shareFeedback.classList.add('active');
-                shareFeedback.textContent = error.message;
-              }
+              exportShareAsWord(payload);
             }
           },
           {
             label: 'Image',
             primary: false,
-            onClick: function () {
+            onClick: async () => {
               hidePrompt();
-              try {
-                exportShareAsImage(payload);
-              } catch (error) {
-                shareFeedback.classList.add('active');
-                shareFeedback.textContent = error.message;
-              }
+              await exportShareAsImage(payload);
             }
           },
           {
             label: 'Close',
             primary: false,
-            onClick: function () {
-              hidePrompt();
-            }
+            onClick: () => hidePrompt()
           }
         ]);
       } catch (error) {
         shareFeedback.classList.add('active');
-        shareFeedback.textContent = error.message;
+        shareFeedback.textContent = error.message || 'Download could not be prepared.';
       }
     }
 
     function getReflectionSelectionLabel() {
       const type = shareType.value;
-      if (type === 'single') {
-        return `Verse ${Number(shareSingleVerse.value || 1)}`;
-      }
       if (type === 'range') {
         const from = Number(shareRangeFrom.value || 1);
         const to = Number(shareRangeTo.value || from);
         return `Verses ${Math.min(from, to)} to ${Math.max(from, to)}`;
       }
-      return 'Whole surah';
+      return `Verse ${Number(shareSingleVerse.value || 1)}`;
     }
 
     async function submitReflection() {
@@ -3657,6 +3736,8 @@ ${exportAttribution}`;
         tests.push(['Download handler exists', typeof downloadShareSelection === 'function']);
         tests.push(['Reflection fields exist', Boolean(reflectionName && reflectionEmail && reflectionDraft && reflectionSendButton)]);
         tests.push(['Default reciter is Shuraym', reciterSelect.value === defaultReciterKey]);
+        tests.push(['Share selector cleaned', shareType.options.length === 2 && Array.from(shareType.options).every((option) => option.value !== 'surah')]);
+        tests.push(['Selection blocks available', typeof buildSelectionBlocks === 'function']);
         console.table(tests.map(([name, pass]) => ({ test: name, pass })));
       } catch (error) {
         console.warn('Smoke tests skipped.', error);
