@@ -1449,6 +1449,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const shouldAutoplay = urlParams.get('autoplay') === '1' || sessionStorage.getItem(autoplaySessionKey) === '1';
     const autoplayReciter = urlParams.get('reciter');
+    const autoplayView = urlParams.get('view');
 
     const versesContainer = document.getElementById('versesContainer');
     const loadingState = document.getElementById('loadingState');
@@ -3432,45 +3433,30 @@
       }
     }
 
-    async function loadSurah() {
-      loadingState.style.display = 'block';
-      errorState.style.display = 'none';
-      try {
-        const verseData = await fetchAllVerseData();
-        if (!verseData || verseData.length !== englishVerses.length) {
-          apiDegraded = true;
-          verseDataCache = buildFallbackVerseData();
-          transliterationAvailable = false;
-          renderVerses(verseDataCache);
-          noteState.style.display = 'block';
-          noteState.textContent = 'Live Qur’an data is temporarily unavailable, so a fallback reading view has loaded.';
-        } else {
-          apiDegraded = false;
-          verseDataCache = verseData;
-          transliterationAvailable = verseData.some((verse) => verse.transliteration && verse.transliteration.trim());
-          renderVerses(verseDataCache);
-        }
-
-        buildVerseSelector();
-        applyMode('bilingual');
-        applyWordMode(false);
-        applyAudioView('standard', false);
-        updateBookmarkUI();
-        const storedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
-        if (storedReflectionDraft) reflectionDraft.value = storedReflectionDraft;
-        updateShareBuilder();
-        loadingState.style.display = 'none';
-        observeReadingProgress();
-        handleInitialVerseJump();
-        renderSmokeTests();
-
-        if (!apiDegraded) {
+            if (!apiDegraded) {
           reciterSelect.value = defaultReciterKey;
           audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
           if (shouldAutoplay) {
             sessionStorage.removeItem(autoplaySessionKey);
             await loadSelectedAudio();
-            if (currentAudioUrl && syncTimestamps.length) applyAudioView('synced', true);
+            const wantsSynced = autoplayView === 'synced';
+            if (wantsSynced && currentAudioUrl && syncTimestamps.length) {
+              applyAudioView('synced', true);
+              setActiveTab('read');
+              try {
+                await startFromBeginningWithBismillah();
+              } catch {
+                showBookmarkMessage('Tap play to begin recitation.');
+              }
+            } else if (currentAudioUrl) {
+              applyAudioView('standard', false);
+              setActiveTab('listen');
+              try {
+                await surahAudioPlayer.play();
+              } catch {
+                showBookmarkMessage('Tap play to begin recitation.');
+              }
+            }
           }
         }
       } catch (error) {
