@@ -2306,6 +2306,8 @@ ${exportAttribution}`;
       const shareVerseText = buildShareVerseText(blocks);
       const intro = 'A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.';
       const namedLine = [toName ? `For ${toName}.` : '', fromName ? `Shared by ${fromName}.` : ''].filter(Boolean).join(' ');
+      const senderNote = message ? `Personal note from sender
+${message}` : '';
 
       let title = 'Surah An-Naml';
       let url = `${window.location.origin}${window.location.pathname}`;
@@ -2318,8 +2320,8 @@ ${exportAttribution}`;
       }
 
       const shareParts = type === 'surah'
-        ? [intro, namedLine, title, message, exportAttribution, url]
-        : [intro, namedLine, title, shareVerseText, message, exportAttribution, url];
+        ? [intro, namedLine, title, senderNote, exportAttribution, url]
+        : [intro, namedLine, title, shareVerseText, senderNote, exportAttribution, url];
 
       const shareText = shareParts.filter(Boolean).join(sectionBreak);
       const downloadText = body;
@@ -2877,7 +2879,12 @@ ${exportAttribution}`;
       }
       await sharePayloadNow({
         title: `Surah An-Naml | Verse ${ayah} note`,
-        text: `${getVerseTextForCopy(ayah)}\n\nNote:\n${note}`,
+        text: `${getVerseTextForCopy(ayah)}
+
+Personal note from sender
+${note}
+
+${getVerseUrl(ayah)}`,
         url: getVerseUrl(ayah)
       });
       showBookmarkMessage(`Verse ${ayah} note ready to share.`);
