@@ -1281,7 +1281,6 @@
 
           <div class="tab-panel" id="overview">
             <div class="overview notranslate" translate="no">
-              <!-- Overview refreshed -->
               <h3 translate="no">Overview</h3>
               <p translate="no">Surah An-Naml centres on clear signs, knowledge, and recognition of Allah’s power, with its name drawn from the account of the ant that speaks within the story of Sulaymān (Solomon), reflecting awareness and order within creation. Revealed in Makkah, it strengthens certainty by showing that guidance is clear, yet only those who reflect and are sincere truly benefit. It opens by presenting the Qur’an as guidance and good news, while making clear that those who deny the Hereafter remain blind to its message despite its clarity.</p>
               <p translate="no">A central focus of the Surah is the story of Mūsā (Moses), who is called and given signs to confront Firʿawn (Pharaoh), showing again the struggle between truth and arrogance. It then gives detailed attention to Dāwūd (David) and Sulaymān (Solomon), highlighting the knowledge, authority, and control granted to them by Allah. The account of the ant and the interaction with the birds reflects a world functioning with awareness and submission to Allah’s command, showing that knowledge must be met with gratitude and humility.</p>
@@ -2018,6 +2017,7 @@
         tajweedMiniPlayPause.textContent = 'Pause';
         tajweedMiniContinueAll.textContent = 'Continue all';
         tajweedMiniContinueAll.classList.remove('primary');
+        tajweedMiniContinueAll.style.display = 'inline-flex';
         tajweedMiniText.textContent = 'Ready';
       }
     }
@@ -2747,6 +2747,7 @@
       tajweedMiniPlayPause.textContent = tajweedAudio.paused ? 'Play' : 'Pause';
       tajweedMiniContinueAll.textContent = tajweedContinueAllActive ? 'Continuing all' : 'Continue all';
       tajweedMiniContinueAll.classList.toggle('primary', tajweedContinueAllActive);
+      tajweedMiniContinueAll.style.display = tajweedContinueAllActive ? 'none' : 'inline-flex';
     }
 
     function loadAudioAtTime(audio, src, startSeconds = 0) {
@@ -2832,6 +2833,7 @@
       tajweedEndMs = null;
       tajweedActive = true;
       tajweedContinueAllActive = mode === 'continue-all';
+      tajweedMiniContinueAll.style.display = tajweedContinueAllActive ? 'none' : 'inline-flex';
       lastAutoScrolledVerse = null;
       clearAllHighlights();
       try {
@@ -3594,6 +3596,7 @@
       if (!tajweedVerse || tajweedMode === 'word') return;
       tajweedContinueAllActive = true;
       tajweedMode = 'continue-all';
+      tajweedMiniContinueAll.style.display = 'none';
       updateTajweedMini(`Continuing from verse ${tajweedVerse}`, `Playing verse ${tajweedVerse} and continuing to the end`, true);
       if (tajweedAudio.paused) {
         try { await tajweedAudio.play(); } catch {}
