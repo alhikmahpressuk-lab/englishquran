@@ -2256,6 +2256,8 @@ ${exportAttribution}`;
     }
 
     function buildSelectionBodyText(blocks) {
+      const lineBreak = '\n';
+      const blockBreak = '\n\n\n';
       return blocks.map((block) => {
         const parts = [];
         if (block.kind === 'verse') {
@@ -2264,12 +2266,8 @@ ${exportAttribution}`;
         if (block.arabic) parts.push(block.arabic);
         if (block.transliteration) parts.push(block.transliteration);
         if (block.english) parts.push(block.english);
-        return parts.join('
-');
-      }).filter(Boolean).join('
-
-
-');
+        return parts.join(lineBreak);
+      }).filter(Boolean).join(blockBreak);
     }
 
     function getSharePayload() {
@@ -2277,6 +2275,7 @@ ${exportAttribution}`;
       const fromName = shareFromName.value.trim();
       const toName = shareToName.value.trim();
       const message = shareMessage.value.trim();
+      const doubleBreak = '\n\n';
 
       if (containsBlockedContent(fromName) || containsBlockedContent(toName) || containsBlockedContent(message)) {
         throw new Error('Please keep the text respectful and suitable for Qur’an sharing.');
@@ -2295,9 +2294,7 @@ ${exportAttribution}`;
         title = `Surah An-Naml | Verses ${range.start} to ${range.end}`;
       }
 
-      const shareText = [namedLine, intro, title, body, message, exportAttribution, url].filter(Boolean).join('
-
-');
+      const shareText = [namedLine, intro, title, body, message, exportAttribution, url].filter(Boolean).join(doubleBreak);
       const downloadText = body;
 
       return { title, text: shareText, downloadText, url, range, blocks };
@@ -2483,8 +2480,8 @@ ${exportAttribution}`;
     }
 
     function buildCanvasLines(ctx, text, maxWidth) {
-      const paragraphs = String(text || '').split('
-');
+      const lineBreak = '\n';
+      const paragraphs = String(text || '').split(lineBreak);
       const lines = [];
       paragraphs.forEach((paragraph, paragraphIndex) => {
         const words = paragraph.split(' ').filter(Boolean);
