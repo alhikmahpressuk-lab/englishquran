@@ -2202,6 +2202,16 @@ Surah An-Naml, Ayah ${ayah}
 ${exportAttribution}`;
     }
 
+    function getVerseTextForShare(ayah) {
+      const verse = getVerseData(ayah);
+      if (!verse) return '';
+      return `${verse.arabic}
+
+${ayah}. ${englishVerses[ayah - 1] || ''}
+
+Surah An-Naml, Ayah ${ayah}`;
+    }
+
     function getVerseUrl(ayah) {
       return `${window.location.origin}${window.location.pathname}?ayah=${ayah}#ayah-${ayah}`;
     }
@@ -2306,7 +2316,7 @@ ${exportAttribution}`;
       const shareVerseText = buildShareVerseText(blocks);
       const intro = 'A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.';
       const namedLine = [toName ? `For ${toName}.` : '', fromName ? `Shared by ${fromName}.` : ''].filter(Boolean).join(' ');
-      const senderNote = message ? `Personal note from sender
+      const senderNote = message ? `Personal note from sender:
 ${message}` : '';
 
       let title = 'Surah An-Naml';
@@ -2320,8 +2330,8 @@ ${message}` : '';
       }
 
       const shareParts = type === 'surah'
-        ? [intro, namedLine, title, senderNote, exportAttribution, url]
-        : [intro, namedLine, title, shareVerseText, senderNote, exportAttribution, url];
+        ? [intro, namedLine, title, senderNote, url, exportAttribution]
+        : [intro, namedLine, title, shareVerseText, senderNote, url, exportAttribution];
 
       const shareText = shareParts.filter(Boolean).join(sectionBreak);
       const downloadText = body;
@@ -2398,7 +2408,11 @@ ${message}` : '';
     async function shareVerse(ayah) {
       await sharePayloadNow({
         title: `Surah An-Naml | Verse ${ayah}`,
-        text: `${getVerseTextForCopy(ayah)}\n\n${getVerseUrl(ayah)}`,
+        text: `${getVerseTextForShare(ayah)}
+
+${getVerseUrl(ayah)}
+
+${exportAttribution}`,
         url: getVerseUrl(ayah)
       });
       showBookmarkMessage(`Verse ${ayah} ready to share.`);
@@ -2879,12 +2893,14 @@ ${message}` : '';
       }
       await sharePayloadNow({
         title: `Surah An-Naml | Verse ${ayah} note`,
-        text: `${getVerseTextForCopy(ayah)}
+        text: `${getVerseTextForShare(ayah)}
 
-Personal note from sender
+Personal note from sender:
 ${note}
 
-${getVerseUrl(ayah)}`,
+${getVerseUrl(ayah)}
+
+${exportAttribution}`,
         url: getVerseUrl(ayah)
       });
       showBookmarkMessage(`Verse ${ayah} note ready to share.`);
@@ -3777,20 +3793,31 @@ ${getVerseUrl(ayah)}`,
     }
 
     async function loadSurah() {
+      const restoreReflectionDrafts = () => {
+        const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
+        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
+        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
+        if (savedReflectionDraft !== null) reflectionDraft.value = savedReflectionDraft;
+        if (savedReflectionName !== null) reflectionName.value = savedReflectionName;
+        if (savedReflectionEmail !== null) reflectionEmail.value = savedReflectionEmail;
+      };
+
       try {
-        const verseData = await fetchAllVerseData();
+        const liveVerseData = await fetchAllVerseData();
+        const hasValidLiveData = Array.isArray(liveVerseData) && liveVerseData.length === englishVerses.length;
 
-        if (!verseData || !verseData.length) {
-          throw new Error('Live verse data unavailable.');
+        if (hasValidLiveData) {
+          apiDegraded = false;
+          verseDataCache = liveVerseData;
+          transliterationAvailable = liveVerseData.some((verse) => verse.transliteration && verse.transliteration.trim());
+          errorState.style.display = 'none';
+        } else {
+          apiDegraded = true;
+          verseDataCache = buildFallbackVerseData();
+          transliterationAvailable = false;
+          errorState.style.display = 'block';
+          errorState.textContent = 'The live surah data could not be loaded right now. A fallback reading view has been shown instead.';
         }
-
-        if (verseData.length !== englishVerses.length) {
-          throw new Error(`Verse count mismatch: Arabic ${verseData.length}, English ${englishVerses.length}`);
-        }
-
-        apiDegraded = false;
-        verseDataCache = verseData;
-        transliterationAvailable = verseData.some((verse) => verse.transliteration && verse.transliteration.trim());
 
         renderVerses(verseDataCache);
         buildVerseSelector();
@@ -3799,52 +3826,37 @@ ${getVerseUrl(ayah)}`,
         applyAudioView('standard', false);
         updateBookmarkUI();
         updateShareBuilder();
-
-        const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
-        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
-        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
-        if (savedReflectionDraft !== null) {
-          reflectionDraft.value = savedReflectionDraft;
-        }
-        if (savedReflectionName !== null) {
-          reflectionName.value = savedReflectionName;
-        }
-        if (savedReflectionEmail !== null) {
-          reflectionEmail.value = savedReflectionEmail;
-        }
+        restoreReflectionDrafts();
 
         loadingState.style.display = 'none';
-        errorState.style.display = 'none';
         noteState.style.display = 'none';
 
         handleInitialVerseJump();
         renderSmokeTests();
 
-        if (!apiDegraded) {
-          reciterSelect.value = defaultReciterKey;
-          audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
+        reciterSelect.value = defaultReciterKey;
+        audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
 
-          if (shouldAutoplay) {
-            sessionStorage.removeItem(autoplaySessionKey);
-            await loadSelectedAudio();
+        if (!apiDegraded && shouldAutoplay) {
+          sessionStorage.removeItem(autoplaySessionKey);
+          await loadSelectedAudio();
 
-            const wantsSynced = autoplayView === 'synced';
-            if (wantsSynced && currentAudioUrl && syncTimestamps.length) {
-              applyAudioView('synced', true);
-              setActiveTab('read');
-              try {
-                await startFromBeginningWithBismillah();
-              } catch {
-                showBookmarkMessage('Tap play to begin recitation.');
-              }
-            } else if (currentAudioUrl) {
-              applyAudioView('standard', false);
-              setActiveTab('listen');
-              try {
-                await surahAudioPlayer.play();
-              } catch {
-                showBookmarkMessage('Tap play to begin recitation.');
-              }
+          const wantsSynced = autoplayView === 'synced';
+          if (wantsSynced && currentAudioUrl && syncTimestamps.length) {
+            applyAudioView('synced', true);
+            setActiveTab('read');
+            try {
+              await startFromBeginningWithBismillah();
+            } catch {
+              showBookmarkMessage('Tap play to begin recitation.');
+            }
+          } else if (currentAudioUrl) {
+            applyAudioView('standard', false);
+            setActiveTab('listen');
+            try {
+              await surahAudioPlayer.play();
+            } catch {
+              showBookmarkMessage('Tap play to begin recitation.');
             }
           }
         }
@@ -3860,20 +3872,7 @@ ${getVerseUrl(ayah)}`,
         applyAudioView('standard', false);
         updateBookmarkUI();
         updateShareBuilder();
-
-        const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
-        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
-        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
-        if (savedReflectionDraft !== null) {
-          reflectionDraft.value = savedReflectionDraft;
-        }
-        if (savedReflectionName !== null) {
-          reflectionName.value = savedReflectionName;
-        }
-        if (savedReflectionEmail !== null) {
-          reflectionEmail.value = savedReflectionEmail;
-        }
-
+        restoreReflectionDrafts();
         loadingState.style.display = 'none';
         errorState.style.display = 'block';
         errorState.textContent = 'The live surah data could not be loaded right now. A fallback reading view has been shown instead.';
