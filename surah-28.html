@@ -2260,17 +2260,32 @@ ${exportAttribution}`;
     }
 
     function buildSelectionBodyText(blocks) {
-      const verseLineSeparator = '\\n';
-      const verseBlockSeparator = '\\n\\n\\n';
+      const joinLine = String.fromCharCode(10);
+      const joinBlock = `${joinLine}${joinLine}${joinLine}`;
       const renderedBlocks = blocks.map((block) => {
         const parts = [];
         if (block.kind === 'verse') parts.push(`Verse ${block.verseNumber}`);
         if (block.arabic) parts.push(block.arabic);
         if (block.transliteration) parts.push(block.transliteration);
         if (block.english) parts.push(block.english);
-        return parts.join(verseLineSeparator);
+        return parts.join(joinLine);
       }).filter(Boolean);
-      return renderedBlocks.join(verseBlockSeparator);
+      return renderedBlocks.join(joinBlock);
+    }
+
+    function buildShareVerseText(blocks) {
+      const joinLine = String.fromCharCode(10);
+      const joinBlock = `${joinLine}${joinLine}`;
+      const verseBlocks = blocks
+        .filter((block) => block.kind === 'verse')
+        .map((block) => {
+          const parts = [];
+          if (block.arabic) parts.push(block.arabic);
+          if (block.english) parts.push(block.english);
+          return parts.filter(Boolean).join(joinLine);
+        })
+        .filter(Boolean);
+      return verseBlocks.join(joinBlock);
     }
 
     function getSharePayload() {
@@ -2278,7 +2293,7 @@ ${exportAttribution}`;
       const fromName = shareFromName.value.trim();
       const toName = shareToName.value.trim();
       const message = shareMessage.value.trim();
-      const sectionBreak = '\\n\\n';
+      const sectionBreak = `${String.fromCharCode(10)}${String.fromCharCode(10)}`;
 
       if (containsBlockedContent(fromName) || containsBlockedContent(toName) || containsBlockedContent(message)) {
         throw new Error('Please keep the text respectful and suitable for Qur’an sharing.');
@@ -2288,6 +2303,7 @@ ${exportAttribution}`;
       const flags = getExportModeFlags();
       const blocks = buildSelectionBlocks(range, flags);
       const body = buildSelectionBodyText(blocks);
+      const shareVerseText = buildShareVerseText(blocks);
       const intro = 'A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.';
       const namedLine = [toName ? `For ${toName}.` : '', fromName ? `Shared by ${fromName}.` : ''].filter(Boolean).join(' ');
 
@@ -2302,8 +2318,8 @@ ${exportAttribution}`;
       }
 
       const shareParts = type === 'surah'
-        ? [namedLine, intro, title, message, exportAttribution, url]
-        : [namedLine, intro, title, body, message, exportAttribution, url];
+        ? [intro, namedLine, title, message, exportAttribution, url]
+        : [intro, namedLine, title, shareVerseText, message, exportAttribution, url];
 
       const shareText = shareParts.filter(Boolean).join(sectionBreak);
       const downloadText = body;
@@ -2491,7 +2507,7 @@ ${exportAttribution}`;
     }
 
     function buildCanvasLines(ctx, text, maxWidth) {
-      const lineBreak = '\\n';
+      const lineBreak = '\n';
       const paragraphs = String(text || '').split(lineBreak);
       const lines = [];
       paragraphs.forEach((paragraph, paragraphIndex) => {
