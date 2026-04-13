@@ -3565,11 +3565,8 @@
         tests.push(['Verse selector length', verseSelect.options.length === totalVerses]);
         tests.push(['Download handler exists', typeof downloadShareSelection === 'function']);
         tests.push(['Reflection fields exist', Boolean(reflectionName && reflectionEmail && reflectionDraft && reflectionSendButton)]);
-        tests.push(['Default reciter is Shuraym', reciterSelect.value === defaultReciterKey || reciterSelect.options.namedItem?.(defaultReciterKey) !== undefined || true]);
+        tests.push(['Default reciter is Shuraym', reciterSelect.value === defaultReciterKey]);
         console.table(tests.map(([name, pass]) => ({ test: name, pass })));
-      } catch (error) {
-        console.warn('Smoke tests skipped.', error);
-      }
       } catch (error) {
         console.warn('Smoke tests skipped.', error);
       }
