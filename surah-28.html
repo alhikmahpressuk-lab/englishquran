@@ -1213,13 +1213,14 @@
 
           <div class="subpanel" id="sharePanel">
             <h3 translate="no">Share</h3>
-            <p translate="no">Share one verse or a verse range. You can also download a clean document for your current selection.</p>
+            <p translate="no">Share the whole surah, a single verse, or a verse range. You can also download a clean document for your current selection.</p>
             <div class="share-help" translate="no">A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.</div>
             <div class="share-builder">
               <div class="share-row" style="margin-bottom: 12px;">
                 <div class="share-field">
                   <label for="shareType" translate="no">Share type</label>
                   <select id="shareType" translate="no">
+                    <option value="surah" selected>Whole surah</option>
                     <option value="single">Single verse</option>
                     <option value="range">Verse range</option>
                   </select>
@@ -2220,6 +2221,9 @@ ${exportAttribution}`;
 
     function getSelectionRange() {
       const type = shareType.value;
+      if (type === 'surah') {
+        return { start: 1, end: totalVerses, type: 'surah' };
+      }
       if (type === 'range') {
         const from = Number(shareRangeFrom.value || 1);
         const to = Number(shareRangeTo.value || from);
@@ -2231,7 +2235,7 @@ ${exportAttribution}`;
 
     function buildSelectionBlocks(range, flags) {
       const blocks = [];
-      if (range.start === 1) {
+      if (range.type === 'surah') {
         blocks.push({
           kind: 'bismillah',
           arabic: flags.arabic ? bismillahArabic : '',
@@ -2256,18 +2260,17 @@ ${exportAttribution}`;
     }
 
     function buildSelectionBodyText(blocks) {
-      const lineBreak = '\n';
-      const blockBreak = '\n\n\n';
-      return blocks.map((block) => {
+      const verseLineSeparator = '\\n';
+      const verseBlockSeparator = '\\n\\n\\n';
+      const renderedBlocks = blocks.map((block) => {
         const parts = [];
-        if (block.kind === 'verse') {
-          parts.push(`Verse ${block.verseNumber}`);
-        }
+        if (block.kind === 'verse') parts.push(`Verse ${block.verseNumber}`);
         if (block.arabic) parts.push(block.arabic);
         if (block.transliteration) parts.push(block.transliteration);
         if (block.english) parts.push(block.english);
-        return parts.join(lineBreak);
-      }).filter(Boolean).join(blockBreak);
+        return parts.join(verseLineSeparator);
+      }).filter(Boolean);
+      return renderedBlocks.join(verseBlockSeparator);
     }
 
     function getSharePayload() {
@@ -2275,7 +2278,7 @@ ${exportAttribution}`;
       const fromName = shareFromName.value.trim();
       const toName = shareToName.value.trim();
       const message = shareMessage.value.trim();
-      const doubleBreak = '\n\n';
+      const sectionBreak = '\\n\\n';
 
       if (containsBlockedContent(fromName) || containsBlockedContent(toName) || containsBlockedContent(message)) {
         throw new Error('Please keep the text respectful and suitable for Qur’an sharing.');
@@ -2288,16 +2291,24 @@ ${exportAttribution}`;
       const intro = 'A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.';
       const namedLine = [toName ? `For ${toName}.` : '', fromName ? `Shared by ${fromName}.` : ''].filter(Boolean).join(' ');
 
-      let title = `Surah An-Naml | Verse ${range.start}`;
-      let url = getVerseUrl(range.start);
-      if (type === 'range') {
+      let title = 'Surah An-Naml';
+      let url = `${window.location.origin}${window.location.pathname}`;
+      if (type === 'single') {
+        title = `Surah An-Naml | Verse ${range.start}`;
+        url = getVerseUrl(range.start);
+      } else if (type === 'range') {
         title = `Surah An-Naml | Verses ${range.start} to ${range.end}`;
+        url = getVerseUrl(range.start);
       }
 
-      const shareText = [namedLine, intro, title, body, message, exportAttribution, url].filter(Boolean).join(doubleBreak);
+      const shareParts = type === 'surah'
+        ? [namedLine, intro, title, message, exportAttribution, url]
+        : [namedLine, intro, title, body, message, exportAttribution, url];
+
+      const shareText = shareParts.filter(Boolean).join(sectionBreak);
       const downloadText = body;
 
-      return { title, text: shareText, downloadText, url, range, blocks };
+      return { title, text: shareText, downloadText, url, range, blocks, shareType: type };
     }
 
     function updateShareBuilder() {
@@ -2318,7 +2329,7 @@ ${exportAttribution}`;
     }
 
     function clearShareInputs(showMessage = true) {
-      shareType.value = 'single';
+      shareType.value = 'surah';
       shareSingleVerse.value = '1';
       shareRangeFrom.value = '1';
       shareRangeTo.value = String(totalVerses);
@@ -2480,7 +2491,7 @@ ${exportAttribution}`;
     }
 
     function buildCanvasLines(ctx, text, maxWidth) {
-      const lineBreak = '\n';
+      const lineBreak = '\\n';
       const paragraphs = String(text || '').split(lineBreak);
       const lines = [];
       paragraphs.forEach((paragraph, paragraphIndex) => {
@@ -2669,6 +2680,7 @@ ${exportAttribution}`;
 
     function getReflectionSelectionLabel() {
       const type = shareType.value;
+      if (type === 'surah') return 'Whole surah';
       if (type === 'range') {
         const from = Number(shareRangeFrom.value || 1);
         const to = Number(shareRangeTo.value || from);
@@ -3733,7 +3745,7 @@ ${exportAttribution}`;
         tests.push(['Download handler exists', typeof downloadShareSelection === 'function']);
         tests.push(['Reflection fields exist', Boolean(reflectionName && reflectionEmail && reflectionDraft && reflectionSendButton)]);
         tests.push(['Default reciter is Shuraym', reciterSelect.value === defaultReciterKey]);
-        tests.push(['Share selector cleaned', shareType.options.length === 2 && Array.from(shareType.options).every((option) => option.value !== 'surah')]);
+        tests.push(['Share selector supports surah', Array.from(shareType.options).some((option) => option.value === 'surah')]);
         tests.push(['Selection blocks available', typeof buildSelectionBlocks === 'function']);
         console.table(tests.map(([name, pass]) => ({ test: name, pass })));
       } catch (error) {
