@@ -1263,6 +1263,16 @@
             <div class="reflection-card">
               <div style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);margin-bottom:8px;" translate="no">TEQ Insight (Reflections)</div>
               <p translate="no" style="margin:0 0 10px;color:color-mix(in srgb, var(--text) 88%, white);">Share your reflections, surah thoughts, verse thoughts, or related benefit with us. If your view is beneficial for readers, we may polish it for public view on TEQ Insight.</p>
+              <div class="share-row" style="margin-bottom: 12px;">
+                <div class="share-field">
+                  <label for="reflectionName" translate="no">Your name</label>
+                  <input id="reflectionName" type="text" maxlength="80" autocomplete="name" translate="no" placeholder="Enter your name" />
+                </div>
+                <div class="share-field">
+                  <label for="reflectionEmail" translate="no">Your email</label>
+                  <input id="reflectionEmail" type="email" maxlength="120" autocomplete="email" translate="no" placeholder="Enter your email" />
+                </div>
+              </div>
               <div class="share-field">
                 <label for="reflectionDraft" translate="no">Reflection draft</label>
                 <textarea id="reflectionDraft" maxlength="800" translate="no" placeholder="Write your reflection here."></textarea>
@@ -1525,6 +1535,8 @@
     const shareDownloadButton = document.getElementById('shareDownloadButton');
     const sharePreview = document.getElementById('sharePreview');
     const shareFeedback = document.getElementById('shareFeedback');
+    const reflectionName = document.getElementById('reflectionName');
+    const reflectionEmail = document.getElementById('reflectionEmail');
     const reflectionDraft = document.getElementById('reflectionDraft');
     const reflectionSendButton = document.getElementById('reflectionSendButton');
     const reflectionFeedback = document.getElementById('reflectionFeedback');
@@ -1534,6 +1546,8 @@
     const pinnedStorageKey = `teq-surah-${surahNumber}-pinned`;
     const verseNotesStorageKey = `teq-surah-${surahNumber}-notes`;
     const reflectionDraftStorageKey = `teq-surah-${surahNumber}-reflection-draft`;
+    const reflectionNameStorageKey = `teq-surah-${surahNumber}-reflection-name`;
+    const reflectionEmailStorageKey = `teq-surah-${surahNumber}-reflection-email`;
     const historyLimit = 25;
 
     const bismillahArabic = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
@@ -2017,7 +2031,6 @@
       lastAutoScrolledVerse = null;
       clearAllHighlights();
       clearWordMeaningPanels();
-      clearWordMeaningPanels();
       if (resetUI) {
         tajweedMini.classList.remove('active');
         tajweedMiniPlayPause.textContent = 'Pause';
@@ -2244,6 +2257,15 @@
 
     function persistReflectionDraft() {
       localStorage.setItem(reflectionDraftStorageKey, reflectionDraft.value || '');
+      localStorage.setItem(reflectionNameStorageKey, reflectionName.value || '');
+      localStorage.setItem(reflectionEmailStorageKey, reflectionEmail.value || '');
+    }
+
+    function isValidEmail(value) {
+      const email = String(value || '').trim();
+      const atIndex = email.indexOf('@');
+      const dotIndex = email.lastIndexOf('.');
+      return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1;
     }
 
     async function sharePayloadNow(payload) {
@@ -2500,10 +2522,34 @@
       const note = shareMessage.value.trim();
       const fromName = shareFromName.value.trim();
       const toName = shareToName.value.trim();
+      const senderName = reflectionName.value.trim();
+      const senderEmail = reflectionEmail.value.trim();
+
+      if (!senderName) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please enter your name before sending.';
+        reflectionName.focus();
+        return;
+      }
+
+      if (!senderEmail) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please enter your email before sending.';
+        reflectionEmail.focus();
+        return;
+      }
+
+      if (!isValidEmail(senderEmail)) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please enter a valid email address.';
+        reflectionEmail.focus();
+        return;
+      }
 
       if (!reflection) {
         reflectionFeedback.classList.add('active');
         reflectionFeedback.textContent = 'Please write a reflection before sending.';
+        reflectionDraft.focus();
         return;
       }
 
@@ -2511,7 +2557,8 @@
         containsBlockedContent(reflection) ||
         containsBlockedContent(note) ||
         containsBlockedContent(fromName) ||
-        containsBlockedContent(toName)
+        containsBlockedContent(toName) ||
+        containsBlockedContent(senderName)
       ) {
         reflectionFeedback.classList.add('active');
         reflectionFeedback.textContent = 'Please keep the reflection respectful and suitable for a Qur’an reading space.';
@@ -2523,6 +2570,8 @@
       reflectionFeedback.textContent = '';
 
       const payload = {
+        name: senderName,
+        email: senderEmail,
         subject: `TEQ Reflection | Surah ${surahNumber} | An-Naml`,
         source_page: window.location.href,
         source_surah: `Surah ${surahNumber} | An-Naml`,
@@ -2533,6 +2582,8 @@
         share_note: note,
         reflection,
         message: [
+          `Name: ${senderName}`,
+          `Email: ${senderEmail}`,
           `Surah: Surah ${surahNumber} | An-Naml`,
           `Selection: ${getReflectionSelectionLabel()}`,
           fromName ? `From name: ${fromName}` : '',
@@ -2564,6 +2615,10 @@
         reflectionFeedback.classList.add('active');
         reflectionFeedback.textContent = 'Reflection sent. Thank you for sharing your thoughts with us.';
         localStorage.removeItem(reflectionDraftStorageKey);
+        localStorage.removeItem(reflectionNameStorageKey);
+        localStorage.removeItem(reflectionEmailStorageKey);
+        reflectionName.value = '';
+        reflectionEmail.value = '';
         reflectionDraft.value = '';
       } catch (error) {
         reflectionFeedback.classList.add('active');
@@ -3541,8 +3596,16 @@
         updateShareBuilder();
 
         const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
+        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
+        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
         if (savedReflectionDraft !== null) {
           reflectionDraft.value = savedReflectionDraft;
+        }
+        if (savedReflectionName !== null) {
+          reflectionName.value = savedReflectionName;
+        }
+        if (savedReflectionEmail !== null) {
+          reflectionEmail.value = savedReflectionEmail;
         }
 
         loadingState.style.display = 'none';
@@ -3594,8 +3657,16 @@
         updateShareBuilder();
 
         const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
+        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
+        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
         if (savedReflectionDraft !== null) {
           reflectionDraft.value = savedReflectionDraft;
+        }
+        if (savedReflectionName !== null) {
+          reflectionName.value = savedReflectionName;
+        }
+        if (savedReflectionEmail !== null) {
+          reflectionEmail.value = savedReflectionEmail;
         }
 
         loadingState.style.display = 'none';
@@ -3611,6 +3682,8 @@
     shareFromName.addEventListener('input', updateShareBuilder);
     shareToName.addEventListener('input', updateShareBuilder);
     shareMessage.addEventListener('input', updateShareBuilder);
+    reflectionName.addEventListener('input', persistReflectionDraft);
+    reflectionEmail.addEventListener('input', persistReflectionDraft);
     reflectionDraft.addEventListener('input', persistReflectionDraft);
 
     shareNowButton.addEventListener('click', async () => {
