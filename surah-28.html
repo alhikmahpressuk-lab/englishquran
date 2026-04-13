@@ -276,6 +276,10 @@
       background: var(--accent-deep);
     }
 
+    #loadAudioButton {
+      align-self: flex-end;
+    }
+
     .bookmark-action,
     .bookmark-remove {
       appearance: none;
@@ -2408,7 +2412,9 @@ ${message}` : '';
     async function shareVerse(ayah) {
       await sharePayloadNow({
         title: `Surah An-Naml | Verse ${ayah}`,
-        text: `${getVerseTextForShare(ayah)}\n\n${getVerseUrl(ayah)}`,
+        text: `${getVerseTextForShare(ayah)}
+
+${getVerseUrl(ayah)}`,
         url: getVerseUrl(ayah)
       });
       showBookmarkMessage(`Verse ${ayah} ready to share.`);
@@ -2889,7 +2895,12 @@ ${message}` : '';
       }
       await sharePayloadNow({
         title: `Surah An-Naml | Verse ${ayah} note`,
-        text: `${getVerseTextForShare(ayah)}\n\nPersonal note from sender:\n${note}\n\n${getVerseUrl(ayah)}`,
+        text: `${getVerseTextForShare(ayah)}
+
+Personal note from sender:
+${note}
+
+${getVerseUrl(ayah)}`,
         url: getVerseUrl(ayah)
       });
       showBookmarkMessage(`Verse ${ayah} note ready to share.`);
