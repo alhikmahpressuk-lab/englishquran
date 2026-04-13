@@ -1214,7 +1214,7 @@
           <div class="subpanel" id="sharePanel">
             <h3 translate="no">Share</h3>
             <p translate="no">Share the whole surah, one verse, or a verse range. You can also download a printable version for your current selection.</p>
-            <div class="share-help" translate="no">A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah. You can also send us reflections through Get in Touch for possible TEQ Insight publication.</div>
+            <div class="share-help" translate="no">A gentle reminder from The English Qur’an. May these verses bring benefit, reflection, and remembrance of Allah.</div>
             <div class="share-builder">
               <div class="share-row" style="margin-bottom: 12px;">
                 <div class="share-field">
@@ -1256,7 +1256,6 @@
                 <button class="share-main-btn" type="button" id="shareNowButton" translate="no">Share now</button>
                 <button class="share-copy-btn" type="button" id="shareCopyButton" translate="no">Copy share text</button>
                 <button class="share-download-btn" type="button" id="shareDownloadButton" translate="no">Download</button>
-                <button class="share-contact-btn" type="button" id="shareContactButton" translate="no">Open Get in Touch</button>
               </div>
               <div class="share-feedback" id="shareFeedback" translate="no"></div>
               <div class="share-preview" id="sharePreview" translate="no"></div>
@@ -1268,6 +1267,10 @@
                 <label for="reflectionDraft" translate="no">Reflection draft</label>
                 <textarea id="reflectionDraft" maxlength="800" translate="no" placeholder="Write your reflection here."></textarea>
               </div>
+              <div class="share-row" style="margin-top: 12px;">
+                <button class="share-main-btn" type="button" id="reflectionSendButton" translate="no">Send reflection</button>
+              </div>
+              <div class="share-feedback" id="reflectionFeedback" translate="no"></div>
             </div>
           </div>
 
@@ -1431,6 +1434,7 @@
     const tajweedRecitationId = 1;
     const autoplaySessionKey = 'teq-index-autoplay';
     const defaultReciterKey = 'shuraim';
+    const formspreeEndpoint = 'https://formspree.io/f/mreokljn';
 
     const reciters = {
       sudais: { name: 'Sheikh Abdur-Rahman as-Sudais', id: 3 },
@@ -1519,10 +1523,11 @@
     const shareNowButton = document.getElementById('shareNowButton');
     const shareCopyButton = document.getElementById('shareCopyButton');
     const shareDownloadButton = document.getElementById('shareDownloadButton');
-    const shareContactButton = document.getElementById('shareContactButton');
     const sharePreview = document.getElementById('sharePreview');
     const shareFeedback = document.getElementById('shareFeedback');
     const reflectionDraft = document.getElementById('reflectionDraft');
+    const reflectionSendButton = document.getElementById('reflectionSendButton');
+    const reflectionFeedback = document.getElementById('reflectionFeedback');
 
     const lastReadStorageKey = `teq-surah-${surahNumber}-last-read`;
     const historyStorageKey = `teq-surah-${surahNumber}-history`;
@@ -2477,17 +2482,95 @@
       }
     }
 
-    async function openGetInTouch() {
-      const draft = reflectionDraft.value.trim();
-      const message = shareMessage.value.trim();
-      if (containsBlockedContent(draft) || containsBlockedContent(message)) {
-        shareFeedback.classList.add('active');
-        shareFeedback.textContent = 'Please keep the text respectful before sending it forward.';
+    function getReflectionSelectionLabel() {
+      const type = shareType.value;
+      if (type === 'single') {
+        return `Verse ${Number(shareSingleVerse.value || 1)}`;
+      }
+      if (type === 'range') {
+        const from = Number(shareRangeFrom.value || 1);
+        const to = Number(shareRangeTo.value || from);
+        return `Verses ${Math.min(from, to)} to ${Math.max(from, to)}`;
+      }
+      return 'Whole surah';
+    }
+
+    async function submitReflection() {
+      const reflection = reflectionDraft.value.trim();
+      const note = shareMessage.value.trim();
+      const fromName = shareFromName.value.trim();
+      const toName = shareToName.value.trim();
+
+      if (!reflection) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please write a reflection before sending.';
         return;
       }
-      sessionStorage.setItem('teq-contact-reflection-draft', draft);
-      sessionStorage.setItem('teq-contact-share-draft', message);
-      window.location.href = 'index.html#get-in-touch';
+
+      if (
+        containsBlockedContent(reflection) ||
+        containsBlockedContent(note) ||
+        containsBlockedContent(fromName) ||
+        containsBlockedContent(toName)
+      ) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Please keep the reflection respectful and suitable for a Qur’an reading space.';
+        return;
+      }
+
+      reflectionSendButton.disabled = true;
+      reflectionFeedback.classList.remove('active');
+      reflectionFeedback.textContent = '';
+
+      const payload = {
+        subject: `TEQ Reflection | Surah ${surahNumber} | An-Naml`,
+        source_page: window.location.href,
+        source_surah: `Surah ${surahNumber} | An-Naml`,
+        selection_type: shareType.value,
+        selection_label: getReflectionSelectionLabel(),
+        from_name: fromName,
+        to_name: toName,
+        share_note: note,
+        reflection,
+        message: [
+          `Surah: Surah ${surahNumber} | An-Naml`,
+          `Selection: ${getReflectionSelectionLabel()}`,
+          fromName ? `From name: ${fromName}` : '',
+          toName ? `To name: ${toName}` : '',
+          note ? `Share note: ${note}` : '',
+          '',
+          'Reflection:',
+          reflection,
+          '',
+          `Page: ${window.location.href}`
+        ].filter(Boolean).join('
+')
+      };
+
+      try {
+        const response = await fetch(formspreeEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Reflection could not be sent right now.');
+        }
+
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = 'Reflection sent. Thank you for sharing your thoughts with us.';
+        localStorage.removeItem(reflectionDraftStorageKey);
+        reflectionDraft.value = '';
+      } catch (error) {
+        reflectionFeedback.classList.add('active');
+        reflectionFeedback.textContent = error.message;
+      } finally {
+        reflectionSendButton.disabled = false;
+      }
     }
 
     function validateNoteInput(value, panel) {
@@ -3537,7 +3620,7 @@
       try { await navigator.clipboard.writeText(getSharePayload().text); shareFeedback.classList.add('active'); shareFeedback.textContent = 'Share text copied.'; } catch (error) { shareFeedback.classList.add('active'); shareFeedback.textContent = error.message; }
     });
     shareDownloadButton.addEventListener('click', downloadShareSelection);
-    shareContactButton.addEventListener('click', openGetInTouch);
+    reflectionSendButton.addEventListener('click', submitReflection);
 
     tabButtons.forEach((button) => button.addEventListener('click', () => {
       if (button.dataset.tab === 'read') {
@@ -3631,6 +3714,20 @@
     });
     tajweedMiniContinueAll.addEventListener('click', async () => {
       if (!tajweedVerse || tajweedMode === 'word') return;
+
+      const atOrNearEnd = Number.isFinite(tajweedAudio.duration) && tajweedAudio.duration > 0 && tajweedAudio.currentTime >= Math.max(0, tajweedAudio.duration - 0.2);
+
+      if (atOrNearEnd) {
+        if (tajweedVerse < totalVerses) {
+          await playVerseTajweed(tajweedVerse + 1, 'continue-all');
+        } else {
+          tajweedContinueAllActive = false;
+          tajweedMiniContinueAll.style.display = 'none';
+          updateTajweedMini('Tajweed sequence finished', 'All verses have been played', true);
+        }
+        return;
+      }
+
       tajweedContinueAllActive = true;
       tajweedMode = 'continue-all';
       tajweedMiniContinueAll.style.display = 'none';
@@ -3685,10 +3782,12 @@
       clearActiveWordOnly();
       clearTimeout(tajweedWordStopTimer);
       tajweedWordStopTimer = null;
+
       if (tajweedMode === 'word') {
         tajweedMini.classList.remove('active');
         return;
       }
+
       tajweedMiniPlayPause.textContent = 'Play';
 
       if (tajweedContinueAllActive && tajweedVerse < totalVerses) {
@@ -3699,48 +3798,25 @@
       if (tajweedContinueAllActive && tajweedVerse === totalVerses) {
         tajweedContinueAllActive = false;
         updateTajweedMini('Tajweed sequence finished', 'All remaining verses have been played', true);
-        showPrompt(
-          'Tajweed sequence finished',
-          'All remaining verses have now been played to the end of the surah.',
-          [
-            { label: 'Close', primary: false, onClick: () => hidePrompt() },
-            { label: 'Replay last verse', primary: true, onClick: () => playVerseTajweed(totalVerses, 'repeat') }
-          ]
-        );
+        tajweedMiniContinueAll.style.display = 'none';
         return;
       }
 
       if (tajweedMode === 'verse') {
+        tajweedContinueAllActive = false;
+        tajweedMiniTitle.textContent = `Tajweed verse ${tajweedVerse}`;
         tajweedMiniText.textContent = `Verse ${tajweedVerse} finished`;
-        showPrompt(
-          `Verse ${tajweedVerse} finished`,
-          tajweedVerse < totalVerses
-            ? 'You can replay this verse, stop here, or continue all remaining verses to the end.'
-            : 'You can replay this verse or close the prompt.',
-          tajweedVerse < totalVerses
-            ? [
-                { label: 'Close', primary: false, onClick: () => hidePrompt() },
-                { label: 'Continue all', primary: false, onClick: () => playVerseTajweed(tajweedVerse + 1, 'continue-all') },
-                { label: 'Replay verse', primary: true, onClick: () => playVerseTajweed(tajweedVerse, 'repeat') }
-              ]
-            : [
-                { label: 'Close', primary: false, onClick: () => hidePrompt() },
-                { label: 'Replay verse', primary: true, onClick: () => playVerseTajweed(tajweedVerse, 'repeat') }
-              ]
-        );
+        tajweedMini.classList.add('active');
+        tajweedMiniContinueAll.style.display = tajweedVerse < totalVerses ? 'inline-flex' : 'none';
         return;
       }
 
       if (tajweedMode === 'repeat') {
+        tajweedContinueAllActive = false;
+        tajweedMiniTitle.textContent = `Repeat verse ${tajweedVerse}`;
         tajweedMiniText.textContent = `Verse ${tajweedVerse} finished`;
-        showPrompt(
-          `Verse ${tajweedVerse} finished`,
-          'You can replay this verse or close the prompt.',
-          [
-            { label: 'Close', primary: false, onClick: () => hidePrompt() },
-            { label: 'Replay verse', primary: true, onClick: () => playVerseTajweed(tajweedVerse, 'repeat') }
-          ]
-        );
+        tajweedMini.classList.add('active');
+        tajweedMiniContinueAll.style.display = 'none';
       }
     });
 
