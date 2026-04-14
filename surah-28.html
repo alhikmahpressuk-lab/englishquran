@@ -1820,32 +1820,45 @@
     let translationContinueActive = false;
     let translationSequenceId = 0;
     let translationBridgeAudio = null;
+    let translationSpeechAudio = null;
     let translationSpeechActive = false;
-    let translationVoicesReady = false;
+
+    const premiumTranslationTtsConfig = {
+      enabled: true,
+      endpoint: localStorage.getItem('teq-translation-tts-endpoint') || '',
+      method: 'POST',
+      authHeaderName: localStorage.getItem('teq-translation-tts-header-name') || '',
+      authHeaderValue: localStorage.getItem('teq-translation-tts-header-value') || '',
+      requestTimeoutMs: 15000,
+      preloadNextVerse: true,
+      requestFormat: 'openai_compatible'
+    };
+
+    const translationAudioCache = new Map();
 
     const translationVoiceRegistry = {
-      en: { locale: 'en-GB', preferredNames: ['Ryan', 'Ollie', 'Thomas', 'Google UK English Male', 'Male'] },
-      bn: { locale: 'bn-BD', preferredNames: ['Male'] },
-      ur: { locale: 'ur-PK', preferredNames: ['Male'] },
-      fr: { locale: 'fr-FR', preferredNames: ['Male'] },
-      tr: { locale: 'tr-TR', preferredNames: ['Male'] },
-      id: { locale: 'id-ID', preferredNames: ['Male'] },
-      ms: { locale: 'ms-MY', preferredNames: ['Male'] },
-      sw: { locale: 'sw-KE', preferredNames: ['Male'] },
-      es: { locale: 'es-ES', preferredNames: ['Male'] },
-      de: { locale: 'de-DE', preferredNames: ['Male'] },
-      fa: { locale: 'fa-IR', preferredNames: ['Male'] },
-      ru: { locale: 'ru-RU', preferredNames: ['Male'] },
-      hi: { locale: 'hi-IN', preferredNames: ['Male'] },
-      ta: { locale: 'ta-IN', preferredNames: ['Male'] },
-      te: { locale: 'te-IN', preferredNames: ['Male'] },
-      ml: { locale: 'ml-IN', preferredNames: ['Male'] },
-      zh: { locale: 'zh-CN', preferredNames: ['Male'] },
-      ja: { locale: 'ja-JP', preferredNames: ['Male'] },
-      ko: { locale: 'ko-KR', preferredNames: ['Male'] },
-      pt: { locale: 'pt-PT', preferredNames: ['Male'] },
-      it: { locale: 'it-IT', preferredNames: ['Male'] },
-      nl: { locale: 'nl-NL', preferredNames: ['Male'] }
+      en: { locale: 'en-GB', voiceHint: 'male-british-natural' },
+      bn: { locale: 'bn-BD', voiceHint: 'male-natural' },
+      ur: { locale: 'ur-PK', voiceHint: 'male-natural' },
+      fr: { locale: 'fr-FR', voiceHint: 'male-natural' },
+      tr: { locale: 'tr-TR', voiceHint: 'male-natural' },
+      id: { locale: 'id-ID', voiceHint: 'male-natural' },
+      ms: { locale: 'ms-MY', voiceHint: 'male-natural' },
+      sw: { locale: 'sw-KE', voiceHint: 'male-natural' },
+      es: { locale: 'es-ES', voiceHint: 'male-natural' },
+      de: { locale: 'de-DE', voiceHint: 'male-natural' },
+      fa: { locale: 'fa-IR', voiceHint: 'male-natural' },
+      ru: { locale: 'ru-RU', voiceHint: 'male-natural' },
+      hi: { locale: 'hi-IN', voiceHint: 'male-natural' },
+      ta: { locale: 'ta-IN', voiceHint: 'male-natural' },
+      te: { locale: 'te-IN', voiceHint: 'male-natural' },
+      ml: { locale: 'ml-IN', voiceHint: 'male-natural' },
+      zh: { locale: 'zh-CN', voiceHint: 'male-natural' },
+      ja: { locale: 'ja-JP', voiceHint: 'male-natural' },
+      ko: { locale: 'ko-KR', voiceHint: 'male-natural' },
+      pt: { locale: 'pt-PT', voiceHint: 'male-natural' },
+      it: { locale: 'it-IT', voiceHint: 'male-natural' },
+      nl: { locale: 'nl-NL', voiceHint: 'male-natural' }
     };
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
@@ -2669,7 +2682,7 @@
     }
 
     function getTranslationTtsConfig() {
-      return translationVoiceRegistry[currentTranslationCode] || translationVoiceRegistry.en || { locale: 'en-GB', preferredNames: ['Male'] };
+      return translationVoiceRegistry[currentTranslationCode] || translationVoiceRegistry.en || { locale: 'en-GB', voiceHint: 'male-natural' };
     }
 
     function getPreferredTranslationLocale() {
@@ -2677,62 +2690,103 @@
       return config.locale || currentTranslationCode || 'en-GB';
     }
 
-    async function ensureTranslationVoices() {
-      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return [];
-      const initial = window.speechSynthesis.getVoices();
-      if (initial && initial.length) {
-        translationVoicesReady = true;
-        return initial;
-      }
-      return new Promise((resolve) => {
-        const timer = setTimeout(() => {
-          translationVoicesReady = true;
-          resolve(window.speechSynthesis.getVoices());
-        }, 900);
-        window.speechSynthesis.onvoiceschanged = () => {
-          clearTimeout(timer);
-          translationVoicesReady = true;
-          resolve(window.speechSynthesis.getVoices());
-        };
-      });
+    function hasPremiumTranslationTts() {
+      return Boolean(
+        premiumTranslationTtsConfig
+        && String(premiumTranslationTtsConfig.endpoint || '').trim()
+      );
     }
 
-    function selectPreferredTranslationVoice(voices) {
-      if (!Array.isArray(voices) || !voices.length) return null;
-      const config = getTranslationTtsConfig();
-      const locale = String(config.locale || currentTranslationCode || 'en-GB').toLowerCase();
-      const languageCode = String(currentTranslationCode || 'en').toLowerCase();
-      const preferredNames = Array.isArray(config.preferredNames) ? config.preferredNames : [];
-      const scored = voices.map((voice) => {
-        const lang = String(voice.lang || '').toLowerCase();
-        const name = String(voice.name || '');
-        let score = 0;
-        if (lang === locale) score += 50;
-        else if (lang.startsWith(`${languageCode}-`)) score += 32;
-        else if (lang.startsWith(languageCode)) score += 24;
-        preferredNames.forEach((token) => {
-          if (name.toLowerCase().includes(String(token).toLowerCase())) score += 18;
+    function getConfiguredTranslationTtsHint() {
+      const endpoint = String(premiumTranslationTtsConfig.endpoint || '').trim();
+      if (!endpoint) return 'Translation voice endpoint is not configured yet.';
+      return 'Translation voice endpoint is connected.';
+    }
+
+    async function responseToAudioSource(response) {
+      const payload = await response.json().catch(() => null);
+      if (!payload) return null;
+      if (payload.audioUrl) return String(payload.audioUrl);
+      if (payload.audioBase64) {
+        const mimeType = payload.mimeType || 'audio/mpeg';
+        return `data:${mimeType};base64,${payload.audioBase64}`;
+      }
+      return null;
+    }
+
+    async function fetchTranslationAudioSource(ayah) {
+      const cacheKey = buildTranslationAudioCacheKey(ayah);
+      if (translationAudioCache.has(cacheKey)) return translationAudioCache.get(cacheKey);
+      if (!hasPremiumTranslationTts()) return null;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), Number(premiumTranslationTtsConfig.requestTimeoutMs || 15000));
+      const profile = getTranslationTtsConfig();
+      const headers = { 'Content-Type': 'application/json' };
+      if (premiumTranslationTtsConfig.authHeaderName && premiumTranslationTtsConfig.authHeaderValue) {
+        headers[premiumTranslationTtsConfig.authHeaderName] = premiumTranslationTtsConfig.authHeaderValue;
+      }
+
+      try {
+        const response = await fetch(premiumTranslationTtsConfig.endpoint, {
+          method: premiumTranslationTtsConfig.method || 'POST',
+          headers,
+          signal: controller.signal,
+          body: JSON.stringify({
+            surahNumber,
+            ayah,
+            text: getVerseTranslationSpeechText(ayah),
+            languageCode: currentTranslationCode,
+            languageName: getDisplayLanguageName(),
+            translationId: currentTranslationId,
+            locale: profile.locale,
+            voiceHint: profile.voiceHint,
+            gender: 'male',
+            style: 'natural-calm',
+            reference: exportAttribution
+          })
         });
-        if (/male|man|david|ryan|ollie|thomas|oliver|arthur|noah|ethan|alfie/i.test(name)) score += 10;
-        if (/neural|natural|premium|enhanced|online/i.test(name)) score += 6;
-        if (/female|woman|zira|hazel|susan|aria|luna/i.test(name)) score -= 6;
-        return { voice, score };
-      }).sort((a, b) => b.score - a.score);
-      return scored[0] && scored[0].score > 0 ? scored[0].voice : voices.find((voice) => String(voice.lang || '').toLowerCase().startsWith(languageCode)) || voices[0] || null;
+        if (!response.ok) return null;
+        const source = await responseToAudioSource(response);
+        if (source) translationAudioCache.set(cacheKey, source);
+        return source;
+      } catch (error) {
+        console.warn('Translation audio source could not be fetched.', error);
+        return null;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    async function preloadNextTranslationAudio(ayah) {
+      if (!premiumTranslationTtsConfig.preloadNextVerse) return;
+      const nextAyah = Number(ayah) + 1;
+      if (nextAyah > totalVerses) return;
+      const nextText = getVerseTranslationSpeechText(nextAyah);
+      if (!nextText) return;
+      try {
+        await fetchTranslationAudioSource(nextAyah);
+      } catch {}
+    }
+
+    function stopTranslationMedia() {
+      if (translationBridgeAudio) {
+        translationBridgeAudio.pause();
+        translationBridgeAudio.src = '';
+        translationBridgeAudio = null;
+      }
+      if (translationSpeechAudio) {
+        translationSpeechAudio.pause();
+        translationSpeechAudio.src = '';
+        translationSpeechAudio = null;
+      }
     }
 
     function stopTranslationFlow(resetMode = false) {
       translationSequenceId += 1;
       translationContinueActive = false;
       translationSpeechActive = false;
-      if (translationBridgeAudio) {
-        translationBridgeAudio.pause();
-        translationBridgeAudio.src = '';
-        translationBridgeAudio = null;
-      }
-      if ('speechSynthesis' in window) {
-        try { window.speechSynthesis.cancel(); } catch {}
-      }
+      stopTranslationMedia();
       if (resetMode) translationTapMode = 'off';
     }
 
@@ -2740,41 +2794,33 @@
       return String(getCurrentTranslationText(ayah) || '').trim();
     }
 
-    async function speakVerseTranslation(ayah, token) {
+    async function playVerseTranslationAudio(ayah, token) {
       const text = getVerseTranslationSpeechText(ayah);
       if (!text) {
         showBookmarkMessage(`Translation is unavailable for verse ${ayah}.`);
         return false;
       }
-      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-        showBookmarkMessage('Translation voice is unavailable on this device.');
+      const source = await fetchTranslationAudioSource(ayah);
+      if (token !== translationSequenceId) return false;
+      if (!source) {
+        showBookmarkMessage(getConfiguredTranslationTtsHint());
         return false;
       }
-      const voices = await ensureTranslationVoices();
-      if (token !== translationSequenceId) return false;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = getPreferredTranslationLocale();
-      const preferredVoice = selectPreferredTranslationVoice(voices);
-      if (preferredVoice) utterance.voice = preferredVoice;
-      utterance.rate = currentTranslationCode === 'en' ? 0.95 : 0.93;
-      utterance.pitch = 0.92;
-      translationSpeechActive = true;
       return new Promise((resolve) => {
-        utterance.onend = () => {
+        const audio = new Audio(source);
+        translationSpeechAudio = audio;
+        translationSpeechActive = true;
+        audio.preload = 'auto';
+        const finish = (ok) => {
+          audio.onended = null;
+          audio.onerror = null;
+          if (translationSpeechAudio === audio) translationSpeechAudio = null;
           translationSpeechActive = false;
-          resolve(true);
+          resolve(ok);
         };
-        utterance.onerror = () => {
-          translationSpeechActive = false;
-          resolve(false);
-        };
-        try {
-          window.speechSynthesis.cancel();
-          window.speechSynthesis.speak(utterance);
-        } catch {
-          translationSpeechActive = false;
-          resolve(false);
-        }
+        audio.onended = () => finish(true);
+        audio.onerror = () => finish(false);
+        audio.play().catch(() => finish(false));
       });
     }
 
@@ -2806,7 +2852,10 @@
         showBookmarkMessage(`Translation is unavailable for verse ${safeAyah}.`);
         return;
       }
-      stopTranslationFlow(false);
+      if (!hasPremiumTranslationTts()) {
+        showBookmarkMessage(getConfiguredTranslationTtsHint());
+        return;
+      }
       stopTranslationFlow(false);
       stopSyncedPlayback(false);
       stopTajweedPlayback(true);
@@ -2839,12 +2888,13 @@
             showBookmarkMessage(`Arabic audio is unavailable for verse ${ayah}.`);
           }
         }
-        const spoke = await speakVerseTranslation(ayah, token);
+        const spoke = await playVerseTranslationAudio(ayah, token);
         if (token !== translationSequenceId) return;
         if (!spoke && !continueAll) {
           showBookmarkMessage(`Translation voice could not be played for verse ${ayah}.`);
           break;
         }
+        if (continueAll) preloadNextTranslationAudio(ayah);
         if (!continueAll) break;
       }
 
