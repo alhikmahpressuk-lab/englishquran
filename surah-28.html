@@ -851,12 +851,21 @@
       line-height: 1;
       text-align: center;
     }
-    .english-text { font-size: 1rem; color: color-mix(in srgb, var(--text) 88%, white); padding-top: 2px; }
-    .translation-line { display: inline; }
+    .english-text {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: color-mix(in srgb, var(--text) 88%, white);
+      padding-top: 2px;
+    }
+    .translation-line {
+      display: block;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
     .translation-word {
       display: inline;
-      padding: 0.02em 0.08em;
-      border-radius: 8px;
+      padding: 0.01em 0.05em;
+      border-radius: 6px;
       transition: background 0.14s ease, color 0.14s ease;
     }
     .translation-word.translation-active {
@@ -3054,7 +3063,7 @@
 
     function showTranslationAudioPrompt(ayah) {
       const safeAyah = Number(ayah);
-      const isActive = translationTapMode !== 'off' || translationContinueActive || translationSpeechActive || translationBridgeAudio || translationSpeechAudio;
+      const isActive = translationTapMode !== 'off' || translationContinueActive || translationSpeechActive || translationBridgeAudio || translationSpeechAudio || translationSpeechUtterance;
       const playPauseLabel = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
       const options = [
         {
@@ -3063,19 +3072,14 @@
           onClick: async () => { await runTranslationFlow(safeAyah, 'translation', false); }
         },
         {
-          label: 'With Arabic',
-          primary: false,
-          onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', false); }
-        },
-        {
-          label: 'Continue here',
+          label: 'Continue',
           primary: false,
           onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', true); }
         },
         {
-          label: 'Continue start',
+          label: 'With Arabic',
           primary: false,
-          onClick: async () => { await runTranslationFlow(1, 'with-arabic', true); }
+          onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', false); }
         }
       ];
       if (isActive) {
@@ -3098,10 +3102,9 @@
           }
         });
       }
-      options.push({ label: 'Close', primary: false, onClick: () => hidePrompt() });
       showPrompt(
         `Play translation · Verse ${safeAyah}`,
-        `Choose how to hear verse ${safeAyah} in ${getDisplayLanguageName()}.`,
+        `Play translation only, or continue with Arabic first and ${getDisplayLanguageName()} after it.`,
         options
       );
     }
@@ -4891,7 +4894,7 @@ ${getVerseUrl(ayah)}`,
             <div class="verse-toolbar" data-toolbar="${verse.number}">
               <button class="icon-btn" type="button" data-menu-toggle="menu-${verse.number}" aria-label="Verse actions" title="Verse actions" translate="no">${iconMore()}</button>
               <div class="verse-menu" id="menu-${verse.number}" translate="no">
-                <button class="menu-item-btn" type="button" data-translation-audio-ayah="${verse.number}">${iconVoice()}<span>Translation audio</span></button>
+                <button class="menu-item-btn" type="button" data-translation-audio-ayah="${verse.number}">${iconVoice()}<span>Play translation</span></button>
                 <button class="menu-item-btn" type="button" data-pin-ayah="${verse.number}">${iconPin()}<span>Pin</span></button>
                 <button class="menu-item-btn" type="button" data-share-ayah="${verse.number}">${iconShare()}<span>Share</span></button>
                 <button class="menu-item-btn" type="button" data-copy-ayah="${verse.number}">${iconCopy()}<span>Copy verse</span></button>
