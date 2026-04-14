@@ -1344,7 +1344,7 @@
               <div class="languages-panel-head">
                 <div class="languages-panel-title" translate="no">Languages</div>
               </div>
-              <div class="languages-panel-text" translate="no">Arabic stays on top. Select a translation language below and the reading view, synced recitation view, sharing, and downloads will reflect it.</div>
+              <div class="languages-panel-text" translate="no">Arabic stays on top. Full live languages update the transliteration and live word meanings during tajweed and word-by-word view. Other languages still update the verse meaning, sharing, and downloads, while live word-by-word stays on the stable English layer.</div>
               <div class="languages-selection" id="languageSelectionText" translate="no">Arabic on top · English below</div>
               <div class="languages-status" id="languagesStatus" translate="no">English is active.</div>
               <div class="languages-list" id="languagesList"></div>
@@ -1757,6 +1757,12 @@
     const translationCache = { 'en-fallback': englishVerses.slice(), ar: Array.from({ length: totalVerses }, () => '') };
     let languageListLoadingPromise = null;
     const wordLayerCache = { en: null, ar: null };
+    const translationCapabilityMap = {
+      ar: { level: 'arabic_only', liveTajweed: true },
+      'en-fallback': { level: 'full_live', liveTajweed: true }
+    };
+    let currentWordLayerLanguageName = 'English';
+    let currentWordLayerLevel = 'full_live';
     let currentVisibleVerse = 1;
     let readingObserver = null;
     let readingSaveTimer = null;
@@ -1861,9 +1867,13 @@
         translationOnlyButton.disabled = currentTranslationId === 'ar';
       }
       if (languageSelectionText) {
+        const capability = getTranslationCapability(currentTranslationId);
         languageSelectionText.textContent = currentTranslationId === 'ar'
           ? 'Arabic on top · Arabic only active'
-          : `Arabic on top · ${getDisplayLanguageName()} below`;
+          : `Arabic on top · ${getDisplayLanguageName()} below · ${getCapabilityLabel(capability.level)}`;
+      }
+      if (languagesStatus) {
+        languagesStatus.textContent = getWordLayerStatusText();
       }
     }
 
@@ -1944,6 +1954,7 @@
       if (!languagesList) return;
       languagesList.innerHTML = '';
       translationResources.forEach((item) => {
+        const capability = getTranslationCapability(item.id);
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'language-item';
@@ -1952,7 +1963,7 @@
           <span class="language-item-label">
             <span class="language-item-name">${escapeHtml(item.languageName)}</span>
           </span>
-          <span class="language-item-meta">${escapeHtml(item.resourceName)}</span>
+          <span class="language-item-meta">${escapeHtml(item.resourceName)} · ${escapeHtml(getCapabilityLabel(capability.level))}</span>
         `;
         button.addEventListener('click', async () => {
           await activateTranslation(item);
@@ -2025,13 +2036,12 @@
         currentTranslationCode = 'ar';
         currentTranslationName = 'Arabic';
         currentTranslationVerses = translationCache.ar.slice();
-        const arabicWordLayer = await fetchWordLayer('ar');
-        mergeWordLayerIntoVerseData(arabicWordLayer);
-        if (currentMode === 'english-only') currentMode = 'arabic-only';
+        await applyActiveWordLayer('ar', 'ar', 'Arabic');
+        currentMode = 'arabic-only';
         updateModeLabels();
         rerenderTranslationView();
         saveTranslationSelection();
-        if (languagesStatus) languagesStatus.textContent = 'Arabic only is active.';
+        if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
         return;
       }
 
@@ -2040,12 +2050,12 @@
         currentTranslationCode = 'en';
         currentTranslationName = 'English';
         currentTranslationVerses = englishVerses.slice();
-        const englishWordLayer = await fetchWordLayer('en');
-        mergeWordLayerIntoVerseData(englishWordLayer);
+        await applyActiveWordLayer('en', 'en-fallback', 'English');
+        if (currentMode === 'arabic-only') currentMode = 'bilingual';
         updateModeLabels();
         rerenderTranslationView();
         saveTranslationSelection();
-        if (languagesStatus) languagesStatus.textContent = 'English is active.';
+        if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
         return;
       }
 
@@ -2060,12 +2070,12 @@
       currentTranslationCode = item.languageCode || 'en';
       currentTranslationName = item.languageName || 'Translation';
       currentTranslationVerses = texts;
-      const selectedWordLayer = await fetchWordLayer(currentTranslationCode);
-      mergeWordLayerIntoVerseData(selectedWordLayer);
+      await applyActiveWordLayer(currentTranslationCode, nextId, currentTranslationName);
+      if (currentMode === 'arabic-only') currentMode = 'bilingual';
       updateModeLabels();
       rerenderTranslationView();
       saveTranslationSelection();
-      if (languagesStatus) languagesStatus.textContent = `${currentTranslationName} is active.`;
+      if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
     }
 
     function toTitleCaseLabel(value) {
@@ -2074,6 +2084,59 @@
         .filter(Boolean)
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
         .join(' ');
+    }
+
+    function getCapabilityLabel(level) {
+      if (level === 'arabic_only') return 'Arabic only';
+      if (level === 'full_live') return 'Full live';
+      if (level === 'verse_meaning') return 'Verse meaning';
+      return 'Not ready';
+    }
+
+    function getTranslationCapability(id) {
+      return translationCapabilityMap[String(id)] || { level: 'verse_meaning', liveTajweed: false };
+    }
+
+    function getWordLayerDisplayName() {
+      return currentWordLayerLanguageName || 'English';
+    }
+
+    function getWordLayerStatusText() {
+      if (currentTranslationId === 'ar') {
+        return 'Arabic only is active. Live word-by-word meaning falls back to English where needed.';
+      }
+      if (currentWordLayerLevel === 'full_live' && getWordLayerDisplayName() === getDisplayLanguageName()) {
+        return `${getDisplayLanguageName()} is active with live word-by-word support.`;
+      }
+      if (currentWordLayerLevel === 'full_live') {
+        return `${getDisplayLanguageName()} is active.`;
+      }
+      return `${getDisplayLanguageName()} is active for verse meaning. Live word-by-word stays in English for stability.`;
+    }
+
+    function measureWordLayerCapability(wordLayer) {
+      if (!Array.isArray(wordLayer) || !wordLayer.length) {
+        return { fullLive: false, level: 'verse_meaning' };
+      }
+      let totalWords = 0;
+      let translatedWords = 0;
+      let transliteratedWords = 0;
+      let versesWithWords = 0;
+      wordLayer.forEach((verse) => {
+        const words = Array.isArray(verse.words) ? verse.words : [];
+        if (words.length) versesWithWords += 1;
+        words.forEach((word) => {
+          totalWords += 1;
+          if (String(word.translation || '').trim()) translatedWords += 1;
+          if (String(word.transliteration || '').trim()) transliteratedWords += 1;
+        });
+      });
+      if (!totalWords) return { fullLive: false, level: 'verse_meaning' };
+      const verseCoverage = versesWithWords / Math.max(1, totalVerses);
+      const meaningCoverage = translatedWords / totalWords;
+      const transliterationCoverage = transliteratedWords / totalWords;
+      const fullLive = verseCoverage >= 0.9 && meaningCoverage >= 0.55 && transliterationCoverage >= 0.55;
+      return { fullLive, level: fullLive ? 'full_live' : 'verse_meaning' };
     }
 
     function mergeWordLayerIntoVerseData(wordLayer) {
@@ -2100,6 +2163,40 @@
           words: nextWords
         };
       });
+      transliterationAvailable = verseDataCache.some((verse) => verse.transliteration && verse.transliteration.trim());
+    }
+
+    async function applyActiveWordLayer(languageCode, translationId = currentTranslationId, translationName = currentTranslationName) {
+      const englishWordLayer = await fetchWordLayer('en');
+      mergeWordLayerIntoVerseData(englishWordLayer);
+      currentWordLayerLanguageName = 'English';
+      currentWordLayerLevel = 'full_live';
+
+      const code = String(languageCode || 'en').trim().toLowerCase();
+      if (code === 'en') {
+        translationCapabilityMap[String(translationId)] = { level: 'full_live', liveTajweed: true };
+        return;
+      }
+      if (code === 'ar') {
+        translationCapabilityMap[String(translationId)] = { level: 'arabic_only', liveTajweed: true };
+        currentWordLayerLevel = 'verse_meaning';
+        return;
+      }
+
+      const selectedWordLayer = await fetchWordLayer(code);
+      const capability = measureWordLayerCapability(selectedWordLayer);
+      translationCapabilityMap[String(translationId)] = {
+        level: capability.level,
+        liveTajweed: capability.fullLive
+      };
+      if (capability.fullLive) {
+        mergeWordLayerIntoVerseData(selectedWordLayer);
+        currentWordLayerLanguageName = translationName || 'Translation';
+        currentWordLayerLevel = 'full_live';
+      } else {
+        currentWordLayerLanguageName = 'English';
+        currentWordLayerLevel = 'verse_meaning';
+      }
     }
 
     async function fetchWordLayer(languageCode) {
@@ -3551,9 +3648,11 @@ ${getVerseUrl(ayah)}`,
       document.querySelectorAll('.word-meaning-panel').forEach((item) => {
         if (item !== panel) item.classList.remove('active');
       });
+      const translit = wordElement.getAttribute('data-word-translit') || '';
+      const gloss = wordElement.getAttribute('data-word-gloss') || '';
       panel.querySelector('.word-meaning-arabic').textContent = wordElement.getAttribute('data-word-arabic') || wordElement.textContent.trim();
-      panel.querySelector('.word-meaning-translit').textContent = wordElement.getAttribute('data-word-translit') || '';
-      panel.querySelector('.word-meaning-gloss').textContent = wordElement.getAttribute('data-word-gloss') || 'Meaning not available for this word.';
+      panel.querySelector('.word-meaning-translit').textContent = translit || `Transliteration not available for this word in ${getWordLayerDisplayName()}.`;
+      panel.querySelector('.word-meaning-gloss').textContent = gloss || `Meaning not available for this word in ${getWordLayerDisplayName()}.`;
       panel.classList.add('active');
     }
 
