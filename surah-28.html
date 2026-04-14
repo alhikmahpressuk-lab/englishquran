@@ -852,6 +852,20 @@
       text-align: center;
     }
     .english-text { font-size: 1rem; color: color-mix(in srgb, var(--text) 88%, white); padding-top: 2px; }
+    .translation-line { display: inline; }
+    .translation-word {
+      display: inline;
+      padding: 0.02em 0.08em;
+      border-radius: 8px;
+      transition: background 0.14s ease, color 0.14s ease;
+    }
+    .translation-word.translation-active {
+      background: var(--word-active);
+      color: var(--accent-deep);
+    }
+    html[data-theme="dark"] .translation-word.translation-active {
+      color: #d8fff4;
+    }
 
     .verse-toolbar-wrap { display: flex; justify-content: flex-start; margin-top: 14px; }
     .verse-toolbar {
@@ -1822,6 +1836,8 @@
     let translationBridgeAudio = null;
     let translationSpeechAudio = null;
     let translationSpeechActive = false;
+    let currentTranslationPlaybackVerse = null;
+    let translationWordSyncCleanup = null;
 
     const premiumTranslationTtsConfig = {
       enabled: true,
@@ -2757,8 +2773,10 @@
             translationId: currentTranslationId,
             locale: profile.locale,
             voiceHint: profile.voiceHint,
+            providerHint: 'google_cloud_tts',
             gender: 'male',
             style: 'natural-calm',
+            playbackMode: translationTapMode || 'translation',
             reference: exportAttribution
           })
         });
@@ -2786,6 +2804,7 @@
     }
 
     function stopTranslationMedia() {
+      stopTranslationWordTracking();
       if (translationBridgeAudio) {
         translationBridgeAudio.pause();
         translationBridgeAudio.src = '';
@@ -2827,11 +2846,13 @@
         translationSpeechAudio = audio;
         translationSpeechActive = true;
         audio.preload = 'auto';
+        startTranslationWordTracking(audio, ayah);
         const finish = (ok) => {
           audio.onended = null;
           audio.onerror = null;
           if (translationSpeechAudio === audio) translationSpeechAudio = null;
           translationSpeechActive = false;
+          stopTranslationWordTracking();
           resolve(ok);
         };
         audio.onended = () => finish(true);
@@ -2921,8 +2942,32 @@
       }
     }
 
+    function isTranslationPlaybackPaused() {
+      if (translationBridgeAudio && !translationBridgeAudio.ended) return translationBridgeAudio.paused;
+      if (translationSpeechAudio && !translationSpeechAudio.ended) return translationSpeechAudio.paused;
+      return true;
+    }
+
+    async function toggleTranslationPlayback() {
+      try {
+        if (translationBridgeAudio && !translationBridgeAudio.ended) {
+          if (translationBridgeAudio.paused) await translationBridgeAudio.play();
+          else translationBridgeAudio.pause();
+          return;
+        }
+        if (translationSpeechAudio && !translationSpeechAudio.ended) {
+          if (translationSpeechAudio.paused) await translationSpeechAudio.play();
+          else translationSpeechAudio.pause();
+        }
+      } catch {
+        showBookmarkMessage('Translation audio could not be resumed right now.');
+      }
+    }
+
     function showTranslationAudioPrompt(ayah) {
       const safeAyah = Number(ayah);
+      const isActive = translationTapMode !== 'off' || translationContinueActive || translationSpeechActive || translationBridgeAudio || translationSpeechAudio;
+      const playPauseLabel = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
       const options = [
         {
           label: 'Play translation',
@@ -2930,17 +2975,31 @@
           onClick: async () => { await runTranslationFlow(safeAyah, 'translation', false); }
         },
         {
-          label: 'Play with Arabic',
+          label: 'With Arabic',
           primary: false,
           onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', false); }
         },
         {
-          label: 'Continue',
+          label: 'Continue here',
           primary: false,
           onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', true); }
+        },
+        {
+          label: 'Continue start',
+          primary: false,
+          onClick: async () => { await runTranslationFlow(1, 'with-arabic', true); }
         }
       ];
-      if (translationTapMode !== 'off' || translationContinueActive || translationSpeechActive || translationBridgeAudio) {
+      if (isActive) {
+        options.push({
+          label: playPauseLabel,
+          primary: false,
+          onClick: async () => {
+            await toggleTranslationPlayback();
+            hidePrompt();
+            showBookmarkMessage(`Translation audio ${playPauseLabel === 'Play' ? 'resumed' : 'paused'}.`);
+          }
+        });
         options.push({
           label: 'Stop',
           primary: false,
@@ -2953,7 +3012,7 @@
       }
       options.push({ label: 'Close', primary: false, onClick: () => hidePrompt() });
       showPrompt(
-        `Translation audio · Verse ${safeAyah}`,
+        `Play translation · Verse ${safeAyah}`,
         `Choose how to hear verse ${safeAyah} in ${getDisplayLanguageName()}.`,
         options
       );
@@ -4022,6 +4081,60 @@ ${getVerseUrl(ayah)}`,
       document.querySelectorAll('.word-meaning-panel').forEach((panel) => panel.classList.remove('active'));
     }
 
+    function clearTranslationWordHighlights(targetAyah = null) {
+      const selector = targetAyah ? `[data-translation-word-key^="${targetAyah}-"]` : '.translation-word';
+      document.querySelectorAll(selector).forEach((word) => word.classList.remove('translation-active'));
+    }
+
+    function highlightTranslationWordByIndex(ayah, wordIndex) {
+      clearTranslationWordHighlights(ayah);
+      const active = document.querySelector(`[data-translation-word-key="${ayah}-${wordIndex}"]`);
+      if (active) active.classList.add('translation-active');
+    }
+
+    function getTranslationWordCount(ayah) {
+      return document.querySelectorAll(`[data-translation-word-key^="${ayah}-"]`).length;
+    }
+
+    function stopTranslationWordTracking() {
+      if (typeof translationWordSyncCleanup === 'function') {
+        translationWordSyncCleanup();
+      }
+      translationWordSyncCleanup = null;
+      currentTranslationPlaybackVerse = null;
+      clearTranslationWordHighlights();
+    }
+
+    function startTranslationWordTracking(audio, ayah) {
+      stopTranslationWordTracking();
+      currentTranslationPlaybackVerse = ayah;
+      const update = () => {
+        const totalWords = getTranslationWordCount(ayah);
+        if (!totalWords) return;
+        const duration = Number(audio.duration || 0);
+        if (!Number.isFinite(duration) || duration <= 0) {
+          highlightTranslationWordByIndex(ayah, 1);
+          return;
+        }
+        const ratio = Math.min(0.999, Math.max(0, audio.currentTime / duration));
+        const index = Math.min(totalWords, Math.max(1, Math.floor(ratio * totalWords) + 1));
+        highlightTranslationWordByIndex(ayah, index);
+      };
+      const clear = () => {
+        clearTranslationWordHighlights(ayah);
+      };
+      audio.addEventListener('timeupdate', update);
+      audio.addEventListener('play', update);
+      audio.addEventListener('pause', update);
+      audio.addEventListener('ended', clear, { once: true });
+      translationWordSyncCleanup = () => {
+        audio.removeEventListener('timeupdate', update);
+        audio.removeEventListener('play', update);
+        audio.removeEventListener('pause', update);
+        clear();
+      };
+    }
+
     function showWordMeaning(ayah, wordElement, forceOpen = false) {
       if (!wordModeEnabled && !forceOpen) return;
       const panel = document.getElementById(`word-panel-${ayah}`);
@@ -4582,6 +4695,20 @@ ${getVerseUrl(ayah)}`,
       `;
     }
 
+    function buildTranslationTextHtml(text, verseNumber) {
+      const source = String(text || '').trim();
+      if (!source) return 'Translation unavailable.';
+      const words = source.split(' ').filter(Boolean);
+      if (!words.length) return escapeHtml(source);
+      let html = `<span class="translation-line" data-translation-line="${verseNumber}">`;
+      for (let index = 0; index < words.length; index += 1) {
+        if (index > 0) html += ' ';
+        html += `<span class="translation-word" data-translation-word-key="${verseNumber}-${index + 1}" data-translation-word-index="${index + 1}">${escapeHtml(words[index])}</span>`;
+      }
+      html += '</span>';
+      return html;
+    }
+
     function renderVerseArticle(verse) {
       const english = getCurrentTranslationText(verse.number);
       const cleanVerseArabic = stripEmbeddedVerseMarkers(verse.arabic);
@@ -4608,7 +4735,7 @@ ${getVerseUrl(ayah)}`,
 
           <div class="english notranslate" translate="no">
             <div class="english-number notranslate" translate="no">${verse.number}.</div>
-            <div class="english-text notranslate" translate="no">${escapeHtml(english)}</div>
+            <div class="english-text notranslate" translate="no">${buildTranslationTextHtml(english, verse.number)}</div>
           </div>
 
           <div class="note-indicator notranslate ${existingNote ? 'active' : ''}" data-note-indicator="${verse.number}" translate="no">${existingNote ? 'Private note saved for this verse.' : ''}</div>
