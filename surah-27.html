@@ -223,7 +223,9 @@
 
     .mode-button,
     .audio-view-button,
-    .wordmode-button {
+    .wordmode-button,
+    .language-toggle-button {
+
       appearance: none;
       border: 1px solid var(--line);
       background: var(--surface);
@@ -242,14 +244,18 @@
 
     .mode-button:hover,
     .audio-view-button:hover,
-    .wordmode-button:hover {
+    .wordmode-button:hover,
+    .language-toggle-button:hover {
+
       background: var(--surface-deep);
       border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
     }
 
     .mode-button.active,
     .audio-view-button.active,
-    .wordmode-button.active {
+    .wordmode-button.active,
+    .language-toggle-button.active {
+
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
@@ -274,6 +280,150 @@
 
     .jump-button:hover {
       background: var(--accent-deep);
+    }
+
+    .language-toggle-button svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .language-toggle-button {
+      gap: 8px;
+    }
+
+    .languages-panel {
+      display: none;
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .languages-panel.active {
+      display: block;
+    }
+
+    .languages-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .languages-panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .languages-panel-text {
+      color: color-mix(in srgb, var(--text) 82%, white);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .languages-selection,
+    .languages-status {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: color-mix(in srgb, var(--text) 88%, white);
+      font-size: 0.94rem;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .languages-list {
+      display: grid;
+      gap: 8px;
+      max-height: 340px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    #languagesSearchInput {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 12px 14px;
+      outline: none;
+    }
+
+    #languagesSearchInput:focus {
+      border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .language-item {
+      appearance: none;
+      width: 100%;
+      min-height: 52px;
+      padding: 10px 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.94rem;
+      font-weight: 600;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      line-height: 1.2;
+    }
+
+    .language-item:hover {
+      background: var(--surface-deep);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+
+    .language-item.active {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+    }
+
+    .language-item-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .language-item-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .language-item-meta {
+      color: var(--muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    html[data-theme="dark"] .language-item.active {
+      color: #d8fff4;
     }
 
     #loadAudioButton {
@@ -1040,6 +1190,33 @@
       .note-panel-actions { flex-direction: column; }
       .note-save-btn, .note-clear-btn, .note-share-btn, .note-copy-btn, .note-close-btn, .tajweed-mini-btn { width: 100%; }
       .tajweed-mini-top { flex-direction: column; align-items: flex-start; }
+      .languages-panel { padding: 14px; border-radius: 16px; }
+      .languages-list { max-height: 300px; gap: 10px; }
+      #languagesSearchInput { min-height: 46px; }
+      .language-item {
+        min-height: 60px;
+        padding: 12px 14px;
+        border-radius: 18px;
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-items: start;
+        align-items: center;
+        gap: 4px;
+      }
+      .language-item-label, .language-item-meta {
+        width: 100%;
+      }
+      .language-item-name {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+      }
+      .language-item-meta {
+        white-space: normal;
+        text-align: left;
+        font-size: 0.8rem;
+        line-height: 1.35;
+      }
     }
   </style>
 </head>
@@ -1175,6 +1352,23 @@
             </div>
             <div class="mode-options">
               <button class="wordmode-button" type="button" id="wordModeToggle" translate="no">Word by word</button>
+              <button class="language-toggle-button" type="button" id="languagesToggleButton" translate="no" aria-expanded="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M4 12h16"></path><path d="M12 4a12 12 0 0 1 0 16"></path><path d="M12 4a12 12 0 0 0 0 16"></path></svg>
+                <span>Languages</span>
+              </button>
+            </div>
+            <div class="languages-panel" id="languagesPanel">
+              <div class="languages-panel-head">
+                <div class="languages-panel-title" translate="no">Languages</div>
+              </div>
+              <div class="languages-panel-text" id="languagesPanelText" translate="no">70+ languages available. Select a language, then press Read.</div>
+              <div class="languages-selection" id="languageSelectionText" translate="no">Arabic on top · English below</div>
+              <div class="languages-status" id="languagesStatus" translate="no">English is active.</div>
+              <div class="share-field" style="margin-bottom: 10px;">
+                <label for="languagesSearchInput" translate="no">Search languages</label>
+                <input id="languagesSearchInput" type="text" maxlength="80" autocomplete="off" spellcheck="false" translate="no" placeholder="Find a language" />
+              </div>
+              <div class="languages-list" id="languagesList"></div>
             </div>
           </div>
 
@@ -1489,6 +1683,13 @@
     const modeButtons = document.querySelectorAll('.mode-button');
     const audioViewButtons = document.querySelectorAll('.audio-view-button');
     const wordModeToggle = document.getElementById('wordModeToggle');
+    const languagesToggleButton = document.getElementById('languagesToggleButton');
+    const languagesPanel = document.getElementById('languagesPanel');
+    const languageSelectionText = document.getElementById('languageSelectionText');
+    const languagesStatus = document.getElementById('languagesStatus');
+    const languagesPanelText = document.getElementById('languagesPanelText');
+    const languagesSearchInput = document.getElementById('languagesSearchInput');
+    const languagesList = document.getElementById('languagesList');
     const verseSelect = document.getElementById('verseSelect');
     const jumpButton = document.getElementById('jumpButton');
     const themeToggle = document.getElementById('themeToggle');
@@ -1556,6 +1757,7 @@
     const reflectionDraftStorageKey = `teq-surah-${surahNumber}-reflection-draft`;
     const reflectionNameStorageKey = `teq-surah-${surahNumber}-reflection-name`;
     const reflectionEmailStorageKey = `teq-surah-${surahNumber}-reflection-email`;
+    const translationSelectionStorageKey = `teq-surah-${surahNumber}-translation-selection`;
     const historyLimit = 25;
 
     const bismillahArabic = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
@@ -1570,6 +1772,20 @@
     let currentAudioView = 'standard';
     let wordModeEnabled = false;
     let transliterationAvailable = false;
+    let currentTranslationId = 'en-fallback';
+    let currentTranslationCode = 'en';
+    let currentTranslationName = 'English';
+    let currentTranslationVerses = englishVerses.slice();
+    let translationResources = [];
+    const translationCache = { 'en-fallback': englishVerses.slice(), ar: Array.from({ length: totalVerses }, () => '') };
+    let languageListLoadingPromise = null;
+    const wordLayerCache = { en: null, ar: null };
+    const translationCapabilityMap = {
+      ar: { level: 'arabic_only', liveTajweed: true },
+      'en-fallback': { level: 'full_live', liveTajweed: true }
+    };
+    let currentWordLayerLanguageName = 'English';
+    let currentWordLayerLevel = 'full_live';
     let currentVisibleVerse = 1;
     let readingObserver = null;
     let readingSaveTimer = null;
@@ -1600,6 +1816,37 @@
     let tajweedContinueAllActive = false;
     let apiDegraded = false;
     let jsPdfLoaderPromise = null;
+    let translationTapMode = 'off';
+    let translationContinueActive = false;
+    let translationSequenceId = 0;
+    let translationBridgeAudio = null;
+    let translationSpeechActive = false;
+    let translationVoicesReady = false;
+
+    const translationVoiceRegistry = {
+      en: { locale: 'en-GB', preferredNames: ['Ryan', 'Ollie', 'Thomas', 'Google UK English Male', 'Male'] },
+      bn: { locale: 'bn-BD', preferredNames: ['Male'] },
+      ur: { locale: 'ur-PK', preferredNames: ['Male'] },
+      fr: { locale: 'fr-FR', preferredNames: ['Male'] },
+      tr: { locale: 'tr-TR', preferredNames: ['Male'] },
+      id: { locale: 'id-ID', preferredNames: ['Male'] },
+      ms: { locale: 'ms-MY', preferredNames: ['Male'] },
+      sw: { locale: 'sw-KE', preferredNames: ['Male'] },
+      es: { locale: 'es-ES', preferredNames: ['Male'] },
+      de: { locale: 'de-DE', preferredNames: ['Male'] },
+      fa: { locale: 'fa-IR', preferredNames: ['Male'] },
+      ru: { locale: 'ru-RU', preferredNames: ['Male'] },
+      hi: { locale: 'hi-IN', preferredNames: ['Male'] },
+      ta: { locale: 'ta-IN', preferredNames: ['Male'] },
+      te: { locale: 'te-IN', preferredNames: ['Male'] },
+      ml: { locale: 'ml-IN', preferredNames: ['Male'] },
+      zh: { locale: 'zh-CN', preferredNames: ['Male'] },
+      ja: { locale: 'ja-JP', preferredNames: ['Male'] },
+      ko: { locale: 'ko-KR', preferredNames: ['Male'] },
+      pt: { locale: 'pt-PT', preferredNames: ['Male'] },
+      it: { locale: 'it-IT', preferredNames: ['Male'] },
+      nl: { locale: 'nl-NL', preferredNames: ['Male'] }
+    };
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
     function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
@@ -1610,6 +1857,7 @@
     function iconPlay() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.5L18 12L8 17.5Z"></path></svg>`; }
     function iconRepeat() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4l-4 4"></path><path d="M3 11V9a3 3 0 0 1 3-3h15"></path><path d="M7 22l-4-4l4-4"></path><path d="M21 13v2a3 3 0 0 1-3 3H3"></path></svg>`; }
     function iconStartFromHere() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16"></path><path d="M9 7l8 5l-8 5z"></path></svg>`; }
+    function iconVoice() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18 6a8.5 8.5 0 0 1 0 12"></path></svg>`; }
 
     function escapeHtml(text) {
       return String(text ?? '')
@@ -1643,6 +1891,432 @@
         console.warn('Fetch failed:', url, error);
         return null;
       }
+    }
+
+    function stripHtmlContent(value) {
+      const temp = document.createElement('div');
+      temp.innerHTML = String(value || '');
+      const raw = String(temp.textContent || temp.innerText || '').trim();
+      return raw.split(' ').filter(Boolean).join(' ');
+    }
+
+    function getCurrentTranslationText(ayah) {
+      const safeAyah = Number(ayah);
+      if (!safeAyah || safeAyah < 1 || safeAyah > totalVerses) return '';
+      if (currentTranslationId === 'ar') return '';
+      return currentTranslationVerses[safeAyah - 1] || englishVerses[safeAyah - 1] || '';
+    }
+
+    function getDisplayLanguageName() {
+      return currentTranslationId === 'ar' ? 'Arabic' : currentTranslationName;
+    }
+
+    function updateModeLabels() {
+      const bilingualButton = document.querySelector('[data-mode="bilingual"]');
+      const translationOnlyButton = document.querySelector('[data-mode="english-only"]');
+      if (bilingualButton) {
+        bilingualButton.textContent = currentTranslationId === 'ar' ? 'Arabic Only' : `Arabic + ${getDisplayLanguageName()}`;
+      }
+      if (translationOnlyButton) {
+        translationOnlyButton.textContent = currentTranslationId === 'ar' ? 'Translation Only' : `${getDisplayLanguageName()} Only`;
+        translationOnlyButton.disabled = currentTranslationId === 'ar';
+      }
+      if (languageSelectionText) {
+        const capability = getTranslationCapability(currentTranslationId);
+        languageSelectionText.textContent = currentTranslationId === 'ar'
+          ? 'Arabic on top · Arabic only active'
+          : `Arabic on top · ${getDisplayLanguageName()} below · ${getCapabilityLabel(capability.level)}`;
+      }
+      if (languagesStatus) {
+        languagesStatus.textContent = getWordLayerStatusText();
+      }
+    }
+
+    function getTranslationResourceList(payload) {
+      const rawItems = Array.isArray(payload && payload.translations)
+        ? payload.translations
+        : Array.isArray(payload && payload.resources)
+          ? payload.resources
+          : Array.isArray(payload && payload.data)
+            ? payload.data
+            : [];
+
+      const byLanguage = new Map();
+      rawItems.forEach((item) => {
+        const id = Number(item && item.id);
+        if (!id) return;
+        const languageCode = String(item.language_code || (item.language && item.language.iso_code) || item.iso_code || item.language_name || `lang-${id}`).trim().toLowerCase();
+        if (!languageCode || languageCode === 'ar') return;
+        const languageName = toTitleCaseLabel(String(item.language_name || (item.language && item.language.name) || (item.translated_name && item.translated_name.name) || item.name || item.resource_name || languageCode).trim());
+        const resourceName = toTitleCaseLabel(String((item.translated_name && item.translated_name.name) || item.resource_name || item.name || languageName).trim());
+        if (!languageName) return;
+        if (!byLanguage.has(languageCode)) {
+          byLanguage.set(languageCode, { id, languageCode, languageName, resourceName });
+        }
+      });
+
+      const items = Array.from(byLanguage.values()).sort((a, b) => {
+        if (a.languageCode === 'en') return -1;
+        if (b.languageCode === 'en') return 1;
+        return a.languageName.localeCompare(b.languageName, 'en', { sensitivity: 'base' });
+      });
+
+      return [
+        { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
+        { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' },
+        ...items.filter((item) => item.languageCode !== 'en')
+      ];
+    }
+
+    function saveTranslationSelection() {
+      localStorage.setItem(translationSelectionStorageKey, JSON.stringify({
+        id: currentTranslationId,
+        code: currentTranslationCode,
+        name: currentTranslationName
+      }));
+    }
+
+    function getSavedTranslationSelection() {
+      try {
+        const raw = localStorage.getItem(translationSelectionStorageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : null;
+      } catch {
+        return null;
+      }
+    }
+
+    async function fetchTranslationTexts(translationId) {
+      if (translationCache[translationId]) return translationCache[translationId];
+      const pages = [1, 2];
+      const results = await Promise.all(pages.map((page) => safeFetchJson(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?per_page=50&page=${page}&translations=${translationId}&translation_fields=resource_name,language_name,text`)));
+      const combined = results.flatMap((payload) => payload && Array.isArray(payload.verses) ? payload.verses : []);
+      if (!combined.length) return null;
+      const texts = Array.from({ length: totalVerses }, () => '');
+      combined
+        .filter((verse) => verse && verse.verse_number)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .forEach((verse) => {
+          const translation = Array.isArray(verse.translations) ? verse.translations[0] : null;
+          texts[verse.verse_number - 1] = stripHtmlContent(translation && translation.text ? translation.text : '');
+        });
+      translationCache[translationId] = texts;
+      return texts;
+    }
+
+    function updateLanguagesPanelText() {
+      const count = Array.isArray(translationResources) && translationResources.length ? translationResources.length : 70;
+      if (languagesPanelText) {
+        languagesPanelText.textContent = `${count}+ languages available. Select a language, then press Read.`;
+      }
+    }
+
+    function renderLanguageList() {
+      if (!languagesList) return;
+      const query = String(languagesSearchInput && languagesSearchInput.value ? languagesSearchInput.value : '').trim().toLowerCase();
+      languagesList.innerHTML = '';
+      const filteredResources = translationResources.filter((item) => {
+        if (!query) return true;
+        return String(item.languageName || '').toLowerCase().includes(query)
+          || String(item.resourceName || '').toLowerCase().includes(query)
+          || String(item.languageCode || '').toLowerCase().includes(query);
+      });
+
+      filteredResources.forEach((item) => {
+        const capability = getTranslationCapability(item.id);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'language-item';
+        button.classList.toggle('active', String(item.id) === String(currentTranslationId));
+        button.innerHTML = `
+          <span class="language-item-label">
+            <span class="language-item-name">${escapeHtml(item.languageName)}</span>
+          </span>
+          <span class="language-item-meta">${escapeHtml(item.resourceName)} · ${escapeHtml(getCapabilityLabel(capability.level))}</span>
+        `;
+        button.addEventListener('click', async () => {
+          await activateTranslation(item);
+        });
+        languagesList.appendChild(button);
+      });
+
+      if (!filteredResources.length) {
+        const empty = document.createElement('div');
+        empty.className = 'languages-status';
+        empty.textContent = 'No languages found. Try another search.';
+        empty.style.marginBottom = '0';
+        languagesList.appendChild(empty);
+      }
+    }
+
+    async function loadTranslationResources() {
+      if (translationResources.length) return translationResources;
+      if (languageListLoadingPromise) return languageListLoadingPromise;
+      if (languagesStatus) languagesStatus.textContent = 'Loading languages...';
+
+      languageListLoadingPromise = (async () => {
+        try {
+          const payload = await safeFetchJson('https://api.quran.com/api/v4/resources/translations');
+          translationResources = getTranslationResourceList(payload);
+          if (!translationResources.length) {
+            translationResources = [
+              { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
+              { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' }
+            ];
+            if (languagesStatus) languagesStatus.textContent = 'Only Arabic and English are available right now.';
+          } else if (languagesStatus) {
+            languagesStatus.textContent = `${translationResources.length} languages ready.`;
+          }
+        } catch (error) {
+          console.warn('Language resources could not be loaded.', error);
+          translationResources = [
+            { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
+            { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' }
+          ];
+          if (languagesStatus) languagesStatus.textContent = 'Languages could not be refreshed right now.';
+        }
+        updateLanguagesPanelText();
+        renderLanguageList();
+        return translationResources;
+      })().finally(() => {
+        languageListLoadingPromise = null;
+      });
+
+      return languageListLoadingPromise;
+    }
+
+    function rerenderTranslationView() {
+      const currentAyah = currentVisibleVerse;
+      const activeTab = document.querySelector('.tab-button.active') && document.querySelector('.tab-button.active').dataset.tab
+        ? document.querySelector('.tab-button.active').dataset.tab
+        : 'read';
+      renderVerses(verseDataCache);
+      applyMode(currentTranslationId === 'ar' && currentMode === 'english-only' ? 'arabic-only' : currentMode);
+      versesContainer.classList.toggle('word-mode-active', wordModeEnabled);
+      wordModeToggle.classList.toggle('active', wordModeEnabled);
+      wordModeToggle.textContent = wordModeEnabled ? 'Word by word on' : 'Word by word';
+      updateShareBuilder();
+      updateModeLabels();
+      renderLanguageList();
+      setActiveTab(activeTab);
+      setCurrentVisibleVerse(currentAyah, false);
+    }
+
+    async function activateTranslation(item) {
+      if (!item) return;
+      const nextId = String(item.id);
+      if (languagesStatus) {
+        languagesStatus.textContent = nextId === 'ar' ? 'Arabic only is loading...' : `Loading ${item.languageName}...`;
+      }
+
+      if (nextId === 'ar') {
+        currentTranslationId = 'ar';
+        currentTranslationCode = 'ar';
+        currentTranslationName = 'Arabic';
+        currentTranslationVerses = translationCache.ar.slice();
+        await applyActiveWordLayer('ar', 'ar', 'Arabic');
+        currentMode = 'arabic-only';
+        updateModeLabels();
+        rerenderTranslationView();
+        saveTranslationSelection();
+        if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
+        return;
+      }
+
+      if (nextId === 'en-fallback') {
+        currentTranslationId = 'en-fallback';
+        currentTranslationCode = 'en';
+        currentTranslationName = 'English';
+        currentTranslationVerses = englishVerses.slice();
+        await applyActiveWordLayer('en', 'en-fallback', 'English');
+        if (currentMode === 'arabic-only') currentMode = 'bilingual';
+        updateModeLabels();
+        rerenderTranslationView();
+        saveTranslationSelection();
+        if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
+        return;
+      }
+
+      const texts = await fetchTranslationTexts(nextId);
+      if (!texts || !texts.length) {
+        if (languagesStatus) languagesStatus.textContent = `${item.languageName} could not be loaded right now.`;
+        showBookmarkMessage('That language could not be loaded right now.');
+        return;
+      }
+
+      currentTranslationId = nextId;
+      currentTranslationCode = item.languageCode || 'en';
+      currentTranslationName = item.languageName || 'Translation';
+      currentTranslationVerses = texts;
+      await applyActiveWordLayer(currentTranslationCode, nextId, currentTranslationName);
+      if (currentMode === 'arabic-only') currentMode = 'bilingual';
+      updateModeLabels();
+      rerenderTranslationView();
+      saveTranslationSelection();
+      if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
+    }
+
+    function toTitleCaseLabel(value) {
+      return String(value || '')
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    function getCapabilityLabel(level) {
+      if (level === 'arabic_only') return 'Arabic only';
+      if (level === 'full_live') return 'Full live';
+      if (level === 'verse_meaning') return 'Verse meaning';
+      return 'Not ready';
+    }
+
+    function getTranslationCapability(id) {
+      return translationCapabilityMap[String(id)] || { level: 'verse_meaning', liveTajweed: false };
+    }
+
+    function getWordLayerDisplayName() {
+      return currentWordLayerLanguageName || 'English';
+    }
+
+    function getWordLayerStatusText() {
+      if (currentTranslationId === 'ar') {
+        return 'Arabic only is active. Live word-by-word meaning falls back to English where needed.';
+      }
+      if (currentWordLayerLevel === 'full_live' && getWordLayerDisplayName() === getDisplayLanguageName()) {
+        return `${getDisplayLanguageName()} is active with live word-by-word support.`;
+      }
+      if (currentWordLayerLevel === 'full_live') {
+        return `${getDisplayLanguageName()} is active.`;
+      }
+      return `${getDisplayLanguageName()} is active for verse meaning. Live word-by-word stays in English for stability.`;
+    }
+
+    function measureWordLayerCapability(wordLayer) {
+      if (!Array.isArray(wordLayer) || !wordLayer.length) {
+        return { fullLive: false, level: 'verse_meaning' };
+      }
+      let totalWords = 0;
+      let translatedWords = 0;
+      let transliteratedWords = 0;
+      let versesWithWords = 0;
+      wordLayer.forEach((verse) => {
+        const words = Array.isArray(verse.words) ? verse.words : [];
+        if (words.length) versesWithWords += 1;
+        words.forEach((word) => {
+          totalWords += 1;
+          if (String(word.translation || '').trim()) translatedWords += 1;
+          if (String(word.transliteration || '').trim()) transliteratedWords += 1;
+        });
+      });
+      if (!totalWords) return { fullLive: false, level: 'verse_meaning' };
+      const verseCoverage = versesWithWords / Math.max(1, totalVerses);
+      const meaningCoverage = translatedWords / totalWords;
+      const transliterationCoverage = transliteratedWords / totalWords;
+      const fullLive = verseCoverage >= 0.9 && meaningCoverage >= 0.55 && transliterationCoverage >= 0.55;
+      return { fullLive, level: fullLive ? 'full_live' : 'verse_meaning' };
+    }
+
+    function mergeWordLayerIntoVerseData(wordLayer) {
+      if (!Array.isArray(wordLayer) || !wordLayer.length) return;
+      const byVerse = new Map(wordLayer.map((item) => [Number(item.number), item]));
+      verseDataCache = verseDataCache.map((verse) => {
+        const incoming = byVerse.get(Number(verse.number));
+        if (!incoming) return verse;
+        const words = Array.isArray(verse.words) ? verse.words : [];
+        const nextWords = words.map((word, index) => {
+          const incomingWord = Array.isArray(incoming.words)
+            ? incoming.words.find((entry) => Number(entry.position) === Number(word.position || index + 1))
+            : null;
+          if (!incomingWord) return word;
+          return {
+            ...word,
+            transliteration: incomingWord.transliteration || word.transliteration || '',
+            translation: incomingWord.translation || word.translation || ''
+          };
+        });
+        return {
+          ...verse,
+          transliteration: incoming.transliteration || verse.transliteration || '',
+          words: nextWords
+        };
+      });
+      transliterationAvailable = verseDataCache.some((verse) => verse.transliteration && verse.transliteration.trim());
+    }
+
+    async function applyActiveWordLayer(languageCode, translationId = currentTranslationId, translationName = currentTranslationName) {
+      const englishWordLayer = await fetchWordLayer('en');
+      mergeWordLayerIntoVerseData(englishWordLayer);
+      currentWordLayerLanguageName = 'English';
+      currentWordLayerLevel = 'full_live';
+
+      const code = String(languageCode || 'en').trim().toLowerCase();
+      if (code === 'en') {
+        translationCapabilityMap[String(translationId)] = { level: 'full_live', liveTajweed: true };
+        return;
+      }
+      if (code === 'ar') {
+        translationCapabilityMap[String(translationId)] = { level: 'arabic_only', liveTajweed: true };
+        currentWordLayerLevel = 'verse_meaning';
+        return;
+      }
+
+      const selectedWordLayer = await fetchWordLayer(code);
+      const capability = measureWordLayerCapability(selectedWordLayer);
+      translationCapabilityMap[String(translationId)] = {
+        level: capability.level,
+        liveTajweed: capability.fullLive
+      };
+      if (capability.fullLive) {
+        mergeWordLayerIntoVerseData(selectedWordLayer);
+        currentWordLayerLanguageName = translationName || 'Translation';
+        currentWordLayerLevel = 'full_live';
+      } else {
+        currentWordLayerLanguageName = 'English';
+        currentWordLayerLevel = 'verse_meaning';
+      }
+    }
+
+    async function fetchWordLayer(languageCode) {
+      const code = String(languageCode || 'en').trim().toLowerCase() || 'en';
+      if (wordLayerCache[code]) return wordLayerCache[code];
+      if (code === 'ar') {
+        const arabicLayer = verseDataCache.map((verse) => ({
+          number: verse.number,
+          transliteration: verse.transliteration || '',
+          words: Array.isArray(verse.words)
+            ? verse.words.map((word) => ({
+                position: word.position,
+                transliteration: word.transliteration || '',
+                translation: ''
+              }))
+            : []
+        }));
+        wordLayerCache[code] = arabicLayer;
+        return arabicLayer;
+      }
+      const pages = [1, 2];
+      const results = await Promise.all(pages.map((page) => safeFetchJson(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?language=${encodeURIComponent(code)}&words=true&per_page=50&page=${page}&fields=text_uthmani&word_fields=text_uthmani,transliteration,translation,audio_url,char_type_name`)));
+      const combined = results.flatMap((payload) => payload && Array.isArray(payload.verses) ? payload.verses : []);
+      if (!combined.length) return null;
+      const layer = combined
+        .filter((verse) => verse && verse.verse_number)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .map((verse) => {
+          const words = Array.isArray(verse.words) ? verse.words : [];
+          return {
+            number: verse.verse_number,
+            transliteration: words.map((word) => word && word.transliteration && word.transliteration.text ? word.transliteration.text : '').filter(Boolean).join(' '),
+            words: words.map((word, index) => ({
+              position: Number(word.position || index + 1),
+              transliteration: word && word.transliteration && word.transliteration.text ? word.transliteration.text : '',
+              translation: word && word.translation && word.translation.text ? stripHtmlContent(word.translation.text) : ''
+            }))
+          };
+        });
+      wordLayerCache[code] = layer;
+      return layer;
     }
 
     function buildVerseSelector() {
@@ -1994,6 +2668,231 @@
       promptActions.innerHTML = '';
     }
 
+    function getTranslationTtsConfig() {
+      return translationVoiceRegistry[currentTranslationCode] || translationVoiceRegistry.en || { locale: 'en-GB', preferredNames: ['Male'] };
+    }
+
+    function getPreferredTranslationLocale() {
+      const config = getTranslationTtsConfig();
+      return config.locale || currentTranslationCode || 'en-GB';
+    }
+
+    async function ensureTranslationVoices() {
+      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return [];
+      const initial = window.speechSynthesis.getVoices();
+      if (initial && initial.length) {
+        translationVoicesReady = true;
+        return initial;
+      }
+      return new Promise((resolve) => {
+        const timer = setTimeout(() => {
+          translationVoicesReady = true;
+          resolve(window.speechSynthesis.getVoices());
+        }, 900);
+        window.speechSynthesis.onvoiceschanged = () => {
+          clearTimeout(timer);
+          translationVoicesReady = true;
+          resolve(window.speechSynthesis.getVoices());
+        };
+      });
+    }
+
+    function selectPreferredTranslationVoice(voices) {
+      if (!Array.isArray(voices) || !voices.length) return null;
+      const config = getTranslationTtsConfig();
+      const locale = String(config.locale || currentTranslationCode || 'en-GB').toLowerCase();
+      const languageCode = String(currentTranslationCode || 'en').toLowerCase();
+      const preferredNames = Array.isArray(config.preferredNames) ? config.preferredNames : [];
+      const scored = voices.map((voice) => {
+        const lang = String(voice.lang || '').toLowerCase();
+        const name = String(voice.name || '');
+        let score = 0;
+        if (lang === locale) score += 50;
+        else if (lang.startsWith(`${languageCode}-`)) score += 32;
+        else if (lang.startsWith(languageCode)) score += 24;
+        preferredNames.forEach((token) => {
+          if (name.toLowerCase().includes(String(token).toLowerCase())) score += 18;
+        });
+        if (/male|man|david|ryan|ollie|thomas|oliver|arthur|noah|ethan|alfie/i.test(name)) score += 10;
+        if (/neural|natural|premium|enhanced|online/i.test(name)) score += 6;
+        if (/female|woman|zira|hazel|susan|aria|luna/i.test(name)) score -= 6;
+        return { voice, score };
+      }).sort((a, b) => b.score - a.score);
+      return scored[0] && scored[0].score > 0 ? scored[0].voice : voices.find((voice) => String(voice.lang || '').toLowerCase().startsWith(languageCode)) || voices[0] || null;
+    }
+
+    function stopTranslationFlow(resetMode = false) {
+      translationSequenceId += 1;
+      translationContinueActive = false;
+      translationSpeechActive = false;
+      if (translationBridgeAudio) {
+        translationBridgeAudio.pause();
+        translationBridgeAudio.src = '';
+        translationBridgeAudio = null;
+      }
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch {}
+      }
+      if (resetMode) translationTapMode = 'off';
+    }
+
+    function getVerseTranslationSpeechText(ayah) {
+      return String(getCurrentTranslationText(ayah) || '').trim();
+    }
+
+    async function speakVerseTranslation(ayah, token) {
+      const text = getVerseTranslationSpeechText(ayah);
+      if (!text) {
+        showBookmarkMessage(`Translation is unavailable for verse ${ayah}.`);
+        return false;
+      }
+      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+        showBookmarkMessage('Translation voice is unavailable on this device.');
+        return false;
+      }
+      const voices = await ensureTranslationVoices();
+      if (token !== translationSequenceId) return false;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = getPreferredTranslationLocale();
+      const preferredVoice = selectPreferredTranslationVoice(voices);
+      if (preferredVoice) utterance.voice = preferredVoice;
+      utterance.rate = currentTranslationCode === 'en' ? 0.95 : 0.93;
+      utterance.pitch = 0.92;
+      translationSpeechActive = true;
+      return new Promise((resolve) => {
+        utterance.onend = () => {
+          translationSpeechActive = false;
+          resolve(true);
+        };
+        utterance.onerror = () => {
+          translationSpeechActive = false;
+          resolve(false);
+        };
+        try {
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(utterance);
+        } catch {
+          translationSpeechActive = false;
+          resolve(false);
+        }
+      });
+    }
+
+    async function playArabicBridgeForTranslation(ayah, token) {
+      const verseAudio = await ensureTajweedVerseAudio(ayah);
+      if (!verseAudio || !verseAudio.url || token !== translationSequenceId) return false;
+      return new Promise((resolve) => {
+        const audio = new Audio(verseAudio.url);
+        translationBridgeAudio = audio;
+        audio.preload = 'auto';
+        const finish = (didPlay) => {
+          audio.onended = null;
+          audio.onerror = null;
+          audio.onpause = null;
+          if (translationBridgeAudio === audio) translationBridgeAudio = null;
+          resolve(didPlay);
+        };
+        audio.onended = () => finish(true);
+        audio.onerror = () => finish(false);
+        audio.play().catch(() => finish(false));
+      });
+    }
+
+    async function runTranslationFlow(startAyah, mode = 'translation', continueAll = false) {
+      const safeAyah = Number(startAyah);
+      if (!safeAyah || safeAyah < 1 || safeAyah > totalVerses) return;
+      const firstText = getVerseTranslationSpeechText(safeAyah);
+      if (!firstText) {
+        showBookmarkMessage(`Translation is unavailable for verse ${safeAyah}.`);
+        return;
+      }
+      stopTranslationFlow(false);
+      stopTranslationFlow(false);
+      stopSyncedPlayback(false);
+      stopTajweedPlayback(true);
+      translationTapMode = mode;
+      translationContinueActive = Boolean(continueAll);
+      const token = translationSequenceId;
+      hidePrompt();
+      setActiveTab('read');
+      showBookmarkMessage(
+        continueAll
+          ? `Arabic then ${getDisplayLanguageName()} translation will continue from verse ${safeAyah}.`
+          : mode === 'with-arabic'
+            ? `Arabic and ${getDisplayLanguageName()} translation are ready. Tap any verse to use this mode.`
+            : `${getDisplayLanguageName()} translation mode is ready. Tap any verse to hear its translation.`
+      );
+
+      for (let ayah = safeAyah; ayah <= totalVerses; ayah += 1) {
+        if (token !== translationSequenceId) return;
+        const verseText = getVerseTranslationSpeechText(ayah);
+        if (!verseText) {
+          if (!continueAll) showBookmarkMessage(`Translation is unavailable for verse ${ayah}.`);
+          continue;
+        }
+        highlightVerseByNumber(ayah, true);
+        setCurrentVisibleVerse(ayah, true);
+        if (mode === 'with-arabic') {
+          const playedArabic = await playArabicBridgeForTranslation(ayah, token);
+          if (token !== translationSequenceId) return;
+          if (!playedArabic && !continueAll) {
+            showBookmarkMessage(`Arabic audio is unavailable for verse ${ayah}.`);
+          }
+        }
+        const spoke = await speakVerseTranslation(ayah, token);
+        if (token !== translationSequenceId) return;
+        if (!spoke && !continueAll) {
+          showBookmarkMessage(`Translation voice could not be played for verse ${ayah}.`);
+          break;
+        }
+        if (!continueAll) break;
+      }
+
+      if (token === translationSequenceId) {
+        translationContinueActive = false;
+        clearAllHighlights();
+        if (continueAll) showBookmarkMessage('Translation sequence finished.');
+      }
+    }
+
+    function showTranslationAudioPrompt(ayah) {
+      const safeAyah = Number(ayah);
+      const options = [
+        {
+          label: 'Play translation',
+          primary: true,
+          onClick: async () => { await runTranslationFlow(safeAyah, 'translation', false); }
+        },
+        {
+          label: 'Play with Arabic',
+          primary: false,
+          onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', false); }
+        },
+        {
+          label: 'Continue',
+          primary: false,
+          onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', true); }
+        }
+      ];
+      if (translationTapMode !== 'off' || translationContinueActive || translationSpeechActive || translationBridgeAudio) {
+        options.push({
+          label: 'Stop',
+          primary: false,
+          onClick: () => {
+            stopTranslationFlow(true);
+            hidePrompt();
+            showBookmarkMessage('Translation audio stopped.');
+          }
+        });
+      }
+      options.push({ label: 'Close', primary: false, onClick: () => hidePrompt() });
+      showPrompt(
+        `Translation audio · Verse ${safeAyah}`,
+        `Choose how to hear verse ${safeAyah} in ${getDisplayLanguageName()}.`,
+        options
+      );
+    }
+
     function showActionPulse(button) {
       if (!button) return;
       button.classList.add('just-did');
@@ -2027,6 +2926,7 @@
     }
 
     function stopTajweedPlayback(resetUI = true) {
+      stopTranslationFlow(false);
       clearTimeout(tajweedWordStopTimer);
       tajweedWordStopTimer = null;
       tajweedAudio.pause();
@@ -2063,6 +2963,7 @@
     }
 
     function applyAudioView(view, autoMove = true) {
+      stopTranslationFlow(false);
       currentAudioView = view;
       audioViewButtons.forEach((button) => button.classList.toggle('active', button.dataset.audioView === view));
       updateVerseClickability();
@@ -2140,6 +3041,7 @@
 
     function resetToReadingView(scrollToContent = false) {
       hidePrompt();
+      stopTranslationFlow(true);
       closeAllMenus();
       closeBookmarkPanel();
       stopTajweedPlayback(true);
@@ -2168,6 +3070,14 @@
     }
 
     function refreshInlineStates() {
+      document.querySelectorAll('[data-translation-audio-ayah]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          showTranslationAudioPrompt(Number(button.getAttribute('data-translation-audio-ayah')));
+          showActionPulse(button);
+        });
+      });
+
       document.querySelectorAll('[data-pin-ayah]').forEach((button) => {
         const ayah = Number(button.getAttribute('data-pin-ayah'));
         button.classList.toggle('active', isVersePinned(ayah));
@@ -2200,7 +3110,7 @@
       if (!verse) return '';
       return `${verse.arabic}
 
-${ayah}. ${englishVerses[ayah - 1] || ''}
+${ayah}. ${getCurrentTranslationText(ayah)}
 
 Surah An-Naml, Ayah ${ayah}
 ${exportAttribution}`;
@@ -2211,7 +3121,7 @@ ${exportAttribution}`;
       if (!verse) return '';
       return `${verse.arabic}
 
-${ayah}. ${englishVerses[ayah - 1] || ''}
+${ayah}. ${getCurrentTranslationText(ayah)}
 
 Surah An-Naml, Ayah ${ayah}`;
     }
@@ -2266,7 +3176,7 @@ Surah An-Naml, Ayah ${ayah}`;
           verseNumber,
           arabic: flags.arabic ? `${stripEmbeddedVerseMarkers(verse.arabic || fallbackArabicVerses[verseNumber - 1] || `الآية ${verseNumber}`)} ﴿${toArabicDigits(verseNumber)}﴾` : '',
           transliteration: flags.transliteration && verse.transliteration ? verse.transliteration : '',
-          english: flags.english ? `${verseNumber}. ${englishVerses[verseNumber - 1] || ''}` : ''
+          english: flags.english ? `${verseNumber}. ${getCurrentTranslationText(verseNumber)}` : ''
         });
       }
 
@@ -2431,18 +3341,25 @@ ${getVerseUrl(ayah)}`,
       const blocksHtml = payload.blocks.map((block) => {
         if (block.kind === 'bismillah') {
           return [
-            '<section class="export-block export-bismillah">',
-            block.arabic ? `<div class="export-arabic export-arabic-center">${escapeHtml(block.arabic)}</div>` : '',
-            block.english ? `<div class="export-english export-english-center">${escapeHtml(block.english)}</div>` : '',
+            '<section class="export-bismillah">',
+            block.arabic ? `<div class="export-bismillah-arabic">${escapeHtml(block.arabic)}</div>` : '',
+            block.english ? `<div class="export-bismillah-english">${escapeHtml(block.english)}</div>` : '',
             '</section>'
           ].join('');
         }
+
         return [
-          '<section class="export-block">',
-          `<div class="export-label">Verse ${block.verseNumber}</div>`,
-          block.arabic ? `<div class="export-arabic">${escapeHtml(block.arabic)}</div>` : '',
-          block.transliteration ? `<div class="export-transliteration">${escapeHtml(block.transliteration)}</div>` : '',
+          '<section class="export-verse-row">',
+          '<div class="export-english-col">',
+          `<div class="export-number">${block.verseNumber}</div>`,
+          '<div class="export-english-stack">',
           block.english ? `<div class="export-english">${escapeHtml(block.english)}</div>` : '',
+          block.transliteration ? `<div class="export-transliteration">${escapeHtml(block.transliteration)}</div>` : '',
+          '</div>',
+          '</div>',
+          '<div class="export-arabic-col">',
+          block.arabic ? `<div class="export-arabic">${escapeHtml(block.arabic)}</div>` : '',
+          '</div>',
           '</section>'
         ].join('');
       }).join('');
@@ -2455,20 +3372,24 @@ ${getVerseUrl(ayah)}`,
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
         `<title>${escapeHtml(payload.title)}</title>`,
         '<style>',
-        'body{font-family:Inter,Arial,sans-serif;margin:0;padding:32px;color:#182128;background:#ffffff;line-height:1.75;}',
-        '.wrap{max-width:900px;margin:0 auto;}',
-        '.brand{font-size:14px;color:#1e6b5c;font-weight:700;margin-bottom:12px;}',
-        'h1{margin:0 0 18px;font-size:28px;line-height:1.2;}',
-        '.export-block{padding:0 0 28px;margin:0 0 28px;border-bottom:1px solid #e3e8ec;}',
-        '.export-block:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0;}',
-        '.export-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#66727d;margin-bottom:12px;}',
-        '.export-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:30px;line-height:2;text-align:right;direction:rtl;margin-bottom:14px;}',
-        '.export-arabic-center{text-align:center;}',
-        '.export-transliteration{font-size:15px;line-height:1.9;font-style:italic;color:#66727d;margin-bottom:12px;}',
-        '.export-english{font-size:16px;line-height:1.85;}',
-        '.export-english-center{text-align:center;}',
+        'body{font-family:Inter,Arial,sans-serif;margin:0;padding:28px;color:#182128;background:#ffffff;line-height:1.7;}',
+        '.wrap{max-width:980px;margin:0 auto;}',
+        '.brand{font-size:14px;color:#1e6b5c;font-weight:700;margin-bottom:10px;letter-spacing:.04em;text-transform:uppercase;}',
+        'h1{margin:0 0 22px;font-size:28px;line-height:1.2;letter-spacing:-.02em;}',
+        '.export-bismillah{padding:0 0 22px;margin:0 0 18px;border-bottom:1px solid #e3e8ec;text-align:center;}',
+        '.export-bismillah-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:30px;line-height:2.05;margin-bottom:10px;direction:rtl;}',
+        '.export-bismillah-english{font-size:15px;color:#475467;line-height:1.8;}',
+        '.export-verse-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;padding:0 0 24px;margin:0 0 24px;border-bottom:1px solid #e3e8ec;page-break-inside:avoid;break-inside:avoid;}',
+        '.export-english-col{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;align-items:start;}',
+        '.export-number{width:44px;height:44px;border-radius:14px;background:#e8f3f0;color:#154d42;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;line-height:1;margin-top:2px;}',
+        '.export-english-stack{min-width:0;}',
+        '.export-english{font-size:16px;line-height:1.9;color:#182128;}',
+        '.export-transliteration{margin-top:8px;font-size:14px;line-height:1.8;font-style:italic;color:#66727d;}',
+        '.export-arabic-col{min-width:0;}',
+        '.export-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:28px;line-height:2.05;text-align:right;direction:rtl;color:#111827;}',
         '.foot{margin-top:28px;padding-top:18px;border-top:1px solid #e3e8ec;font-size:13px;color:#66727d;}',
-        '@page{size:A4;margin:16mm;}',
+        '@media print{body{padding:0}.wrap{max-width:none}.export-verse-row{gap:18px}}',
+        '@page{size:A4;margin:15mm 13mm;}',
         '</style>',
         '</head>',
         '<body>',
@@ -2552,69 +3473,183 @@ ${getVerseUrl(ayah)}`,
 
     function buildCanvasPages(payload) {
       const width = 1600;
-      const height = 2100;
-      const padding = 96;
-      const footerGap = 90;
-      const contentWidth = width - (padding * 2);
-      const probeCanvas = document.createElement('canvas');
-      probeCanvas.width = width;
-      probeCanvas.height = height;
-      const probeCtx = probeCanvas.getContext('2d');
-      probeCtx.font = '700 48px Inter, Arial, sans-serif';
-      const titleLines = buildCanvasLines(probeCtx, payload.title, contentWidth);
-      probeCtx.font = '400 30px Inter, Arial, sans-serif';
-      const bodyLines = buildCanvasLines(probeCtx, payload.downloadText || '', contentWidth);
-
-      const firstPageSlots = 28;
-      const laterPageSlots = 34;
+      const height = 2200;
+      const paddingX = 92;
+      const topPadding = 84;
+      const footerY = height - 52;
+      const gutter = 34;
+      const leftColWidth = 640;
+      const rightColWidth = width - (paddingX * 2) - leftColWidth - gutter;
+      const pageBottom = height - 118;
       const pages = [];
-      let cursor = 0;
-      pages.push({ titleLines, bodyLines: bodyLines.slice(cursor, cursor + firstPageSlots), continued: false });
-      cursor += firstPageSlots;
-      while (cursor < bodyLines.length) {
-        pages.push({ titleLines: buildCanvasLines(probeCtx, `${payload.title} | Continued`, contentWidth), bodyLines: bodyLines.slice(cursor, cursor + laterPageSlots), continued: true });
-        cursor += laterPageSlots;
-      }
 
-      return pages.map((page, pageIndex) => {
-        const canvas = document.createElement('canvas');
+      let canvas = null;
+      let ctx = null;
+      let y = 0;
+      let pageNumber = 0;
+
+      const startPage = (continued = false) => {
+        pageNumber += 1;
+        canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext('2d');
+        ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#1e6b5c';
+        ctx.textAlign = 'left';
         ctx.font = '700 28px Inter, Arial, sans-serif';
-        ctx.fillText('The English Qur’an', padding, padding);
+        ctx.fillText('The English Qur’an', paddingX, topPadding);
 
-        let y = padding + 70;
+        y = topPadding + 56;
         ctx.fillStyle = '#182128';
-        ctx.font = '700 48px Inter, Arial, sans-serif';
-        page.titleLines.forEach((line) => {
-          ctx.fillText(line, padding, y);
-          y += 58;
+        ctx.font = '700 46px Inter, Arial, sans-serif';
+        const titleText = continued ? `${payload.title} | Continued` : payload.title;
+        const titleLines = buildCanvasLines(ctx, titleText, width - (paddingX * 2));
+        titleLines.forEach((line) => {
+          ctx.fillText(line, paddingX, y);
+          y += 54;
         });
-        y += 10;
+        y += 12;
+      };
 
-        ctx.font = '400 30px Inter, Arial, sans-serif';
-        page.bodyLines.forEach((line) => {
-          if (!line) {
-            y += 28;
-            return;
-          }
-          ctx.fillText(line, padding, y);
-          y += 42;
-        });
+      const finishPage = () => {
+        ctx.strokeStyle = '#e3e8ec';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(paddingX, height - 78);
+        ctx.lineTo(width - paddingX, height - 78);
+        ctx.stroke();
 
         ctx.fillStyle = '#66727d';
-        ctx.font = '400 24px Inter, Arial, sans-serif';
-        ctx.fillText(exportAttribution, padding, height - 44);
-        ctx.textAlign = 'right';
-        ctx.fillText(`Page ${pageIndex + 1} of ${pages.length}`, width - padding, height - 44);
+        ctx.font = '400 22px Inter, Arial, sans-serif';
         ctx.textAlign = 'left';
-        return canvas;
+        ctx.fillText(exportAttribution, paddingX, footerY);
+        pages.push(canvas);
+      };
+
+      const ensureSpace = (neededHeight) => {
+        if (y + neededHeight <= pageBottom) return;
+        finishPage();
+        startPage(true);
+      };
+
+      const drawDivider = () => {
+        ctx.strokeStyle = '#e3e8ec';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(paddingX, y);
+        ctx.lineTo(width - paddingX, y);
+        ctx.stroke();
+        y += 22;
+      };
+
+      startPage(false);
+
+      payload.blocks.forEach((block) => {
+        if (block.kind === 'bismillah') {
+          ctx.font = '700 40px Amiri Quran, Amiri, serif';
+          const arabicLines = buildCanvasLines(ctx, block.arabic || '', width - (paddingX * 2));
+          ctx.font = '400 28px Inter, Arial, sans-serif';
+          const englishLines = buildCanvasLines(ctx, block.english || '', width - (paddingX * 2));
+          const estimatedHeight = (arabicLines.length * 50) + (englishLines.length * 38) + 48;
+          ensureSpace(estimatedHeight);
+
+          ctx.fillStyle = '#182128';
+          ctx.font = '700 40px Amiri Quran, Amiri, serif';
+          ctx.textAlign = 'center';
+          arabicLines.forEach((line) => {
+            ctx.fillText(line, width / 2, y);
+            y += 50;
+          });
+
+          if (englishLines.length) y += 4;
+          ctx.fillStyle = '#66727d';
+          ctx.font = '400 28px Inter, Arial, sans-serif';
+          englishLines.forEach((line) => {
+            ctx.fillText(line, width / 2, y);
+            y += 38;
+          });
+
+          y += 16;
+          drawDivider();
+          return;
+        }
+
+        ctx.font = '400 28px Inter, Arial, sans-serif';
+        const englishLines = buildCanvasLines(ctx, block.english || '', leftColWidth - 86);
+        ctx.font = 'italic 24px Inter, Arial, sans-serif';
+        const translitLines = block.transliteration ? buildCanvasLines(ctx, block.transliteration, leftColWidth - 86) : [];
+        ctx.font = '700 34px Amiri Quran, Amiri, serif';
+        const arabicLines = buildCanvasLines(ctx, block.arabic || '', rightColWidth);
+
+        const leftHeight = Math.max(44, englishLines.length * 34) + (translitLines.length ? (12 + (translitLines.length * 30)) : 0);
+        const rightHeight = Math.max(44, arabicLines.length * 48);
+        const rowHeight = Math.max(leftHeight, rightHeight) + 26;
+        ensureSpace(rowHeight + 18);
+
+        const rowTop = y;
+        const leftX = paddingX;
+        const rightX = paddingX + leftColWidth + gutter;
+
+        ctx.fillStyle = '#e8f3f0';
+        const badgeX = leftX;
+        const badgeY = rowTop;
+        const badgeW = 48;
+        const badgeH = 48;
+        const badgeR = 14;
+        ctx.beginPath();
+        ctx.moveTo(badgeX + badgeR, badgeY);
+        ctx.lineTo(badgeX + badgeW - badgeR, badgeY);
+        ctx.quadraticCurveTo(badgeX + badgeW, badgeY, badgeX + badgeW, badgeY + badgeR);
+        ctx.lineTo(badgeX + badgeW, badgeY + badgeH - badgeR);
+        ctx.quadraticCurveTo(badgeX + badgeW, badgeY + badgeH, badgeX + badgeW - badgeR, badgeY + badgeH);
+        ctx.lineTo(badgeX + badgeR, badgeY + badgeH);
+        ctx.quadraticCurveTo(badgeX, badgeY + badgeH, badgeX, badgeY + badgeH - badgeR);
+        ctx.lineTo(badgeX, badgeY + badgeR);
+        ctx.quadraticCurveTo(badgeX, badgeY, badgeX + badgeR, badgeY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#154d42';
+        ctx.font = '700 22px Inter, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(block.verseNumber), badgeX + (badgeW / 2), badgeY + 31);
+
+        let textY = rowTop + 28;
+        ctx.fillStyle = '#182128';
+        ctx.font = '400 28px Inter, Arial, sans-serif';
+        ctx.textAlign = 'left';
+        englishLines.forEach((line) => {
+          ctx.fillText(line, leftX + 68, textY, leftColWidth - 68);
+          textY += 34;
+        });
+
+        if (translitLines.length) {
+          textY += 8;
+          ctx.fillStyle = '#66727d';
+          ctx.font = 'italic 24px Inter, Arial, sans-serif';
+          translitLines.forEach((line) => {
+            ctx.fillText(line, leftX + 68, textY, leftColWidth - 68);
+            textY += 30;
+          });
+        }
+
+        let arabicY = rowTop + 34;
+        ctx.fillStyle = '#111827';
+        ctx.font = '700 34px Amiri Quran, Amiri, serif';
+        ctx.textAlign = 'right';
+        arabicLines.forEach((line) => {
+          ctx.fillText(line, rightX + rightColWidth, arabicY, rightColWidth);
+          arabicY += 48;
+        });
+
+        y = rowTop + rowHeight;
+        drawDivider();
       });
+
+      finishPage();
+      return pages;
     }
 
     function canvasToBlob(canvas) {
@@ -2928,9 +3963,11 @@ ${getVerseUrl(ayah)}`,
       document.querySelectorAll('.word-meaning-panel').forEach((item) => {
         if (item !== panel) item.classList.remove('active');
       });
+      const translit = wordElement.getAttribute('data-word-translit') || '';
+      const gloss = wordElement.getAttribute('data-word-gloss') || '';
       panel.querySelector('.word-meaning-arabic').textContent = wordElement.getAttribute('data-word-arabic') || wordElement.textContent.trim();
-      panel.querySelector('.word-meaning-translit').textContent = wordElement.getAttribute('data-word-translit') || '';
-      panel.querySelector('.word-meaning-gloss').textContent = wordElement.getAttribute('data-word-gloss') || 'Meaning not available for this word.';
+      panel.querySelector('.word-meaning-translit').textContent = translit || `Transliteration not available for this word in ${getWordLayerDisplayName()}.`;
+      panel.querySelector('.word-meaning-gloss').textContent = gloss || `Meaning not available for this word in ${getWordLayerDisplayName()}.`;
       panel.classList.add('active');
     }
 
@@ -3383,6 +4420,10 @@ ${getVerseUrl(ayah)}`,
     function handleVerseClickForSyncedMode(event) {
       if (event.target.closest('.verse-toolbar') || event.target.closest('.verse-note-panel')) return;
       const verseNumber = Number(event.currentTarget.dataset.ayahNumber);
+      if (translationTapMode !== 'off' && currentAudioView !== 'synced') {
+        runTranslationFlow(verseNumber, translationTapMode, false);
+        return;
+      }
       if (currentAudioView !== 'synced' || !syncByVerse[verseNumber]) return;
       setActiveTab('read');
       setCurrentVisibleVerse(verseNumber, true);
@@ -3476,7 +4517,7 @@ ${getVerseUrl(ayah)}`,
     }
 
     function renderVerseArticle(verse) {
-      const english = englishVerses[verse.number - 1] || '';
+      const english = getCurrentTranslationText(verse.number);
       const cleanVerseArabic = stripEmbeddedVerseMarkers(verse.arabic);
       const notes = getVerseNotes();
       const wordsHtml = verse.words.map((word) => buildWordSpan(word, verse.number)).filter(Boolean).join(' ');
@@ -3510,6 +4551,7 @@ ${getVerseUrl(ayah)}`,
             <div class="verse-toolbar" data-toolbar="${verse.number}">
               <button class="icon-btn" type="button" data-menu-toggle="menu-${verse.number}" aria-label="Verse actions" title="Verse actions" translate="no">${iconMore()}</button>
               <div class="verse-menu" id="menu-${verse.number}" translate="no">
+                <button class="menu-item-btn" type="button" data-translation-audio-ayah="${verse.number}">${iconVoice()}<span>Translation audio</span></button>
                 <button class="menu-item-btn" type="button" data-pin-ayah="${verse.number}">${iconPin()}<span>Pin</span></button>
                 <button class="menu-item-btn" type="button" data-share-ayah="${verse.number}">${iconShare()}<span>Share</span></button>
                 <button class="menu-item-btn" type="button" data-copy-ayah="${verse.number}">${iconCopy()}<span>Copy verse</span></button>
@@ -3779,6 +4821,7 @@ ${getVerseUrl(ayah)}`,
       try {
         const tests = [];
         tests.push(['Verse count', englishVerses.length === totalVerses]);
+        tests.push(['Translation layer ready', currentTranslationVerses.length === totalVerses]);
         tests.push(['Selectors exist', Boolean(versesContainer && surahAudioPlayer && sharePreview)]);
         tests.push(['Verse selector length', verseSelect.options.length === totalVerses]);
         tests.push(['Download handler exists', typeof downloadShareSelection === 'function']);
@@ -3786,9 +4829,31 @@ ${getVerseUrl(ayah)}`,
         tests.push(['Default reciter is Shuraym', reciterSelect.value === defaultReciterKey]);
         tests.push(['Share selector supports surah', Array.from(shareType.options).some((option) => option.value === 'surah')]);
         tests.push(['Selection blocks available', typeof buildSelectionBlocks === 'function']);
+        tests.push(['Languages UI ready', Boolean(languagesToggleButton && languagesPanel && languagesList)]);
+        tests.push(['Translation audio ready', typeof runTranslationFlow === 'function' && typeof showTranslationAudioPrompt === 'function']);
         console.table(tests.map(([name, pass]) => ({ test: name, pass })));
       } catch (error) {
         console.warn('Smoke tests skipped.', error);
+      }
+    }
+
+    async function restoreSavedTranslationSelection() {
+      updateModeLabels();
+      try {
+        const saved = getSavedTranslationSelection();
+        if (!saved || !saved.id || String(saved.id) === String(currentTranslationId)) return;
+        await loadTranslationResources();
+        const entry = translationResources.find((item) => String(item.id) === String(saved.id));
+        if (entry) {
+          await activateTranslation(entry);
+        }
+      } catch (error) {
+        console.warn('Saved translation selection could not be restored.', error);
+        currentTranslationId = 'en-fallback';
+        currentTranslationCode = 'en';
+        currentTranslationName = 'English';
+        currentTranslationVerses = englishVerses.slice();
+        updateModeLabels();
       }
     }
 
@@ -3809,11 +4874,23 @@ ${getVerseUrl(ayah)}`,
         if (hasValidLiveData) {
           apiDegraded = false;
           verseDataCache = liveVerseData;
+          wordLayerCache.en = liveVerseData.map((verse) => ({
+            number: verse.number,
+            transliteration: verse.transliteration || '',
+            words: Array.isArray(verse.words)
+              ? verse.words.map((word) => ({
+                  position: word.position,
+                  transliteration: word.transliteration || '',
+                  translation: word.translation || ''
+                }))
+              : []
+          }));
           transliterationAvailable = liveVerseData.some((verse) => verse.transliteration && verse.transliteration.trim());
           errorState.style.display = 'none';
         } else {
           apiDegraded = true;
           verseDataCache = buildFallbackVerseData();
+          wordLayerCache.en = verseDataCache.map((verse) => ({ number: verse.number, transliteration: verse.transliteration || '', words: [] }));
           transliterationAvailable = false;
           errorState.style.display = 'block';
           errorState.textContent = 'The live surah data could not be loaded right now. A fallback reading view has been shown instead.';
@@ -3827,6 +4904,7 @@ ${getVerseUrl(ayah)}`,
         updateBookmarkUI();
         updateShareBuilder();
         restoreReflectionDrafts();
+        await restoreSavedTranslationSelection();
 
         loadingState.style.display = 'none';
         noteState.style.display = 'none';
@@ -3864,7 +4942,8 @@ ${getVerseUrl(ayah)}`,
         console.error(error);
         apiDegraded = true;
         verseDataCache = buildFallbackVerseData();
-        transliterationAvailable = false;
+          wordLayerCache.en = verseDataCache.map((verse) => ({ number: verse.number, transliteration: verse.transliteration || '', words: [] }));
+          transliterationAvailable = false;
         renderVerses(verseDataCache);
         buildVerseSelector();
         applyMode('bilingual');
@@ -3873,6 +4952,7 @@ ${getVerseUrl(ayah)}`,
         updateBookmarkUI();
         updateShareBuilder();
         restoreReflectionDrafts();
+        await restoreSavedTranslationSelection();
         loadingState.style.display = 'none';
         errorState.style.display = 'block';
         errorState.textContent = 'The live surah data could not be loaded right now. A fallback reading view has been shown instead.';
@@ -3938,6 +5018,33 @@ ${getVerseUrl(ayah)}`,
       }
     }));
     wordModeToggle.addEventListener('click', () => { applyWordMode(!wordModeEnabled); setActiveTab('read'); });
+    languagesToggleButton.addEventListener('click', async () => {
+      try {
+        const willOpen = !languagesPanel.classList.contains('active');
+        languagesPanel.classList.toggle('active', willOpen);
+        languagesToggleButton.classList.toggle('active', willOpen);
+        languagesToggleButton.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        if (willOpen) {
+          await loadTranslationResources();
+          updateModeLabels();
+          updateLanguagesPanelText();
+          renderLanguageList();
+          if (languagesSearchInput) {
+            languagesSearchInput.value = '';
+            languagesSearchInput.focus();
+          }
+        }
+      } catch (error) {
+        console.warn('Languages panel could not be opened.', error);
+        showBookmarkMessage('Languages could not be opened right now.');
+      }
+    });
+
+    if (languagesSearchInput) {
+      languagesSearchInput.addEventListener('input', () => {
+        renderLanguageList();
+      });
+    }
 
     jumpButton.addEventListener('click', () => jumpToVerse(verseSelect.value));
     verseSelect.addEventListener('change', () => { if (verseSelect.value) jumpToVerse(verseSelect.value); });
@@ -4145,6 +5252,8 @@ ${getVerseUrl(ayah)}`,
     const savedTheme = localStorage.getItem('site-theme');
     applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
     buildVerseSelector();
+    updateLanguagesPanelText();
+    updateModeLabels();
     setActiveTab('read');
     updateBookmarkUI();
     updateSyncBarState();
