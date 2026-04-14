@@ -1836,6 +1836,9 @@
     let translationBridgeAudio = null;
     let translationSpeechAudio = null;
     let translationSpeechActive = false;
+    let translationSpeechUtterance = null;
+    let translationSpeechSource = 'none';
+    let translationVoicesPromise = null;
     let currentTranslationPlaybackVerse = null;
     let translationWordSyncCleanup = null;
 
@@ -2715,8 +2718,11 @@
 
     function getConfiguredTranslationTtsHint() {
       const endpoint = String(premiumTranslationTtsConfig.endpoint || '').trim();
-      if (!endpoint) return 'Translation voice endpoint is not configured yet.';
-      return 'Translation voice endpoint is connected.';
+      if (endpoint) return 'Translation voice endpoint is connected.';
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+        return 'Using the best available device translation voice.';
+      }
+      return 'Translation voice is unavailable on this device.';
     }
 
     function buildTranslationAudioCacheKey(ayah) {
@@ -2815,6 +2821,11 @@
         translationSpeechAudio.src = '';
         translationSpeechAudio = null;
       }
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch {}
+      }
+      translationSpeechUtterance = null;
+      translationSpeechSource = 'none';
     }
 
     function stopTranslationFlow(resetMode = false) {
@@ -2835,29 +2846,90 @@
         showBookmarkMessage(`Translation is unavailable for verse ${ayah}.`);
         return false;
       }
+
       const source = await fetchTranslationAudioSource(ayah);
       if (token !== translationSequenceId) return false;
-      if (!source) {
+
+      if (source) {
+        return new Promise((resolve) => {
+          const audio = new Audio(source);
+          translationSpeechAudio = audio;
+          translationSpeechSource = 'audio';
+          translationSpeechActive = true;
+          audio.preload = 'auto';
+          startTranslationWordTracking(audio, ayah);
+          const finish = (ok) => {
+            audio.onended = null;
+            audio.onerror = null;
+            if (translationSpeechAudio === audio) translationSpeechAudio = null;
+            translationSpeechActive = false;
+            translationSpeechSource = 'none';
+            stopTranslationWordTracking();
+            resolve(ok);
+          };
+          audio.onended = () => finish(true);
+          audio.onerror = () => finish(false);
+          audio.play().catch(() => finish(false));
+        });
+      }
+
+      if (!(typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)) {
         showBookmarkMessage(getConfiguredTranslationTtsHint());
         return false;
       }
+
+      const voices = window.speechSynthesis.getVoices();
+      const locale = String(getPreferredTranslationLocale() || currentTranslationCode || 'en').toLowerCase();
+      const languageCode = String(currentTranslationCode || 'en').toLowerCase();
+      const ranked = voices.map((voice) => {
+        const lang = String(voice.lang || '').toLowerCase();
+        const name = String(voice.name || '');
+        let score = 0;
+        if (lang === locale) score += 50;
+        else if (lang.indexOf(languageCode + '-') === 0) score += 28;
+        else if (lang.indexOf(languageCode) === 0) score += 18;
+        if (/male|man|david|ryan|ollie|thomas|oliver|arthur|noah|ethan|alfie|daniel/i.test(name)) score += 12;
+        if (/google|microsoft|online|natural|neural|premium/i.test(name)) score += 8;
+        if (/female|woman|zira|hazel|aria|susan|luna/i.test(name)) score -= 10;
+        return { voice, score };
+      }).sort((a, b) => b.score - a.score);
+      const chosenVoice = ranked.length ? ranked[0].voice : null;
+      const words = text.split(' ').filter(Boolean);
+
       return new Promise((resolve) => {
-        const audio = new Audio(source);
-        translationSpeechAudio = audio;
+        const utterance = new SpeechSynthesisUtterance(text);
+        translationSpeechUtterance = utterance;
+        translationSpeechSource = 'tts';
         translationSpeechActive = true;
-        audio.preload = 'auto';
-        startTranslationWordTracking(audio, ayah);
+        utterance.lang = getPreferredTranslationLocale();
+        if (chosenVoice) utterance.voice = chosenVoice;
+        utterance.rate = currentTranslationCode === 'en' ? 0.94 : 0.92;
+        utterance.pitch = 0.9;
+        utterance.onstart = () => {
+          if (words.length) highlightTranslationWordByIndex(ayah, 1);
+        };
+        utterance.onboundary = (event) => {
+          if (!Number.isFinite(event.charIndex)) return;
+          const slice = text.slice(0, event.charIndex);
+          const spokenWords = slice.split(' ').filter(Boolean).length;
+          const index = Math.min(words.length || 1, Math.max(1, spokenWords + 1));
+          highlightTranslationWordByIndex(ayah, index);
+        };
         const finish = (ok) => {
-          audio.onended = null;
-          audio.onerror = null;
-          if (translationSpeechAudio === audio) translationSpeechAudio = null;
+          translationSpeechUtterance = null;
           translationSpeechActive = false;
+          translationSpeechSource = 'none';
           stopTranslationWordTracking();
           resolve(ok);
         };
-        audio.onended = () => finish(true);
-        audio.onerror = () => finish(false);
-        audio.play().catch(() => finish(false));
+        utterance.onend = () => finish(true);
+        utterance.onerror = () => finish(false);
+        try {
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(utterance);
+        } catch {
+          finish(false);
+        }
       });
     }
 
@@ -2889,7 +2961,7 @@
         showBookmarkMessage(`Translation is unavailable for verse ${safeAyah}.`);
         return;
       }
-      if (!hasPremiumTranslationTts()) {
+      if (!(hasPremiumTranslationTts() || (typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window))) {
         showBookmarkMessage(getConfiguredTranslationTtsHint());
         return;
       }
@@ -2945,6 +3017,9 @@
     function isTranslationPlaybackPaused() {
       if (translationBridgeAudio && !translationBridgeAudio.ended) return translationBridgeAudio.paused;
       if (translationSpeechAudio && !translationSpeechAudio.ended) return translationSpeechAudio.paused;
+      if (translationSpeechUtterance && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        return window.speechSynthesis.paused;
+      }
       return true;
     }
 
@@ -2958,6 +3033,11 @@
         if (translationSpeechAudio && !translationSpeechAudio.ended) {
           if (translationSpeechAudio.paused) await translationSpeechAudio.play();
           else translationSpeechAudio.pause();
+          return;
+        }
+        if (translationSpeechUtterance && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+          if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+          else window.speechSynthesis.pause();
         }
       } catch {
         showBookmarkMessage('Translation audio could not be resumed right now.');
@@ -3195,14 +3275,6 @@
     }
 
     function refreshInlineStates() {
-      document.querySelectorAll('[data-translation-audio-ayah]').forEach((button) => {
-        button.addEventListener('click', (event) => {
-          event.stopPropagation();
-          showTranslationAudioPrompt(Number(button.getAttribute('data-translation-audio-ayah')));
-          showActionPulse(button);
-        });
-      });
-
       document.querySelectorAll('[data-pin-ayah]').forEach((button) => {
         const ayah = Number(button.getAttribute('data-pin-ayah'));
         button.classList.toggle('active', isVersePinned(ayah));
@@ -4808,6 +4880,14 @@ ${getVerseUrl(ayah)}`,
     }
 
     function attachInteractiveHandlers() {
+      document.querySelectorAll('[data-translation-audio-ayah]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          showTranslationAudioPrompt(Number(button.getAttribute('data-translation-audio-ayah')));
+          showActionPulse(button);
+        });
+      });
+
       document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
         button.addEventListener('click', (event) => {
           event.stopPropagation();
@@ -5442,16 +5522,45 @@ ${getVerseUrl(ayah)}`,
       if (!event.target.closest('.verse-toolbar')) closeAllMenus();
     });
 
-    const savedTheme = localStorage.getItem('site-theme');
-    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
-    buildVerseSelector();
-    updateLanguagesPanelText();
-    updateModeLabels();
-    setActiveTab('read');
-    updateBookmarkUI();
-    updateSyncBarState();
-    updateShareBuilder();
-    loadSurah();
+    async function initialiseSurahPage() {
+      try {
+        const savedTheme = localStorage.getItem('site-theme');
+        applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+        buildVerseSelector();
+        updateLanguagesPanelText();
+        updateModeLabels();
+        setActiveTab('read');
+        updateBookmarkUI();
+        updateSyncBarState();
+        updateShareBuilder();
+        await loadSurah();
+      } catch (error) {
+        console.error('Initialisation failed.', error);
+        try {
+          apiDegraded = true;
+          verseDataCache = buildFallbackVerseData();
+          wordLayerCache.en = verseDataCache.map((verse) => ({ number: verse.number, transliteration: verse.transliteration || '', words: [] }));
+          transliterationAvailable = false;
+          renderVerses(verseDataCache);
+          buildVerseSelector();
+          applyMode('bilingual');
+          applyWordMode(false);
+          applyAudioView('standard', false);
+          updateBookmarkUI();
+          updateShareBuilder();
+          loadingState.style.display = 'none';
+          errorState.style.display = 'block';
+          errorState.textContent = 'The page hit a loading issue, so a safe fallback reading view has been shown instead.';
+        } catch (fallbackError) {
+          console.error('Fallback initialisation failed.', fallbackError);
+          loadingState.style.display = 'none';
+          errorState.style.display = 'block';
+          errorState.textContent = 'The page could not be loaded right now. Please refresh and try again.';
+        }
+      }
+    }
+
+    initialiseSurahPage();
   </script>
 </body>
 </html>
