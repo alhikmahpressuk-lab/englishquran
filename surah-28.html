@@ -1841,6 +1841,7 @@
     let translationVoicesPromise = null;
     let currentTranslationPlaybackVerse = null;
     let translationWordSyncCleanup = null;
+    let translationArabicSyncCleanup = null;
 
     const premiumTranslationTtsConfig = {
       enabled: true,
@@ -2811,6 +2812,7 @@
 
     function stopTranslationMedia() {
       stopTranslationWordTracking();
+      stopTranslationArabicTracking();
       if (translationBridgeAudio) {
         translationBridgeAudio.pause();
         translationBridgeAudio.src = '';
@@ -2906,9 +2908,13 @@
         utterance.rate = currentTranslationCode === 'en' ? 0.94 : 0.92;
         utterance.pitch = 0.9;
         utterance.onstart = () => {
+          highlightVerseByNumber(ayah, true);
+          setCurrentVisibleVerse(ayah, true);
           if (words.length) highlightTranslationWordByIndex(ayah, 1);
         };
         utterance.onboundary = (event) => {
+          highlightVerseByNumber(ayah, true);
+          setCurrentVisibleVerse(ayah, true);
           if (!Number.isFinite(event.charIndex)) return;
           const slice = text.slice(0, event.charIndex);
           const spokenWords = slice.split(' ').filter(Boolean).length;
@@ -2940,11 +2946,13 @@
         const audio = new Audio(verseAudio.url);
         translationBridgeAudio = audio;
         audio.preload = 'auto';
+        startArabicTranslationTracking(audio, ayah, verseAudio.segments);
         const finish = (didPlay) => {
           audio.onended = null;
           audio.onerror = null;
           audio.onpause = null;
           if (translationBridgeAudio === audio) translationBridgeAudio = null;
+          stopTranslationArabicTracking();
           resolve(didPlay);
         };
         audio.onended = () => finish(true);
@@ -4177,10 +4185,77 @@ ${getVerseUrl(ayah)}`,
       clearTranslationWordHighlights();
     }
 
+    function stopTranslationArabicTracking() {
+      if (typeof translationArabicSyncCleanup === 'function') {
+        translationArabicSyncCleanup();
+      }
+      translationArabicSyncCleanup = null;
+      clearActiveWordOnly();
+      clearWordMeaningPanels();
+    }
+
+    function syncTranslationHighlightToArabicWord(ayah, wordIndex) {
+      const verse = getVerseData(ayah);
+      const arabicCount = Array.isArray(verse?.words)
+        ? verse.words.filter((word) => String(word.char_type_name || '') !== 'end').length
+        : 0;
+      const translationCount = getTranslationWordCount(ayah);
+      if (!translationCount) return;
+      if (!arabicCount) {
+        highlightTranslationWordByIndex(ayah, Math.min(translationCount, Math.max(1, wordIndex)));
+        return;
+      }
+      const mappedIndex = Math.min(
+        translationCount,
+        Math.max(1, Math.ceil((Math.max(1, wordIndex) / arabicCount) * translationCount))
+      );
+      highlightTranslationWordByIndex(ayah, mappedIndex);
+    }
+
+    function startArabicTranslationTracking(audio, ayah, segments) {
+      stopTranslationArabicTracking();
+      const safeSegments = Array.isArray(segments) ? segments : [];
+      const update = () => {
+        highlightVerseByNumber(ayah, true);
+        setCurrentVisibleVerse(ayah, true);
+        if (!safeSegments.length) return;
+        const currentMs = Math.floor(audio.currentTime * 1000);
+        const activeSegment = safeSegments.find((segment) => {
+          const start = Number(segment[1]);
+          const end = Number(segment[2]);
+          return Number.isFinite(start) && Number.isFinite(end) && currentMs >= start && currentMs <= end;
+        });
+        if (!activeSegment) return;
+        const wordIndex = Number(activeSegment[0]);
+        if (!Number.isFinite(wordIndex) || wordIndex < 1) return;
+        highlightWordByVerseIndex(ayah, wordIndex);
+        syncTranslationHighlightToArabicWord(ayah, wordIndex);
+        const activeWordElement = document.querySelector(`[data-word-key="${ayah}-${wordIndex}"]`);
+        if (activeWordElement) showWordMeaning(ayah, activeWordElement, true);
+      };
+      const clear = () => {
+        clearActiveWordOnly();
+        clearTranslationWordHighlights(ayah);
+        clearWordMeaningPanels();
+      };
+      audio.addEventListener('timeupdate', update);
+      audio.addEventListener('play', update);
+      audio.addEventListener('pause', update);
+      audio.addEventListener('ended', clear, { once: true });
+      translationArabicSyncCleanup = () => {
+        audio.removeEventListener('timeupdate', update);
+        audio.removeEventListener('play', update);
+        audio.removeEventListener('pause', update);
+        clear();
+      };
+    }
+
     function startTranslationWordTracking(audio, ayah) {
       stopTranslationWordTracking();
       currentTranslationPlaybackVerse = ayah;
       const update = () => {
+        highlightVerseByNumber(ayah, true);
+        setCurrentVisibleVerse(ayah, true);
         const totalWords = getTranslationWordCount(ayah);
         if (!totalWords) return;
         const duration = Number(audio.duration || 0);
