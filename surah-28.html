@@ -355,9 +355,9 @@
     .language-item {
       appearance: none;
       width: 100%;
-      min-height: 46px;
-      padding: 0 14px;
-      border-radius: 999px;
+      min-height: 52px;
+      padding: 10px 14px;
+      border-radius: 18px;
       border: 1px solid var(--line);
       background: var(--surface);
       color: var(--text);
@@ -370,7 +370,7 @@
       justify-content: space-between;
       gap: 12px;
       text-align: left;
-      line-height: 1;
+      line-height: 1.2;
     }
 
     .language-item:hover {
@@ -389,6 +389,7 @@
       align-items: center;
       gap: 10px;
       min-width: 0;
+      flex: 1;
     }
 
     .language-item-name {
@@ -402,6 +403,7 @@
       font-size: 0.82rem;
       white-space: nowrap;
       flex-shrink: 0;
+      text-align: right;
     }
 
     html[data-theme="dark"] .language-item.active {
@@ -1172,6 +1174,32 @@
       .note-panel-actions { flex-direction: column; }
       .note-save-btn, .note-clear-btn, .note-share-btn, .note-copy-btn, .note-close-btn, .tajweed-mini-btn { width: 100%; }
       .tajweed-mini-top { flex-direction: column; align-items: flex-start; }
+      .languages-panel { padding: 14px; border-radius: 16px; }
+      .languages-list { max-height: 300px; gap: 10px; }
+      .language-item {
+        min-height: 60px;
+        padding: 12px 14px;
+        border-radius: 18px;
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-items: start;
+        align-items: center;
+        gap: 4px;
+      }
+      .language-item-label, .language-item-meta {
+        width: 100%;
+      }
+      .language-item-name {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+      }
+      .language-item-meta {
+        white-space: normal;
+        text-align: left;
+        font-size: 0.8rem;
+        line-height: 1.35;
+      }
     }
   </style>
 </head>
@@ -1728,6 +1756,7 @@
     let translationResources = [];
     const translationCache = { 'en-fallback': englishVerses.slice(), ar: Array.from({ length: totalVerses }, () => '') };
     let languageListLoadingPromise = null;
+    const wordLayerCache = { en: null, ar: null };
     let currentVisibleVerse = 1;
     let readingObserver = null;
     let readingSaveTimer = null;
@@ -1853,8 +1882,8 @@
         if (!id) return;
         const languageCode = String(item.language_code || (item.language && item.language.iso_code) || item.iso_code || item.language_name || `lang-${id}`).trim().toLowerCase();
         if (!languageCode || languageCode === 'ar') return;
-        const languageName = String(item.language_name || (item.language && item.language.name) || (item.translated_name && item.translated_name.name) || item.name || item.resource_name || languageCode).trim();
-        const resourceName = String((item.translated_name && item.translated_name.name) || item.resource_name || item.name || languageName).trim();
+        const languageName = toTitleCaseLabel(String(item.language_name || (item.language && item.language.name) || (item.translated_name && item.translated_name.name) || item.name || item.resource_name || languageCode).trim());
+        const resourceName = toTitleCaseLabel(String((item.translated_name && item.translated_name.name) || item.resource_name || item.name || languageName).trim());
         if (!languageName) return;
         if (!byLanguage.has(languageCode)) {
           byLanguage.set(languageCode, { id, languageCode, languageName, resourceName });
@@ -1869,7 +1898,7 @@
 
       return [
         { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
-        { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an' },
+        { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' },
         ...items.filter((item) => item.languageCode !== 'en')
       ];
     }
@@ -1944,7 +1973,7 @@
           if (!translationResources.length) {
             translationResources = [
               { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
-              { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an' }
+              { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' }
             ];
             if (languagesStatus) languagesStatus.textContent = 'Only Arabic and English are available right now.';
           } else if (languagesStatus) {
@@ -1954,7 +1983,7 @@
           console.warn('Language resources could not be loaded.', error);
           translationResources = [
             { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
-            { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an' }
+            { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' }
           ];
           if (languagesStatus) languagesStatus.textContent = 'Languages could not be refreshed right now.';
         }
@@ -1996,6 +2025,8 @@
         currentTranslationCode = 'ar';
         currentTranslationName = 'Arabic';
         currentTranslationVerses = translationCache.ar.slice();
+        const arabicWordLayer = await fetchWordLayer('ar');
+        mergeWordLayerIntoVerseData(arabicWordLayer);
         if (currentMode === 'english-only') currentMode = 'arabic-only';
         updateModeLabels();
         rerenderTranslationView();
@@ -2009,6 +2040,8 @@
         currentTranslationCode = 'en';
         currentTranslationName = 'English';
         currentTranslationVerses = englishVerses.slice();
+        const englishWordLayer = await fetchWordLayer('en');
+        mergeWordLayerIntoVerseData(englishWordLayer);
         updateModeLabels();
         rerenderTranslationView();
         saveTranslationSelection();
@@ -2027,10 +2060,87 @@
       currentTranslationCode = item.languageCode || 'en';
       currentTranslationName = item.languageName || 'Translation';
       currentTranslationVerses = texts;
+      const selectedWordLayer = await fetchWordLayer(currentTranslationCode);
+      mergeWordLayerIntoVerseData(selectedWordLayer);
       updateModeLabels();
       rerenderTranslationView();
       saveTranslationSelection();
       if (languagesStatus) languagesStatus.textContent = `${currentTranslationName} is active.`;
+    }
+
+    function toTitleCaseLabel(value) {
+      return String(value || '')
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    function mergeWordLayerIntoVerseData(wordLayer) {
+      if (!Array.isArray(wordLayer) || !wordLayer.length) return;
+      const byVerse = new Map(wordLayer.map((item) => [Number(item.number), item]));
+      verseDataCache = verseDataCache.map((verse) => {
+        const incoming = byVerse.get(Number(verse.number));
+        if (!incoming) return verse;
+        const words = Array.isArray(verse.words) ? verse.words : [];
+        const nextWords = words.map((word, index) => {
+          const incomingWord = Array.isArray(incoming.words)
+            ? incoming.words.find((entry) => Number(entry.position) === Number(word.position || index + 1))
+            : null;
+          if (!incomingWord) return word;
+          return {
+            ...word,
+            transliteration: incomingWord.transliteration || word.transliteration || '',
+            translation: incomingWord.translation || word.translation || ''
+          };
+        });
+        return {
+          ...verse,
+          transliteration: incoming.transliteration || verse.transliteration || '',
+          words: nextWords
+        };
+      });
+    }
+
+    async function fetchWordLayer(languageCode) {
+      const code = String(languageCode || 'en').trim().toLowerCase() || 'en';
+      if (wordLayerCache[code]) return wordLayerCache[code];
+      if (code === 'ar') {
+        const arabicLayer = verseDataCache.map((verse) => ({
+          number: verse.number,
+          transliteration: verse.transliteration || '',
+          words: Array.isArray(verse.words)
+            ? verse.words.map((word) => ({
+                position: word.position,
+                transliteration: word.transliteration || '',
+                translation: ''
+              }))
+            : []
+        }));
+        wordLayerCache[code] = arabicLayer;
+        return arabicLayer;
+      }
+      const pages = [1, 2];
+      const results = await Promise.all(pages.map((page) => safeFetchJson(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?language=${encodeURIComponent(code)}&words=true&per_page=50&page=${page}&fields=text_uthmani&word_fields=text_uthmani,transliteration,translation,audio_url,char_type_name`)));
+      const combined = results.flatMap((payload) => payload && Array.isArray(payload.verses) ? payload.verses : []);
+      if (!combined.length) return null;
+      const layer = combined
+        .filter((verse) => verse && verse.verse_number)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .map((verse) => {
+          const words = Array.isArray(verse.words) ? verse.words : [];
+          return {
+            number: verse.verse_number,
+            transliteration: words.map((word) => word && word.transliteration && word.transliteration.text ? word.transliteration.text : '').filter(Boolean).join(' '),
+            words: words.map((word, index) => ({
+              position: Number(word.position || index + 1),
+              transliteration: word && word.transliteration && word.transliteration.text ? word.transliteration.text : '',
+              translation: word && word.translation && word.translation.text ? stripHtmlContent(word.translation.text) : ''
+            }))
+          };
+        });
+      wordLayerCache[code] = layer;
+      return layer;
     }
 
     function buildVerseSelector() {
@@ -4344,11 +4454,23 @@ ${getVerseUrl(ayah)}`,
         if (hasValidLiveData) {
           apiDegraded = false;
           verseDataCache = liveVerseData;
+          wordLayerCache.en = liveVerseData.map((verse) => ({
+            number: verse.number,
+            transliteration: verse.transliteration || '',
+            words: Array.isArray(verse.words)
+              ? verse.words.map((word) => ({
+                  position: word.position,
+                  transliteration: word.transliteration || '',
+                  translation: word.translation || ''
+                }))
+              : []
+          }));
           transliterationAvailable = liveVerseData.some((verse) => verse.transliteration && verse.transliteration.trim());
           errorState.style.display = 'none';
         } else {
           apiDegraded = true;
           verseDataCache = buildFallbackVerseData();
+          wordLayerCache.en = verseDataCache.map((verse) => ({ number: verse.number, transliteration: verse.transliteration || '', words: [] }));
           transliterationAvailable = false;
           errorState.style.display = 'block';
           errorState.textContent = 'The live surah data could not be loaded right now. A fallback reading view has been shown instead.';
@@ -4400,7 +4522,8 @@ ${getVerseUrl(ayah)}`,
         console.error(error);
         apiDegraded = true;
         verseDataCache = buildFallbackVerseData();
-        transliterationAvailable = false;
+          wordLayerCache.en = verseDataCache.map((verse) => ({ number: verse.number, transliteration: verse.transliteration || '', words: [] }));
+          transliterationAvailable = false;
         renderVerses(verseDataCache);
         buildVerseSelector();
         applyMode('bilingual');
