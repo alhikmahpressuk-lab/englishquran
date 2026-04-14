@@ -703,13 +703,7 @@
     }
     .english-text { font-size: 1rem; color: color-mix(in srgb, var(--text) 88%, white); padding-top: 2px; }
 
-    .verse-toolbar-wrap {
-      display: flex;
-      justify-content: flex-start;
-      align-items: flex-start;
-      margin-top: 14px;
-      padding-left: 0;
-    }
+    .verse-toolbar-wrap { display: flex; justify-content: flex-start; margin-top: 14px; }
     .verse-toolbar {
       display: inline-flex;
       align-items: center;
@@ -1033,9 +1027,6 @@
       .sync-bar-text { display: none; }
       .floating-prompt-actions { flex-direction: column; }
       .verse-menu { min-width: min(250px, calc(100vw - 56px)); }
-      .verse-toolbar-wrap {
-        padding-left: 0;
-      }
     }
 
     @media (max-width: 520px) {
@@ -1049,7 +1040,6 @@
       .note-panel-actions { flex-direction: column; }
       .note-save-btn, .note-clear-btn, .note-share-btn, .note-copy-btn, .note-close-btn, .tajweed-mini-btn { width: 100%; }
       .tajweed-mini-top { flex-direction: column; align-items: flex-start; }
-      .verse-toolbar-wrap { padding-left: 0; }
     }
   </style>
 </head>
@@ -1200,12 +1190,10 @@
 
           <div class="subpanel" id="listenPanel">
             <h3 translate="no">Listen</h3>
-            <p translate="no">Choose how you want to listen: standard recitation, synced recitation view, tajweed verse playback, or word by word mode.</p>
+            <p translate="no">Choose a reciter and listen to the full recitation of Surah An-Naml.</p>
             <div class="audio-view-options" style="margin-bottom: 14px;">
               <button class="audio-view-button active" type="button" data-audio-view="standard" translate="no">Standard recitation</button>
               <button class="audio-view-button" type="button" data-audio-view="synced" translate="no">Synced recitation view</button>
-              <button class="audio-view-button" type="button" data-audio-view="tajweed" translate="no">Tajweed</button>
-              <button class="audio-view-button" type="button" data-audio-view="words" translate="no">Words</button>
             </div>
             <div class="listen-controls">
               <div class="listen-field">
@@ -2078,9 +2066,7 @@
       currentAudioView = view;
       audioViewButtons.forEach((button) => button.classList.toggle('active', button.dataset.audioView === view));
       updateVerseClickability();
-
       if (view === 'synced') {
-        applyWordMode(false, { skipAudioViewReset: true });
         stopTajweedPlayback(true);
         listenNote.textContent = apiDegraded
           ? 'Recitation view is temporarily unavailable while verse timing data is unavailable.'
@@ -2093,35 +2079,7 @@
             if (targetVerse) gentleScrollToElement(targetVerse, { center: false });
           });
         }
-      } else if (view === 'tajweed') {
-        stopSyncedPlayback(true);
-        applyWordMode(false, { skipAudioViewReset: true });
-        listenNote.textContent = 'Tajweed mode is active. Use the verse actions to play a verse, repeat it, or continue all with the tajweed controls.';
-        syncText.textContent = 'Recitation view is active.';
-        if (autoMove) {
-          setActiveTab('read');
-          requestAnimationFrame(() => {
-            const targetVerse = document.getElementById(`ayah-${currentVisibleVerse}`) || document.getElementById('bismillah');
-            if (targetVerse) gentleScrollToElement(targetVerse, { center: false });
-          });
-        }
-      } else if (view === 'words') {
-        stopSyncedPlayback(true);
-        stopTajweedPlayback(true);
-        applyWordMode(true, { skipAudioViewReset: true });
-        listenNote.textContent = 'Words mode is active. Tap any Arabic word to hear that word on its own and view the matching transliteration and meaning.';
-        syncText.textContent = 'Recitation view is active.';
-        if (autoMove) {
-          setActiveTab('read');
-          requestAnimationFrame(() => {
-            const targetVerse = document.getElementById(`ayah-${currentVisibleVerse}`) || document.getElementById('bismillah');
-            if (targetVerse) gentleScrollToElement(targetVerse, { center: false });
-          });
-        }
       } else {
-        stopSyncedPlayback(true);
-        stopTajweedPlayback(true);
-        if (wordModeEnabled) applyWordMode(false, { skipAudioViewReset: true });
         listenNote.textContent = 'Choose any reciter, then listen and read comfortably in any mode you select.';
         singleVerseMode = false;
         singleVerseNumber = null;
@@ -2164,18 +2122,14 @@
       }
     }
 
-    function applyWordMode(enabled, options = {}) {
-      const skipAudioViewReset = Boolean(options.skipAudioViewReset);
+    function applyWordMode(enabled) {
       wordModeEnabled = Boolean(enabled);
       versesContainer.classList.toggle('word-mode-active', wordModeEnabled);
       wordModeToggle.classList.toggle('active', wordModeEnabled);
       wordModeToggle.textContent = wordModeEnabled ? 'Word by word on' : 'Word by word';
       if (wordModeEnabled) {
         stopSyncedPlayback(false);
-        if (!skipAudioViewReset && currentAudioView === 'synced') {
-          applyAudioView('standard', false);
-          return;
-        }
+        applyAudioView('standard', false);
       }
       if (!wordModeEnabled) {
         clearWordMeaningPanels();
@@ -3971,8 +3925,7 @@ ${getVerseUrl(ayah)}`,
     }));
     modeButtons.forEach((button) => button.addEventListener('click', () => { applyMode(button.dataset.mode); setActiveTab('read'); }));
     audioViewButtons.forEach((button) => button.addEventListener('click', async () => {
-      const nextView = button.dataset.audioView;
-      if (nextView === 'synced') {
+      if (button.dataset.audioView === 'synced') {
         if (apiDegraded) {
           showBookmarkMessage('Recitation view is unavailable while live timing data is unavailable.');
           return;
@@ -3980,19 +3933,9 @@ ${getVerseUrl(ayah)}`,
         applyAudioView('synced', true);
         setActiveTab('read');
         if (!currentAudioUrl) await loadSelectedAudio();
-        return;
+      } else {
+        applyAudioView('standard', false);
       }
-      if (nextView === 'tajweed') {
-        applyAudioView('tajweed', true);
-        showBookmarkMessage('Tajweed mode is ready. Use a verse menu to start tajweed playback.');
-        return;
-      }
-      if (nextView === 'words') {
-        applyAudioView('words', true);
-        showBookmarkMessage('Words mode is ready. Tap any Arabic word to hear it on its own.');
-        return;
-      }
-      applyAudioView('standard', false);
     }));
     wordModeToggle.addEventListener('click', () => { applyWordMode(!wordModeEnabled); setActiveTab('read'); });
 
