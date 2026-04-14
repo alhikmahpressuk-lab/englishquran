@@ -1825,7 +1825,7 @@
 
     const premiumTranslationTtsConfig = {
       enabled: true,
-      endpoint: localStorage.getItem('teq-translation-tts-endpoint') || '',
+      endpoint: localStorage.getItem('teq-translation-tts-endpoint') || '/api/translation-tts',
       method: 'POST',
       authHeaderName: localStorage.getItem('teq-translation-tts-header-name') || '',
       authHeaderValue: localStorage.getItem('teq-translation-tts-header-value') || '',
@@ -2703,7 +2703,23 @@
       return 'Translation voice endpoint is connected.';
     }
 
+    function buildTranslationAudioCacheKey(ayah) {
+      return [
+        surahNumber,
+        Number(ayah),
+        currentTranslationCode || 'en',
+        currentTranslationId || 'en-fallback',
+        getDisplayLanguageName()
+      ].join(':');
+    }
+
     async function responseToAudioSource(response) {
+      const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+      if (contentType.startsWith('audio/')) {
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+      }
+
       const payload = await response.json().catch(() => null);
       if (!payload) return null;
       if (payload.audioUrl) return String(payload.audioUrl);
