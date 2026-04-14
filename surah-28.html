@@ -2431,18 +2431,25 @@ ${getVerseUrl(ayah)}`,
       const blocksHtml = payload.blocks.map((block) => {
         if (block.kind === 'bismillah') {
           return [
-            '<section class="export-block export-bismillah">',
-            block.arabic ? `<div class="export-arabic export-arabic-center">${escapeHtml(block.arabic)}</div>` : '',
-            block.english ? `<div class="export-english export-english-center">${escapeHtml(block.english)}</div>` : '',
+            '<section class="export-bismillah">',
+            block.arabic ? `<div class="export-bismillah-arabic">${escapeHtml(block.arabic)}</div>` : '',
+            block.english ? `<div class="export-bismillah-english">${escapeHtml(block.english)}</div>` : '',
             '</section>'
           ].join('');
         }
+
         return [
-          '<section class="export-block">',
-          `<div class="export-label">Verse ${block.verseNumber}</div>`,
-          block.arabic ? `<div class="export-arabic">${escapeHtml(block.arabic)}</div>` : '',
-          block.transliteration ? `<div class="export-transliteration">${escapeHtml(block.transliteration)}</div>` : '',
+          '<section class="export-verse-row">',
+          '<div class="export-english-col">',
+          `<div class="export-number">${block.verseNumber}</div>`,
+          '<div class="export-english-stack">',
           block.english ? `<div class="export-english">${escapeHtml(block.english)}</div>` : '',
+          block.transliteration ? `<div class="export-transliteration">${escapeHtml(block.transliteration)}</div>` : '',
+          '</div>',
+          '</div>',
+          '<div class="export-arabic-col">',
+          block.arabic ? `<div class="export-arabic">${escapeHtml(block.arabic)}</div>` : '',
+          '</div>',
           '</section>'
         ].join('');
       }).join('');
@@ -2455,20 +2462,24 @@ ${getVerseUrl(ayah)}`,
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
         `<title>${escapeHtml(payload.title)}</title>`,
         '<style>',
-        'body{font-family:Inter,Arial,sans-serif;margin:0;padding:32px;color:#182128;background:#ffffff;line-height:1.75;}',
-        '.wrap{max-width:900px;margin:0 auto;}',
-        '.brand{font-size:14px;color:#1e6b5c;font-weight:700;margin-bottom:12px;}',
-        'h1{margin:0 0 18px;font-size:28px;line-height:1.2;}',
-        '.export-block{padding:0 0 28px;margin:0 0 28px;border-bottom:1px solid #e3e8ec;}',
-        '.export-block:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0;}',
-        '.export-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#66727d;margin-bottom:12px;}',
-        '.export-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:30px;line-height:2;text-align:right;direction:rtl;margin-bottom:14px;}',
-        '.export-arabic-center{text-align:center;}',
-        '.export-transliteration{font-size:15px;line-height:1.9;font-style:italic;color:#66727d;margin-bottom:12px;}',
-        '.export-english{font-size:16px;line-height:1.85;}',
-        '.export-english-center{text-align:center;}',
+        'body{font-family:Inter,Arial,sans-serif;margin:0;padding:28px;color:#182128;background:#ffffff;line-height:1.7;}',
+        '.wrap{max-width:980px;margin:0 auto;}',
+        '.brand{font-size:14px;color:#1e6b5c;font-weight:700;margin-bottom:10px;letter-spacing:.04em;text-transform:uppercase;}',
+        'h1{margin:0 0 22px;font-size:28px;line-height:1.2;letter-spacing:-.02em;}',
+        '.export-bismillah{padding:0 0 22px;margin:0 0 18px;border-bottom:1px solid #e3e8ec;text-align:center;}',
+        '.export-bismillah-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:30px;line-height:2.05;margin-bottom:10px;direction:rtl;}',
+        '.export-bismillah-english{font-size:15px;color:#475467;line-height:1.8;}',
+        '.export-verse-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;padding:0 0 24px;margin:0 0 24px;border-bottom:1px solid #e3e8ec;page-break-inside:avoid;break-inside:avoid;}',
+        '.export-english-col{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;align-items:start;}',
+        '.export-number{width:44px;height:44px;border-radius:14px;background:#e8f3f0;color:#154d42;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;line-height:1;margin-top:2px;}',
+        '.export-english-stack{min-width:0;}',
+        '.export-english{font-size:16px;line-height:1.9;color:#182128;}',
+        '.export-transliteration{margin-top:8px;font-size:14px;line-height:1.8;font-style:italic;color:#66727d;}',
+        '.export-arabic-col{min-width:0;}',
+        '.export-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:28px;line-height:2.05;text-align:right;direction:rtl;color:#111827;}',
         '.foot{margin-top:28px;padding-top:18px;border-top:1px solid #e3e8ec;font-size:13px;color:#66727d;}',
-        '@page{size:A4;margin:16mm;}',
+        '@media print{body{padding:0}.wrap{max-width:none}.export-verse-row{gap:18px}}',
+        '@page{size:A4;margin:15mm 13mm;}',
         '</style>',
         '</head>',
         '<body>',
@@ -2552,69 +2563,183 @@ ${getVerseUrl(ayah)}`,
 
     function buildCanvasPages(payload) {
       const width = 1600;
-      const height = 2100;
-      const padding = 96;
-      const footerGap = 90;
-      const contentWidth = width - (padding * 2);
-      const probeCanvas = document.createElement('canvas');
-      probeCanvas.width = width;
-      probeCanvas.height = height;
-      const probeCtx = probeCanvas.getContext('2d');
-      probeCtx.font = '700 48px Inter, Arial, sans-serif';
-      const titleLines = buildCanvasLines(probeCtx, payload.title, contentWidth);
-      probeCtx.font = '400 30px Inter, Arial, sans-serif';
-      const bodyLines = buildCanvasLines(probeCtx, payload.downloadText || '', contentWidth);
-
-      const firstPageSlots = 28;
-      const laterPageSlots = 34;
+      const height = 2200;
+      const paddingX = 92;
+      const topPadding = 84;
+      const footerY = height - 52;
+      const gutter = 34;
+      const leftColWidth = 640;
+      const rightColWidth = width - (paddingX * 2) - leftColWidth - gutter;
+      const pageBottom = height - 118;
       const pages = [];
-      let cursor = 0;
-      pages.push({ titleLines, bodyLines: bodyLines.slice(cursor, cursor + firstPageSlots), continued: false });
-      cursor += firstPageSlots;
-      while (cursor < bodyLines.length) {
-        pages.push({ titleLines: buildCanvasLines(probeCtx, `${payload.title} | Continued`, contentWidth), bodyLines: bodyLines.slice(cursor, cursor + laterPageSlots), continued: true });
-        cursor += laterPageSlots;
-      }
 
-      return pages.map((page, pageIndex) => {
-        const canvas = document.createElement('canvas');
+      let canvas = null;
+      let ctx = null;
+      let y = 0;
+      let pageNumber = 0;
+
+      const startPage = (continued = false) => {
+        pageNumber += 1;
+        canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext('2d');
+        ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#1e6b5c';
+        ctx.textAlign = 'left';
         ctx.font = '700 28px Inter, Arial, sans-serif';
-        ctx.fillText('The English Qur’an', padding, padding);
+        ctx.fillText('The English Qur’an', paddingX, topPadding);
 
-        let y = padding + 70;
+        y = topPadding + 56;
         ctx.fillStyle = '#182128';
-        ctx.font = '700 48px Inter, Arial, sans-serif';
-        page.titleLines.forEach((line) => {
-          ctx.fillText(line, padding, y);
-          y += 58;
+        ctx.font = '700 46px Inter, Arial, sans-serif';
+        const titleText = continued ? `${payload.title} | Continued` : payload.title;
+        const titleLines = buildCanvasLines(ctx, titleText, width - (paddingX * 2));
+        titleLines.forEach((line) => {
+          ctx.fillText(line, paddingX, y);
+          y += 54;
         });
-        y += 10;
+        y += 12;
+      };
 
-        ctx.font = '400 30px Inter, Arial, sans-serif';
-        page.bodyLines.forEach((line) => {
-          if (!line) {
-            y += 28;
-            return;
-          }
-          ctx.fillText(line, padding, y);
-          y += 42;
-        });
+      const finishPage = () => {
+        ctx.strokeStyle = '#e3e8ec';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(paddingX, height - 78);
+        ctx.lineTo(width - paddingX, height - 78);
+        ctx.stroke();
 
         ctx.fillStyle = '#66727d';
-        ctx.font = '400 24px Inter, Arial, sans-serif';
-        ctx.fillText(exportAttribution, padding, height - 44);
-        ctx.textAlign = 'right';
-        ctx.fillText(`Page ${pageIndex + 1} of ${pages.length}`, width - padding, height - 44);
+        ctx.font = '400 22px Inter, Arial, sans-serif';
         ctx.textAlign = 'left';
-        return canvas;
+        ctx.fillText(exportAttribution, paddingX, footerY);
+        pages.push(canvas);
+      };
+
+      const ensureSpace = (neededHeight) => {
+        if (y + neededHeight <= pageBottom) return;
+        finishPage();
+        startPage(true);
+      };
+
+      const drawDivider = () => {
+        ctx.strokeStyle = '#e3e8ec';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(paddingX, y);
+        ctx.lineTo(width - paddingX, y);
+        ctx.stroke();
+        y += 22;
+      };
+
+      startPage(false);
+
+      payload.blocks.forEach((block) => {
+        if (block.kind === 'bismillah') {
+          ctx.font = '700 40px Amiri Quran, Amiri, serif';
+          const arabicLines = buildCanvasLines(ctx, block.arabic || '', width - (paddingX * 2));
+          ctx.font = '400 28px Inter, Arial, sans-serif';
+          const englishLines = buildCanvasLines(ctx, block.english || '', width - (paddingX * 2));
+          const estimatedHeight = (arabicLines.length * 50) + (englishLines.length * 38) + 48;
+          ensureSpace(estimatedHeight);
+
+          ctx.fillStyle = '#182128';
+          ctx.font = '700 40px Amiri Quran, Amiri, serif';
+          ctx.textAlign = 'center';
+          arabicLines.forEach((line) => {
+            ctx.fillText(line, width / 2, y);
+            y += 50;
+          });
+
+          if (englishLines.length) y += 4;
+          ctx.fillStyle = '#66727d';
+          ctx.font = '400 28px Inter, Arial, sans-serif';
+          englishLines.forEach((line) => {
+            ctx.fillText(line, width / 2, y);
+            y += 38;
+          });
+
+          y += 16;
+          drawDivider();
+          return;
+        }
+
+        ctx.font = '400 28px Inter, Arial, sans-serif';
+        const englishLines = buildCanvasLines(ctx, block.english || '', leftColWidth - 86);
+        ctx.font = 'italic 24px Inter, Arial, sans-serif';
+        const translitLines = block.transliteration ? buildCanvasLines(ctx, block.transliteration, leftColWidth - 86) : [];
+        ctx.font = '700 34px Amiri Quran, Amiri, serif';
+        const arabicLines = buildCanvasLines(ctx, block.arabic || '', rightColWidth);
+
+        const leftHeight = Math.max(44, englishLines.length * 34) + (translitLines.length ? (12 + (translitLines.length * 30)) : 0);
+        const rightHeight = Math.max(44, arabicLines.length * 48);
+        const rowHeight = Math.max(leftHeight, rightHeight) + 26;
+        ensureSpace(rowHeight + 18);
+
+        const rowTop = y;
+        const leftX = paddingX;
+        const rightX = paddingX + leftColWidth + gutter;
+
+        ctx.fillStyle = '#e8f3f0';
+        const badgeX = leftX;
+        const badgeY = rowTop;
+        const badgeW = 48;
+        const badgeH = 48;
+        const badgeR = 14;
+        ctx.beginPath();
+        ctx.moveTo(badgeX + badgeR, badgeY);
+        ctx.lineTo(badgeX + badgeW - badgeR, badgeY);
+        ctx.quadraticCurveTo(badgeX + badgeW, badgeY, badgeX + badgeW, badgeY + badgeR);
+        ctx.lineTo(badgeX + badgeW, badgeY + badgeH - badgeR);
+        ctx.quadraticCurveTo(badgeX + badgeW, badgeY + badgeH, badgeX + badgeW - badgeR, badgeY + badgeH);
+        ctx.lineTo(badgeX + badgeR, badgeY + badgeH);
+        ctx.quadraticCurveTo(badgeX, badgeY + badgeH, badgeX, badgeY + badgeH - badgeR);
+        ctx.lineTo(badgeX, badgeY + badgeR);
+        ctx.quadraticCurveTo(badgeX, badgeY, badgeX + badgeR, badgeY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#154d42';
+        ctx.font = '700 22px Inter, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(block.verseNumber), badgeX + (badgeW / 2), badgeY + 31);
+
+        let textY = rowTop + 28;
+        ctx.fillStyle = '#182128';
+        ctx.font = '400 28px Inter, Arial, sans-serif';
+        ctx.textAlign = 'left';
+        englishLines.forEach((line) => {
+          ctx.fillText(line, leftX + 68, textY, leftColWidth - 68);
+          textY += 34;
+        });
+
+        if (translitLines.length) {
+          textY += 8;
+          ctx.fillStyle = '#66727d';
+          ctx.font = 'italic 24px Inter, Arial, sans-serif';
+          translitLines.forEach((line) => {
+            ctx.fillText(line, leftX + 68, textY, leftColWidth - 68);
+            textY += 30;
+          });
+        }
+
+        let arabicY = rowTop + 34;
+        ctx.fillStyle = '#111827';
+        ctx.font = '700 34px Amiri Quran, Amiri, serif';
+        ctx.textAlign = 'right';
+        arabicLines.forEach((line) => {
+          ctx.fillText(line, rightX + rightColWidth, arabicY, rightColWidth);
+          arabicY += 48;
+        });
+
+        y = rowTop + rowHeight;
+        drawDivider();
       });
+
+      finishPage();
+      return pages;
     }
 
     function canvasToBlob(canvas) {
