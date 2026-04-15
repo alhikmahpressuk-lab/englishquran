@@ -1846,7 +1846,7 @@
     let translationSpeechActive = false;
     let translationVoicesReady = false;
     const googleTranslationTtsConfig = {
-      endpoint: localStorage.getItem('teq-google-tts-endpoint') || '',
+      endpoint: localStorage.getItem('teq-google-tts-endpoint') || '/api/google-tts',
       authHeaderName: localStorage.getItem('teq-google-tts-header-name') || '',
       authHeaderValue: localStorage.getItem('teq-google-tts-header-value') || '',
       requestTimeoutMs: 15000,
@@ -2884,7 +2884,10 @@
           const finish = (ok) => {
             if (translationSpeechAudio === audio) translationSpeechAudio = null;
             translationSpeechActive = false;
-            updateTranslationMini(ok ? 'Ready' : 'Translation audio unavailable', false);
+            updateTranslationMini(
+              ok ? (translationContinueActive ? 'Continuing English translation...' : 'Ready') : 'Translation audio unavailable',
+              translationContinueActive
+            );
             resolve(ok);
           };
           audio.onplay = () => updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
@@ -2925,7 +2928,7 @@
         utterance.onend = () => {
           translationSpeechUtterance = null;
           translationSpeechActive = false;
-          updateTranslationMini('Ready', false);
+          updateTranslationMini(translationContinueActive ? 'Continuing English translation...' : 'Ready', translationContinueActive);
           resolve(true);
         };
         utterance.onerror = () => {
@@ -2954,12 +2957,16 @@
         audio.preload = 'auto';
         updateTranslationMini(`Arabic verse ${ayah}, then English translation`, true);
         const finish = (didPlay) => {
+          audio.onplay = null;
           audio.onended = null;
           audio.onerror = null;
           audio.onpause = null;
           if (translationBridgeAudio === audio) translationBridgeAudio = null;
+          updateTranslationMini(didPlay && translationContinueActive ? 'Continuing with English translation...' : 'Ready', translationContinueActive);
           resolve(didPlay);
         };
+        audio.onplay = () => updateTranslationMini(`Arabic verse ${ayah}, then English translation`, true);
+        audio.onpause = () => updateTranslationMini('Arabic playback paused', true);
         audio.onended = () => finish(true);
         audio.onerror = () => finish(false);
         audio.play().catch(() => finish(false));
@@ -3013,14 +3020,17 @@
         if (mode === 'with-arabic') {
           const playedArabic = await playArabicBridgeForTranslation(ayah, token);
           if (token !== translationSequenceId) return;
-          if (!playedArabic && !continueAll) {
+          if (!playedArabic) {
             showBookmarkMessage(`Arabic audio is unavailable for verse ${ayah}.`);
+            stopTranslationFlow(true);
+            break;
           }
         }
         const spoke = await speakVerseTranslation(ayah, token);
         if (token !== translationSequenceId) return;
-        if (!spoke && !continueAll) {
+        if (!spoke) {
           showBookmarkMessage(`Translation voice could not be played for verse ${ayah}.`);
+          stopTranslationFlow(true);
           break;
         }
         if (!continueAll) break;
@@ -4317,7 +4327,14 @@ ${getVerseUrl(ayah)}`,
 
     function updateTranslationMini(text = 'Ready', forceVisible = false) {
       if (!translationMini) return;
-      const visible = isEnglishTranslationVoiceEnabled() && (forceVisible || Boolean(translationBridgeAudio) || Boolean(translationSpeechAudio) || translationSpeechActive || translationContinueActive || translationTapMode !== 'off');
+      const visible = isEnglishTranslationVoiceEnabled() && (
+        forceVisible
+        || Boolean(translationBridgeAudio)
+        || Boolean(translationSpeechAudio)
+        || Boolean(translationSpeechUtterance)
+        || translationSpeechActive
+        || translationContinueActive
+      );
       translationMini.style.display = visible ? 'block' : 'none';
       translationMini.classList.toggle('active', visible);
       if (translationMiniTitle) {
