@@ -1273,7 +1273,7 @@
 
   <div class="sync-bar notranslate" id="translationMini" translate="no" aria-live="polite" style="top: 132px;">
     <span class="sync-bar-text" id="translationMiniText" translate="no">Translation audio ready.</span>
-    <button class="sync-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play</button>
+    <button class="sync-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play/Pause</button>
     <button class="sync-mini-btn" type="button" id="translationMiniBeginning" translate="no">Beginning</button>
   </div>
 
@@ -3051,7 +3051,7 @@
       const safeAyah = Number(ayah);
       showPrompt(
         `Translation audio · Verse ${safeAyah}`,
-        'Start translation from this verse. Use the top bar for Play/Pause and Beginning.',
+        'Start translation from this verse. Use the top Play/Pause and Beginning controls while it is active.',
         [
           {
             label: 'Play',
@@ -4375,10 +4375,46 @@ ${getVerseUrl(ayah)}`,
       }
       if (translationMiniToggle) {
         translationMiniToggle.disabled = !visible;
-        translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
+        translationMiniToggle.textContent = 'Play/Pause';
       }
       if (translationMiniBeginning) {
         translationMiniBeginning.disabled = !visible;
+      }
+    }
+
+    async function toggleTranslationMiniPlayback() {
+      if (translationBridgeAudio) {
+        if (translationBridgeAudio.paused) {
+          await translationBridgeAudio.play();
+          updateTranslationMini('Arabic playback resumed', true);
+        } else {
+          translationBridgeAudio.pause();
+          updateTranslationMini('Arabic playback paused', true);
+        }
+        return;
+      }
+      if (translationSpeechAudio) {
+        if (translationSpeechAudio.paused) {
+          await translationSpeechAudio.play();
+          updateTranslationMini('English translation resumed', true);
+        } else {
+          translationSpeechAudio.pause();
+          updateTranslationMini('English translation paused', true);
+        }
+        return;
+      }
+      if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+          updateTranslationMini('English translation resumed', true);
+        } else {
+          window.speechSynthesis.pause();
+          updateTranslationMini('English translation paused', true);
+        }
+        return;
+      }
+      if (translationTapMode !== 'off') {
+        await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode, true);
       }
     }
 
@@ -5379,39 +5415,7 @@ ${getVerseUrl(ayah)}`,
 
     translationMiniToggle.addEventListener('click', async () => {
       try {
-        if (translationBridgeAudio) {
-          if (translationBridgeAudio.paused) {
-            await translationBridgeAudio.play();
-            updateTranslationMini('Arabic playback resumed', true);
-          } else {
-            translationBridgeAudio.pause();
-            updateTranslationMini('Arabic playback paused', true);
-          }
-          return;
-        }
-        if (translationSpeechAudio) {
-          if (translationSpeechAudio.paused) {
-            await translationSpeechAudio.play();
-            updateTranslationMini('English translation resumed', true);
-          } else {
-            translationSpeechAudio.pause();
-            updateTranslationMini('English translation paused', true);
-          }
-          return;
-        }
-        if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
-          if (window.speechSynthesis.paused) {
-            window.speechSynthesis.resume();
-            updateTranslationMini('English translation resumed', true);
-          } else {
-            window.speechSynthesis.pause();
-            updateTranslationMini('English translation paused', true);
-          }
-          return;
-        }
-        if (translationTapMode !== 'off') {
-          await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode, true);
-        }
+        await toggleTranslationMiniPlayback();
       } catch {
         showBookmarkMessage('Translation audio could not be changed right now.');
       }
