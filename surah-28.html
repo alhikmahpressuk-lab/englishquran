@@ -1158,6 +1158,7 @@
       }
       .nav { width: 100%; justify-content: flex-start; }
       .sync-bar { top: 128px; }
+      #translationMini { top: 176px !important; }
     }
 
     @media (max-width: 680px) {
@@ -1191,7 +1192,8 @@
       .note-save-btn, .note-clear-btn, .note-share-btn, .note-copy-btn, .note-close-btn, .tajweed-mini-btn { width: 100%; }
       .tajweed-mini-top { flex-direction: column; align-items: flex-start; }
       #translationMini {
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+        top: 176px !important;
+        bottom: auto !important;
       }
       .languages-panel { padding: 14px; border-radius: 16px; }
       .languages-list { max-height: 300px; gap: 10px; }
@@ -1269,17 +1271,11 @@
     </div>
   </div>
 
-  <div class="tajweed-mini notranslate" id="translationMini" translate="no" aria-live="polite" style="bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); display: none;">
-    <div class="tajweed-mini-top">
-      <div>
-        <div class="tajweed-mini-title" id="translationMiniTitle" translate="no">Translation audio</div>
-        <div class="tajweed-mini-text" id="translationMiniText" translate="no">Ready</div>
-      </div>
-      <div class="page-nav">
-        <button class="tajweed-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play</button>
-        <button class="tajweed-mini-btn" type="button" id="translationMiniStop" translate="no">Stop</button>
-      </div>
-    </div>
+  <div class="sync-bar notranslate" id="translationMini" translate="no" aria-live="polite" style="top: 132px; display: none;">
+    <span class="sync-bar-text" id="translationMiniText" translate="no">Translation audio ready.</span>
+    <button class="sync-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play</button>
+    <button class="sync-mini-btn" type="button" id="translationMiniBeginning" translate="no">Beginning</button>
+  </div>
   </div>
 
   <main translate="no" class="notranslate">
@@ -1744,10 +1740,9 @@
     const tajweedMiniContinueAll = document.getElementById('tajweedMiniContinueAll');
     const tajweedMiniStop = document.getElementById('tajweedMiniStop');
     const translationMini = document.getElementById('translationMini');
-    const translationMiniTitle = document.getElementById('translationMiniTitle');
     const translationMiniText = document.getElementById('translationMiniText');
     const translationMiniToggle = document.getElementById('translationMiniToggle');
-    const translationMiniStop = document.getElementById('translationMiniStop');
+    const translationMiniBeginning = document.getElementById('translationMiniBeginning');
 
     const shareType = document.getElementById('shareType');
     const shareSingleVerse = document.getElementById('shareSingleVerse');
@@ -1839,6 +1834,7 @@
     let jsPdfLoaderPromise = null;
     let translationTapMode = 'off';
     let translationContinueActive = false;
+    let translationStartVerse = 1;
     let translationSequenceId = 0;
     let translationBridgeAudio = null;
     let translationSpeechAudio = null;
@@ -2853,7 +2849,10 @@
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch {}
       }
-      if (resetMode) translationTapMode = 'off';
+      if (resetMode) {
+        translationTapMode = 'off';
+        translationStartVerse = 1;
+      }
       updateTranslationMini('Ready', false);
     }
 
@@ -2980,6 +2979,7 @@
       }
       const safeAyah = Number(startAyah);
       if (!safeAyah || safeAyah < 1 || safeAyah > totalVerses) return;
+      translationStartVerse = safeAyah;
       const firstText = getVerseTranslationSpeechText(safeAyah);
       if (!firstText) {
         showBookmarkMessage(`Translation is unavailable for verse ${safeAyah}.`);
@@ -4334,20 +4334,17 @@ ${getVerseUrl(ayah)}`,
         || Boolean(translationSpeechUtterance)
         || translationSpeechActive
         || translationContinueActive
+        || translationTapMode !== 'off'
       );
-      translationMini.style.display = visible ? 'block' : 'none';
       translationMini.classList.toggle('active', visible);
-      if (translationMiniTitle) {
-        translationMiniTitle.textContent = translationTapMode === 'with-arabic' ? 'Translation audio · With Arabic' : 'Translation audio';
-      }
       if (translationMiniText) {
-        translationMiniText.textContent = visible ? text : 'Ready';
+        translationMiniText.textContent = visible ? text : 'Translation audio ready.';
       }
       if (translationMiniToggle) {
         translationMiniToggle.disabled = !visible;
         translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
       }
-      if (translationMiniStop) translationMiniStop.disabled = !visible;
+      if (translationMiniBeginning) translationMiniBeginning.disabled = !visible;
     }
 
     function loadAudioAtTime(audio, src, startSeconds = 0) {
@@ -5386,16 +5383,20 @@ ${getVerseUrl(ayah)}`,
           return;
         }
         if (translationTapMode !== 'off') {
-          await runTranslationFlow(currentVisibleVerse || 1, translationTapMode, true);
+          await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode, true);
         }
       } catch {
         showBookmarkMessage('Translation audio could not be changed right now.');
       }
     });
 
-    translationMiniStop.addEventListener('click', () => {
-      stopTranslationFlow(true);
-      showBookmarkMessage('Translation audio stopped.');
+    translationMiniBeginning.addEventListener('click', async () => {
+      if (translationTapMode === 'off') return;
+      try {
+        await runTranslationFlow(1, translationTapMode, true);
+      } catch {
+        showBookmarkMessage('Translation audio could not start from the beginning right now.');
+      }
     });
 
     introAudio.addEventListener('play', () => {
