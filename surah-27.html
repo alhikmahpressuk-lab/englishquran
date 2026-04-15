@@ -1672,8 +1672,39 @@
       /\b(?:blasphem(?:y|ous)|pig\s+muslim|dirty\s+muslim|lesser\s+people)\b/i
     ];
 
+    function safeStorageGet(storageType, key) {
+      try {
+        const storage = window && window[storageType];
+        return storage ? storage.getItem(key) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function safeStorageSet(storageType, key, value) {
+      try {
+        const storage = window && window[storageType];
+        if (!storage) return false;
+        storage.setItem(key, String(value));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function safeStorageRemove(storageType, key) {
+      try {
+        const storage = window && window[storageType];
+        if (!storage) return false;
+        storage.removeItem(key);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
-    const shouldAutoplay = urlParams.get('autoplay') === '1' || sessionStorage.getItem(autoplaySessionKey) === '1';
+    const shouldAutoplay = urlParams.get('autoplay') === '1' || safeStorageGet('sessionStorage', autoplaySessionKey) === '1';
     const autoplayReciter = urlParams.get('reciter');
     const autoplayView = urlParams.get('view');
 
@@ -1839,18 +1870,65 @@
     let translationSpeechAudio = null;
     let translationSpeechUtterance = null;
     let translationSpeechActive = false;
-    let translationPlaybackState = 'idle';
-    let translationMiniMonitor = null;
     let translationVoicesReady = false;
-    const googleTranslationTtsConfig = {
-      endpoint: localStorage.getItem('teq-google-tts-endpoint') || '/api/google-tts',
-      authHeaderName: localStorage.getItem('teq-google-tts-header-name') || '',
-      authHeaderValue: localStorage.getItem('teq-google-tts-header-value') || '',
-      requestTimeoutMs: 15000,
-      voiceName: 'en-GB-Neural2-D',
-      languageCode: 'en-GB'
+    const translationRemoteProviders = {
+      custom: {
+        endpoint: safeStorageGet('localStorage', 'teq-tts-custom-endpoint') || '',
+        authHeaderName: safeStorageGet('localStorage', 'teq-tts-custom-header-name') || '',
+        authHeaderValue: safeStorageGet('localStorage', 'teq-tts-custom-header-value') || '',
+        requestTimeoutMs: 15000
+      },
+      google: {
+        endpoint: safeStorageGet('localStorage', 'teq-google-tts-endpoint') || '',
+        authHeaderName: safeStorageGet('localStorage', 'teq-google-tts-header-name') || '',
+        authHeaderValue: safeStorageGet('localStorage', 'teq-google-tts-header-value') || '',
+        requestTimeoutMs: 15000
+      },
+      azure: {
+        endpoint: safeStorageGet('localStorage', 'teq-azure-tts-endpoint') || '/api/azure-tts',
+        authHeaderName: safeStorageGet('localStorage', 'teq-azure-tts-header-name') || '',
+        authHeaderValue: safeStorageGet('localStorage', 'teq-azure-tts-header-value') || '',
+        requestTimeoutMs: 15000
+      },
+      polly: {
+        endpoint: safeStorageGet('localStorage', 'teq-polly-tts-endpoint') || '',
+        authHeaderName: safeStorageGet('localStorage', 'teq-polly-tts-header-name') || '',
+        authHeaderValue: safeStorageGet('localStorage', 'teq-polly-tts-header-value') || '',
+        requestTimeoutMs: 15000
+      }
     };
+    const translationRemoteProviderOrder = ['custom', 'azure', 'google', 'polly'];
     const translationAudioCache = new Map();
+    let translationAudioPrimed = false;
+    let translationAudioPrimingPromise = null;
+
+    function markTranslationAudioPrimed() {
+      translationAudioPrimed = true;
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.resume();
+          window.speechSynthesis.getVoices();
+        } catch {}
+      }
+    }
+
+    async function primeTranslationAudio() {
+      if (translationAudioPrimed) return true;
+      if (translationAudioPrimingPromise) return translationAudioPrimingPromise;
+      translationAudioPrimingPromise = (async () => {
+        if ('speechSynthesis' in window) {
+          try {
+            window.speechSynthesis.resume();
+            window.speechSynthesis.getVoices();
+          } catch {}
+        }
+        translationAudioPrimed = true;
+        return true;
+      })().finally(() => {
+        translationAudioPrimingPromise = null;
+      });
+      return translationAudioPrimingPromise;
+    }
 
     const translationVoiceRegistry = {
       en: { locale: 'en-GB', preferredNames: ['Ryan', 'Ollie', 'Thomas', 'Google UK English Male', 'Male'] },
@@ -1911,14 +1989,22 @@
       return blockedPatterns.some((pattern) => pattern.test(String(value || '')));
     }
 
-    async function safeFetchJson(url) {
+    async function safeFetchJson(url, timeoutMs = 9000) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), Number(timeoutMs) || 9000);
       try {
-        const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
+        const response = await fetch(url, {
+          mode: 'cors',
+          cache: 'no-store',
+          signal: controller.signal
+        });
         if (!response.ok) throw new Error(`Request failed: ${response.status}`);
         return await response.json();
       } catch (error) {
         console.warn('Fetch failed:', url, error);
         return null;
+      } finally {
+        clearTimeout(timeoutId);
       }
     }
 
@@ -1998,7 +2084,7 @@
     }
 
     function saveTranslationSelection() {
-      localStorage.setItem(translationSelectionStorageKey, JSON.stringify({
+      safeStorageSet('localStorage', translationSelectionStorageKey, JSON.stringify({
         id: currentTranslationId,
         code: currentTranslationCode,
         name: currentTranslationName
@@ -2007,7 +2093,7 @@
 
     function getSavedTranslationSelection() {
       try {
-        const raw = localStorage.getItem(translationSelectionStorageKey);
+        const raw = safeStorageGet('localStorage', translationSelectionStorageKey);
         if (!raw) return null;
         const parsed = JSON.parse(raw);
         return parsed && typeof parsed === 'object' ? parsed : null;
@@ -2395,7 +2481,7 @@
 
     function getLastRead() {
       try {
-        const raw = localStorage.getItem(lastReadStorageKey);
+        const raw = safeStorageGet('localStorage', lastReadStorageKey);
         if (!raw) return null;
         const parsed = JSON.parse(raw);
         if (!parsed || typeof parsed.ayah !== 'number') return null;
@@ -2408,7 +2494,7 @@
 
     function getHistory() {
       try {
-        const raw = localStorage.getItem(historyStorageKey);
+        const raw = safeStorageGet('localStorage', historyStorageKey);
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
@@ -2420,7 +2506,7 @@
 
     function getPinnedVerses() {
       try {
-        const raw = localStorage.getItem(pinnedStorageKey);
+        const raw = safeStorageGet('localStorage', pinnedStorageKey);
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
@@ -2432,7 +2518,7 @@
 
     function getVerseNotes() {
       try {
-        const raw = localStorage.getItem(verseNotesStorageKey);
+        const raw = safeStorageGet('localStorage', verseNotesStorageKey);
         if (!raw) return {};
         const parsed = JSON.parse(raw);
         return parsed && typeof parsed === 'object' ? parsed : {};
@@ -2442,7 +2528,7 @@
     }
 
     function setVerseNotes(notes) {
-      localStorage.setItem(verseNotesStorageKey, JSON.stringify(notes));
+      safeStorageSet('localStorage', verseNotesStorageKey, JSON.stringify(notes));
     }
 
     function isVersePinned(ayah) {
@@ -2533,27 +2619,27 @@
     function saveLastReadAndHistory(ayahNumber) {
       const safeVerse = Number(ayahNumber);
       if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
-      localStorage.setItem(lastReadStorageKey, JSON.stringify({ ayah: safeVerse, savedAt: new Date().toISOString() }));
+      safeStorageSet('localStorage', lastReadStorageKey, JSON.stringify({ ayah: safeVerse, savedAt: new Date().toISOString() }));
       const history = getHistory().filter((item) => item.ayah !== safeVerse);
       history.unshift({ ayah: safeVerse, savedAt: new Date().toISOString() });
-      localStorage.setItem(historyStorageKey, JSON.stringify(history.slice(0, historyLimit)));
+      safeStorageSet('localStorage', historyStorageKey, JSON.stringify(history.slice(0, historyLimit)));
       updateBookmarkUI();
     }
 
     function clearBookmarkHistory() {
-      localStorage.removeItem(lastReadStorageKey);
-      localStorage.removeItem(historyStorageKey);
+      safeStorageRemove('localStorage', lastReadStorageKey);
+      safeStorageRemove('localStorage', historyStorageKey);
       updateBookmarkUI();
       showBookmarkMessage('Bookmark history cleared.');
     }
 
     function removeHistoryVerse(ayah) {
       const filtered = getHistory().filter((item) => item.ayah !== ayah);
-      localStorage.setItem(historyStorageKey, JSON.stringify(filtered));
+      safeStorageSet('localStorage', historyStorageKey, JSON.stringify(filtered));
       const lastRead = getLastRead();
       if (lastRead && lastRead.ayah === ayah) {
-        if (filtered.length) localStorage.setItem(lastReadStorageKey, JSON.stringify(filtered[0]));
-        else localStorage.removeItem(lastReadStorageKey);
+        if (filtered.length) safeStorageSet('localStorage', lastReadStorageKey, JSON.stringify(filtered[0]));
+        else safeStorageRemove('localStorage', lastReadStorageKey);
       }
       updateBookmarkUI();
       showBookmarkMessage(`Verse ${ayah} removed from bookmark history.`);
@@ -2566,7 +2652,7 @@
       const next = exists
         ? current.filter((item) => item.ayah !== safeAyah)
         : [{ ayah: safeAyah, savedAt: new Date().toISOString() }, ...current.filter((item) => item.ayah !== safeAyah)];
-      localStorage.setItem(pinnedStorageKey, JSON.stringify(next.slice(0, 100)));
+      safeStorageSet('localStorage', pinnedStorageKey, JSON.stringify(next.slice(0, 100)));
       updateBookmarkUI();
       refreshInlineStates();
       showBookmarkMessage(exists ? `Verse ${safeAyah} removed from pinned verses.` : `Verse ${safeAyah} pinned.`);
@@ -2700,16 +2786,60 @@
     }
 
     function isEnglishTranslationVoiceEnabled() {
-      return currentTranslationId === 'en-fallback' || currentTranslationCode === 'en';
+      return currentTranslationId !== 'ar' && String(currentTranslationCode || '').toLowerCase() === 'en';
+    }
+
+    function getTranslationAudioAvailabilityMessage() {
+      return currentTranslationId === 'ar' || String(currentTranslationCode || '').toLowerCase() === 'ar'
+        ? 'Translation audio is unavailable in Arabic-only mode.'
+        : 'Translation audio is available in English only.';
     }
 
     function getTranslationTtsConfig() {
-      return translationVoiceRegistry[currentTranslationCode] || translationVoiceRegistry.en || { locale: 'en-GB', preferredNames: ['Male'] };
+      const base = translationVoiceRegistry[currentTranslationCode] || translationVoiceRegistry.en || { locale: 'en-GB', preferredNames: ['Male'] };
+      const locale = base.locale || currentTranslationCode || 'en-GB';
+      return {
+        ...base,
+        locale,
+        remoteVoices: {
+          custom: { languageCode: locale, voiceName: currentTranslationCode === 'en' ? 'en-GB-RyanNeural' : '' },
+          google: { languageCode: locale, voiceName: currentTranslationCode === 'en' ? 'en-GB-Neural2-D' : '' },
+          azure: { languageCode: locale, voiceName: currentTranslationCode === 'en' ? 'en-GB-RyanNeural' : '' },
+          polly: { languageCode: locale, voiceName: currentTranslationCode === 'en' ? 'Brian' : '' },
+          ...(base.remoteVoices || {})
+        }
+      };
     }
 
     function getPreferredTranslationLocale() {
       const config = getTranslationTtsConfig();
       return config.locale || currentTranslationCode || 'en-GB';
+    }
+
+    function getTranslationAudioLabel() {
+      return currentTranslationId === 'ar' ? 'Arabic' : getDisplayLanguageName();
+    }
+
+    function isEnglishHumanLikeRemoteRequired() {
+      return currentTranslationId !== 'ar' && String(currentTranslationCode || '').toLowerCase() === 'en';
+    }
+
+    function getStrictEnglishRemoteMessage() {
+      return 'English translation audio needs an approved male voice on this device or a connected neural voice endpoint.';
+    }
+
+    function isLikelyFemaleTranslationVoice(voice) {
+      if (!voice) return false;
+      const name = String(voice.name || '').toLowerCase();
+      const femaleTokens = ['female', 'woman', 'zira', 'hazel', 'aria', 'susan', 'luna', 'sara', 'sonia', 'amy', 'emma', 'ava', 'allison', 'victoria', 'veena', 'moira', 'karen'];
+      return femaleTokens.some((token) => name.includes(token));
+    }
+
+    function isLikelyMaleTranslationVoice(voice) {
+      if (!voice) return false;
+      const name = String(voice.name || '').toLowerCase();
+      const maleTokens = ['male', 'man', 'david', 'ryan', 'ollie', 'thomas', 'oliver', 'arthur', 'noah', 'ethan', 'alfie', 'daniel', 'guy', 'alex', 'fred', 'jorge', 'juan', 'sergei', 'aaron', 'andrew', 'christopher', 'davis', 'brian', 'joey', 'matthew', 'reed', 'nathan', 'martin', 'paul', 'roger', 'sam', 'george', 'james'];
+      return maleTokens.some((token) => name.includes(token));
     }
 
     function isApprovedMaleTranslationVoice(voice) {
@@ -2719,58 +2849,85 @@
       const locale = String(getPreferredTranslationLocale() || 'en-GB').toLowerCase();
       const languageCode = String(currentTranslationCode || 'en').toLowerCase();
       const preferredNames = Array.isArray(getTranslationTtsConfig().preferredNames) ? getTranslationTtsConfig().preferredNames : [];
-      const femaleTokens = ['female', 'woman', 'zira', 'hazel', 'aria', 'susan', 'luna', 'sara', 'sonia', 'amy', 'emma'];
-      const maleTokens = ['male', 'man', 'david', 'ryan', 'ollie', 'thomas', 'oliver', 'arthur', 'noah', 'ethan', 'alfie', 'daniel', 'guy'];
       const matchesLocale = lang === locale || lang.startsWith(`${languageCode}-`) || lang.startsWith(languageCode);
       const matchesPreferred = preferredNames.some((token) => name.includes(String(token).toLowerCase()));
-      const looksFemale = femaleTokens.some((token) => name.includes(token));
-      const looksMale = maleTokens.some((token) => name.includes(token));
-      return matchesLocale && !looksFemale && (matchesPreferred || looksMale);
+      return matchesLocale && !isLikelyFemaleTranslationVoice(voice) && (matchesPreferred || isLikelyMaleTranslationVoice(voice));
     }
 
     async function ensureTranslationVoices() {
       if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return [];
-      const initial = window.speechSynthesis.getVoices();
-      if (initial && initial.length) {
+
+      const readVoices = () => {
+        try {
+          return window.speechSynthesis.getVoices() || [];
+        } catch {
+          return [];
+        }
+      };
+
+      const immediate = readVoices();
+      if (immediate.length) {
         translationVoicesReady = true;
-        return initial;
+        return immediate;
       }
+
       return new Promise((resolve) => {
-        const timer = setTimeout(() => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
           translationVoicesReady = true;
-          resolve(window.speechSynthesis.getVoices());
-        }, 900);
-        window.speechSynthesis.onvoiceschanged = () => {
-          clearTimeout(timer);
-          translationVoicesReady = true;
-          resolve(window.speechSynthesis.getVoices());
+          window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
+          resolve(readVoices());
         };
+        const onVoicesChanged = () => {
+          const nextVoices = readVoices();
+          if (nextVoices.length) finish();
+        };
+
+        window.speechSynthesis.addEventListener('voiceschanged', onVoicesChanged);
+
+        [150, 450, 900, 1500].forEach((delay) => {
+          setTimeout(() => {
+            if (readVoices().length) finish();
+          }, delay);
+        });
+
+        setTimeout(finish, 1800);
       });
     }
 
     function selectPreferredTranslationVoice(voices) {
       if (!Array.isArray(voices) || !voices.length) return null;
-      const approved = voices.filter((voice) => isApprovedMaleTranslationVoice(voice));
-      if (!approved.length) return null;
-      const config = getTranslationTtsConfig();
-      const locale = String(config.locale || currentTranslationCode || 'en-GB').toLowerCase();
-      const preferredNames = Array.isArray(config.preferredNames) ? config.preferredNames : [];
-      const scored = approved.map((voice) => {
-        const lang = String(voice.lang || '').toLowerCase();
-        const name = String(voice.name || '');
-        let score = 0;
-        if (lang === locale) score += 50;
-        preferredNames.forEach((token) => {
-          if (name.toLowerCase().includes(String(token).toLowerCase())) score += 18;
-        });
-        if (/neural|natural|premium|enhanced|online|google|microsoft/i.test(name)) score += 8;
-        return { voice, score };
-      }).sort((a, b) => b.score - a.score);
-      return scored[0] ? scored[0].voice : null;
+      const rankedApproved = voices
+        .filter((voice) => isApprovedMaleTranslationVoice(voice))
+        .map((voice) => {
+          const lang = String(voice.lang || '').toLowerCase();
+          const name = String(voice.name || '').toLowerCase();
+          const locale = String(getPreferredTranslationLocale() || '').toLowerCase();
+          const languageCode = String(currentTranslationCode || 'en').toLowerCase();
+          let score = 0;
+          if (lang === locale) score += 60;
+          else if (lang.startsWith(`${languageCode}-`) || lang.startsWith(languageCode)) score += 34;
+          if (/google|microsoft|samsung|enhanced|premium|neural|natural|online/i.test(name)) score += 10;
+          if (isLikelyMaleTranslationVoice(voice)) score += 26;
+          return { voice, score };
+        })
+        .sort((a, b) => b.score - a.score);
+      return rankedApproved.length ? rankedApproved[0].voice : null;
+    }
+
+    function getTranslationRemoteProviders() {
+      const orderedKeys = isEnglishHumanLikeRemoteRequired()
+        ? ['custom', 'azure', 'google', 'polly']
+        : translationRemoteProviderOrder;
+      return orderedKeys
+        .map((providerKey) => ({ providerKey, ...(translationRemoteProviders[providerKey] || {}) }))
+        .filter((provider) => Boolean(String(provider.endpoint || '').trim()));
     }
 
     function hasGoogleTranslationTtsEndpoint() {
-      return Boolean(String(googleTranslationTtsConfig.endpoint || '').trim());
+      return getTranslationRemoteProviders().length > 0;
     }
 
     function isMobileAppleOrAndroid() {
@@ -2778,8 +2935,42 @@
       return /iphone|ipad|ipod|android/i.test(ua);
     }
 
-    function buildTranslationAudioCacheKey(ayah) {
-      return `${surahNumber}:${ayah}:${currentTranslationCode}:${currentTranslationId}`;
+    function buildTranslationAudioCacheKey(ayah, providerKey = 'local') {
+      return `${providerKey}:${surahNumber}:${ayah}:${currentTranslationCode}:${currentTranslationId}`;
+    }
+
+    function getTranslationRemoteVoiceProfile(providerKey) {
+      const config = getTranslationTtsConfig();
+      const remoteVoices = config.remoteVoices || {};
+      const preset = remoteVoices[providerKey] || {};
+      const locale = preset.languageCode || config.locale || currentTranslationCode || 'en';
+      const baseProfile = {
+        languageCode: locale,
+        voiceName: preset.voiceName || '',
+        gender: 'MALE',
+        preferredNames: Array.isArray(config.preferredNames) ? config.preferredNames : [],
+        quality: isEnglishHumanLikeRemoteRequired() ? 'neural' : 'standard',
+        humanLike: isEnglishHumanLikeRemoteRequired(),
+        voiceCandidates: []
+      };
+
+      if (!isEnglishHumanLikeRemoteRequired()) {
+        return baseProfile;
+      }
+
+      const englishCandidatesByProvider = {
+        custom: ['en-GB-RyanNeural', 'en-GB-Neural2-D', 'en-GB-News-G', 'en-US-AndrewNeural', 'en-US-ChristopherNeural'],
+        azure: ['en-GB-RyanNeural', 'en-US-AndrewNeural', 'en-US-ChristopherNeural', 'en-US-GuyNeural'],
+        google: ['en-GB-Neural2-D', 'en-GB-News-G', 'en-US-Neural2-D', 'en-US-Studio-M'],
+        polly: ['Matthew', 'Joey', 'Brian']
+      };
+
+      const candidates = englishCandidatesByProvider[providerKey] || [];
+      return {
+        ...baseProfile,
+        voiceName: baseProfile.voiceName || candidates[0] || '',
+        voiceCandidates: candidates
+      };
     }
 
     async function responseToTranslationAudioSource(response) {
@@ -2796,28 +2987,43 @@
       return null;
     }
 
-    async function fetchGoogleTranslationAudioSource(ayah, text) {
-      if (!hasGoogleTranslationTtsEndpoint()) return null;
-      const cacheKey = buildTranslationAudioCacheKey(ayah);
+    async function fetchProviderTranslationAudioSource(providerKey, ayah, text) {
+      const provider = translationRemoteProviders[providerKey];
+      if (!provider || !String(provider.endpoint || '').trim()) return null;
+      const cacheKey = buildTranslationAudioCacheKey(ayah, providerKey);
       if (translationAudioCache.has(cacheKey)) return translationAudioCache.get(cacheKey);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), Number(googleTranslationTtsConfig.requestTimeoutMs || 15000));
+      const timeoutId = setTimeout(() => controller.abort(), Number(provider.requestTimeoutMs || 15000));
       try {
         const headers = { 'Content-Type': 'application/json' };
-        if (googleTranslationTtsConfig.authHeaderName && googleTranslationTtsConfig.authHeaderValue) {
-          headers[googleTranslationTtsConfig.authHeaderName] = googleTranslationTtsConfig.authHeaderValue;
+        if (provider.authHeaderName && provider.authHeaderValue) {
+          headers[provider.authHeaderName] = provider.authHeaderValue;
         }
-        const response = await fetch(googleTranslationTtsConfig.endpoint, {
+        const voiceProfile = getTranslationRemoteVoiceProfile(providerKey);
+        const response = await fetch(provider.endpoint, {
           method: 'POST',
           headers,
           signal: controller.signal,
           body: JSON.stringify({
+            provider: providerKey,
             surahNumber,
             ayah,
             text,
-            languageCode: googleTranslationTtsConfig.languageCode,
-            voiceName: googleTranslationTtsConfig.voiceName,
-            gender: 'MALE'
+            translationId: currentTranslationId,
+            translationCode: currentTranslationCode,
+            translationName: currentTranslationName,
+            locale: getPreferredTranslationLocale(),
+            languageCode: voiceProfile.languageCode,
+            voiceName: voiceProfile.voiceName,
+            voiceCandidates: Array.isArray(voiceProfile.voiceCandidates) ? voiceProfile.voiceCandidates : [],
+            gender: 'MALE',
+            requiredGender: 'MALE',
+            forbidFemale: true,
+            preferredNames: voiceProfile.preferredNames,
+            quality: voiceProfile.quality,
+            humanLike: Boolean(voiceProfile.humanLike),
+            requireHumanLike: Boolean(voiceProfile.humanLike),
+            requireRemote: isEnglishHumanLikeRemoteRequired()
           })
         });
         if (!response.ok) return null;
@@ -2825,11 +3031,20 @@
         if (source) translationAudioCache.set(cacheKey, source);
         return source;
       } catch (error) {
-        console.warn('Google translation audio could not be fetched.', error);
+        console.warn(`${providerKey} translation audio could not be fetched.`, error);
         return null;
       } finally {
         clearTimeout(timeoutId);
       }
+    }
+
+    async function fetchGoogleTranslationAudioSource(ayah, text) {
+      const providers = getTranslationRemoteProviders();
+      for (const provider of providers) {
+        const source = await fetchProviderTranslationAudioSource(provider.providerKey, ayah, text);
+        if (source) return source;
+      }
+      return null;
     }
 
     function stopTranslationFlow(resetMode = false) {
@@ -2847,8 +3062,6 @@
         translationSpeechAudio = null;
       }
       translationSpeechUtterance = null;
-      translationPlaybackState = 'idle';
-      stopTranslationMiniMonitor();
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch {}
       }
@@ -2856,7 +3069,7 @@
         translationTapMode = 'off';
         translationStartVerse = 1;
       }
-      updateTranslationMini('Translation audio ready.', false);
+      updateTranslationMini('Ready', false);
     }
 
     function getVerseTranslationSpeechText(ayah) {
@@ -2865,12 +3078,14 @@
 
     async function speakVerseTranslation(ayah, token) {
       if (!isEnglishTranslationVoiceEnabled()) {
-        showBookmarkMessage('Translation audio is available in English only.');
+        showBookmarkMessage(getTranslationAudioAvailabilityMessage());
         return false;
       }
+      await primeTranslationAudio();
       const text = getVerseTranslationSpeechText(ayah);
+      const audioLabel = getTranslationAudioLabel();
       if (!text) {
-        showBookmarkMessage(`Translation is unavailable for verse ${ayah}.`);
+        showBookmarkMessage(`${audioLabel} translation is unavailable for verse ${ayah}.`);
         return false;
       }
 
@@ -2879,64 +3094,60 @@
       if (remoteSource) {
         return new Promise((resolve) => {
           const audio = new Audio(remoteSource);
+          audio.preload = 'auto';
+          audio.playsInline = true;
           translationSpeechAudio = audio;
           translationSpeechUtterance = null;
           translationSpeechActive = true;
-          updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
+          updateTranslationMini(`Playing ${audioLabel} translation · Verse ${ayah}`, true);
           const finish = (ok) => {
             if (translationSpeechAudio === audio) translationSpeechAudio = null;
             translationSpeechActive = false;
             updateTranslationMini(
-              ok ? (translationContinueActive ? 'Continuing English translation...' : 'Ready') : 'Translation audio unavailable',
+              ok ? (translationContinueActive ? `Continuing ${audioLabel} translation...` : 'Ready') : 'Translation audio unavailable',
               translationContinueActive
             );
             resolve(ok);
           };
-          audio.onplay = () => {
-            updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
-            syncTranslationMiniToggleLabel();
-          };
-          audio.onpause = () => {
-            updateTranslationMini('Translation audio paused', true);
-            syncTranslationMiniToggleLabel();
-          };
+          audio.onplay = () => updateTranslationMini(`Playing ${audioLabel} translation · Verse ${ayah}`, true);
+          audio.onpause = () => updateTranslationMini(`${audioLabel} translation paused`, true);
           audio.onended = () => finish(true);
           audio.onerror = () => finish(false);
           audio.play().catch(() => finish(false));
         });
       }
 
-      if (isMobileAppleOrAndroid()) {
-        showBookmarkMessage('Google male English translation voice is not connected on this device yet.');
-        return false;
-      }
-
       if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-        showBookmarkMessage('Translation voice is unavailable on this device.');
+        showBookmarkMessage('A male translation voice is unavailable on this device.');
         return false;
       }
-      const voices = await ensureTranslationVoices();
+      let voices = await ensureTranslationVoices();
+      if ((!voices || !voices.length) && isMobileAppleOrAndroid()) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+        voices = await ensureTranslationVoices();
+      }
       if (token !== translationSequenceId) return false;
       const preferredVoice = selectPreferredTranslationVoice(voices);
       if (!preferredVoice) {
-        showBookmarkMessage('No approved male English voice is available on this device.');
+        showBookmarkMessage(`No approved male ${audioLabel} voice is available on this device.`);
         translationSpeechActive = false;
         return false;
       }
+
       const utterance = new SpeechSynthesisUtterance(text);
       translationSpeechUtterance = utterance;
       utterance.lang = getPreferredTranslationLocale();
       utterance.voice = preferredVoice;
-      utterance.rate = 0.95;
+      utterance.rate = isMobileAppleOrAndroid() ? 0.92 : 0.95;
       utterance.pitch = 0.92;
       translationSpeechActive = true;
-      updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
+      updateTranslationMini(`Playing ${audioLabel} translation · Verse ${ayah}`, true);
       return new Promise((resolve) => {
-        utterance.onstart = () => updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
+        utterance.onstart = () => updateTranslationMini(`Playing ${audioLabel} translation · Verse ${ayah}`, true);
         utterance.onend = () => {
           translationSpeechUtterance = null;
           translationSpeechActive = false;
-          updateTranslationMini(translationContinueActive ? 'Continuing English translation...' : 'Ready', translationContinueActive);
+          updateTranslationMini(translationContinueActive ? `Continuing ${audioLabel} translation...` : 'Ready', translationContinueActive);
           resolve(true);
         };
         utterance.onerror = () => {
@@ -2947,6 +3158,7 @@
         };
         try {
           window.speechSynthesis.cancel();
+          window.speechSynthesis.resume();
           window.speechSynthesis.speak(utterance);
         } catch {
           translationSpeechUtterance = null;
@@ -2963,17 +3175,18 @@
         const audio = new Audio(verseAudio.url);
         translationBridgeAudio = audio;
         audio.preload = 'auto';
-        updateTranslationMini(`Arabic verse ${ayah}, then English translation`, true);
+        audio.playsInline = true;
+        updateTranslationMini(`Arabic verse ${ayah}, then ${getTranslationAudioLabel()} translation`, true);
         const finish = (didPlay) => {
           audio.onplay = null;
           audio.onended = null;
           audio.onerror = null;
           audio.onpause = null;
           if (translationBridgeAudio === audio) translationBridgeAudio = null;
-          updateTranslationMini(didPlay && translationContinueActive ? 'Continuing with English translation...' : 'Ready', translationContinueActive);
+          updateTranslationMini(didPlay && translationContinueActive ? `Continuing with ${getTranslationAudioLabel()} translation...` : 'Ready', translationContinueActive);
           resolve(didPlay);
         };
-        audio.onplay = () => updateTranslationMini(`Arabic verse ${ayah}, then English translation`, true);
+        audio.onplay = () => updateTranslationMini(`Arabic verse ${ayah}, then ${getTranslationAudioLabel()} translation`, true);
         audio.onpause = () => updateTranslationMini('Arabic playback paused', true);
         audio.onended = () => finish(true);
         audio.onerror = () => finish(false);
@@ -2983,15 +3196,16 @@
 
     async function runTranslationFlow(startAyah, mode = 'translation', continueAll = false) {
       if (!isEnglishTranslationVoiceEnabled()) {
-        showBookmarkMessage('Translation audio is available in English only.');
+        showBookmarkMessage(getTranslationAudioAvailabilityMessage());
         return;
       }
       const safeAyah = Number(startAyah);
       if (!safeAyah || safeAyah < 1 || safeAyah > totalVerses) return;
       translationStartVerse = safeAyah;
       const firstText = getVerseTranslationSpeechText(safeAyah);
+      const audioLabel = getTranslationAudioLabel();
       if (!firstText) {
-        showBookmarkMessage(`Translation is unavailable for verse ${safeAyah}.`);
+        showBookmarkMessage(`${audioLabel} translation is unavailable for verse ${safeAyah}.`);
         return;
       }
       stopTranslationFlow(false);
@@ -3000,29 +3214,28 @@
       translationTapMode = mode;
       translationContinueActive = Boolean(continueAll);
       const token = translationSequenceId;
-      translationPlaybackState = 'playing';
       hidePrompt();
       setActiveTab('read');
       showBookmarkMessage(
         continueAll
           ? (mode === 'translation'
-              ? `English translation will continue from verse ${safeAyah} to the end.`
-              : `Arabic first, then English translation will continue from verse ${safeAyah} to the end.`)
-          : 'Arabic first, then English translation for this verse.'
+              ? `${audioLabel} translation will continue from verse ${safeAyah} to the end.`
+              : `Arabic first, then ${audioLabel} translation will continue from verse ${safeAyah} to the end.`)
+          : `${audioLabel} translation will play for this verse.`
       );
       updateTranslationMini(
         continueAll
-          ? (mode === 'translation' ? `Playing English translation from verse ${safeAyah} to the end` : `Continuing from verse ${safeAyah}`)
+          ? (mode === 'translation' ? `Playing ${audioLabel} translation from verse ${safeAyah} to the end` : `Continuing ${audioLabel} translation from verse ${safeAyah}`)
           : mode === 'with-arabic'
-            ? 'Arabic first, then English translation'
-            : 'Playing English translation'
+            ? `Arabic first, then ${audioLabel} translation`
+            : `Playing ${audioLabel} translation`
       );
 
       for (let ayah = safeAyah; ayah <= totalVerses; ayah += 1) {
         if (token !== translationSequenceId) return;
         const verseText = getVerseTranslationSpeechText(ayah);
         if (!verseText) {
-          if (!continueAll) showBookmarkMessage(`Translation is unavailable for verse ${ayah}.`);
+          if (!continueAll) showBookmarkMessage(`${audioLabel} translation is unavailable for verse ${ayah}.`);
           continue;
         }
         highlightVerseByNumber(ayah, true);
@@ -3039,7 +3252,7 @@
         const spoke = await speakVerseTranslation(ayah, token);
         if (token !== translationSequenceId) return;
         if (!spoke) {
-          showBookmarkMessage(`Translation voice could not be played for verse ${ayah}.`);
+          showBookmarkMessage(`${audioLabel} translation voice could not be played for verse ${ayah}.`);
           stopTranslationFlow(true);
           break;
         }
@@ -3048,22 +3261,21 @@
 
       if (token === translationSequenceId) {
         translationContinueActive = false;
-        translationPlaybackState = 'idle';
         clearAllHighlights();
-        updateTranslationMini('Translation audio ready.', false);
+        updateTranslationMini('Ready', false);
         if (continueAll) showBookmarkMessage('Translation sequence finished.');
       }
     }
 
     function showTranslationAudioPrompt(ayah) {
       if (!isEnglishTranslationVoiceEnabled()) {
-        showBookmarkMessage('Translation audio is available in English only.');
+        showBookmarkMessage(getTranslationAudioAvailabilityMessage());
         return;
       }
       const safeAyah = Number(ayah);
       showPrompt(
         `Translation audio · Verse ${safeAyah}`,
-        'Start translation from this verse. Use the top Play/Pause and Beginning controls while it is active.',
+        'Start English translation audio from this verse. Use the top Play/Pause and Beginning controls while it is active.',
         [
           {
             label: 'Play',
@@ -3086,18 +3298,19 @@
 
     function showPlayVersePrompt(ayah) {
       const safeAyah = Number(ayah);
-      showPrompt(
-        `Play verse · Verse ${safeAyah}`,
-        'Choose verse audio or English translation audio for this verse.',
-        [
-          {
-            label: 'Play verse',
-            primary: true,
-            onClick: async () => {
-              hidePrompt();
-              await playVerseTajweed(safeAyah, 'verse');
-            }
-          },
+      const actions = [
+        {
+          label: 'Play verse',
+          primary: true,
+          onClick: async () => {
+            hidePrompt();
+            await playVerseTajweed(safeAyah, 'verse');
+          }
+        }
+      ];
+
+      if (isEnglishTranslationVoiceEnabled()) {
+        actions.push(
           {
             label: 'Play translation audio',
             primary: false,
@@ -3107,13 +3320,22 @@
             label: 'With Arabic',
             primary: false,
             onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', true); }
-          },
-          {
-            label: 'Clear',
-            primary: false,
-            onClick: () => hidePrompt()
           }
-        ]
+        );
+      }
+
+      actions.push({
+        label: 'Clear',
+        primary: false,
+        onClick: () => hidePrompt()
+      });
+
+      showPrompt(
+        `Play verse · Verse ${safeAyah}`,
+        isEnglishTranslationVoiceEnabled()
+          ? 'Choose verse audio or English translation audio for this verse.'
+          : 'Choose verse audio for this verse.',
+        actions
       );
     }
 
@@ -3503,9 +3725,9 @@ ${message}` : '';
     }
 
     function persistReflectionDraft() {
-      localStorage.setItem(reflectionDraftStorageKey, reflectionDraft.value || '');
-      localStorage.setItem(reflectionNameStorageKey, reflectionName.value || '');
-      localStorage.setItem(reflectionEmailStorageKey, reflectionEmail.value || '');
+      safeStorageSet('localStorage', reflectionDraftStorageKey, reflectionDraft.value || '');
+      safeStorageSet('localStorage', reflectionNameStorageKey, reflectionName.value || '');
+      safeStorageSet('localStorage', reflectionEmailStorageKey, reflectionEmail.value || '');
     }
 
     function isValidEmail(value) {
@@ -4077,9 +4299,9 @@ ${getVerseUrl(ayah)}`,
 
         reflectionFeedback.classList.add('active');
         reflectionFeedback.textContent = 'Reflection sent. Thank you for sharing your thoughts with us.';
-        localStorage.removeItem(reflectionDraftStorageKey);
-        localStorage.removeItem(reflectionNameStorageKey);
-        localStorage.removeItem(reflectionEmailStorageKey);
+        safeStorageRemove('localStorage', reflectionDraftStorageKey);
+        safeStorageRemove('localStorage', reflectionNameStorageKey);
+        safeStorageRemove('localStorage', reflectionEmailStorageKey);
         reflectionName.value = '';
         reflectionEmail.value = '';
         reflectionDraft.value = '';
@@ -4360,124 +4582,80 @@ ${getVerseUrl(ayah)}`,
       tajweedMiniContinueAll.style.display = tajweedContinueAllActive ? 'none' : 'inline-flex';
     }
 
-    function getTranslationPlaybackMode() {
-      if (translationBridgeAudio && !translationBridgeAudio.ended) {
-        return translationBridgeAudio.paused ? 'paused' : 'playing';
-      }
-      if (translationSpeechAudio && !translationSpeechAudio.ended) {
-        return translationSpeechAudio.paused ? 'paused' : 'playing';
-      }
-      if ('speechSynthesis' in window && translationSpeechUtterance) {
-        if (window.speechSynthesis.speaking) {
-          return window.speechSynthesis.paused ? 'paused' : 'playing';
-        }
-        if (window.speechSynthesis.paused) {
-          return 'paused';
-        }
-      }
-      return translationPlaybackState || 'idle';
-    }
-
     function isTranslationPlaybackPaused() {
-      return getTranslationPlaybackMode() !== 'playing';
-    }
-
-    function syncTranslationMiniToggleLabel() {
-      if (!translationMiniToggle) return;
-      translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
-    }
-
-    function stopTranslationMiniMonitor() {
-      if (translationMiniMonitor) {
-        clearInterval(translationMiniMonitor);
-        translationMiniMonitor = null;
+      if (translationBridgeAudio) return translationBridgeAudio.paused;
+      if (translationSpeechAudio) return translationSpeechAudio.paused;
+      if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
+        return window.speechSynthesis.paused;
       }
+      return !translationSpeechActive;
     }
 
-    function startTranslationMiniMonitor() {
-      stopTranslationMiniMonitor();
-      translationMiniMonitor = setInterval(() => {
-        syncTranslationMiniToggleLabel();
-      }, 180);
-    }
-
-    function updateTranslationMini(text = 'Translation audio ready.', forceVisible = false) {
-      if (!translationMini) return;
-      const visible = isEnglishTranslationVoiceEnabled() && (
-        forceVisible
-        || Boolean(translationBridgeAudio)
-        || Boolean(translationSpeechAudio)
-        || Boolean(translationSpeechUtterance)
+    function hasTranslationPlaybackSession() {
+      return Boolean(
+        translationBridgeAudio
+        || translationSpeechAudio
+        || translationSpeechUtterance
         || translationSpeechActive
         || translationContinueActive
         || translationTapMode !== 'off'
-        || getTranslationPlaybackMode() !== 'idle'
       );
+    }
+
+    function getTranslationMiniToggleLabel() {
+      return hasTranslationPlaybackSession() && !isTranslationPlaybackPaused() ? 'Pause' : 'Play';
+    }
+
+    function updateTranslationMini(text = 'Ready', forceVisible = false) {
+      if (!translationMini) return;
+      const visible = isEnglishTranslationVoiceEnabled() && (forceVisible || hasTranslationPlaybackSession());
+      translationMini.style.display = visible ? 'inline-flex' : 'none';
       translationMini.classList.toggle('active', visible);
       if (translationMiniText) {
         translationMiniText.textContent = visible ? text : 'Translation audio ready.';
       }
       if (translationMiniToggle) {
         translationMiniToggle.disabled = !visible;
-        syncTranslationMiniToggleLabel();
+        translationMiniToggle.textContent = getTranslationMiniToggleLabel();
       }
       if (translationMiniBeginning) {
         translationMiniBeginning.disabled = !visible;
       }
-      if (visible) startTranslationMiniMonitor();
-      else stopTranslationMiniMonitor();
     }
 
     async function toggleTranslationMiniPlayback() {
-      if (translationBridgeAudio && !translationBridgeAudio.ended) {
+      const audioLabel = getTranslationAudioLabel();
+      if (translationBridgeAudio) {
         if (translationBridgeAudio.paused) {
           await translationBridgeAudio.play();
-          translationPlaybackState = 'playing';
           updateTranslationMini('Arabic playback resumed', true);
         } else {
           translationBridgeAudio.pause();
-          translationPlaybackState = 'paused';
           updateTranslationMini('Arabic playback paused', true);
         }
-        syncTranslationMiniToggleLabel();
         return;
       }
-
-      if (translationSpeechAudio && !translationSpeechAudio.ended) {
+      if (translationSpeechAudio) {
         if (translationSpeechAudio.paused) {
           await translationSpeechAudio.play();
-          translationPlaybackState = 'playing';
-          updateTranslationMini('English translation resumed', true);
+          updateTranslationMini(`${audioLabel} translation resumed`, true);
         } else {
           translationSpeechAudio.pause();
-          translationPlaybackState = 'paused';
-          updateTranslationMini('English translation paused', true);
+          updateTranslationMini(`${audioLabel} translation paused`, true);
         }
-        syncTranslationMiniToggleLabel();
         return;
       }
-
-      if ('speechSynthesis' in window && translationSpeechUtterance) {
-        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-          window.speechSynthesis.pause();
-          translationPlaybackState = 'paused';
-          updateTranslationMini('English translation paused', true);
-          syncTranslationMiniToggleLabel();
-          return;
-        }
+      if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
         if (window.speechSynthesis.paused) {
           window.speechSynthesis.resume();
-          translationPlaybackState = 'playing';
-          updateTranslationMini('English translation resumed', true);
-          syncTranslationMiniToggleLabel();
-          return;
+          updateTranslationMini(`${audioLabel} translation resumed`, true);
+        } else {
+          window.speechSynthesis.pause();
+          updateTranslationMini(`${audioLabel} translation paused`, true);
         }
+        return;
       }
-
       if (translationTapMode !== 'off') {
-        translationPlaybackState = 'playing';
-        updateTranslationMini('Translation audio starting...', true);
-        syncTranslationMiniToggleLabel();
         await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode, true);
       }
     }
@@ -4730,7 +4908,7 @@ ${getVerseUrl(ayah)}`,
     }
 
     function goToNextSurahWithRecitation() {
-      sessionStorage.setItem(autoplaySessionKey, '1');
+      safeStorageSet('sessionStorage', autoplaySessionKey, '1');
       window.location.href = `${nextSurahFile}?reciter=${encodeURIComponent(reciterSelect.value)}&view=synced&autoplay=1`;
     }
 
@@ -4814,7 +4992,7 @@ ${getVerseUrl(ayah)}`,
         document.documentElement.removeAttribute('data-theme');
         themeToggle.textContent = 'Dark';
       }
-      localStorage.setItem('site-theme', theme);
+      safeStorageSet('localStorage', 'site-theme', theme);
     }
 
     function stripEmbeddedVerseMarkers(text) {
@@ -5197,9 +5375,9 @@ ${getVerseUrl(ayah)}`,
 
     async function loadSurah() {
       const restoreReflectionDrafts = () => {
-        const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
-        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
-        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
+        const savedReflectionDraft = safeStorageGet('localStorage', reflectionDraftStorageKey);
+        const savedReflectionName = safeStorageGet('localStorage', reflectionNameStorageKey);
+        const savedReflectionEmail = safeStorageGet('localStorage', reflectionEmailStorageKey);
         if (savedReflectionDraft !== null) reflectionDraft.value = savedReflectionDraft;
         if (savedReflectionName !== null) reflectionName.value = savedReflectionName;
         if (savedReflectionEmail !== null) reflectionEmail.value = savedReflectionEmail;
@@ -5254,7 +5432,7 @@ ${getVerseUrl(ayah)}`,
         audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
 
         if (!apiDegraded && shouldAutoplay) {
-          sessionStorage.removeItem(autoplaySessionKey);
+          safeStorageRemove('sessionStorage', autoplaySessionKey);
           await loadSelectedAudio();
 
           const wantsSynced = autoplayView === 'synced';
@@ -5477,26 +5655,22 @@ ${getVerseUrl(ayah)}`,
     });
     tajweedMiniStop.addEventListener('click', () => stopTajweedPlayback(true));
 
-    if (translationMiniToggle) {
-      translationMiniToggle.addEventListener('click', async () => {
-        try {
-          await toggleTranslationMiniPlayback();
-        } catch {
-          showBookmarkMessage('Translation audio could not be changed right now.');
-        }
-      });
-    }
+    translationMiniToggle.addEventListener('click', async () => {
+      try {
+        await toggleTranslationMiniPlayback();
+      } catch {
+        showBookmarkMessage('Translation audio could not be changed right now.');
+      }
+    });
 
-    if (translationMiniBeginning) {
-      translationMiniBeginning.addEventListener('click', async () => {
-        if (translationTapMode === 'off') return;
-        try {
-          await runTranslationFlow(1, translationTapMode, true);
-        } catch {
-          showBookmarkMessage('Translation audio could not start from the beginning right now.');
-        }
-      });
-    }
+    translationMiniBeginning.addEventListener('click', async () => {
+      if (translationTapMode === 'off') return;
+      try {
+        await runTranslationFlow(1, translationTapMode, true);
+      } catch {
+        showBookmarkMessage('Translation audio could not start from the beginning right now.');
+      }
+    });
 
     introAudio.addEventListener('play', () => {
       introBismillahPlaying = true;
@@ -5608,27 +5782,25 @@ ${getVerseUrl(ayah)}`,
       if (!event.target.closest('.verse-toolbar')) closeAllMenus();
     });
 
-    async function initialiseSurahPage() {
-      try {
-        const savedTheme = localStorage.getItem('site-theme');
-        applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
-        buildVerseSelector();
-        updateLanguagesPanelText();
-        updateModeLabels();
-        setActiveTab('read');
-        updateBookmarkUI();
-        updateSyncBarState();
-        updateShareBuilder();
-        await loadSurah();
-      } catch (error) {
-        console.error('Initialisation failed.', error);
-        loadingState.style.display = 'none';
-        errorState.style.display = 'block';
-        errorState.textContent = 'The page could not be loaded right now. Please refresh and try again.';
-      }
-    }
+    ['touchstart', 'pointerdown', 'click', 'keydown'].forEach((eventName) => {
+      window.addEventListener(eventName, markTranslationAudioPrimed, { passive: true });
+    });
 
-    initialiseSurahPage();
+    const savedTheme = safeStorageGet('localStorage', 'site-theme');
+    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+    buildVerseSelector();
+    updateLanguagesPanelText();
+    updateModeLabels();
+    setActiveTab('read');
+    updateBookmarkUI();
+    updateSyncBarState();
+    updateShareBuilder();
+    loadSurah().catch((error) => {
+      console.error('Initial load failed.', error);
+      loadingState.style.display = 'none';
+      errorState.style.display = 'block';
+      errorState.textContent = 'The surah could not be loaded. Please refresh the page and try again.';
+    });
   </script>
 </body>
 </html>
