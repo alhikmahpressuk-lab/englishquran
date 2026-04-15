@@ -2854,7 +2854,7 @@
         translationTapMode = 'off';
         translationStartVerse = 1;
       }
-      updateTranslationMini('Ready', false);
+      updateTranslationMini('Translation audio ready.', false);
     }
 
     function getVerseTranslationSpeechText(ayah) {
@@ -2998,6 +2998,7 @@
       translationTapMode = mode;
       translationContinueActive = Boolean(continueAll);
       const token = translationSequenceId;
+      translationPlaybackState = 'playing';
       hidePrompt();
       setActiveTab('read');
       showBookmarkMessage(
@@ -3045,8 +3046,9 @@
 
       if (token === translationSequenceId) {
         translationContinueActive = false;
+        translationPlaybackState = 'idle';
         clearAllHighlights();
-        updateTranslationMini('Ready', false);
+        updateTranslationMini('Translation audio ready.', false);
         if (continueAll) showBookmarkMessage('Translation sequence finished.');
       }
     }
@@ -4371,7 +4373,7 @@ ${getVerseUrl(ayah)}`,
           return 'paused';
         }
       }
-      return translationPlaybackState;
+      return translationPlaybackState || 'idle';
     }
 
     function isTranslationPlaybackPaused() {
@@ -4380,15 +4382,10 @@ ${getVerseUrl(ayah)}`,
 
     function syncTranslationMiniToggleLabel() {
       if (!translationMiniToggle) return;
-      translationMiniToggle.textContent = getTranslationPlaybackMode() === 'playing' ? 'Pause' : 'Play';
+      translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
     }
 
-    function setTranslationPlaybackState(state, text = 'Translation audio ready.', forceVisible = false) {
-      translationPlaybackState = state;
-      updateTranslationMini(text, forceVisible || state !== 'idle');
-    }
-
-    function updateTranslationMini(text = 'Ready', forceVisible = false) {
+    function updateTranslationMini(text = 'Translation audio ready.', forceVisible = false) {
       if (!translationMini) return;
       const visible = isEnglishTranslationVoiceEnabled() && (
         forceVisible
@@ -4398,9 +4395,8 @@ ${getVerseUrl(ayah)}`,
         || translationSpeechActive
         || translationContinueActive
         || translationTapMode !== 'off'
-        || translationPlaybackState !== 'idle'
+        || getTranslationPlaybackMode() !== 'idle'
       );
-      translationMini.style.display = visible ? 'inline-flex' : 'none';
       translationMini.classList.toggle('active', visible);
       if (translationMiniText) {
         translationMiniText.textContent = visible ? text : 'Translation audio ready.';
@@ -4415,26 +4411,28 @@ ${getVerseUrl(ayah)}`,
     }
 
     async function toggleTranslationMiniPlayback() {
-      const playbackMode = getTranslationPlaybackMode();
-
       if (translationBridgeAudio && !translationBridgeAudio.ended) {
-        if (playbackMode === 'playing') {
-          translationBridgeAudio.pause();
-          setTranslationPlaybackState('paused', 'Arabic playback paused', true);
-        } else {
+        if (translationBridgeAudio.paused) {
           await translationBridgeAudio.play();
-          setTranslationPlaybackState('playing', 'Arabic playback resumed', true);
+          translationPlaybackState = 'playing';
+          updateTranslationMini('Arabic playback resumed', true);
+        } else {
+          translationBridgeAudio.pause();
+          translationPlaybackState = 'paused';
+          updateTranslationMini('Arabic playback paused', true);
         }
         return;
       }
 
       if (translationSpeechAudio && !translationSpeechAudio.ended) {
-        if (playbackMode === 'playing') {
-          translationSpeechAudio.pause();
-          setTranslationPlaybackState('paused', 'English translation paused', true);
-        } else {
+        if (translationSpeechAudio.paused) {
           await translationSpeechAudio.play();
-          setTranslationPlaybackState('playing', 'English translation resumed', true);
+          translationPlaybackState = 'playing';
+          updateTranslationMini('English translation resumed', true);
+        } else {
+          translationSpeechAudio.pause();
+          translationPlaybackState = 'paused';
+          updateTranslationMini('English translation paused', true);
         }
         return;
       }
@@ -4442,18 +4440,21 @@ ${getVerseUrl(ayah)}`,
       if ('speechSynthesis' in window && translationSpeechUtterance) {
         if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
           window.speechSynthesis.pause();
-          setTranslationPlaybackState('paused', 'English translation paused', true);
+          translationPlaybackState = 'paused';
+          updateTranslationMini('English translation paused', true);
           return;
         }
         if (window.speechSynthesis.paused) {
           window.speechSynthesis.resume();
-          setTranslationPlaybackState('playing', 'English translation resumed', true);
+          translationPlaybackState = 'playing';
+          updateTranslationMini('English translation resumed', true);
           return;
         }
       }
 
       if (translationTapMode !== 'off') {
-        setTranslationPlaybackState('playing', 'Translation audio starting...', true);
+        translationPlaybackState = 'playing';
+        updateTranslationMini('Translation audio starting...', true);
         await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode, true);
       }
     }
