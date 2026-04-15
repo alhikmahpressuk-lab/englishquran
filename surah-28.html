@@ -1273,7 +1273,7 @@
 
   <div class="sync-bar notranslate" id="translationMini" translate="no" aria-live="polite" style="top: 132px;">
     <span class="sync-bar-text" id="translationMiniText" translate="no">Translation audio ready.</span>
-    <button class="sync-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play/Pause</button>
+    <button class="sync-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play</button>
     <button class="sync-mini-btn" type="button" id="translationMiniBeginning" translate="no">Beginning</button>
   </div>
 
@@ -1839,6 +1839,7 @@
     let translationSpeechAudio = null;
     let translationSpeechUtterance = null;
     let translationSpeechActive = false;
+    let translationPlaybackState = 'idle';
     let translationVoicesReady = false;
     const googleTranslationTtsConfig = {
       endpoint: localStorage.getItem('teq-google-tts-endpoint') || '/api/google-tts',
@@ -2845,6 +2846,7 @@
         translationSpeechAudio = null;
       }
       translationSpeechUtterance = null;
+      translationPlaybackState = 'idle';
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch {}
       }
@@ -2888,8 +2890,14 @@
             );
             resolve(ok);
           };
-          audio.onplay = () => updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
-          audio.onpause = () => updateTranslationMini('Translation audio paused', true);
+          audio.onplay = () => {
+            updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
+            syncTranslationMiniToggleLabel();
+          };
+          audio.onpause = () => {
+            updateTranslationMini('Translation audio paused', true);
+            syncTranslationMiniToggleLabel();
+          };
           audio.onended = () => finish(true);
           audio.onerror = () => finish(false);
           audio.play().catch(() => finish(false));
@@ -4348,13 +4356,36 @@ ${getVerseUrl(ayah)}`,
       tajweedMiniContinueAll.style.display = tajweedContinueAllActive ? 'none' : 'inline-flex';
     }
 
-    function isTranslationPlaybackPaused() {
-      if (translationBridgeAudio) return translationBridgeAudio.paused;
-      if (translationSpeechAudio) return translationSpeechAudio.paused;
-      if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
-        return window.speechSynthesis.paused;
+    function getTranslationPlaybackMode() {
+      if (translationBridgeAudio && !translationBridgeAudio.ended) {
+        return translationBridgeAudio.paused ? 'paused' : 'playing';
       }
-      return !translationSpeechActive;
+      if (translationSpeechAudio && !translationSpeechAudio.ended) {
+        return translationSpeechAudio.paused ? 'paused' : 'playing';
+      }
+      if ('speechSynthesis' in window && translationSpeechUtterance) {
+        if (window.speechSynthesis.speaking) {
+          return window.speechSynthesis.paused ? 'paused' : 'playing';
+        }
+        if (window.speechSynthesis.paused) {
+          return 'paused';
+        }
+      }
+      return translationPlaybackState;
+    }
+
+    function isTranslationPlaybackPaused() {
+      return getTranslationPlaybackMode() !== 'playing';
+    }
+
+    function syncTranslationMiniToggleLabel() {
+      if (!translationMiniToggle) return;
+      translationMiniToggle.textContent = getTranslationPlaybackMode() === 'playing' ? 'Pause' : 'Play';
+    }
+
+    function setTranslationPlaybackState(state, text = 'Translation audio ready.', forceVisible = false) {
+      translationPlaybackState = state;
+      updateTranslationMini(text, forceVisible || state !== 'idle');
     }
 
     function updateTranslationMini(text = 'Ready', forceVisible = false) {
@@ -4367,6 +4398,7 @@ ${getVerseUrl(ayah)}`,
         || translationSpeechActive
         || translationContinueActive
         || translationTapMode !== 'off'
+        || translationPlaybackState !== 'idle'
       );
       translationMini.style.display = visible ? 'inline-flex' : 'none';
       translationMini.classList.toggle('active', visible);
@@ -4375,7 +4407,7 @@ ${getVerseUrl(ayah)}`,
       }
       if (translationMiniToggle) {
         translationMiniToggle.disabled = !visible;
-        translationMiniToggle.textContent = 'Play/Pause';
+        syncTranslationMiniToggleLabel();
       }
       if (translationMiniBeginning) {
         translationMiniBeginning.disabled = !visible;
@@ -4383,37 +4415,45 @@ ${getVerseUrl(ayah)}`,
     }
 
     async function toggleTranslationMiniPlayback() {
-      if (translationBridgeAudio) {
-        if (translationBridgeAudio.paused) {
-          await translationBridgeAudio.play();
-          updateTranslationMini('Arabic playback resumed', true);
-        } else {
+      const playbackMode = getTranslationPlaybackMode();
+
+      if (translationBridgeAudio && !translationBridgeAudio.ended) {
+        if (playbackMode === 'playing') {
           translationBridgeAudio.pause();
-          updateTranslationMini('Arabic playback paused', true);
-        }
-        return;
-      }
-      if (translationSpeechAudio) {
-        if (translationSpeechAudio.paused) {
-          await translationSpeechAudio.play();
-          updateTranslationMini('English translation resumed', true);
+          setTranslationPlaybackState('paused', 'Arabic playback paused', true);
         } else {
-          translationSpeechAudio.pause();
-          updateTranslationMini('English translation paused', true);
+          await translationBridgeAudio.play();
+          setTranslationPlaybackState('playing', 'Arabic playback resumed', true);
         }
         return;
       }
-      if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
+
+      if (translationSpeechAudio && !translationSpeechAudio.ended) {
+        if (playbackMode === 'playing') {
+          translationSpeechAudio.pause();
+          setTranslationPlaybackState('paused', 'English translation paused', true);
+        } else {
+          await translationSpeechAudio.play();
+          setTranslationPlaybackState('playing', 'English translation resumed', true);
+        }
+        return;
+      }
+
+      if ('speechSynthesis' in window && translationSpeechUtterance) {
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          window.speechSynthesis.pause();
+          setTranslationPlaybackState('paused', 'English translation paused', true);
+          return;
+        }
         if (window.speechSynthesis.paused) {
           window.speechSynthesis.resume();
-          updateTranslationMini('English translation resumed', true);
-        } else {
-          window.speechSynthesis.pause();
-          updateTranslationMini('English translation paused', true);
+          setTranslationPlaybackState('playing', 'English translation resumed', true);
+          return;
         }
-        return;
       }
+
       if (translationTapMode !== 'off') {
+        setTranslationPlaybackState('playing', 'Translation audio starting...', true);
         await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode, true);
       }
     }
