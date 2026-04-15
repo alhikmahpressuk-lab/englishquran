@@ -2710,30 +2710,70 @@
       return config.locale || currentTranslationCode || 'en-GB';
     }
 
+    function isLikelyFemaleTranslationVoice(voice) {
+      if (!voice) return false;
+      const name = String(voice.name || '').toLowerCase();
+      const femaleTokens = ['female', 'woman', 'zira', 'hazel', 'aria', 'susan', 'luna', 'sara', 'sonia', 'amy', 'emma', 'ava', 'allison', 'victoria', 'veena', 'moira', 'karen'];
+      return femaleTokens.some((token) => name.includes(token));
+    }
+
+    function isLikelyMaleTranslationVoice(voice) {
+      if (!voice) return false;
+      const name = String(voice.name || '').toLowerCase();
+      const maleTokens = ['male', 'man', 'david', 'ryan', 'ollie', 'thomas', 'oliver', 'arthur', 'noah', 'ethan', 'alfie', 'daniel', 'guy', 'alex', 'fred', 'jorge', 'juan', 'sergei', 'aaron'];
+      return maleTokens.some((token) => name.includes(token));
+    }
+
     function isApprovedMaleTranslationVoice(voice) {
       if (!voice) return false;
       const name = String(voice.name || '').toLowerCase();
       const lang = String(voice.lang || '').toLowerCase();
       const locale = String(getPreferredTranslationLocale() || 'en-GB').toLowerCase();
       const languageCode = String(currentTranslationCode || 'en').toLowerCase();
-      const preferredNames = Array.isArray(getTranslationTtsConfig().preferredNames) ? getTranslationTtsConfig().preferredNames : [];
-      const femaleTokens = ['female', 'woman', 'zira', 'hazel', 'aria', 'susan', 'luna', 'sara', 'sonia', 'amy', 'emma'];
-      const maleTokens = ['male', 'man', 'david', 'ryan', 'ollie', 'thomas', 'oliver', 'arthur', 'noah', 'ethan', 'alfie', 'daniel', 'guy'];
-      const matchesLocale = lang === locale || lang.startsWith(`${languageCode}-`) || lang.startsWith(languageCode);
-      const matchesPreferred = preferredNames.some((token) => name.includes(String(token).toLowerCase()));
-      const looksFemale = femaleTokens.some((token) => name.includes(token));
-      const looksMale = maleTokens.some((token) => name.includes(token));
-      return matchesLocale && !looksFemale && (matchesPreferred || looksMale);
+      const preferredNames = Array.isArray(getTranslationTtsConasync function ensureTranslationVoices() {
+      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return [];
+
+      const readVoices = () => {
+        try {
+          return window.speechSynthesis.getVoices() || [];
+        } catch {
+          return [];
+        }
+      };
+
+      const immediate = readVoices();
+      if (immediate.length) {
+        translationVoicesReady = true;
+        return immediate;
+      }
+
+      return new Promise((resolve) => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          translationVoicesReady = true;
+          window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
+          resolve(readVoices());
+        };
+        const onVoicesChanged = () => {
+          const nextVoices = readVoices();
+          if (nextVoices.length) finish();
+        };
+
+        window.speechSynthesis.addEventListener('voiceschanged', onVoicesChanged);
+
+        [150, 450, 900, 1500].forEach((delay) => {
+          setTimeout(() => {
+            if (readVoices().length) finish();
+          }, delay);
+        });
+
+        setTimeout(finish, 1800);
+      });
     }
 
-    async function ensureTranslationVoices() {
-      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return [];
-      const initial = window.speechSynthesis.getVoices();
-      if (initial && initial.length) {
-        translationVoicesReady = true;
-        return initial;
-      }
-      return new Promise((resolve) => {
+    function selectPreferredTranslationVoice(n new Promise((resolve) => {
         const timer = setTimeout(() => {
           translationVoicesReady = true;
           resolve(window.speechSynthesis.getVoices());
@@ -2748,26 +2788,48 @@
 
     function selectPreferredTranslationVoice(voices) {
       if (!Array.isArray(voices) || !voices.length) return null;
-      const approved = voices.filter((voice) => isApprovedMaleTranslationVoice(voice));
-      if (!approved.length) return null;
       const config = getTranslationTtsConfig();
       const locale = String(config.locale || currentTranslationCode || 'en-GB').toLowerCase();
+      const languageCode = String(currentTranslationCode || 'en').toLowerCase();
       const preferredNames = Array.isArray(config.preferredNames) ? config.preferredNames : [];
-      const scored = approved.map((voice) => {
+
+      const scoreVoice = (voice, allowSoftFallback = false) => {
         const lang = String(voice.lang || '').toLowerCase();
-        const name = String(voice.name || '');
+        const name = String(voice.name || '').toLowerCase();
+        const matchesExactLocale = lang === locale;
+        const matchesLanguage = matchesExactLocale || lang.startsWith(`${languageCode}-`) || lang.startsWith(languageCode);
+        if (!matchesLanguage && !allowSoftFallback) return -1;
+        if (isLikelyFemaleTranslationVoice(voice)) return -1;
+
         let score = 0;
-        if (lang === locale) score += 50;
+        if (matchesExactLocale) score += 60;
+        else if (matchesLanguage) score += 36;
         preferredNames.forEach((token) => {
-          if (name.toLowerCase().includes(String(token).toLowerCase())) score += 18;
+          if (name.includes(String(token).toLowerCase())) score += 22;
         });
-        if (/neural|natural|premium|enhanced|online|google|microsoft/i.test(name)) score += 8;
-        return { voice, score };
-      }).sort((a, b) => b.score - a.score);
-      return scored[0] ? scored[0].voice : null;
+        if (isLikelyMaleTranslationVoice(voice)) score += 26;
+        if (/google|microsoft|samsung|enhanced|premium|neural|natural|online/i.test(name)) score += 8;
+        if (/local|compact|embedded/i.test(name)) score += 4;
+        if (allowSoftFallback) score -= 8;
+        return score;
+      };
+
+      const rankedApproved = voices
+        .filter((voice) => isApprovedMaleTranslationVoice(voice))
+        .map((voice) => ({ voice, score: scoreVoice(voice) }))
+        .sort((a, b) => b.score - a.score);
+      if (rankedApproved.length) return rankedApproved[0].voice;
+
+      const rankedMobileSafe = voices
+        .map((voice) => ({ voice, score: scoreVoice(voice, true) }))
+        .filter((entry) => entry.score >= 28)
+        .sort((a, b) => b.score - a.score);
+      if (rankedMobileSafe.length) return rankedMobileSafe[0].voice;
+
+      return null;
     }
 
-    function hasGoogleTranslationTtsEndpoint() {
+    function hasGoogleTranslationTtsEndpoint() {) {
       return Boolean(String(googleTranslationTtsConfig.endpoint || '').trim());
     }
 
@@ -2888,30 +2950,24 @@
             );
             resolve(ok);
           };
-          audio.onplay = () => {
-            updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
-            syncTranslationMiniToggleLabel();
-          };
-          audio.onpause = () => {
-            updateTranslationMini('Translation audio paused', true);
-            syncTranslationMiniToggleLabel();
-          };
+          audio.onplay = () => updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
+          audio.onpause = () => updateTranslationMini('Translation audio paused', true);
           audio.onended = () => finish(true);
           audio.onerror = () => finish(false);
           audio.play().catch(() => finish(false));
         });
       }
 
-      if (isMobileAppleOrAndroid()) {
-        showBookmarkMessage('Google male English translation voice is not connected on this device yet.');
-        return false;
-      }
 
       if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
         showBookmarkMessage('Translation voice is unavailable on this device.');
         return false;
       }
-      const voices = await ensureTranslationVoices();
+      let voices = await ensureTranslationVoices();
+      if ((!voices || !voices.length) && isMobileAppleOrAndroid()) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+        voices = await ensureTranslationVoices();
+      }
       if (token !== translationSequenceId) return false;
       const preferredVoice = selectPreferredTranslationVoice(voices);
       if (!preferredVoice) {
@@ -2919,11 +2975,11 @@
         translationSpeechActive = false;
         return false;
       }
-      const utterance = new SpeechSynthesisUtterance(text);
+const utterance = new SpeechSynthesisUtterance(text);
       translationSpeechUtterance = utterance;
       utterance.lang = getPreferredTranslationLocale();
       utterance.voice = preferredVoice;
-      utterance.rate = 0.95;
+      utterance.rate = isMobileAppleOrAndroid() ? 0.92 : 0.95;
       utterance.pitch = 0.92;
       translationSpeechActive = true;
       updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
@@ -2943,6 +2999,7 @@
         };
         try {
           window.speechSynthesis.cancel();
+          window.speechSynthesis.resume();
           window.speechSynthesis.speak(utterance);
         } catch {
           translationSpeechUtterance = null;
@@ -4363,22 +4420,24 @@ ${getVerseUrl(ayah)}`,
       return !translationSpeechActive;
     }
 
-    function syncTranslationMiniToggleLabel() {
-      if (!translationMiniToggle) return;
-      translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
-    }
-
-    function updateTranslationMini(text = 'Ready', forceVisible = false) {
-      if (!translationMini) return;
-      const visible = isEnglishTranslationVoiceEnabled() && (
-        forceVisible
-        || Boolean(translationBridgeAudio)
-        || Boolean(translationSpeechAudio)
-        || Boolean(translationSpeechUtterance)
+    function hasTranslationPlaybackSession() {
+      return Boolean(
+        translationBridgeAudio
+        || translationSpeechAudio
+        || translationSpeechUtterance
         || translationSpeechActive
         || translationContinueActive
         || translationTapMode !== 'off'
       );
+    }
+
+    function getTranslationMiniToggleLabel() {
+      return hasTranslationPlaybackSession() && !isTranslationPlaybackPaused() ? 'Pause' : 'Play';
+    }
+
+    function updateTranslationMini(text = 'Ready', forceVisible = false) {
+      if (!translationMini) return;
+      const visible = isEnglishTranslationVoiceEnabled() && (forceVisible || hasTranslationPlaybackSession());
       translationMini.style.display = visible ? 'inline-flex' : 'none';
       translationMini.classList.toggle('active', visible);
       if (translationMiniText) {
@@ -4386,7 +4445,7 @@ ${getVerseUrl(ayah)}`,
       }
       if (translationMiniToggle) {
         translationMiniToggle.disabled = !visible;
-        syncTranslationMiniToggleLabel();
+        translationMiniToggle.textContent = getTranslationMiniToggleLabel();
       }
       if (translationMiniBeginning) {
         translationMiniBeginning.disabled = !visible;
@@ -4394,7 +4453,7 @@ ${getVerseUrl(ayah)}`,
     }
 
     async function toggleTranslationMiniPlayback() {
-      if (translationBridgeAudio && !translationBridgeAudio.ended) {
+      if (translationBridgeAudio) {
         if (translationBridgeAudio.paused) {
           await translationBridgeAudio.play();
           updateTranslationMini('Arabic playback resumed', true);
@@ -4402,10 +4461,9 @@ ${getVerseUrl(ayah)}`,
           translationBridgeAudio.pause();
           updateTranslationMini('Arabic playback paused', true);
         }
-        syncTranslationMiniToggleLabel();
         return;
       }
-      if (translationSpeechAudio && !translationSpeechAudio.ended) {
+      if (translationSpeechAudio) {
         if (translationSpeechAudio.paused) {
           await translationSpeechAudio.play();
           updateTranslationMini('English translation resumed', true);
@@ -4413,25 +4471,20 @@ ${getVerseUrl(ayah)}`,
           translationSpeechAudio.pause();
           updateTranslationMini('English translation paused', true);
         }
-        syncTranslationMiniToggleLabel();
         return;
       }
-      if ('speechSynthesis' in window && translationSpeechUtterance) {
+      if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
         if (window.speechSynthesis.paused) {
           window.speechSynthesis.resume();
           updateTranslationMini('English translation resumed', true);
-        } else if (window.speechSynthesis.speaking) {
+        } else {
           window.speechSynthesis.pause();
           updateTranslationMini('English translation paused', true);
-        } else {
-          await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode || 'translation', true);
         }
-        syncTranslationMiniToggleLabel();
         return;
       }
       if (translationTapMode !== 'off') {
         await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode, true);
-        syncTranslationMiniToggleLabel();
       }
     }
 
