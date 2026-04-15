@@ -1928,14 +1928,22 @@
       return blockedPatterns.some((pattern) => pattern.test(String(value || '')));
     }
 
-    async function safeFetchJson(url) {
+    async function safeFetchJson(url, timeoutMs = 9000) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), Number(timeoutMs) || 9000);
       try {
-        const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
+        const response = await fetch(url, {
+          mode: 'cors',
+          cache: 'no-store',
+          signal: controller.signal
+        });
         if (!response.ok) throw new Error(`Request failed: ${response.status}`);
         return await response.json();
       } catch (error) {
         console.warn('Fetch failed:', url, error);
         return null;
+      } finally {
+        clearTimeout(timeoutId);
       }
     }
 
@@ -3045,7 +3053,14 @@
           window.speechSynthesis.resume();
           window.speechSynthesis.speak(utterance);
         } catch {
-         async function playArabicBridgeForTranslation(ayah, token) {
+          translationSpeechUtterance = null;
+          translationSpeechActive = false;
+          resolve(false);
+        }
+      });
+    }
+
+    async function playArabicBridgeForTranslation(ayah, token) {
       const verseAudio = await ensureTajweedVerseAudio(ayah);
       if (!verseAudio || !verseAudio.url || token !== translationSequenceId) return false;
       return new Promise((resolve) => {
@@ -3066,11 +3081,6 @@
         audio.onpause = () => updateTranslationMini('Arabic playback paused', true);
         audio.onended = () => finish(true);
         audio.onerror = () => finish(false);
-        audio.play().catch(() => finish(false));
-      });
-    }
-
-    async function runTranslationFlow(.onerror = () => finish(false);
         audio.play().catch(() => finish(false));
       });
     }
