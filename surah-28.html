@@ -1281,7 +1281,6 @@
       </div>
     </div>
   </div>
-  </div>
 
   <main translate="no" class="notranslate">
     <section class="hero">
@@ -1842,8 +1841,19 @@
     let translationContinueActive = false;
     let translationSequenceId = 0;
     let translationBridgeAudio = null;
+    let translationSpeechAudio = null;
+    let translationSpeechUtterance = null;
     let translationSpeechActive = false;
     let translationVoicesReady = false;
+    const googleTranslationTtsConfig = {
+      endpoint: localStorage.getItem('teq-google-tts-endpoint') || '',
+      authHeaderName: localStorage.getItem('teq-google-tts-header-name') || '',
+      authHeaderValue: localStorage.getItem('teq-google-tts-header-value') || '',
+      requestTimeoutMs: 15000,
+      voiceName: 'en-GB-Neural2-D',
+      languageCode: 'en-GB'
+    };
+    const translationAudioCache = new Map();
 
     const translationVoiceRegistry = {
       en: { locale: 'en-GB', preferredNames: ['Ryan', 'Ollie', 'Thomas', 'Google UK English Male', 'Male'] },
@@ -2712,10 +2722,12 @@
       const locale = String(getPreferredTranslationLocale() || 'en-GB').toLowerCase();
       const languageCode = String(currentTranslationCode || 'en').toLowerCase();
       const preferredNames = Array.isArray(getTranslationTtsConfig().preferredNames) ? getTranslationTtsConfig().preferredNames : [];
+      const femaleTokens = ['female', 'woman', 'zira', 'hazel', 'aria', 'susan', 'luna', 'sara', 'sonia', 'amy', 'emma'];
+      const maleTokens = ['male', 'man', 'david', 'ryan', 'ollie', 'thomas', 'oliver', 'arthur', 'noah', 'ethan', 'alfie', 'daniel', 'guy'];
       const matchesLocale = lang === locale || lang.startsWith(`${languageCode}-`) || lang.startsWith(languageCode);
       const matchesPreferred = preferredNames.some((token) => name.includes(String(token).toLowerCase()));
-      const looksMale = /(^|\b)(male|man|david|ryan|ollie|thomas|oliver|arthur|noah|ethan|alfie|daniel|guy)(\b|$)/i.test(name);
-      const looksFemale = /(^|\b)(female|woman|zira|hazel|aria|susan|luna|sara|sonia|amy|emma)(\b|$)/i.test(name);
+      const looksFemale = femaleTokens.some((token) => name.includes(token));
+      const looksMale = maleTokens.some((token) => name.includes(token));
       return matchesLocale && !looksFemale && (matchesPreferred || looksMale);
     }
 
@@ -2760,6 +2772,69 @@
       return scored[0] ? scored[0].voice : null;
     }
 
+    function hasGoogleTranslationTtsEndpoint() {
+      return Boolean(String(googleTranslationTtsConfig.endpoint || '').trim());
+    }
+
+    function isMobileAppleOrAndroid() {
+      const ua = navigator.userAgent || '';
+      return /iphone|ipad|ipod|android/i.test(ua);
+    }
+
+    function buildTranslationAudioCacheKey(ayah) {
+      return `${surahNumber}:${ayah}:${currentTranslationCode}:${currentTranslationId}`;
+    }
+
+    async function responseToTranslationAudioSource(response) {
+      const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+      if (contentType.startsWith('audio/')) {
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+      }
+      const payload = await response.json().catch(() => null);
+      if (!payload) return null;
+      if (payload.audioUrl) return String(payload.audioUrl);
+      if (payload.audioContent) return `data:audio/mpeg;base64,${payload.audioContent}`;
+      if (payload.audioBase64) return `data:${payload.mimeType || 'audio/mpeg'};base64,${payload.audioBase64}`;
+      return null;
+    }
+
+    async function fetchGoogleTranslationAudioSource(ayah, text) {
+      if (!hasGoogleTranslationTtsEndpoint()) return null;
+      const cacheKey = buildTranslationAudioCacheKey(ayah);
+      if (translationAudioCache.has(cacheKey)) return translationAudioCache.get(cacheKey);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), Number(googleTranslationTtsConfig.requestTimeoutMs || 15000));
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (googleTranslationTtsConfig.authHeaderName && googleTranslationTtsConfig.authHeaderValue) {
+          headers[googleTranslationTtsConfig.authHeaderName] = googleTranslationTtsConfig.authHeaderValue;
+        }
+        const response = await fetch(googleTranslationTtsConfig.endpoint, {
+          method: 'POST',
+          headers,
+          signal: controller.signal,
+          body: JSON.stringify({
+            surahNumber,
+            ayah,
+            text,
+            languageCode: googleTranslationTtsConfig.languageCode,
+            voiceName: googleTranslationTtsConfig.voiceName,
+            gender: 'MALE'
+          })
+        });
+        if (!response.ok) return null;
+        const source = await responseToTranslationAudioSource(response);
+        if (source) translationAudioCache.set(cacheKey, source);
+        return source;
+      } catch (error) {
+        console.warn('Google translation audio could not be fetched.', error);
+        return null;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
     function stopTranslationFlow(resetMode = false) {
       translationSequenceId += 1;
       translationContinueActive = false;
@@ -2769,6 +2844,12 @@
         translationBridgeAudio.src = '';
         translationBridgeAudio = null;
       }
+      if (translationSpeechAudio) {
+        translationSpeechAudio.pause();
+        translationSpeechAudio.src = '';
+        translationSpeechAudio = null;
+      }
+      translationSpeechUtterance = null;
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch {}
       }
@@ -2790,38 +2871,74 @@
         showBookmarkMessage(`Translation is unavailable for verse ${ayah}.`);
         return false;
       }
+
+      const remoteSource = await fetchGoogleTranslationAudioSource(ayah, text);
+      if (token !== translationSequenceId) return false;
+      if (remoteSource) {
+        return new Promise((resolve) => {
+          const audio = new Audio(remoteSource);
+          translationSpeechAudio = audio;
+          translationSpeechUtterance = null;
+          translationSpeechActive = true;
+          updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
+          const finish = (ok) => {
+            if (translationSpeechAudio === audio) translationSpeechAudio = null;
+            translationSpeechActive = false;
+            updateTranslationMini(ok ? 'Ready' : 'Translation audio unavailable', false);
+            resolve(ok);
+          };
+          audio.onplay = () => updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
+          audio.onpause = () => updateTranslationMini('Translation audio paused', true);
+          audio.onended = () => finish(true);
+          audio.onerror = () => finish(false);
+          audio.play().catch(() => finish(false));
+        });
+      }
+
+      if (isMobileAppleOrAndroid()) {
+        showBookmarkMessage('Google male English translation voice is not connected on this device yet.');
+        return false;
+      }
+
       if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
         showBookmarkMessage('Translation voice is unavailable on this device.');
         return false;
       }
       const voices = await ensureTranslationVoices();
       if (token !== translationSequenceId) return false;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = getPreferredTranslationLocale();
       const preferredVoice = selectPreferredTranslationVoice(voices);
       if (!preferredVoice) {
         showBookmarkMessage('No approved male English voice is available on this device.');
         translationSpeechActive = false;
         return false;
       }
+      const utterance = new SpeechSynthesisUtterance(text);
+      translationSpeechUtterance = utterance;
+      utterance.lang = getPreferredTranslationLocale();
       utterance.voice = preferredVoice;
-      utterance.rate = currentTranslationCode === 'en' ? 0.95 : 0.93;
+      utterance.rate = 0.95;
       utterance.pitch = 0.92;
       translationSpeechActive = true;
       updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
       return new Promise((resolve) => {
+        utterance.onstart = () => updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
         utterance.onend = () => {
+          translationSpeechUtterance = null;
           translationSpeechActive = false;
+          updateTranslationMini('Ready', false);
           resolve(true);
         };
         utterance.onerror = () => {
+          translationSpeechUtterance = null;
           translationSpeechActive = false;
+          updateTranslationMini('Translation audio unavailable', false);
           resolve(false);
         };
         try {
           window.speechSynthesis.cancel();
           window.speechSynthesis.speak(utterance);
         } catch {
+          translationSpeechUtterance = null;
           translationSpeechActive = false;
           resolve(false);
         }
@@ -4191,13 +4308,16 @@ ${getVerseUrl(ayah)}`,
 
     function isTranslationPlaybackPaused() {
       if (translationBridgeAudio) return translationBridgeAudio.paused;
-      if ('speechSynthesis' in window && window.speechSynthesis.speaking) return window.speechSynthesis.paused;
+      if (translationSpeechAudio) return translationSpeechAudio.paused;
+      if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
+        return window.speechSynthesis.paused;
+      }
       return !translationSpeechActive;
     }
 
     function updateTranslationMini(text = 'Ready', forceVisible = false) {
       if (!translationMini) return;
-      const visible = isEnglishTranslationVoiceEnabled() && (forceVisible || Boolean(translationBridgeAudio) || translationSpeechActive || translationContinueActive || translationTapMode !== 'off');
+      const visible = isEnglishTranslationVoiceEnabled() && (forceVisible || Boolean(translationBridgeAudio) || Boolean(translationSpeechAudio) || translationSpeechActive || translationContinueActive || translationTapMode !== 'off');
       translationMini.style.display = visible ? 'block' : 'none';
       translationMini.classList.toggle('active', visible);
       if (translationMiniTitle) {
@@ -5224,17 +5344,27 @@ ${getVerseUrl(ayah)}`,
             updateTranslationMini('Arabic playback resumed', true);
           } else {
             translationBridgeAudio.pause();
-            updateTranslationMini('Translation audio paused', true);
+            updateTranslationMini('Arabic playback paused', true);
           }
           return;
         }
-        if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+        if (translationSpeechAudio) {
+          if (translationSpeechAudio.paused) {
+            await translationSpeechAudio.play();
+            updateTranslationMini('English translation resumed', true);
+          } else {
+            translationSpeechAudio.pause();
+            updateTranslationMini('English translation paused', true);
+          }
+          return;
+        }
+        if ('speechSynthesis' in window && (window.speechSynthesis.speaking || translationSpeechUtterance)) {
           if (window.speechSynthesis.paused) {
             window.speechSynthesis.resume();
             updateTranslationMini('English translation resumed', true);
           } else {
             window.speechSynthesis.pause();
-            updateTranslationMini('Translation audio paused', true);
+            updateTranslationMini('English translation paused', true);
           }
           return;
         }
