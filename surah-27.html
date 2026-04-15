@@ -2730,7 +2730,13 @@
       const lang = String(voice.lang || '').toLowerCase();
       const locale = String(getPreferredTranslationLocale() || 'en-GB').toLowerCase();
       const languageCode = String(currentTranslationCode || 'en').toLowerCase();
-      const preferredNames = Array.isArray(getTranslationTtsConasync function ensureTranslationVoices() {
+      const preferredNames = Array.isArray(getTranslationTtsConfig().preferredNames) ? getTranslationTtsConfig().preferredNames : [];
+      const matchesLocale = lang === locale || lang.startsWith(`${languageCode}-`) || lang.startsWith(languageCode);
+      const matchesPreferred = preferredNames.some((token) => name.includes(String(token).toLowerCase()));
+      return matchesLocale && !isLikelyFemaleTranslationVoice(voice) && (matchesPreferred || isLikelyMaleTranslationVoice(voice));
+    }
+
+    async function ensureTranslationVoices() {
       if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return [];
 
       const readVoices = () => {
@@ -2770,19 +2776,6 @@
         });
 
         setTimeout(finish, 1800);
-      });
-    }
-
-    function selectPreferredTranslationVoice(n new Promise((resolve) => {
-        const timer = setTimeout(() => {
-          translationVoicesReady = true;
-          resolve(window.speechSynthesis.getVoices());
-        }, 900);
-        window.speechSynthesis.onvoiceschanged = () => {
-          clearTimeout(timer);
-          translationVoicesReady = true;
-          resolve(window.speechSynthesis.getVoices());
-        };
       });
     }
 
@@ -2829,7 +2822,7 @@
       return null;
     }
 
-    function hasGoogleTranslationTtsEndpoint() {) {
+    function hasGoogleTranslationTtsEndpoint() {
       return Boolean(String(googleTranslationTtsConfig.endpoint || '').trim());
     }
 
