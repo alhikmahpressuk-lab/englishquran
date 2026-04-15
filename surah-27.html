@@ -1273,7 +1273,7 @@
 
   <div class="sync-bar notranslate" id="translationMini" translate="no" aria-live="polite" style="top: 132px;">
     <span class="sync-bar-text" id="translationMiniText" translate="no">Translation audio ready.</span>
-    <button class="sync-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play/Pause</button>
+    <button class="sync-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play</button>
     <button class="sync-mini-btn" type="button" id="translationMiniBeginning" translate="no">Beginning</button>
   </div>
 
@@ -4357,17 +4357,24 @@ ${getVerseUrl(ayah)}`,
       return !translationSpeechActive;
     }
 
-    function updateTranslationMini(text = 'Ready', forceVisible = false) {
-      if (!translationMini) return;
-      const visible = isEnglishTranslationVoiceEnabled() && (
-        forceVisible
-        || Boolean(translationBridgeAudio)
-        || Boolean(translationSpeechAudio)
-        || Boolean(translationSpeechUtterance)
+    function hasTranslationPlaybackSession() {
+      return Boolean(
+        translationBridgeAudio
+        || translationSpeechAudio
+        || translationSpeechUtterance
         || translationSpeechActive
         || translationContinueActive
         || translationTapMode !== 'off'
       );
+    }
+
+    function getTranslationMiniToggleLabel() {
+      return hasTranslationPlaybackSession() && !isTranslationPlaybackPaused() ? 'Pause' : 'Play';
+    }
+
+    function updateTranslationMini(text = 'Ready', forceVisible = false) {
+      if (!translationMini) return;
+      const visible = isEnglishTranslationVoiceEnabled() && (forceVisible || hasTranslationPlaybackSession());
       translationMini.style.display = visible ? 'inline-flex' : 'none';
       translationMini.classList.toggle('active', visible);
       if (translationMiniText) {
@@ -4375,7 +4382,7 @@ ${getVerseUrl(ayah)}`,
       }
       if (translationMiniToggle) {
         translationMiniToggle.disabled = !visible;
-        translationMiniToggle.textContent = 'Play/Pause';
+        translationMiniToggle.textContent = getTranslationMiniToggleLabel();
       }
       if (translationMiniBeginning) {
         translationMiniBeginning.disabled = !visible;
