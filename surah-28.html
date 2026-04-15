@@ -3072,6 +3072,39 @@
       );
     }
 
+    function showPlayVersePrompt(ayah) {
+      const safeAyah = Number(ayah);
+      showPrompt(
+        `Play verse · Verse ${safeAyah}`,
+        'Choose verse audio or English translation audio for this verse.',
+        [
+          {
+            label: 'Play verse',
+            primary: true,
+            onClick: async () => {
+              hidePrompt();
+              await playVerseTajweed(safeAyah, 'verse');
+            }
+          },
+          {
+            label: 'Play translation audio',
+            primary: false,
+            onClick: async () => { await runTranslationFlow(safeAyah, 'translation', true); }
+          },
+          {
+            label: 'With Arabic',
+            primary: false,
+            onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', true); }
+          },
+          {
+            label: 'Clear',
+            primary: false,
+            onClick: () => hidePrompt()
+          }
+        ]
+      );
+    }
+
     function showActionPulse(button) {
       if (!button) return;
       button.classList.add('just-did');
@@ -4763,7 +4796,6 @@ ${getVerseUrl(ayah)}`,
                 <button class="menu-item-btn" type="button" data-note-ayah="${verse.number}">${iconNote()}<span>Notes</span></button>
                 <button class="menu-item-btn" type="button" data-wordtoggle-ayah="${verse.number}">${iconWord()}<span>Word by word</span></button>
                 <button class="menu-item-btn" type="button" data-play-ayah="${verse.number}">${iconPlay()}<span>Play verse</span></button>
-                ${isEnglishTranslationVoiceEnabled() ? `<button class="menu-item-btn" type="button" data-translation-audio-ayah="${verse.number}">${iconVoice()}<span>Play translation audio</span></button>` : ''}
                 <button class="menu-item-btn" type="button" data-repeat-ayah="${verse.number}">${iconRepeat()}<span>Repeat verse</span></button>
                 <button class="menu-item-btn" type="button" data-start-ayah="${verse.number}">${iconStartFromHere()}<span>Start recitation from here</span></button>
               </div>
@@ -4821,13 +4853,6 @@ ${getVerseUrl(ayah)}`,
     }
 
     function attachInteractiveHandlers() {
-      document.querySelectorAll('[data-translation-audio-ayah]').forEach((button) => {
-        button.addEventListener('click', (event) => {
-          event.stopPropagation();
-          showTranslationAudioPrompt(Number(button.getAttribute('data-translation-audio-ayah')));
-          showActionPulse(button);
-        });
-      });
       document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
         button.addEventListener('click', (event) => {
           event.stopPropagation();
@@ -4888,13 +4913,13 @@ ${getVerseUrl(ayah)}`,
       });
 
       document.querySelectorAll('[data-play-ayah]').forEach((button) => {
-        button.addEventListener('click', async (event) => {
+        button.addEventListener('click', (event) => {
           event.stopPropagation();
           if (currentAudioView === 'synced') {
             showBookmarkMessage('Tajweed verse playback is off while recitation view is active.');
             return;
           }
-          await playVerseTajweed(Number(button.getAttribute('data-play-ayah')), 'verse');
+          showPlayVersePrompt(Number(button.getAttribute('data-play-ayah')));
           showActionPulse(button);
         });
       });
