@@ -4362,6 +4362,74 @@ ${getVerseUrl(ayah)}`,
 
     function getTranslationPlaybackMode() {
       if (translationBridgeAudio && !translationBridgeAudio.ended) {
+        return translationBridgeAudio.paused ? 'paused' : 'playing';
+      }
+      if (translationSpeechAudio && !translationSpeechAudio.ended) {
+        return translationSpeechAudio.paused ? 'paused' : 'playing';
+      }
+      if ('speechSynthesis' in window && translationSpeechUtterance) {
+        if (window.speechSynthesis.speaking) {
+          return window.speechSynthesis.paused ? 'paused' : 'playing';
+        }
+        if (window.speechSynthesis.paused) {
+          return 'paused';
+        }
+      }
+      return translationPlaybackState || 'idle';
+    }
+
+    function isTranslationPlaybackPaused() {
+      return getTranslationPlaybackMode() !== 'playing';
+    }
+
+    function syncTranslationMiniToggleLabel() {
+      if (!translationMiniToggle) return;
+      translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
+    }
+
+    function stopTranslationMiniMonitor() {
+      if (translationMiniMonitor) {
+        clearInterval(translationMiniMonitor);
+        translationMiniMonitor = null;
+      }
+    }
+
+    function startTranslationMiniMonitor() {
+      stopTranslationMiniMonitor();
+      translationMiniMonitor = setInterval(() => {
+        syncTranslationMiniToggleLabel();
+      }, 180);
+    }
+
+    function updateTranslationMini(text = 'Translation audio ready.', forceVisible = false) {
+      if (!translationMini) return;
+      const visible = isEnglishTranslationVoiceEnabled() && (
+        forceVisible
+        || Boolean(translationBridgeAudio)
+        || Boolean(translationSpeechAudio)
+        || Boolean(translationSpeechUtterance)
+        || translationSpeechActive
+        || translationContinueActive
+        || translationTapMode !== 'off'
+        || getTranslationPlaybackMode() !== 'idle'
+      );
+      translationMini.classList.toggle('active', visible);
+      if (translationMiniText) {
+        translationMiniText.textContent = visible ? text : 'Translation audio ready.';
+      }
+      if (translationMiniToggle) {
+        translationMiniToggle.disabled = !visible;
+        syncTranslationMiniToggleLabel();
+      }
+      if (translationMiniBeginning) {
+        translationMiniBeginning.disabled = !visible;
+      }
+      if (visible) startTranslationMiniMonitor();
+      else stopTranslationMiniMonitor();
+    }
+
+    async function toggleTranslationMiniPlayback() {
+      if (translationBridgeAudio && !translationBridgeAudio.ended) {
         if (translationBridgeAudio.paused) {
           await translationBridgeAudio.play();
           translationPlaybackState = 'playing';
@@ -5409,22 +5477,26 @@ ${getVerseUrl(ayah)}`,
     });
     tajweedMiniStop.addEventListener('click', () => stopTajweedPlayback(true));
 
-    translationMiniToggle.addEventListener('click', async () => {
-      try {
-        await toggleTranslationMiniPlayback();
-      } catch {
-        showBookmarkMessage('Translation audio could not be changed right now.');
-      }
-    });
+    if (translationMiniToggle) {
+      translationMiniToggle.addEventListener('click', async () => {
+        try {
+          await toggleTranslationMiniPlayback();
+        } catch {
+          showBookmarkMessage('Translation audio could not be changed right now.');
+        }
+      });
+    }
 
-    translationMiniBeginning.addEventListener('click', async () => {
-      if (translationTapMode === 'off') return;
-      try {
-        await runTranslationFlow(1, translationTapMode, true);
-      } catch {
-        showBookmarkMessage('Translation audio could not start from the beginning right now.');
-      }
-    });
+    if (translationMiniBeginning) {
+      translationMiniBeginning.addEventListener('click', async () => {
+        if (translationTapMode === 'off') return;
+        try {
+          await runTranslationFlow(1, translationTapMode, true);
+        } catch {
+          showBookmarkMessage('Translation audio could not start from the beginning right now.');
+        }
+      });
+    }
 
     introAudio.addEventListener('play', () => {
       introBismillahPlaying = true;
@@ -5536,16 +5608,27 @@ ${getVerseUrl(ayah)}`,
       if (!event.target.closest('.verse-toolbar')) closeAllMenus();
     });
 
-    const savedTheme = localStorage.getItem('site-theme');
-    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
-    buildVerseSelector();
-    updateLanguagesPanelText();
-    updateModeLabels();
-    setActiveTab('read');
-    updateBookmarkUI();
-    updateSyncBarState();
-    updateShareBuilder();
-    loadSurah();
+    async function initialiseSurahPage() {
+      try {
+        const savedTheme = localStorage.getItem('site-theme');
+        applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+        buildVerseSelector();
+        updateLanguagesPanelText();
+        updateModeLabels();
+        setActiveTab('read');
+        updateBookmarkUI();
+        updateSyncBarState();
+        updateShareBuilder();
+        await loadSurah();
+      } catch (error) {
+        console.error('Initialisation failed.', error);
+        loadingState.style.display = 'none';
+        errorState.style.display = 'block';
+        errorState.textContent = 'The page could not be loaded right now. Please refresh and try again.';
+      }
+    }
+
+    initialiseSurahPage();
   </script>
 </body>
 </html>
