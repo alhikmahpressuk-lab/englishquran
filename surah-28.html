@@ -1190,6 +1190,9 @@
       .note-panel-actions { flex-direction: column; }
       .note-save-btn, .note-clear-btn, .note-share-btn, .note-copy-btn, .note-close-btn, .tajweed-mini-btn { width: 100%; }
       .tajweed-mini-top { flex-direction: column; align-items: flex-start; }
+      #translationMini {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+      }
       .languages-panel { padding: 14px; border-radius: 16px; }
       .languages-list { max-height: 300px; gap: 10px; }
       #languagesSearchInput { min-height: 46px; }
@@ -1264,6 +1267,20 @@
         <button class="tajweed-mini-btn" type="button" id="tajweedMiniStop" translate="no">Stop</button>
       </div>
     </div>
+  </div>
+
+  <div class="tajweed-mini notranslate" id="translationMini" translate="no" aria-live="polite" style="bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); display: none;">
+    <div class="tajweed-mini-top">
+      <div>
+        <div class="tajweed-mini-title" id="translationMiniTitle" translate="no">Translation audio</div>
+        <div class="tajweed-mini-text" id="translationMiniText" translate="no">Ready</div>
+      </div>
+      <div class="page-nav">
+        <button class="tajweed-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play</button>
+        <button class="tajweed-mini-btn" type="button" id="translationMiniStop" translate="no">Stop</button>
+      </div>
+    </div>
+  </div>
   </div>
 
   <main translate="no" class="notranslate">
@@ -1727,6 +1744,11 @@
     const tajweedMiniPlayPause = document.getElementById('tajweedMiniPlayPause');
     const tajweedMiniContinueAll = document.getElementById('tajweedMiniContinueAll');
     const tajweedMiniStop = document.getElementById('tajweedMiniStop');
+    const translationMini = document.getElementById('translationMini');
+    const translationMiniTitle = document.getElementById('translationMiniTitle');
+    const translationMiniText = document.getElementById('translationMiniText');
+    const translationMiniToggle = document.getElementById('translationMiniToggle');
+    const translationMiniStop = document.getElementById('translationMiniStop');
 
     const shareType = document.getElementById('shareType');
     const shareSingleVerse = document.getElementById('shareSingleVerse');
@@ -2683,6 +2705,20 @@
       return config.locale || currentTranslationCode || 'en-GB';
     }
 
+    function isApprovedMaleTranslationVoice(voice) {
+      if (!voice) return false;
+      const name = String(voice.name || '').toLowerCase();
+      const lang = String(voice.lang || '').toLowerCase();
+      const locale = String(getPreferredTranslationLocale() || 'en-GB').toLowerCase();
+      const languageCode = String(currentTranslationCode || 'en').toLowerCase();
+      const preferredNames = Array.isArray(getTranslationTtsConfig().preferredNames) ? getTranslationTtsConfig().preferredNames : [];
+      const matchesLocale = lang === locale || lang.startsWith(`${languageCode}-`) || lang.startsWith(languageCode);
+      const matchesPreferred = preferredNames.some((token) => name.includes(String(token).toLowerCase()));
+      const looksMale = /(^|\b)(male|man|david|ryan|ollie|thomas|oliver|arthur|noah|ethan|alfie|daniel|guy)(\b|$)/i.test(name);
+      const looksFemale = /(^|\b)(female|woman|zira|hazel|aria|susan|luna|sara|sonia|amy|emma)(\b|$)/i.test(name);
+      return matchesLocale && !looksFemale && (matchesPreferred || looksMale);
+    }
+
     async function ensureTranslationVoices() {
       if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return [];
       const initial = window.speechSynthesis.getVoices();
@@ -2705,26 +2741,23 @@
 
     function selectPreferredTranslationVoice(voices) {
       if (!Array.isArray(voices) || !voices.length) return null;
+      const approved = voices.filter((voice) => isApprovedMaleTranslationVoice(voice));
+      if (!approved.length) return null;
       const config = getTranslationTtsConfig();
       const locale = String(config.locale || currentTranslationCode || 'en-GB').toLowerCase();
-      const languageCode = String(currentTranslationCode || 'en').toLowerCase();
       const preferredNames = Array.isArray(config.preferredNames) ? config.preferredNames : [];
-      const scored = voices.map((voice) => {
+      const scored = approved.map((voice) => {
         const lang = String(voice.lang || '').toLowerCase();
         const name = String(voice.name || '');
         let score = 0;
         if (lang === locale) score += 50;
-        else if (lang.startsWith(`${languageCode}-`)) score += 32;
-        else if (lang.startsWith(languageCode)) score += 24;
         preferredNames.forEach((token) => {
           if (name.toLowerCase().includes(String(token).toLowerCase())) score += 18;
         });
-        if (/male|man|david|ryan|ollie|thomas|oliver|arthur|noah|ethan|alfie/i.test(name)) score += 10;
-        if (/neural|natural|premium|enhanced|online/i.test(name)) score += 6;
-        if (/female|woman|zira|hazel|susan|aria|luna/i.test(name)) score -= 6;
+        if (/neural|natural|premium|enhanced|online|google|microsoft/i.test(name)) score += 8;
         return { voice, score };
       }).sort((a, b) => b.score - a.score);
-      return scored[0] && scored[0].score > 0 ? scored[0].voice : voices.find((voice) => String(voice.lang || '').toLowerCase().startsWith(languageCode)) || voices[0] || null;
+      return scored[0] ? scored[0].voice : null;
     }
 
     function stopTranslationFlow(resetMode = false) {
@@ -2740,6 +2773,7 @@
         try { window.speechSynthesis.cancel(); } catch {}
       }
       if (resetMode) translationTapMode = 'off';
+      updateTranslationMini('Ready', false);
     }
 
     function getVerseTranslationSpeechText(ayah) {
@@ -2765,10 +2799,16 @@
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = getPreferredTranslationLocale();
       const preferredVoice = selectPreferredTranslationVoice(voices);
-      if (preferredVoice) utterance.voice = preferredVoice;
+      if (!preferredVoice) {
+        showBookmarkMessage('No approved male English voice is available on this device.');
+        translationSpeechActive = false;
+        return false;
+      }
+      utterance.voice = preferredVoice;
       utterance.rate = currentTranslationCode === 'en' ? 0.95 : 0.93;
       utterance.pitch = 0.92;
       translationSpeechActive = true;
+      updateTranslationMini(`Playing English translation · Verse ${ayah}`, true);
       return new Promise((resolve) => {
         utterance.onend = () => {
           translationSpeechActive = false;
@@ -2795,6 +2835,7 @@
         const audio = new Audio(verseAudio.url);
         translationBridgeAudio = audio;
         audio.preload = 'auto';
+        updateTranslationMini(`Arabic verse ${ayah}, then English translation`, true);
         const finish = (didPlay) => {
           audio.onended = null;
           audio.onerror = null;
@@ -2821,7 +2862,6 @@
         return;
       }
       stopTranslationFlow(false);
-      stopTranslationFlow(false);
       stopSyncedPlayback(false);
       stopTajweedPlayback(true);
       translationTapMode = mode;
@@ -2831,10 +2871,17 @@
       setActiveTab('read');
       showBookmarkMessage(
         continueAll
-          ? `Arabic then ${getDisplayLanguageName()} translation will continue from verse ${safeAyah}.`
+          ? (mode === 'translation'
+              ? `English translation will continue from verse ${safeAyah} to the end.`
+              : `Arabic first, then English translation will continue from verse ${safeAyah} to the end.`)
+          : 'Arabic first, then English translation for this verse.'
+      );
+      updateTranslationMini(
+        continueAll
+          ? (mode === 'translation' ? `Playing English translation from verse ${safeAyah} to the end` : `Continuing from verse ${safeAyah}`)
           : mode === 'with-arabic'
-            ? `Arabic and ${getDisplayLanguageName()} translation are ready. Tap any verse to use this mode.`
-            : `${getDisplayLanguageName()} translation mode is ready. Tap any verse to hear its translation.`
+            ? 'Arabic first, then English translation'
+            : 'Playing English translation'
       );
 
       for (let ayah = safeAyah; ayah <= totalVerses; ayah += 1) {
@@ -2865,6 +2912,7 @@
       if (token === translationSequenceId) {
         translationContinueActive = false;
         clearAllHighlights();
+        updateTranslationMini('Ready', false);
         if (continueAll) showBookmarkMessage('Translation sequence finished.');
       }
     }
@@ -2875,39 +2923,26 @@
         return;
       }
       const safeAyah = Number(ayah);
-      const options = [
-        {
-          label: 'Play translation',
-          primary: true,
-          onClick: async () => { await runTranslationFlow(safeAyah, 'translation', false); }
-        },
-        {
-          label: 'Play with Arabic',
-          primary: false,
-          onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', false); }
-        },
-        {
-          label: 'Continue',
-          primary: false,
-          onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', true); }
-        }
-      ];
-      if (translationTapMode !== 'off' || translationContinueActive || translationSpeechActive || translationBridgeAudio) {
-        options.push({
-          label: 'Stop',
-          primary: false,
-          onClick: () => {
-            stopTranslationFlow(true);
-            hidePrompt();
-            showBookmarkMessage('Translation audio stopped.');
-          }
-        });
-      }
-      options.push({ label: 'Close', primary: false, onClick: () => hidePrompt() });
       showPrompt(
         `Translation audio · Verse ${safeAyah}`,
-        `Choose how to hear verse ${safeAyah} in ${getDisplayLanguageName()}.`,
-        options
+        'Choose how to hear the English translation for this verse.',
+        [
+          {
+            label: 'Play',
+            primary: true,
+            onClick: async () => { await runTranslationFlow(safeAyah, 'translation', true); }
+          },
+          {
+            label: 'With Arabic',
+            primary: false,
+            onClick: async () => { await runTranslationFlow(safeAyah, 'with-arabic', true); }
+          },
+          {
+            label: 'Clear',
+            primary: false,
+            onClick: () => hidePrompt()
+          }
+        ]
       );
     }
 
@@ -4154,6 +4189,30 @@ ${getVerseUrl(ayah)}`,
       tajweedMiniContinueAll.style.display = tajweedContinueAllActive ? 'none' : 'inline-flex';
     }
 
+    function isTranslationPlaybackPaused() {
+      if (translationBridgeAudio) return translationBridgeAudio.paused;
+      if ('speechSynthesis' in window && window.speechSynthesis.speaking) return window.speechSynthesis.paused;
+      return !translationSpeechActive;
+    }
+
+    function updateTranslationMini(text = 'Ready', forceVisible = false) {
+      if (!translationMini) return;
+      const visible = isEnglishTranslationVoiceEnabled() && (forceVisible || Boolean(translationBridgeAudio) || translationSpeechActive || translationContinueActive || translationTapMode !== 'off');
+      translationMini.style.display = visible ? 'block' : 'none';
+      translationMini.classList.toggle('active', visible);
+      if (translationMiniTitle) {
+        translationMiniTitle.textContent = translationTapMode === 'with-arabic' ? 'Translation audio · With Arabic' : 'Translation audio';
+      }
+      if (translationMiniText) {
+        translationMiniText.textContent = visible ? text : 'Ready';
+      }
+      if (translationMiniToggle) {
+        translationMiniToggle.disabled = !visible;
+        translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
+      }
+      if (translationMiniStop) translationMiniStop.disabled = !visible;
+    }
+
     function loadAudioAtTime(audio, src, startSeconds = 0) {
       return new Promise((resolve, reject) => {
         const onReady = () => {
@@ -4432,7 +4491,7 @@ ${getVerseUrl(ayah)}`,
       if (event.target.closest('.verse-toolbar') || event.target.closest('.verse-note-panel')) return;
       const verseNumber = Number(event.currentTarget.dataset.ayahNumber);
       if (translationTapMode !== 'off' && currentAudioView !== 'synced') {
-        runTranslationFlow(verseNumber, translationTapMode, false);
+        runTranslationFlow(verseNumber, translationTapMode, true);
         return;
       }
       if (currentAudioView !== 'synced' || !syncByVerse[verseNumber]) return;
@@ -5156,6 +5215,41 @@ ${getVerseUrl(ayah)}`,
       }
     });
     tajweedMiniStop.addEventListener('click', () => stopTajweedPlayback(true));
+
+    translationMiniToggle.addEventListener('click', async () => {
+      try {
+        if (translationBridgeAudio) {
+          if (translationBridgeAudio.paused) {
+            await translationBridgeAudio.play();
+            updateTranslationMini('Arabic playback resumed', true);
+          } else {
+            translationBridgeAudio.pause();
+            updateTranslationMini('Translation audio paused', true);
+          }
+          return;
+        }
+        if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+            updateTranslationMini('English translation resumed', true);
+          } else {
+            window.speechSynthesis.pause();
+            updateTranslationMini('Translation audio paused', true);
+          }
+          return;
+        }
+        if (translationTapMode !== 'off') {
+          await runTranslationFlow(currentVisibleVerse || 1, translationTapMode, true);
+        }
+      } catch {
+        showBookmarkMessage('Translation audio could not be changed right now.');
+      }
+    });
+
+    translationMiniStop.addEventListener('click', () => {
+      stopTranslationFlow(true);
+      showBookmarkMessage('Translation audio stopped.');
+    });
 
     introAudio.addEventListener('play', () => {
       introBismillahPlaying = true;
