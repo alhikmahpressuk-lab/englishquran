@@ -1672,8 +1672,39 @@
       /\b(?:blasphem(?:y|ous)|pig\s+muslim|dirty\s+muslim|lesser\s+people)\b/i
     ];
 
+    function safeStorageGet(storageType, key) {
+      try {
+        const storage = window && window[storageType];
+        return storage ? storage.getItem(key) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function safeStorageSet(storageType, key, value) {
+      try {
+        const storage = window && window[storageType];
+        if (!storage) return false;
+        storage.setItem(key, String(value));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function safeStorageRemove(storageType, key) {
+      try {
+        const storage = window && window[storageType];
+        if (!storage) return false;
+        storage.removeItem(key);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
-    const shouldAutoplay = urlParams.get('autoplay') === '1' || sessionStorage.getItem(autoplaySessionKey) === '1';
+    const shouldAutoplay = urlParams.get('autoplay') === '1' || safeStorageGet('sessionStorage', autoplaySessionKey) === '1';
     const autoplayReciter = urlParams.get('reciter');
     const autoplayView = urlParams.get('view');
 
@@ -1842,31 +1873,31 @@
     let translationVoicesReady = false;
     const translationRemoteProviders = {
       custom: {
-        endpoint: localStorage.getItem('teq-tts-custom-endpoint') || '/api/tts',
-        authHeaderName: localStorage.getItem('teq-tts-custom-header-name') || '',
-        authHeaderValue: localStorage.getItem('teq-tts-custom-header-value') || '',
+        endpoint: safeStorageGet('localStorage', 'teq-tts-custom-endpoint') || '/api/tts',
+        authHeaderName: safeStorageGet('localStorage', 'teq-tts-custom-header-name') || '',
+        authHeaderValue: safeStorageGet('localStorage', 'teq-tts-custom-header-value') || '',
         requestTimeoutMs: 15000
       },
       google: {
-        endpoint: localStorage.getItem('teq-google-tts-endpoint') || '/api/google-tts',
-        authHeaderName: localStorage.getItem('teq-google-tts-header-name') || '',
-        authHeaderValue: localStorage.getItem('teq-google-tts-header-value') || '',
+        endpoint: safeStorageGet('localStorage', 'teq-google-tts-endpoint') || '/api/google-tts',
+        authHeaderName: safeStorageGet('localStorage', 'teq-google-tts-header-name') || '',
+        authHeaderValue: safeStorageGet('localStorage', 'teq-google-tts-header-value') || '',
         requestTimeoutMs: 15000
       },
       azure: {
-        endpoint: localStorage.getItem('teq-azure-tts-endpoint') || '/api/azure-tts',
-        authHeaderName: localStorage.getItem('teq-azure-tts-header-name') || '',
-        authHeaderValue: localStorage.getItem('teq-azure-tts-header-value') || '',
+        endpoint: safeStorageGet('localStorage', 'teq-azure-tts-endpoint') || '/api/azure-tts',
+        authHeaderName: safeStorageGet('localStorage', 'teq-azure-tts-header-name') || '',
+        authHeaderValue: safeStorageGet('localStorage', 'teq-azure-tts-header-value') || '',
         requestTimeoutMs: 15000
       },
       polly: {
-        endpoint: localStorage.getItem('teq-polly-tts-endpoint') || '/api/polly-tts',
-        authHeaderName: localStorage.getItem('teq-polly-tts-header-name') || '',
-        authHeaderValue: localStorage.getItem('teq-polly-tts-header-value') || '',
+        endpoint: safeStorageGet('localStorage', 'teq-polly-tts-endpoint') || '/api/polly-tts',
+        authHeaderName: safeStorageGet('localStorage', 'teq-polly-tts-header-name') || '',
+        authHeaderValue: safeStorageGet('localStorage', 'teq-polly-tts-header-value') || '',
         requestTimeoutMs: 15000
       }
     };
-    const translationRemoteProviderOrder = ['custom', 'google', 'azure', 'polly'];
+    const translationRemoteProviderOrder = ['custom', 'azure', 'google', 'polly'];
     const translationAudioCache = new Map();
 
     const translationVoiceRegistry = {
@@ -2023,7 +2054,7 @@
     }
 
     function saveTranslationSelection() {
-      localStorage.setItem(translationSelectionStorageKey, JSON.stringify({
+      safeStorageSet('localStorage', translationSelectionStorageKey, JSON.stringify({
         id: currentTranslationId,
         code: currentTranslationCode,
         name: currentTranslationName
@@ -2032,7 +2063,7 @@
 
     function getSavedTranslationSelection() {
       try {
-        const raw = localStorage.getItem(translationSelectionStorageKey);
+        const raw = safeStorageGet('localStorage', translationSelectionStorageKey);
         if (!raw) return null;
         const parsed = JSON.parse(raw);
         return parsed && typeof parsed === 'object' ? parsed : null;
@@ -2420,7 +2451,7 @@
 
     function getLastRead() {
       try {
-        const raw = localStorage.getItem(lastReadStorageKey);
+        const raw = safeStorageGet('localStorage', lastReadStorageKey);
         if (!raw) return null;
         const parsed = JSON.parse(raw);
         if (!parsed || typeof parsed.ayah !== 'number') return null;
@@ -2433,7 +2464,7 @@
 
     function getHistory() {
       try {
-        const raw = localStorage.getItem(historyStorageKey);
+        const raw = safeStorageGet('localStorage', historyStorageKey);
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
@@ -2445,7 +2476,7 @@
 
     function getPinnedVerses() {
       try {
-        const raw = localStorage.getItem(pinnedStorageKey);
+        const raw = safeStorageGet('localStorage', pinnedStorageKey);
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
@@ -2457,7 +2488,7 @@
 
     function getVerseNotes() {
       try {
-        const raw = localStorage.getItem(verseNotesStorageKey);
+        const raw = safeStorageGet('localStorage', verseNotesStorageKey);
         if (!raw) return {};
         const parsed = JSON.parse(raw);
         return parsed && typeof parsed === 'object' ? parsed : {};
@@ -2467,7 +2498,7 @@
     }
 
     function setVerseNotes(notes) {
-      localStorage.setItem(verseNotesStorageKey, JSON.stringify(notes));
+      safeStorageSet('localStorage', verseNotesStorageKey, JSON.stringify(notes));
     }
 
     function isVersePinned(ayah) {
@@ -2558,27 +2589,27 @@
     function saveLastReadAndHistory(ayahNumber) {
       const safeVerse = Number(ayahNumber);
       if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
-      localStorage.setItem(lastReadStorageKey, JSON.stringify({ ayah: safeVerse, savedAt: new Date().toISOString() }));
+      safeStorageSet('localStorage', lastReadStorageKey, JSON.stringify({ ayah: safeVerse, savedAt: new Date().toISOString() }));
       const history = getHistory().filter((item) => item.ayah !== safeVerse);
       history.unshift({ ayah: safeVerse, savedAt: new Date().toISOString() });
-      localStorage.setItem(historyStorageKey, JSON.stringify(history.slice(0, historyLimit)));
+      safeStorageSet('localStorage', historyStorageKey, JSON.stringify(history.slice(0, historyLimit)));
       updateBookmarkUI();
     }
 
     function clearBookmarkHistory() {
-      localStorage.removeItem(lastReadStorageKey);
-      localStorage.removeItem(historyStorageKey);
+      safeStorageRemove('localStorage', lastReadStorageKey);
+      safeStorageRemove('localStorage', historyStorageKey);
       updateBookmarkUI();
       showBookmarkMessage('Bookmark history cleared.');
     }
 
     function removeHistoryVerse(ayah) {
       const filtered = getHistory().filter((item) => item.ayah !== ayah);
-      localStorage.setItem(historyStorageKey, JSON.stringify(filtered));
+      safeStorageSet('localStorage', historyStorageKey, JSON.stringify(filtered));
       const lastRead = getLastRead();
       if (lastRead && lastRead.ayah === ayah) {
-        if (filtered.length) localStorage.setItem(lastReadStorageKey, JSON.stringify(filtered[0]));
-        else localStorage.removeItem(lastReadStorageKey);
+        if (filtered.length) safeStorageSet('localStorage', lastReadStorageKey, JSON.stringify(filtered[0]));
+        else safeStorageRemove('localStorage', lastReadStorageKey);
       }
       updateBookmarkUI();
       showBookmarkMessage(`Verse ${ayah} removed from bookmark history.`);
@@ -2591,7 +2622,7 @@
       const next = exists
         ? current.filter((item) => item.ayah !== safeAyah)
         : [{ ayah: safeAyah, savedAt: new Date().toISOString() }, ...current.filter((item) => item.ayah !== safeAyah)];
-      localStorage.setItem(pinnedStorageKey, JSON.stringify(next.slice(0, 100)));
+      safeStorageSet('localStorage', pinnedStorageKey, JSON.stringify(next.slice(0, 100)));
       updateBookmarkUI();
       refreshInlineStates();
       showBookmarkMessage(exists ? `Verse ${safeAyah} removed from pinned verses.` : `Verse ${safeAyah} pinned.`);
@@ -2753,6 +2784,14 @@
       return currentTranslationId === 'ar' ? 'Arabic' : getDisplayLanguageName();
     }
 
+    function isEnglishHumanLikeRemoteRequired() {
+      return currentTranslationId !== 'ar' && String(currentTranslationCode || '').toLowerCase() === 'en';
+    }
+
+    function getStrictEnglishRemoteMessage() {
+      return 'English translation audio needs a connected male neural voice endpoint on this device.';
+    }
+
     function isLikelyFemaleTranslationVoice(voice) {
       if (!voice) return false;
       const name = String(voice.name || '').toLowerCase();
@@ -2843,7 +2882,10 @@
     }
 
     function getTranslationRemoteProviders() {
-      return translationRemoteProviderOrder
+      const orderedKeys = isEnglishHumanLikeRemoteRequired()
+        ? ['custom', 'azure', 'google', 'polly']
+        : translationRemoteProviderOrder;
+      return orderedKeys
         .map((providerKey) => ({ providerKey, ...(translationRemoteProviders[providerKey] || {}) }))
         .filter((provider) => Boolean(String(provider.endpoint || '').trim()));
     }
@@ -2865,11 +2907,33 @@
       const config = getTranslationTtsConfig();
       const remoteVoices = config.remoteVoices || {};
       const preset = remoteVoices[providerKey] || {};
-      return {
-        languageCode: preset.languageCode || config.locale || currentTranslationCode || 'en',
+      const locale = preset.languageCode || config.locale || currentTranslationCode || 'en';
+      const baseProfile = {
+        languageCode: locale,
         voiceName: preset.voiceName || '',
         gender: 'MALE',
-        preferredNames: Array.isArray(config.preferredNames) ? config.preferredNames : []
+        preferredNames: Array.isArray(config.preferredNames) ? config.preferredNames : [],
+        quality: isEnglishHumanLikeRemoteRequired() ? 'neural' : 'standard',
+        humanLike: isEnglishHumanLikeRemoteRequired(),
+        voiceCandidates: []
+      };
+
+      if (!isEnglishHumanLikeRemoteRequired()) {
+        return baseProfile;
+      }
+
+      const englishCandidatesByProvider = {
+        custom: ['en-GB-RyanNeural', 'en-GB-Neural2-D', 'en-GB-News-G', 'en-US-AndrewNeural', 'en-US-ChristopherNeural'],
+        azure: ['en-GB-RyanNeural', 'en-US-AndrewNeural', 'en-US-ChristopherNeural', 'en-US-GuyNeural'],
+        google: ['en-GB-Neural2-D', 'en-GB-News-G', 'en-US-Neural2-D', 'en-US-Studio-M'],
+        polly: ['Matthew', 'Joey', 'Brian']
+      };
+
+      const candidates = englishCandidatesByProvider[providerKey] || [];
+      return {
+        ...baseProfile,
+        voiceName: baseProfile.voiceName || candidates[0] || '',
+        voiceCandidates: candidates
       };
     }
 
@@ -2915,10 +2979,15 @@
             locale: getPreferredTranslationLocale(),
             languageCode: voiceProfile.languageCode,
             voiceName: voiceProfile.voiceName,
+            voiceCandidates: Array.isArray(voiceProfile.voiceCandidates) ? voiceProfile.voiceCandidates : [],
             gender: 'MALE',
             requiredGender: 'MALE',
             forbidFemale: true,
-            preferredNames: voiceProfile.preferredNames
+            preferredNames: voiceProfile.preferredNames,
+            quality: voiceProfile.quality,
+            humanLike: Boolean(voiceProfile.humanLike),
+            requireHumanLike: Boolean(voiceProfile.humanLike),
+            requireRemote: isEnglishHumanLikeRemoteRequired()
           })
         });
         if (!response.ok) return null;
@@ -3007,6 +3076,11 @@
           audio.onerror = () => finish(false);
           audio.play().catch(() => finish(false));
         });
+      }
+
+      if (isEnglishHumanLikeRemoteRequired()) {
+        showBookmarkMessage(getStrictEnglishRemoteMessage());
+        return false;
       }
 
       if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
@@ -3606,9 +3680,9 @@ ${message}` : '';
     }
 
     function persistReflectionDraft() {
-      localStorage.setItem(reflectionDraftStorageKey, reflectionDraft.value || '');
-      localStorage.setItem(reflectionNameStorageKey, reflectionName.value || '');
-      localStorage.setItem(reflectionEmailStorageKey, reflectionEmail.value || '');
+      safeStorageSet('localStorage', reflectionDraftStorageKey, reflectionDraft.value || '');
+      safeStorageSet('localStorage', reflectionNameStorageKey, reflectionName.value || '');
+      safeStorageSet('localStorage', reflectionEmailStorageKey, reflectionEmail.value || '');
     }
 
     function isValidEmail(value) {
@@ -4180,9 +4254,9 @@ ${getVerseUrl(ayah)}`,
 
         reflectionFeedback.classList.add('active');
         reflectionFeedback.textContent = 'Reflection sent. Thank you for sharing your thoughts with us.';
-        localStorage.removeItem(reflectionDraftStorageKey);
-        localStorage.removeItem(reflectionNameStorageKey);
-        localStorage.removeItem(reflectionEmailStorageKey);
+        safeStorageRemove('localStorage', reflectionDraftStorageKey);
+        safeStorageRemove('localStorage', reflectionNameStorageKey);
+        safeStorageRemove('localStorage', reflectionEmailStorageKey);
         reflectionName.value = '';
         reflectionEmail.value = '';
         reflectionDraft.value = '';
@@ -4789,7 +4863,7 @@ ${getVerseUrl(ayah)}`,
     }
 
     function goToNextSurahWithRecitation() {
-      sessionStorage.setItem(autoplaySessionKey, '1');
+      safeStorageSet('sessionStorage', autoplaySessionKey, '1');
       window.location.href = `${nextSurahFile}?reciter=${encodeURIComponent(reciterSelect.value)}&view=synced&autoplay=1`;
     }
 
@@ -4873,7 +4947,7 @@ ${getVerseUrl(ayah)}`,
         document.documentElement.removeAttribute('data-theme');
         themeToggle.textContent = 'Dark';
       }
-      localStorage.setItem('site-theme', theme);
+      safeStorageSet('localStorage', 'site-theme', theme);
     }
 
     function stripEmbeddedVerseMarkers(text) {
@@ -5256,9 +5330,9 @@ ${getVerseUrl(ayah)}`,
 
     async function loadSurah() {
       const restoreReflectionDrafts = () => {
-        const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
-        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
-        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
+        const savedReflectionDraft = safeStorageGet('localStorage', reflectionDraftStorageKey);
+        const savedReflectionName = safeStorageGet('localStorage', reflectionNameStorageKey);
+        const savedReflectionEmail = safeStorageGet('localStorage', reflectionEmailStorageKey);
         if (savedReflectionDraft !== null) reflectionDraft.value = savedReflectionDraft;
         if (savedReflectionName !== null) reflectionName.value = savedReflectionName;
         if (savedReflectionEmail !== null) reflectionEmail.value = savedReflectionEmail;
@@ -5313,7 +5387,7 @@ ${getVerseUrl(ayah)}`,
         audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
 
         if (!apiDegraded && shouldAutoplay) {
-          sessionStorage.removeItem(autoplaySessionKey);
+          safeStorageRemove('sessionStorage', autoplaySessionKey);
           await loadSelectedAudio();
 
           const wantsSynced = autoplayView === 'synced';
@@ -5663,7 +5737,7 @@ ${getVerseUrl(ayah)}`,
       if (!event.target.closest('.verse-toolbar')) closeAllMenus();
     });
 
-    const savedTheme = localStorage.getItem('site-theme');
+    const savedTheme = safeStorageGet('localStorage', 'site-theme');
     applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
     buildVerseSelector();
     updateLanguagesPanelText();
