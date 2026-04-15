@@ -1190,6 +1190,9 @@
       .note-panel-actions { flex-direction: column; }
       .note-save-btn, .note-clear-btn, .note-share-btn, .note-copy-btn, .note-close-btn, .tajweed-mini-btn { width: 100%; }
       .tajweed-mini-top { flex-direction: column; align-items: flex-start; }
+      #translationMini {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+      }
       .languages-panel { padding: 14px; border-radius: 16px; }
       .languages-list { max-height: 300px; gap: 10px; }
       #languagesSearchInput { min-height: 46px; }
@@ -1266,18 +1269,18 @@
     </div>
   </div>
 
-  <div class="tajweed-mini notranslate" id="translationMini" translate="no" aria-live="polite" style="bottom: 92px; display: none;">
+  <div class="tajweed-mini notranslate" id="translationMini" translate="no" aria-live="polite" style="bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); display: none;">
     <div class="tajweed-mini-top">
       <div>
         <div class="tajweed-mini-title" id="translationMiniTitle" translate="no">Translation audio</div>
         <div class="tajweed-mini-text" id="translationMiniText" translate="no">Ready</div>
       </div>
       <div class="page-nav">
-        <button class="tajweed-mini-btn primary" type="button" id="translationMiniPlay" translate="no">Play</button>
-        <button class="tajweed-mini-btn" type="button" id="translationMiniPause" translate="no">Pause</button>
+        <button class="tajweed-mini-btn primary" type="button" id="translationMiniToggle" translate="no">Play</button>
         <button class="tajweed-mini-btn" type="button" id="translationMiniStop" translate="no">Stop</button>
       </div>
     </div>
+  </div>
   </div>
 
   <main translate="no" class="notranslate">
@@ -1744,8 +1747,7 @@
     const translationMini = document.getElementById('translationMini');
     const translationMiniTitle = document.getElementById('translationMiniTitle');
     const translationMiniText = document.getElementById('translationMiniText');
-    const translationMiniPlay = document.getElementById('translationMiniPlay');
-    const translationMiniPause = document.getElementById('translationMiniPause');
+    const translationMiniToggle = document.getElementById('translationMiniToggle');
     const translationMiniStop = document.getElementById('translationMiniStop');
 
     const shareType = document.getElementById('shareType');
@@ -2860,10 +2862,10 @@
       );
       updateTranslationMini(
         continueAll
-          ? `Continuing from verse ${safeAyah}`
+          ? (mode === 'translation' ? `Playing English translation from verse ${safeAyah} to the end` : `Continuing from verse ${safeAyah}`)
           : mode === 'with-arabic'
-            ? `Arabic first, then English translation`
-            : `Playing English translation`
+            ? 'Arabic first, then English translation'
+            : 'Playing English translation'
       );
 
       for (let ayah = safeAyah; ayah <= totalVerses; ayah += 1) {
@@ -2912,7 +2914,7 @@
           {
             label: 'Play translation',
             primary: true,
-            onClick: async () => { await runTranslationFlow(safeAyah, 'translation', false); }
+            onClick: async () => { await runTranslationFlow(safeAyah, 'translation', true); }
           },
           {
             label: 'Continue',
@@ -4193,8 +4195,10 @@ ${getVerseUrl(ayah)}`,
       if (translationMiniText) {
         translationMiniText.textContent = visible ? text : 'Ready';
       }
-      if (translationMiniPlay) translationMiniPlay.disabled = !visible;
-      if (translationMiniPause) translationMiniPause.disabled = !visible;
+      if (translationMiniToggle) {
+        translationMiniToggle.disabled = !visible;
+        translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
+      }
       if (translationMiniStop) translationMiniStop.disabled = !visible;
     }
 
@@ -5201,36 +5205,33 @@ ${getVerseUrl(ayah)}`,
     });
     tajweedMiniStop.addEventListener('click', () => stopTajweedPlayback(true));
 
-    translationMiniPlay.addEventListener('click', async () => {
+    translationMiniToggle.addEventListener('click', async () => {
       try {
-        if (translationBridgeAudio && translationBridgeAudio.paused) {
-          await translationBridgeAudio.play();
-          updateTranslationMini('Arabic playback resumed', true);
+        if (translationBridgeAudio) {
+          if (translationBridgeAudio.paused) {
+            await translationBridgeAudio.play();
+            updateTranslationMini('Arabic playback resumed', true);
+          } else {
+            translationBridgeAudio.pause();
+            updateTranslationMini('Translation audio paused', true);
+          }
           return;
         }
-        if ('speechSynthesis' in window && window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-          updateTranslationMini('English translation resumed', true);
+        if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+            updateTranslationMini('English translation resumed', true);
+          } else {
+            window.speechSynthesis.pause();
+            updateTranslationMini('Translation audio paused', true);
+          }
           return;
         }
         if (translationTapMode !== 'off') {
-          await runTranslationFlow(currentVisibleVerse || 1, translationTapMode, false);
+          await runTranslationFlow(currentVisibleVerse || 1, translationTapMode, translationTapMode === 'translation' || translationContinueActive);
         }
       } catch {
-        showBookmarkMessage('Translation audio could not be played right now.');
-      }
-    });
-
-    translationMiniPause.addEventListener('click', () => {
-      try {
-        if (translationBridgeAudio && !translationBridgeAudio.paused) {
-          translationBridgeAudio.pause();
-        } else if ('speechSynthesis' in window && window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-          window.speechSynthesis.pause();
-        }
-        updateTranslationMini('Translation audio paused', true);
-      } catch {
-        showBookmarkMessage('Translation audio could not be paused right now.');
+        showBookmarkMessage('Translation audio could not be changed right now.');
       }
     });
 
