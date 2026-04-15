@@ -1840,6 +1840,7 @@
     let translationSpeechUtterance = null;
     let translationSpeechActive = false;
     let translationPlaybackState = 'idle';
+    let translationMiniMonitor = null;
     let translationVoicesReady = false;
     const googleTranslationTtsConfig = {
       endpoint: localStorage.getItem('teq-google-tts-endpoint') || '/api/google-tts',
@@ -2847,6 +2848,7 @@
       }
       translationSpeechUtterance = null;
       translationPlaybackState = 'idle';
+      stopTranslationMiniMonitor();
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch {}
       }
@@ -4360,58 +4362,6 @@ ${getVerseUrl(ayah)}`,
 
     function getTranslationPlaybackMode() {
       if (translationBridgeAudio && !translationBridgeAudio.ended) {
-        return translationBridgeAudio.paused ? 'paused' : 'playing';
-      }
-      if (translationSpeechAudio && !translationSpeechAudio.ended) {
-        return translationSpeechAudio.paused ? 'paused' : 'playing';
-      }
-      if ('speechSynthesis' in window && translationSpeechUtterance) {
-        if (window.speechSynthesis.speaking) {
-          return window.speechSynthesis.paused ? 'paused' : 'playing';
-        }
-        if (window.speechSynthesis.paused) {
-          return 'paused';
-        }
-      }
-      return translationPlaybackState || 'idle';
-    }
-
-    function isTranslationPlaybackPaused() {
-      return getTranslationPlaybackMode() !== 'playing';
-    }
-
-    function syncTranslationMiniToggleLabel() {
-      if (!translationMiniToggle) return;
-      translationMiniToggle.textContent = isTranslationPlaybackPaused() ? 'Play' : 'Pause';
-    }
-
-    function updateTranslationMini(text = 'Translation audio ready.', forceVisible = false) {
-      if (!translationMini) return;
-      const visible = isEnglishTranslationVoiceEnabled() && (
-        forceVisible
-        || Boolean(translationBridgeAudio)
-        || Boolean(translationSpeechAudio)
-        || Boolean(translationSpeechUtterance)
-        || translationSpeechActive
-        || translationContinueActive
-        || translationTapMode !== 'off'
-        || getTranslationPlaybackMode() !== 'idle'
-      );
-      translationMini.classList.toggle('active', visible);
-      if (translationMiniText) {
-        translationMiniText.textContent = visible ? text : 'Translation audio ready.';
-      }
-      if (translationMiniToggle) {
-        translationMiniToggle.disabled = !visible;
-        syncTranslationMiniToggleLabel();
-      }
-      if (translationMiniBeginning) {
-        translationMiniBeginning.disabled = !visible;
-      }
-    }
-
-    async function toggleTranslationMiniPlayback() {
-      if (translationBridgeAudio && !translationBridgeAudio.ended) {
         if (translationBridgeAudio.paused) {
           await translationBridgeAudio.play();
           translationPlaybackState = 'playing';
@@ -4421,6 +4371,7 @@ ${getVerseUrl(ayah)}`,
           translationPlaybackState = 'paused';
           updateTranslationMini('Arabic playback paused', true);
         }
+        syncTranslationMiniToggleLabel();
         return;
       }
 
@@ -4434,6 +4385,7 @@ ${getVerseUrl(ayah)}`,
           translationPlaybackState = 'paused';
           updateTranslationMini('English translation paused', true);
         }
+        syncTranslationMiniToggleLabel();
         return;
       }
 
@@ -4442,12 +4394,14 @@ ${getVerseUrl(ayah)}`,
           window.speechSynthesis.pause();
           translationPlaybackState = 'paused';
           updateTranslationMini('English translation paused', true);
+          syncTranslationMiniToggleLabel();
           return;
         }
         if (window.speechSynthesis.paused) {
           window.speechSynthesis.resume();
           translationPlaybackState = 'playing';
           updateTranslationMini('English translation resumed', true);
+          syncTranslationMiniToggleLabel();
           return;
         }
       }
@@ -4455,6 +4409,7 @@ ${getVerseUrl(ayah)}`,
       if (translationTapMode !== 'off') {
         translationPlaybackState = 'playing';
         updateTranslationMini('Translation audio starting...', true);
+        syncTranslationMiniToggleLabel();
         await runTranslationFlow(translationStartVerse || currentVisibleVerse || 1, translationTapMode, true);
       }
     }
