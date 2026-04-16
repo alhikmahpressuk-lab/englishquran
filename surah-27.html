@@ -1348,10 +1348,10 @@
 
         <div class="controls">
           <button class="tab-button active" type="button" data-tab="read" translate="no">Read</button>
-          <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
           <button class="tab-button" type="button" data-tab="overview" translate="no">Overview</button>
           <button class="tab-button" type="button" data-tab="mode" translate="no">Mode</button>
           <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
+          <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
           <button class="tab-button" type="button" data-tab="share" translate="no">Share</button>
           <button class="main-reset-button" type="button" id="resetMainButton" title="All saved data will be reset to normal." aria-label="Reset all saved data to normal" translate="no">Reset</button>
         </div>
@@ -1414,11 +1414,6 @@
                   <option value="dussary">Yasser Ad-Dussary</option>
                   <option value="ali-jaber">Sheikh Ali Jaber</option>
                   <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
-                  <option value="abu-bakr-al-shatri">Abu Bakr al-Shatri</option>
-                  <option value="mahmoud-khalil-al-husary-learning">Mahmoud Khalil Al-Husary (Learning)</option>
-                  <option value="bandar-baleela">Sheikh Bander Baleela</option>
-                  <option value="maher-al-muaiqly">Sheikh Maher al-Muaiqly</option>
-                  <option value="saad-al-ghamdi">Saad al-Ghamdi</option>
                 </select>
               </div>
               <button class="jump-button" type="button" id="loadAudioButton" translate="no">Load recitation</button>
@@ -1673,12 +1668,7 @@
       shuraim: { name: 'Sheikh Saud ash-Shuraym', id: 10 },
       dussary: { name: 'Yasser Ad-Dussary', id: 174 },
       'ali-jaber': { name: 'Sheikh Ali Jaber', id: 158 },
-      'abdul-basit': { name: 'Sheikh Abdul Basit Abdul Samad', id: 2 },
-      'abu-bakr-al-shatri': { name: 'Abu Bakr al-Shatri', id: null, lookupNames: ['Abu Bakr al-Shatri', 'Abu Bakr Ash-Shatri', 'Abu Bakr Al-Shatri'] },
-      'mahmoud-khalil-al-husary-learning': { name: 'Mahmoud Khalil Al-Husary (Learning)', id: null, lookupNames: ['Mahmoud Khalil Al-Husary Muallim', 'Mahmoud Khalil Al-Husary (Learning)', 'Mahmoud Khalil Al-Husary', 'Al-Husary Muallim'] },
-      'bandar-baleela': { name: 'Sheikh Bander Baleela', id: null, lookupNames: ['Bandar Baleela', 'Bander Baleela', 'Bandar Balila', 'Bander Balila'] },
-      'maher-al-muaiqly': { name: 'Sheikh Maher al-Muaiqly', id: null, lookupNames: ['Maher al-Muaiqly', 'Maher Al Muaiqly', 'Maher Almaiqly', 'Maher Al-Muaiqly', 'Maher Al Muaiqli'] },
-      'saad-al-ghamdi': { name: 'Saad al-Ghamdi', id: null, lookupNames: ['Saad al-Ghamdi', 'Saad Al Ghamdi', 'Saad Al-Ghamdi'] }
+      'abdul-basit': { name: 'Sheikh Abdul Basit Abdul Samad', id: 2 }
     };
 
     const blockedPatterns = [
@@ -1843,7 +1833,6 @@
     let tajweedContinueAllActive = false;
     let apiDegraded = false;
     let jsPdfLoaderPromise = null;
-    let chapterRecitersLookupPromise = null;
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
     function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
@@ -3856,53 +3845,12 @@ ${getVerseUrl(ayah)}`,
         });
     }
 
-    function normaliseReciterLookupName(value) {
-      return String(value || '').toLowerCase().split('(')[0].replace(/[^a-z0-9]+/g, ' ').trim();
-    }
-
-    async function resolveChapterReciterId(reciterKey) {
-      const reciter = reciters[reciterKey];
-      if (!reciter) return null;
-      if (Number.isFinite(reciter.id)) return reciter.id;
-      if (!chapterRecitersLookupPromise) {
-        chapterRecitersLookupPromise = safeFetchJson('https://api.quran.com/api/v4/resources/chapter_reciters?language=en');
-      }
-      const payload = await chapterRecitersLookupPromise;
-      const items = [];
-      if (Array.isArray(payload?.reciters)) items.push(...payload.reciters);
-      if (Array.isArray(payload?.chapter_reciters)) items.push(...payload.chapter_reciters);
-      if (Array.isArray(payload?.readers)) items.push(...payload.readers);
-      if (Array.isArray(payload?.data)) items.push(...payload.data);
-
-      const expected = [reciter.name, ...(Array.isArray(reciter.lookupNames) ? reciter.lookupNames : [])]
-        .map((name) => normaliseReciterLookupName(name))
-        .filter(Boolean);
-
-      const match = items.find((item) => {
-        const names = [
-          item?.name,
-          item?.translated_name?.name,
-          item?.author_name,
-          item?.reader_name,
-          item?.resource_name
-        ].map((name) => normaliseReciterLookupName(name)).filter(Boolean);
-        return names.some((name) => expected.includes(name));
-      });
-
-      if (match && Number.isFinite(Number(match.id))) {
-        reciter.id = Number(match.id);
-        return reciter.id;
-      }
-      return null;
-    }
-
     async function fetchReciterAudio(reciterId) {
       const payload = await safeFetchJson(`https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${surahNumber}?segments=true`);
-      const audioFile = payload?.audio_file || payload?.chapter_recitation || payload?.audio_files?.[0] || null;
-      const rawUrl = audioFile?.audio_url || audioFile?.url || audioFile?.audio || '';
-      if (!rawUrl) return null;
-      const audioUrl = normaliseAudioUrl(rawUrl);
-      const rawTimestamps = Array.isArray(audioFile?.timestamps) ? audioFile.timestamps : [];
+      const audioFile = payload?.audio_file;
+      if (!audioFile?.audio_url) return null;
+      const audioUrl = normaliseAudioUrl(audioFile.audio_url);
+      const rawTimestamps = Array.isArray(audioFile.timestamps) ? audioFile.timestamps : [];
       const timestamps = rawTimestamps
         .map((item) => ({
           verseNumber: Number(String(item.verse_key).split(':')[1]),
@@ -4673,16 +4621,7 @@ ${getVerseUrl(ayah)}`,
       loadAudioButton.disabled = true;
       loadAudioButton.textContent = 'Loading...';
       try {
-        const resolvedId = await resolveChapterReciterId(reciterSelect.value);
-        if (!resolvedId) {
-          currentAudioUrl = '';
-          syncTimestamps = [];
-          syncByVerse = {};
-          audioMeta.textContent = `Recitation is unavailable for ${reciter.name} right now.`;
-          showBookmarkMessage('That reciter is unavailable right now.');
-          return;
-        }
-        const result = await fetchReciterAudio(resolvedId);
+        const result = await fetchReciterAudio(reciter.id);
         await fetchIntroBismillahAudio();
         if (!result?.audioUrl) {
           currentAudioUrl = '';
