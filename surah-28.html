@@ -1153,6 +1153,17 @@
       min-height: 42px;
     }
     .footer-links a:hover { background: var(--surface-soft); }
+    .footer-note {
+      width: 100%;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      padding-top: 6px;
+    }
+    .footer-note small {
+      display: block;
+    }
 
     .hidden-arabic .arabic-wrap,
     .hidden-arabic .bismillah-arabic { display: none; }
@@ -1550,6 +1561,7 @@
         <a href="index.html" translate="no">Homepage</a>
         <a href="surah-28.html" translate="no">Next Surah · Al-Qaṣaṣ</a>
       </div>
+      <div class="footer-note" id="pageFooterMeta" translate="no"></div>
     </div>
   </footer>
 
@@ -1696,6 +1708,7 @@
     const listenPanel = document.getElementById('listenPanel');
     const sharePanel = document.getElementById('sharePanel');
     const resetMainButton = document.getElementById('resetMainButton');
+    const overviewRoot = document.querySelector('#overview .overview');
 
     const modeButtons = document.querySelectorAll('.mode-button');
     const audioViewButtons = document.querySelectorAll('.audio-view-button');
@@ -1797,6 +1810,7 @@
     let translationResources = [];
     const translationCache = { 'en-fallback': englishVerses.slice(), ar: Array.from({ length: totalVerses }, () => '') };
     const bismillahTranslationCache = { 'en-fallback': bismillahEnglish, ar: '' };
+    const overviewTranslationCache = {};
     let languageListLoadingPromise = null;
     const wordLayerCache = { en: null, ar: null };
     const translationCapabilityMap = {
@@ -1900,6 +1914,16 @@
       return currentTranslationId === 'ar' ? 'Arabic' : currentTranslationName;
     }
 
+    function updatePageFooterMeta() {
+      const footerMeta = document.getElementById('pageFooterMeta');
+      if (!footerMeta) return;
+      const lines = ['© openquran.uk. All rights reserved.'];
+      if (currentTranslationId === 'en-fallback') {
+        lines.push('The English Qur’an | By: Dr A. K. Khan');
+      }
+      footerMeta.innerHTML = lines.map((line) => `<small>${escapeHtml(line)}</small>`).join('');
+    }
+
     function updateModeLabels() {
       const bilingualButton = document.querySelector('[data-mode="bilingual"]');
       const translationOnlyButton = document.querySelector('[data-mode="english-only"]');
@@ -1918,6 +1942,79 @@
       }
       if (languagesStatus) {
         languagesStatus.textContent = getWordLayerStatusText();
+      }
+      updatePageFooterMeta();
+    }
+
+    function getOverviewSourceContent() {
+      if (!overviewRoot) return null;
+      const headings = Array.from(overviewRoot.querySelectorAll('h3')).map((node) => node.textContent.trim());
+      const paragraphs = Array.from(overviewRoot.querySelectorAll('p')).map((node) => node.textContent.trim());
+      const keyThemeItems = Array.from(overviewRoot.querySelectorAll('li')).map((node) => node.textContent.trim());
+      return {
+        overviewTitle: headings[0] || 'Overview',
+        overviewParagraphs: paragraphs.slice(0, 5),
+        keyThemesTitle: headings[1] || 'Key Themes',
+        keyThemeItems,
+        centralMessageTitle: headings[2] || 'Central Message',
+        centralMessageParagraph: paragraphs[5] || ''
+      };
+    }
+
+    const overviewSourceContent = getOverviewSourceContent();
+
+    function renderOverviewContent(content) {
+      if (!overviewRoot || !content) return;
+      const overviewParagraphs = Array.isArray(content.overviewParagraphs) ? content.overviewParagraphs : [];
+      const keyThemeItems = Array.isArray(content.keyThemeItems) ? content.keyThemeItems : [];
+      overviewRoot.innerHTML = [
+        `<h3 translate="no">${escapeHtml(content.overviewTitle || 'Overview')}</h3>`,
+        ...overviewParagraphs.map((text) => `<p translate="no">${escapeHtml(text)}</p>`),
+        `<h3 translate="no">${escapeHtml(content.keyThemesTitle || 'Key Themes')}</h3>`,
+        `<ul>${keyThemeItems.map((item) => `<li translate="no">${escapeHtml(item)}</li>`).join('')}</ul>`,
+        `<h3 translate="no">${escapeHtml(content.centralMessageTitle || 'Central Message')}</h3>`,
+        `<p translate="no">${escapeHtml(content.centralMessageParagraph || '')}</p>`
+      ].join('');
+    }
+
+    async function translateOverviewForActiveLanguage() {
+      if (!overviewRoot || !overviewSourceContent) return;
+      const cacheKey = String(currentTranslationId || currentTranslationCode || 'en-fallback');
+      if (cacheKey === 'en-fallback') {
+        renderOverviewContent(overviewSourceContent);
+        return;
+      }
+      if (overviewTranslationCache[cacheKey]) {
+        renderOverviewContent(overviewTranslationCache[cacheKey]);
+        return;
+      }
+
+      const endpoint = window.OPENQURAN_OVERVIEW_TRANSLATE_ENDPOINT || localStorage.getItem('openquran-overview-endpoint') || '';
+      if (!endpoint) {
+        renderOverviewContent(overviewSourceContent);
+        return;
+      }
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetLanguage: currentTranslationCode || 'en',
+            translationId: currentTranslationId,
+            translationName: currentTranslationName,
+            content: overviewSourceContent
+          })
+        });
+        if (!response.ok) throw new Error('Overview translation request failed.');
+        const result = await response.json();
+        const translated = result && result.content ? result.content : null;
+        if (!translated) throw new Error('Overview translation response was empty.');
+        overviewTranslationCache[cacheKey] = translated;
+        renderOverviewContent(translated);
+      } catch (error) {
+        console.warn('Overview translation could not be loaded.', error);
+        renderOverviewContent(overviewSourceContent);
       }
     }
 
@@ -2125,6 +2222,24 @@
         updateModeLabels();
         rerenderTranslationView();
         saveTranslationSelection();
+        await translateOverviewForActiveLanguage();
+        if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
+        return;
+      }
+
+      if (nextId === 'en-fallback') {
+        currentTranslationId = 'en-fallback';
+        currentTranslationCode = 'en';
+        currentTranslationName = 'English';
+        currentTranslationAttributionName = 'Dr A. K. Khan';
+        currentTranslationVerses = englishVerses.slice();
+        bismillahTranslationCache['en-fallback'] = bismillahEnglish;
+        await applyActiveWordLayer('en', 'en-fallback', 'English');
+        if (currentMode === 'arabic-only') currentMode = 'bilingual';
+        updateModeLabels();
+        rerenderTranslationView();
+        saveTranslationSelection();
+        await translateOverviewForActiveLanguage();
         if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
         return;
       }
@@ -2163,6 +2278,7 @@
       updateModeLabels();
       rerenderTranslationView();
       saveTranslationSelection();
+      await translateOverviewForActiveLanguage();
       if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
     }
 
@@ -5205,6 +5321,7 @@ ${getVerseUrl(ayah)}`,
     updateBookmarkUI();
     updateSyncBarState();
     updateShareBuilder();
+    renderOverviewContent(overviewSourceContent);
     loadSurah();
   </script>
 </body>
