@@ -3027,8 +3027,12 @@ Surah An-Naml, Ayah ${ayah}`;
       return currentTranslationId === 'en-fallback' ? bismillahEnglish : '';
     }
 
-    function getExportFooterText() {
-      return `Translation by ${getCurrentTranslatorAttribution()}`;
+    function getExportFooterBrandText() {
+      return '© openquran.uk | The English Qur’an | By: A. K. Khan';
+    }
+
+    function getExportFooterTranslatorText() {
+      return `Translated by ${getCurrentTranslatorAttribution()}`;
     }
 
     function getSelectionRange() {
@@ -3227,7 +3231,8 @@ ${getVerseUrl(ayah)}`,
     }
 
     function createExportHtml(payload) {
-      const footerText = getExportFooterText();
+      const footerBrandText = getExportFooterBrandText();
+      const footerTranslatorText = getExportFooterTranslatorText();
       const blocksHtml = payload.blocks.map((block) => {
         if (block.kind === 'bismillah') {
           return [
@@ -3291,7 +3296,7 @@ ${getVerseUrl(ayah)}`,
         `<h1>${escapeHtml(payload.title)}</h1>`,
         blocksHtml,
         '</div>',
-        `<div class="foot"><div class="foot-left">© TEQ<br>${escapeHtml(footerText)}</div><div class="foot-right"><span class="page-number"></span></div></div>`,
+        `<div class="foot"><div class="foot-left">${escapeHtml(footerBrandText)}<br>${escapeHtml(footerTranslatorText)}</div><div class="foot-right"><span class="page-number"></span></div></div>`,
         '</body>',
         '</html>'
       ].join('');
@@ -3375,7 +3380,8 @@ ${getVerseUrl(ayah)}`,
       const rightColWidth = width - (paddingX * 2) - leftColWidth - gutter;
       const pageBottom = height - 118;
       const pages = [];
-      const footerText = getExportFooterText();
+      const footerBrandText = getExportFooterBrandText();
+      const footerTranslatorText = getExportFooterTranslatorText();
 
       let canvas = null;
       let ctx = null;
@@ -3545,8 +3551,8 @@ ${getVerseUrl(ayah)}`,
         pageCtx.fillStyle = '#66727d';
         pageCtx.textAlign = 'left';
         pageCtx.font = '400 20px Inter, Arial, sans-serif';
-        pageCtx.fillText('© TEQ', paddingX, footerY - 18);
-        pageCtx.fillText(footerText, paddingX, footerY + 10);
+        pageCtx.fillText(footerBrandText, paddingX, footerY - 18);
+        pageCtx.fillText(footerTranslatorText, paddingX, footerY + 10);
 
         pageCtx.textAlign = 'right';
         pageCtx.fillText(`${index + 1}/${pages.length}`, width - paddingX, footerY + 10);
