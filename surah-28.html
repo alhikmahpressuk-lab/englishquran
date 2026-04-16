@@ -1977,71 +1977,57 @@
       ].join('');
     }
 
-    async function translateOverviewTextWithGoogle(text, targetLanguage) {
+    async function translateOverviewTextFresh(text, targetLanguage) {
       const sourceText = String(text || '').trim();
       const target = String(targetLanguage || '').trim().toLowerCase();
       if (!sourceText || !target || target === 'en') return sourceText;
-      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${encodeURIComponent(target)}&dt=t&q=${encodeURIComponent(sourceText)}`;
+
+      const endpoint = window.OPENQURAN_OVERVIEW_TRANSLATE_ENDPOINT || localStorage.getItem('openquran-overview-endpoint') || '';
+      if (endpoint) {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: sourceText, targetLanguage: target, nonce: Date.now() })
+        });
+        if (!response.ok) throw new Error('Overview translation endpoint request failed.');
+        const result = await response.json();
+        const translated = String(result?.text || result?.translation || '').trim();
+        if (translated) return translated;
+      }
+
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(sourceText)}&langpair=en|${encodeURIComponent(target)}&de=overview@openquran.uk&t=${Date.now()}`;
       const response = await fetch(url, { cache: 'no-store' });
-      if (!response.ok) throw new Error('Google overview translation request failed.');
+      if (!response.ok) throw new Error('Overview live translation request failed.');
       const payload = await response.json();
-      const segments = Array.isArray(payload?.[0]) ? payload[0] : [];
-      const translated = segments.map((segment) => Array.isArray(segment) ? String(segment[0] || '') : '').join('').trim();
+      const translated = String(payload?.responseData?.translatedText || '').trim();
       return translated || sourceText;
     }
 
-    async function buildGoogleTranslatedOverview(targetLanguage) {
+    async function buildLiveTranslatedOverview(targetLanguage) {
       if (!overviewSourceContent) return null;
-      const translatedParagraphs = await Promise.all((overviewSourceContent.overviewParagraphs || []).map((text) => translateOverviewTextWithGoogle(text, targetLanguage)));
-      const translatedKeyThemeItems = await Promise.all((overviewSourceContent.keyThemeItems || []).map((text) => translateOverviewTextWithGoogle(text, targetLanguage)));
+      const translatedParagraphs = await Promise.all((overviewSourceContent.overviewParagraphs || []).map((text) => translateOverviewTextFresh(text, targetLanguage)));
+      const translatedKeyThemeItems = await Promise.all((overviewSourceContent.keyThemeItems || []).map((text) => translateOverviewTextFresh(text, targetLanguage)));
       return {
-        overviewTitle: await translateOverviewTextWithGoogle(overviewSourceContent.overviewTitle || 'Overview', targetLanguage),
+        overviewTitle: await translateOverviewTextFresh(overviewSourceContent.overviewTitle || 'Overview', targetLanguage),
         overviewParagraphs: translatedParagraphs,
-        keyThemesTitle: await translateOverviewTextWithGoogle(overviewSourceContent.keyThemesTitle || 'Key Themes', targetLanguage),
+        keyThemesTitle: await translateOverviewTextFresh(overviewSourceContent.keyThemesTitle || 'Key Themes', targetLanguage),
         keyThemeItems: translatedKeyThemeItems,
-        centralMessageTitle: await translateOverviewTextWithGoogle(overviewSourceContent.centralMessageTitle || 'Central Message', targetLanguage),
-        centralMessageParagraph: await translateOverviewTextWithGoogle(overviewSourceContent.centralMessageParagraph || '', targetLanguage)
+        centralMessageTitle: await translateOverviewTextFresh(overviewSourceContent.centralMessageTitle || 'Central Message', targetLanguage),
+        centralMessageParagraph: await translateOverviewTextFresh(overviewSourceContent.centralMessageParagraph || '', targetLanguage)
       };
     }
 
     async function translateOverviewForActiveLanguage() {
       if (!overviewRoot || !overviewSourceContent) return;
-      const cacheKey = String(currentTranslationId || currentTranslationCode || 'en-fallback');
       const targetLanguage = String(currentTranslationCode || 'en').trim().toLowerCase();
-      if (cacheKey === 'en-fallback' || targetLanguage === 'en') {
+      if (String(currentTranslationId || 'en-fallback') === 'en-fallback' || targetLanguage === 'en') {
         renderOverviewContent(overviewSourceContent);
-        return;
-      }
-      if (overviewTranslationCache[cacheKey]) {
-        renderOverviewContent(overviewTranslationCache[cacheKey]);
         return;
       }
 
       try {
-        const endpoint = window.OPENQURAN_OVERVIEW_TRANSLATE_ENDPOINT || localStorage.getItem('openquran-overview-endpoint') || '';
-        if (endpoint) {
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              targetLanguage,
-              translationId: currentTranslationId,
-              translationName: currentTranslationName,
-              content: overviewSourceContent
-            })
-          });
-          if (!response.ok) throw new Error('Overview translation endpoint failed.');
-          const result = await response.json();
-          const translated = result && result.content ? result.content : null;
-          if (!translated) throw new Error('Overview translation endpoint returned no content.');
-          overviewTranslationCache[cacheKey] = translated;
-          renderOverviewContent(translated);
-          return;
-        }
-
-        const translated = await buildGoogleTranslatedOverview(targetLanguage);
+        const translated = await buildLiveTranslatedOverview(targetLanguage);
         if (translated) {
-          overviewTranslationCache[cacheKey] = translated;
           renderOverviewContent(translated);
           return;
         }
