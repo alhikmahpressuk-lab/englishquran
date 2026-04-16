@@ -193,7 +193,8 @@
       background: var(--surface-soft);
     }
 
-    .tab-button {
+    .tab-button,
+    .main-reset-button {
       appearance: none;
       border: 1px solid var(--line);
       background: var(--surface);
@@ -210,7 +211,8 @@
       line-height: 1;
     }
 
-    .tab-button:hover {
+    .tab-button:hover,
+    .main-reset-button:hover {
       border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
       background: var(--surface-soft);
     }
@@ -219,6 +221,19 @@
       background: var(--accent);
       border-color: var(--accent);
       color: #fff;
+    }
+
+    .main-reset-button {
+      background: color-mix(in srgb, var(--surface-soft) 82%, var(--surface));
+      color: color-mix(in srgb, var(--muted) 92%, var(--text));
+      border-color: color-mix(in srgb, var(--line) 88%, var(--surface));
+      opacity: 0.92;
+    }
+
+    .main-reset-button:hover {
+      background: color-mix(in srgb, var(--surface-deep) 72%, var(--surface));
+      border-color: color-mix(in srgb, var(--line) 76%, var(--accent-soft));
+      color: var(--text);
     }
 
     .mode-button,
@@ -1338,6 +1353,7 @@
           <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
           <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
           <button class="tab-button" type="button" data-tab="share" translate="no">Share</button>
+          <button class="main-reset-button" type="button" id="resetMainButton" title="All saved data will be reset to normal." aria-label="Reset all saved data to normal" translate="no">Reset</button>
         </div>
 
         <div class="content-card">
@@ -1679,6 +1695,7 @@
     const versePanel = document.getElementById('versePanel');
     const listenPanel = document.getElementById('listenPanel');
     const sharePanel = document.getElementById('sharePanel');
+    const resetMainButton = document.getElementById('resetMainButton');
 
     const modeButtons = document.querySelectorAll('.mode-button');
     const audioViewButtons = document.querySelectorAll('.audio-view-button');
@@ -2818,6 +2835,76 @@
       if (scrollToContent) {
         gentleScrollToElement(document.getElementById('content'), { center: false });
       }
+    }
+
+    async function resetSurahExperience() {
+      hidePrompt();
+      closeAllMenus();
+      closeBookmarkPanel();
+      stopTajweedPlayback(true);
+      stopSyncedPlayback(true);
+      clearAllHighlights();
+      clearWordMeaningPanels();
+
+      localStorage.removeItem(lastReadStorageKey);
+      localStorage.removeItem(historyStorageKey);
+      localStorage.removeItem(pinnedStorageKey);
+      localStorage.removeItem(verseNotesStorageKey);
+      localStorage.removeItem(reflectionDraftStorageKey);
+      localStorage.removeItem(reflectionNameStorageKey);
+      localStorage.removeItem(reflectionEmailStorageKey);
+      localStorage.removeItem(translationSelectionStorageKey);
+
+      reflectionName.value = '';
+      reflectionEmail.value = '';
+      reflectionDraft.value = '';
+      reflectionFeedback.classList.remove('active');
+      reflectionFeedback.textContent = '';
+
+      clearShareInputs(false);
+      shareFeedback.classList.remove('active');
+      shareFeedback.textContent = '';
+
+      currentTranslationId = 'en-fallback';
+      currentTranslationCode = 'en';
+      currentTranslationName = 'English';
+      currentTranslationVerses = englishVerses.slice();
+      currentWordLayerLanguageName = 'English';
+      currentWordLayerLevel = 'full_live';
+      await applyActiveWordLayer('en', 'en-fallback', 'English');
+
+      currentMode = 'bilingual';
+      applyWordMode(false);
+      rerenderTranslationView();
+      applyMode('bilingual');
+      applyAudioView('standard', false);
+      setActiveTab('read');
+
+      reciterSelect.value = defaultReciterKey;
+      audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
+      currentAudioUrl = '';
+      syncTimestamps = [];
+      syncByVerse = {};
+      surahAudioPlayer.pause();
+      surahAudioPlayer.removeAttribute('src');
+      surahAudioPlayer.load();
+
+      setCurrentVisibleVerse(1, false);
+      verseSelect.value = '1';
+      shareSingleVerse.value = '1';
+      shareRangeFrom.value = '1';
+      shareRangeTo.value = String(totalVerses);
+
+      updateModeLabels();
+      updateLanguagesPanelText();
+      renderLanguageList();
+      updateBookmarkUI();
+      updateShareBuilder();
+      updateSyncBarState();
+
+      const topTarget = document.getElementById('bismillah') || document.getElementById('content');
+      if (topTarget) gentleScrollToElement(topTarget, { center: false });
+      showBookmarkMessage('Reset to Arabic + English default.');
     }
 
     function updateNoteIndicator(ayah) {
@@ -4823,6 +4910,9 @@ ${getVerseUrl(ayah)}`,
       closeBookmarkPanel();
     });
     clearHistory.addEventListener('click', clearBookmarkHistory);
+    resetMainButton.addEventListener('click', async () => {
+      await resetSurahExperience();
+    });
 
     loadAudioButton.addEventListener('click', async () => { await loadSelectedAudio(); });
     reciterSelect.addEventListener('change', () => {
