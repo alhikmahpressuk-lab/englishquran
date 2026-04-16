@@ -1808,6 +1808,8 @@
     let currentVisibleVerse = 1;
     let readingObserver = null;
     let readingSaveTimer = null;
+    let programmaticVerseLock = null;
+    let programmaticVerseLockTimer = null;
 
     let verseDataCache = [];
     let currentAudioUrl = '';
@@ -2572,6 +2574,16 @@
         clearTimeout(readingSaveTimer);
         readingSaveTimer = setTimeout(() => saveLastReadAndHistory(safeVerse), 180);
       }
+    }
+
+    function lockVerseNavigation(ayahNumber, durationMs = 1200) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+      programmaticVerseLock = safeVerse;
+      clearTimeout(programmaticVerseLockTimer);
+      programmaticVerseLockTimer = setTimeout(() => {
+        programmaticVerseLock = null;
+      }, durationMs);
     }
 
     function gentleScrollToElement(element, options = {}) {
@@ -4316,6 +4328,7 @@ ${getVerseUrl(ayah)}`,
       const target = document.getElementById(`ayah-${safeVerseNumber}`);
       if (!target) return;
       setActiveTab('read');
+      lockVerseNavigation(safeVerseNumber);
       setCurrentVisibleVerse(safeVerseNumber, true);
 
       if (currentAudioView === 'synced' && currentAudioUrl && syncByVerse[safeVerseNumber]) {
@@ -4372,6 +4385,7 @@ ${getVerseUrl(ayah)}`,
       requestAnimationFrame(() => {
         const target = document.getElementById(`ayah-${verseNumber}`);
         if (target) {
+          lockVerseNavigation(verseNumber);
           setCurrentVisibleVerse(verseNumber, false);
           gentleScrollToElement(target, { center: false });
           history.replaceState(null, '', `?ayah=${verseNumber}#ayah-${verseNumber}`);
@@ -4517,6 +4531,10 @@ ${getVerseUrl(ayah)}`,
       if (readingObserver) readingObserver.disconnect();
       readingObserver = new IntersectionObserver((entries) => {
         if (currentAudioView === 'synced' && (!surahAudioPlayer.paused || introBismillahPlaying)) return;
+        if (programmaticVerseLock) {
+          setCurrentVisibleVerse(programmaticVerseLock, false);
+          return;
+        }
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .map((entry) => ({ id: Number(entry.target.id.replace('ayah-', '')), ratio: entry.intersectionRatio }))
