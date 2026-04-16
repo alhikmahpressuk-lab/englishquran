@@ -1977,10 +1977,38 @@
       ].join('');
     }
 
+    async function translateOverviewTextWithGoogle(text, targetLanguage) {
+      const sourceText = String(text || '').trim();
+      const target = String(targetLanguage || '').trim().toLowerCase();
+      if (!sourceText || !target || target === 'en') return sourceText;
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${encodeURIComponent(target)}&dt=t&q=${encodeURIComponent(sourceText)}`;
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Google overview translation request failed.');
+      const payload = await response.json();
+      const segments = Array.isArray(payload?.[0]) ? payload[0] : [];
+      const translated = segments.map((segment) => Array.isArray(segment) ? String(segment[0] || '') : '').join('').trim();
+      return translated || sourceText;
+    }
+
+    async function buildGoogleTranslatedOverview(targetLanguage) {
+      if (!overviewSourceContent) return null;
+      const translatedParagraphs = await Promise.all((overviewSourceContent.overviewParagraphs || []).map((text) => translateOverviewTextWithGoogle(text, targetLanguage)));
+      const translatedKeyThemeItems = await Promise.all((overviewSourceContent.keyThemeItems || []).map((text) => translateOverviewTextWithGoogle(text, targetLanguage)));
+      return {
+        overviewTitle: await translateOverviewTextWithGoogle(overviewSourceContent.overviewTitle || 'Overview', targetLanguage),
+        overviewParagraphs: translatedParagraphs,
+        keyThemesTitle: await translateOverviewTextWithGoogle(overviewSourceContent.keyThemesTitle || 'Key Themes', targetLanguage),
+        keyThemeItems: translatedKeyThemeItems,
+        centralMessageTitle: await translateOverviewTextWithGoogle(overviewSourceContent.centralMessageTitle || 'Central Message', targetLanguage),
+        centralMessageParagraph: await translateOverviewTextWithGoogle(overviewSourceContent.centralMessageParagraph || '', targetLanguage)
+      };
+    }
+
     async function translateOverviewForActiveLanguage() {
       if (!overviewRoot || !overviewSourceContent) return;
       const cacheKey = String(currentTranslationId || currentTranslationCode || 'en-fallback');
-      if (cacheKey === 'en-fallback') {
+      const targetLanguage = String(currentTranslationCode || 'en').trim().toLowerCase();
+      if (cacheKey === 'en-fallback' || targetLanguage === 'en') {
         renderOverviewContent(overviewSourceContent);
         return;
       }
@@ -1989,33 +2017,39 @@
         return;
       }
 
-      const endpoint = window.OPENQURAN_OVERVIEW_TRANSLATE_ENDPOINT || localStorage.getItem('openquran-overview-endpoint') || '';
-      if (!endpoint) {
-        renderOverviewContent(overviewSourceContent);
-        return;
-      }
-
       try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            targetLanguage: currentTranslationCode || 'en',
-            translationId: currentTranslationId,
-            translationName: currentTranslationName,
-            content: overviewSourceContent
-          })
-        });
-        if (!response.ok) throw new Error('Overview translation request failed.');
-        const result = await response.json();
-        const translated = result && result.content ? result.content : null;
-        if (!translated) throw new Error('Overview translation response was empty.');
-        overviewTranslationCache[cacheKey] = translated;
-        renderOverviewContent(translated);
+        const endpoint = window.OPENQURAN_OVERVIEW_TRANSLATE_ENDPOINT || localStorage.getItem('openquran-overview-endpoint') || '';
+        if (endpoint) {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              targetLanguage,
+              translationId: currentTranslationId,
+              translationName: currentTranslationName,
+              content: overviewSourceContent
+            })
+          });
+          if (!response.ok) throw new Error('Overview translation endpoint failed.');
+          const result = await response.json();
+          const translated = result && result.content ? result.content : null;
+          if (!translated) throw new Error('Overview translation endpoint returned no content.');
+          overviewTranslationCache[cacheKey] = translated;
+          renderOverviewContent(translated);
+          return;
+        }
+
+        const translated = await buildGoogleTranslatedOverview(targetLanguage);
+        if (translated) {
+          overviewTranslationCache[cacheKey] = translated;
+          renderOverviewContent(translated);
+          return;
+        }
       } catch (error) {
         console.warn('Overview translation could not be loaded.', error);
-        renderOverviewContent(overviewSourceContent);
       }
+
+      renderOverviewContent(overviewSourceContent);
     }
 
     function getTranslationResourceList(payload) {
