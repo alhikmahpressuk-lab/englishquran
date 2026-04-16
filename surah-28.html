@@ -193,7 +193,8 @@
       background: var(--surface-soft);
     }
 
-    .tab-button {
+    .tab-button,
+    .main-reset-button {
       appearance: none;
       border: 1px solid var(--line);
       background: var(--surface);
@@ -210,7 +211,8 @@
       line-height: 1;
     }
 
-    .tab-button:hover {
+    .tab-button:hover,
+    .main-reset-button:hover {
       border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
       background: var(--surface-soft);
     }
@@ -219,6 +221,19 @@
       background: var(--accent);
       border-color: var(--accent);
       color: #fff;
+    }
+
+    .main-reset-button {
+      background: color-mix(in srgb, var(--surface-soft) 82%, var(--surface));
+      color: color-mix(in srgb, var(--muted) 92%, var(--text));
+      border-color: color-mix(in srgb, var(--line) 88%, var(--surface));
+      opacity: 0.92;
+    }
+
+    .main-reset-button:hover {
+      background: color-mix(in srgb, var(--surface-deep) 72%, var(--surface));
+      border-color: color-mix(in srgb, var(--line) 76%, var(--accent-soft));
+      color: var(--text);
     }
 
     .mode-button,
@@ -1338,6 +1353,7 @@
           <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
           <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
           <button class="tab-button" type="button" data-tab="share" translate="no">Share</button>
+          <button class="main-reset-button" type="button" id="resetMainButton" title="All saved data will be reset to normal." aria-label="Reset all saved data to normal" translate="no">Reset</button>
         </div>
 
         <div class="content-card">
@@ -1661,39 +1677,8 @@
       /\b(?:blasphem(?:y|ous)|pig\s+muslim|dirty\s+muslim|lesser\s+people)\b/i
     ];
 
-    function safeStorageGet(storageType, key) {
-      try {
-        const storage = window && window[storageType];
-        return storage ? storage.getItem(key) : null;
-      } catch {
-        return null;
-      }
-    }
-
-    function safeStorageSet(storageType, key, value) {
-      try {
-        const storage = window && window[storageType];
-        if (!storage) return false;
-        storage.setItem(key, String(value));
-        return true;
-      } catch {
-        return false;
-      }
-    }
-
-    function safeStorageRemove(storageType, key) {
-      try {
-        const storage = window && window[storageType];
-        if (!storage) return false;
-        storage.removeItem(key);
-        return true;
-      } catch {
-        return false;
-      }
-    }
-
     const urlParams = new URLSearchParams(window.location.search);
-    const shouldAutoplay = urlParams.get('autoplay') === '1' || safeStorageGet('sessionStorage', autoplaySessionKey) === '1';
+    const shouldAutoplay = urlParams.get('autoplay') === '1' || sessionStorage.getItem(autoplaySessionKey) === '1';
     const autoplayReciter = urlParams.get('reciter');
     const autoplayView = urlParams.get('view');
 
@@ -1710,6 +1695,7 @@
     const versePanel = document.getElementById('versePanel');
     const listenPanel = document.getElementById('listenPanel');
     const sharePanel = document.getElementById('sharePanel');
+    const resetMainButton = document.getElementById('resetMainButton');
 
     const modeButtons = document.querySelectorAll('.mode-button');
     const audioViewButtons = document.querySelectorAll('.audio-view-button');
@@ -1806,9 +1792,11 @@
     let currentTranslationId = 'en-fallback';
     let currentTranslationCode = 'en';
     let currentTranslationName = 'English';
+    let currentTranslationAttributionName = 'Dr A. K. Khan';
     let currentTranslationVerses = englishVerses.slice();
     let translationResources = [];
     const translationCache = { 'en-fallback': englishVerses.slice(), ar: Array.from({ length: totalVerses }, () => '') };
+    const bismillahTranslationCache = { 'en-fallback': bismillahEnglish, ar: '' };
     let languageListLoadingPromise = null;
     const wordLayerCache = { en: null, ar: null };
     const translationCapabilityMap = {
@@ -1847,197 +1835,702 @@
     let tajweedContinueAllActive = false;
     let apiDegraded = false;
     let jsPdfLoaderPromise = null;
-    function stopTranslationFlow() {}
 
-    let bookmarkMessageTimer = null;
+    function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
+    function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
+    function iconShare() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9c0-1.7 1.3-3 3-3h6l-2.5-2.5"></path><path d="M17 6l-2.5 2.5"></path><path d="M16 14c-1.2 2.4-3.7 4-6.5 4H7"></path></svg>`; }
+    function iconCopy() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="10" height="10" rx="2"></rect><path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"></path></svg>`; }
+    function iconNote() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 5V5z"></path></svg>`; }
+    function iconWord() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h16"></path><circle cx="18" cy="12" r="2"></circle></svg>`; }
+    function iconPlay() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.5L18 12L8 17.5Z"></path></svg>`; }
+    function iconRepeat() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4l-4 4"></path><path d="M3 11V9a3 3 0 0 1 3-3h15"></path><path d="M7 22l-4-4l4-4"></path><path d="M21 13v2a3 3 0 0 1-3 3H3"></path></svg>`; }
+    function iconStartFromHere() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16"></path><path d="M9 7l8 5l-8 5z"></path></svg>`; }
+
+    function escapeHtml(text) {
+      return String(text ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function toArabicDigits(num) {
+      return String(num).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
+    }
 
     function normaliseAudioUrl(url) {
-      const value = String(url || '').trim();
-      if (!value) return '';
-      if (value.startsWith('https://') || value.startsWith('http://')) return value;
-      if (value.startsWith('//')) return `https:${value}`;
-      if (value.startsWith('/')) return `https://verses.quran.com${value}`;
-      return `https://verses.quran.com/${value}`;
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .split('&').join('&amp;')
-        .split('<').join('&lt;')
-        .split('>').join('&gt;')
-        .split('"').join('&quot;')
-        .split("'").join('&#39;');
-    }
-
-    function toArabicDigits(value) {
-      const digits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-      return String(value ?? '').split('').map((char) => (char >= '0' && char <= '9' ? digits[Number(char)] : char)).join('');
+      if (!url) return '';
+      if (/^https?:\/\//i.test(url)) return url;
+      return `https://verses.quran.com/${String(url).replace(/^\/+/, '')}`;
     }
 
     function containsBlockedContent(value) {
-      const text = String(value || '').trim();
-      if (!text) return false;
-      return blockedPatterns.some((pattern) => pattern.test(text));
+      return blockedPatterns.some((pattern) => pattern.test(String(value || '')));
     }
 
-    function parseStoredJson(key, fallback) {
+    async function safeFetchJson(url) {
       try {
-        const raw = safeStorageGet('localStorage', key);
-        if (!raw) return fallback;
-        const parsed = JSON.parse(raw);
-        return parsed ?? fallback;
-      } catch {
-        return fallback;
+        const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        console.warn('Fetch failed:', url, error);
+        return null;
       }
     }
 
-    function setStoredJson(key, value) {
-      safeStorageSet('localStorage', key, JSON.stringify(value));
-    }
-
-    function getVerseNotes() {
-      return parseStoredJson(verseNotesStorageKey, {});
-    }
-
-    function setVerseNotes(notes) {
-      setStoredJson(verseNotesStorageKey, notes || {});
-    }
-
-    function getPinnedVerses() {
-      return parseStoredJson(pinnedStorageKey, []);
-    }
-
-    function setPinnedVerses(verses) {
-      const unique = Array.from(new Set((Array.isArray(verses) ? verses : []).map((item) => Number(item)).filter((item) => item >= 1 && item <= totalVerses))).sort((a, b) => a - b);
-      setStoredJson(pinnedStorageKey, unique);
-    }
-
-    function getHistoryVerses() {
-      return parseStoredJson(historyStorageKey, []);
-    }
-
-    function setHistoryVerses(verses) {
-      const cleaned = (Array.isArray(verses) ? verses : [])
-        .map((item) => ({ ayah: Number(item?.ayah), ts: Number(item?.ts || Date.now()) }))
-        .filter((item) => item.ayah >= 1 && item.ayah <= totalVerses)
-        .slice(0, historyLimit);
-      setStoredJson(historyStorageKey, cleaned);
-    }
-
-    function getLastRead() {
-      return parseStoredJson(lastReadStorageKey, null);
-    }
-
-    function saveLastReadAndHistory(ayah) {
-      const safeAyah = Number(ayah);
-      if (!safeAyah || safeAyah < 1 || safeAyah > totalVerses) return;
-      const payload = { ayah: safeAyah, ts: Date.now() };
-      setStoredJson(lastReadStorageKey, payload);
-      const nextHistory = getHistoryVerses().filter((item) => Number(item?.ayah) !== safeAyah);
-      nextHistory.unshift(payload);
-      setHistoryVerses(nextHistory.slice(0, historyLimit));
-      updateBookmarkUI();
-    }
-
-    function getCurrentTranslationVerse(ayah) {
-      return currentTranslationVerses[Number(ayah) - 1] || englishVerses[Number(ayah) - 1] || '';
+    function stripHtmlContent(value) {
+      const temp = document.createElement('div');
+      temp.innerHTML = String(value || '');
+      const raw = String(temp.textContent || temp.innerText || '').trim();
+      return raw.split(' ').filter(Boolean).join(' ');
     }
 
     function getCurrentTranslationText(ayah) {
-      const verse = getCurrentTranslationVerse(ayah);
-      return verse || `Verse ${ayah}`;
+      const safeAyah = Number(ayah);
+      if (!safeAyah || safeAyah < 1 || safeAyah > totalVerses) return '';
+      if (currentTranslationId === 'ar') return '';
+      return currentTranslationVerses[safeAyah - 1] || englishVerses[safeAyah - 1] || '';
+    }
+
+    function getDisplayLanguageName() {
+      return currentTranslationId === 'ar' ? 'Arabic' : currentTranslationName;
+    }
+
+    function updateModeLabels() {
+      const bilingualButton = document.querySelector('[data-mode="bilingual"]');
+      const translationOnlyButton = document.querySelector('[data-mode="english-only"]');
+      if (bilingualButton) {
+        bilingualButton.textContent = currentTranslationId === 'ar' ? 'Arabic Only' : `Arabic + ${getDisplayLanguageName()}`;
+      }
+      if (translationOnlyButton) {
+        translationOnlyButton.textContent = currentTranslationId === 'ar' ? 'Translation Only' : `${getDisplayLanguageName()} Only`;
+        translationOnlyButton.disabled = currentTranslationId === 'ar';
+      }
+      if (languageSelectionText) {
+        const capability = getTranslationCapability(currentTranslationId);
+        languageSelectionText.textContent = currentTranslationId === 'ar'
+          ? 'Arabic on top · Arabic only active'
+          : `Arabic on top · ${getDisplayLanguageName()} below · ${getCapabilityLabel(capability.level)}`;
+      }
+      if (languagesStatus) {
+        languagesStatus.textContent = getWordLayerStatusText();
+      }
+    }
+
+    function getTranslationResourceList(payload) {
+      const rawItems = Array.isArray(payload && payload.translations)
+        ? payload.translations
+        : Array.isArray(payload && payload.resources)
+          ? payload.resources
+          : Array.isArray(payload && payload.data)
+            ? payload.data
+            : [];
+
+      const byLanguage = new Map();
+      rawItems.forEach((item) => {
+        const id = Number(item && item.id);
+        if (!id) return;
+        const languageCode = String(item.language_code || (item.language && item.language.iso_code) || item.iso_code || item.language_name || `lang-${id}`).trim().toLowerCase();
+        if (!languageCode || languageCode === 'ar') return;
+        const languageName = toTitleCaseLabel(String(item.language_name || (item.language && item.language.name) || (item.translated_name && item.translated_name.name) || item.name || item.resource_name || languageCode).trim());
+        const resourceName = toTitleCaseLabel(String((item.translated_name && item.translated_name.name) || item.resource_name || item.name || languageName).trim());
+        if (!languageName) return;
+        if (!byLanguage.has(languageCode)) {
+          byLanguage.set(languageCode, { id, languageCode, languageName, resourceName });
+        }
+      });
+
+      const items = Array.from(byLanguage.values()).sort((a, b) => {
+        if (a.languageCode === 'en') return -1;
+        if (b.languageCode === 'en') return 1;
+        return a.languageName.localeCompare(b.languageName, 'en', { sensitivity: 'base' });
+      });
+
+      return [
+        { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
+        { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' },
+        ...items.filter((item) => item.languageCode !== 'en')
+      ];
+    }
+
+    function saveTranslationSelection() {
+      localStorage.setItem(translationSelectionStorageKey, JSON.stringify({
+        id: currentTranslationId,
+        code: currentTranslationCode,
+        name: currentTranslationName
+      }));
+    }
+
+    function getSavedTranslationSelection() {
+      try {
+        const raw = localStorage.getItem(translationSelectionStorageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : null;
+      } catch {
+        return null;
+      }
+    }
+
+    async function fetchTranslationTexts(translationId) {
+      if (translationCache[translationId]) return translationCache[translationId];
+      const pages = [1, 2];
+      const results = await Promise.all(pages.map((page) => safeFetchJson(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?per_page=50&page=${page}&translations=${translationId}&translation_fields=resource_name,language_name,text`)));
+      const combined = results.flatMap((payload) => payload && Array.isArray(payload.verses) ? payload.verses : []);
+      if (!combined.length) return null;
+      const texts = Array.from({ length: totalVerses }, () => '');
+      combined
+        .filter((verse) => verse && verse.verse_number)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .forEach((verse) => {
+          const translation = Array.isArray(verse.translations) ? verse.translations[0] : null;
+          texts[verse.verse_number - 1] = stripHtmlContent(translation && translation.text ? translation.text : '');
+        });
+      translationCache[translationId] = texts;
+      return texts;
+    }
+
+    function updateLanguagesPanelText() {
+      const count = Array.isArray(translationResources) && translationResources.length ? translationResources.length : 70;
+      if (languagesPanelText) {
+        languagesPanelText.textContent = `${count}+ languages available. Select a language, then press Read.`;
+      }
+    }
+
+    function renderLanguageList() {
+      if (!languagesList) return;
+      const query = String(languagesSearchInput && languagesSearchInput.value ? languagesSearchInput.value : '').trim().toLowerCase();
+      languagesList.innerHTML = '';
+      const filteredResources = translationResources.filter((item) => {
+        if (!query) return true;
+        return String(item.languageName || '').toLowerCase().includes(query)
+          || String(item.resourceName || '').toLowerCase().includes(query)
+          || String(item.languageCode || '').toLowerCase().includes(query);
+      });
+
+      filteredResources.forEach((item) => {
+        const capability = getTranslationCapability(item.id);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'language-item';
+        button.classList.toggle('active', String(item.id) === String(currentTranslationId));
+        button.innerHTML = `
+          <span class="language-item-label">
+            <span class="language-item-name">${escapeHtml(item.languageName)}</span>
+          </span>
+          <span class="language-item-meta">${escapeHtml(item.resourceName)} · ${escapeHtml(getCapabilityLabel(capability.level))}</span>
+        `;
+        button.addEventListener('click', async () => {
+          await activateTranslation(item);
+        });
+        languagesList.appendChild(button);
+      });
+
+      if (!filteredResources.length) {
+        const empty = document.createElement('div');
+        empty.className = 'languages-status';
+        empty.textContent = 'No languages found. Try another search.';
+        empty.style.marginBottom = '0';
+        languagesList.appendChild(empty);
+      }
+    }
+
+    async function loadTranslationResources() {
+      if (translationResources.length) return translationResources;
+      if (languageListLoadingPromise) return languageListLoadingPromise;
+      if (languagesStatus) languagesStatus.textContent = 'Loading languages...';
+
+      languageListLoadingPromise = (async () => {
+        try {
+          const payload = await safeFetchJson('https://api.quran.com/api/v4/resources/translations');
+          translationResources = getTranslationResourceList(payload);
+          if (!translationResources.length) {
+            translationResources = [
+              { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
+              { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' }
+            ];
+            if (languagesStatus) languagesStatus.textContent = 'Only Arabic and English are available right now.';
+          } else if (languagesStatus) {
+            languagesStatus.textContent = `${translationResources.length} languages ready.`;
+          }
+        } catch (error) {
+          console.warn('Language resources could not be loaded.', error);
+          translationResources = [
+            { id: 'ar', languageCode: 'ar', languageName: 'Arabic', resourceName: 'Arabic' },
+            { id: 'en-fallback', languageCode: 'en', languageName: 'English', resourceName: 'The English Qur’an | Dr A. K. Khan' }
+          ];
+          if (languagesStatus) languagesStatus.textContent = 'Languages could not be refreshed right now.';
+        }
+        updateLanguagesPanelText();
+        renderLanguageList();
+        return translationResources;
+      })().finally(() => {
+        languageListLoadingPromise = null;
+      });
+
+      return languageListLoadingPromise;
+    }
+
+    function rerenderTranslationView() {
+      const currentAyah = currentVisibleVerse;
+      const activeTab = document.querySelector('.tab-button.active') && document.querySelector('.tab-button.active').dataset.tab
+        ? document.querySelector('.tab-button.active').dataset.tab
+        : 'read';
+      renderVerses(verseDataCache);
+      applyMode(currentTranslationId === 'ar' && currentMode === 'english-only' ? 'arabic-only' : currentMode);
+      versesContainer.classList.toggle('word-mode-active', wordModeEnabled);
+      wordModeToggle.classList.toggle('active', wordModeEnabled);
+      wordModeToggle.textContent = wordModeEnabled ? 'Word by word on' : 'Word by word';
+      updateShareBuilder();
+      updateModeLabels();
+      renderLanguageList();
+      setActiveTab(activeTab);
+      setCurrentVisibleVerse(currentAyah, false);
+    }
+
+    async function activateTranslation(item) {
+      if (!item) return;
+      const nextId = String(item.id);
+      if (languagesStatus) {
+        languagesStatus.textContent = nextId === 'ar' ? 'Arabic only is loading...' : `Loading ${item.languageName}...`;
+      }
+
+      if (nextId === 'ar') {
+        currentTranslationId = 'ar';
+        currentTranslationCode = 'ar';
+        currentTranslationName = 'Arabic';
+        currentTranslationVerses = translationCache.ar.slice();
+        await applyActiveWordLayer('ar', 'ar', 'Arabic');
+        currentMode = 'arabic-only';
+        updateModeLabels();
+        rerenderTranslationView();
+        saveTranslationSelection();
+        if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
+        return;
+      }
+
+      if (nextId === 'en-fallback') {
+        currentTranslationId = 'en-fallback';
+        currentTranslationCode = 'en';
+        currentTranslationName = 'English';
+        currentTranslationVerses = englishVerses.slice();
+        await applyActiveWordLayer('en', 'en-fallback', 'English');
+        if (currentMode === 'arabic-only') currentMode = 'bilingual';
+        updateModeLabels();
+        rerenderTranslationView();
+        saveTranslationSelection();
+        if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
+        return;
+      }
+
+      const texts = await fetchTranslationTexts(nextId);
+      if (!texts || !texts.length) {
+        if (languagesStatus) languagesStatus.textContent = `${item.languageName} could not be loaded right now.`;
+        showBookmarkMessage('That language could not be loaded right now.');
+        return;
+      }
+
+      currentTranslationId = nextId;
+      currentTranslationCode = item.languageCode || 'en';
+      currentTranslationName = item.languageName || 'Translation';
+      currentTranslationVerses = texts;
+      await applyActiveWordLayer(currentTranslationCode, nextId, currentTranslationName);
+      if (currentMode === 'arabic-only') currentMode = 'bilingual';
+      updateModeLabels();
+      rerenderTranslationView();
+      saveTranslationSelection();
+      if (languagesStatus) languagesStatus.textContent = getWordLayerStatusText();
+    }
+
+    function toTitleCaseLabel(value) {
+      return String(value || '')
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    function getCapabilityLabel(level) {
+      if (level === 'arabic_only') return 'Arabic only';
+      if (level === 'full_live') return 'Full live';
+      if (level === 'verse_meaning') return 'Verse meaning';
+      return 'Not ready';
+    }
+
+    function getTranslationCapability(id) {
+      return translationCapabilityMap[String(id)] || { level: 'verse_meaning', liveTajweed: false };
     }
 
     function getWordLayerDisplayName() {
-      return currentWordLayerLanguageName || currentTranslationName || 'English';
+      return currentWordLayerLanguageName || 'English';
     }
 
-    function showBookmarkMessage(text) {
-      bookmarkState.textContent = String(text || '');
-      bookmarkState.style.display = text ? 'block' : 'none';
-      clearTimeout(bookmarkMessageTimer);
-      if (!text) return;
-      bookmarkMessageTimer = setTimeout(() => {
-        bookmarkState.style.display = 'none';
-      }, 2600);
-    }
-
-    function gentleScrollToElement(element, options = {}) {
-      if (!element) return;
-      const block = options.center ? 'center' : 'start';
-      element.scrollIntoView({ behavior: 'smooth', block, inline: 'nearest' });
-    }
-
-    function markBismillahReciting(isActive) {
-      const block = document.getElementById('bismillah');
-      if (block) block.classList.toggle('is-reciting', Boolean(isActive));
-    }
-
-    function clearActiveWordOnly() {
-      if (activeWordKey) {
-        const active = document.querySelector(`[data-word-key="${activeWordKey}"]`);
-        if (active) active.classList.remove('word-active');
+    function getWordLayerStatusText() {
+      if (currentTranslationId === 'ar') {
+        return 'Arabic only is active. Live word-by-word meaning falls back to English where needed.';
       }
-      activeWordKey = null;
+      if (currentWordLayerLevel === 'full_live' && getWordLayerDisplayName() === getDisplayLanguageName()) {
+        return `${getDisplayLanguageName()} is active with live word-by-word support.`;
+      }
+      if (currentWordLayerLevel === 'full_live') {
+        return `${getDisplayLanguageName()} is active.`;
+      }
+      return `${getDisplayLanguageName()} is active for verse meaning. Live word-by-word stays in English for stability.`;
     }
 
-    function clearAllHighlights() {
-      document.querySelectorAll('.verse.is-reciting').forEach((verse) => verse.classList.remove('is-reciting'));
-      activeVerseNumber = null;
-      clearActiveWordOnly();
-      markBismillahReciting(false);
-    }
-
-    function highlightWordByVerseIndex(ayah, wordIndex) {
-      clearActiveWordOnly();
-      const nextKey = `${ayah}-${wordIndex}`;
-      const word = document.querySelector(`[data-word-key="${nextKey}"]`);
-      if (!word) return;
-      word.classList.add('word-active');
-      activeWordKey = nextKey;
-    }
-
-    function highlightVerseByNumber(ayah, shouldScroll = false) {
-      const safeAyah = Number(ayah);
-      if (!safeAyah) return;
-      document.querySelectorAll('.verse.is-reciting').forEach((verse) => {
-        verse.classList.toggle('is-reciting', Number(verse.dataset.ayahNumber) === safeAyah);
+    function measureWordLayerCapability(wordLayer) {
+      if (!Array.isArray(wordLayer) || !wordLayer.length) {
+        return { fullLive: false, level: 'verse_meaning' };
+      }
+      let totalWords = 0;
+      let translatedWords = 0;
+      let transliteratedWords = 0;
+      let versesWithWords = 0;
+      wordLayer.forEach((verse) => {
+        const words = Array.isArray(verse.words) ? verse.words : [];
+        if (words.length) versesWithWords += 1;
+        words.forEach((word) => {
+          totalWords += 1;
+          if (String(word.translation || '').trim()) translatedWords += 1;
+          if (String(word.transliteration || '').trim()) transliteratedWords += 1;
+        });
       });
-      markBismillahReciting(false);
-      activeVerseNumber = safeAyah;
-      if (shouldScroll) {
-        const target = document.getElementById(`ayah-${safeAyah}`);
-        if (target) gentleScrollToElement(target, { center: false });
+      if (!totalWords) return { fullLive: false, level: 'verse_meaning' };
+      const verseCoverage = versesWithWords / Math.max(1, totalVerses);
+      const meaningCoverage = translatedWords / totalWords;
+      const transliterationCoverage = transliteratedWords / totalWords;
+      const fullLive = verseCoverage >= 0.9 && meaningCoverage >= 0.55 && transliterationCoverage >= 0.55;
+      return { fullLive, level: fullLive ? 'full_live' : 'verse_meaning' };
+    }
+
+    function mergeWordLayerIntoVerseData(wordLayer) {
+      if (!Array.isArray(wordLayer) || !wordLayer.length) return;
+      const byVerse = new Map(wordLayer.map((item) => [Number(item.number), item]));
+      verseDataCache = verseDataCache.map((verse) => {
+        const incoming = byVerse.get(Number(verse.number));
+        if (!incoming) return verse;
+        const words = Array.isArray(verse.words) ? verse.words : [];
+        const nextWords = words.map((word, index) => {
+          const incomingWord = Array.isArray(incoming.words)
+            ? incoming.words.find((entry) => Number(entry.position) === Number(word.position || index + 1))
+            : null;
+          if (!incomingWord) return word;
+          return {
+            ...word,
+            transliteration: incomingWord.transliteration || word.transliteration || '',
+            translation: incomingWord.translation || word.translation || ''
+          };
+        });
+        return {
+          ...verse,
+          transliteration: incoming.transliteration || verse.transliteration || '',
+          words: nextWords
+        };
+      });
+      transliterationAvailable = verseDataCache.some((verse) => verse.transliteration && verse.transliteration.trim());
+    }
+
+    async function applyActiveWordLayer(languageCode, translationId = currentTranslationId, translationName = currentTranslationName) {
+      const englishWordLayer = await fetchWordLayer('en');
+      mergeWordLayerIntoVerseData(englishWordLayer);
+      currentWordLayerLanguageName = 'English';
+      currentWordLayerLevel = 'full_live';
+
+      const code = String(languageCode || 'en').trim().toLowerCase();
+      if (code === 'en') {
+        translationCapabilityMap[String(translationId)] = { level: 'full_live', liveTajweed: true };
+        return;
+      }
+      if (code === 'ar') {
+        translationCapabilityMap[String(translationId)] = { level: 'arabic_only', liveTajweed: true };
+        currentWordLayerLevel = 'verse_meaning';
+        return;
+      }
+
+      const selectedWordLayer = await fetchWordLayer(code);
+      const capability = measureWordLayerCapability(selectedWordLayer);
+      translationCapabilityMap[String(translationId)] = {
+        level: capability.level,
+        liveTajweed: capability.fullLive
+      };
+      if (capability.fullLive) {
+        mergeWordLayerIntoVerseData(selectedWordLayer);
+        currentWordLayerLanguageName = translationName || 'Translation';
+        currentWordLayerLevel = 'full_live';
+      } else {
+        currentWordLayerLanguageName = 'English';
+        currentWordLayerLevel = 'verse_meaning';
       }
     }
 
-    function setCurrentVisibleVerse(ayah, save = true) {
-      const safeAyah = Number(ayah);
-      if (!safeAyah || safeAyah < 1 || safeAyah > totalVerses) return;
-      currentVisibleVerse = safeAyah;
-      if (!save) return;
-      clearTimeout(readingSaveTimer);
-      readingSaveTimer = setTimeout(() => saveLastReadAndHistory(safeAyah), 180);
+    async function fetchWordLayer(languageCode) {
+      const code = String(languageCode || 'en').trim().toLowerCase() || 'en';
+      if (wordLayerCache[code]) return wordLayerCache[code];
+      if (code === 'ar') {
+        const arabicLayer = verseDataCache.map((verse) => ({
+          number: verse.number,
+          transliteration: verse.transliteration || '',
+          words: Array.isArray(verse.words)
+            ? verse.words.map((word) => ({
+                position: word.position,
+                transliteration: word.transliteration || '',
+                translation: ''
+              }))
+            : []
+        }));
+        wordLayerCache[code] = arabicLayer;
+        return arabicLayer;
+      }
+      const pages = [1, 2];
+      const results = await Promise.all(pages.map((page) => safeFetchJson(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?language=${encodeURIComponent(code)}&words=true&per_page=50&page=${page}&fields=text_uthmani&word_fields=text_uthmani,transliteration,translation,audio_url,char_type_name`)));
+      const combined = results.flatMap((payload) => payload && Array.isArray(payload.verses) ? payload.verses : []);
+      if (!combined.length) return null;
+      const layer = combined
+        .filter((verse) => verse && verse.verse_number)
+        .sort((a, b) => a.verse_number - b.verse_number)
+        .map((verse) => {
+          const words = Array.isArray(verse.words) ? verse.words : [];
+          return {
+            number: verse.verse_number,
+            transliteration: words.map((word) => word && word.transliteration && word.transliteration.text ? word.transliteration.text : '').filter(Boolean).join(' '),
+            words: words.map((word, index) => ({
+              position: Number(word.position || index + 1),
+              transliteration: word && word.transliteration && word.transliteration.text ? word.transliteration.text : '',
+              translation: word && word.translation && word.translation.text ? stripHtmlContent(word.translation.text) : ''
+            }))
+          };
+        });
+      wordLayerCache[code] = layer;
+      return layer;
+    }
+
+    function buildVerseSelector() {
+      const options = Array.from({ length: totalVerses }, (_, index) => {
+        const verse = index + 1;
+        return `<option value="${verse}">Verse ${verse}</option>`;
+      }).join('');
+      verseSelect.innerHTML = options;
+      shareSingleVerse.innerHTML = options;
+      shareRangeFrom.innerHTML = options;
+      shareRangeTo.innerHTML = options;
+      shareRangeTo.value = String(totalVerses);
+    }
+
+    function setActiveTab(target) {
+      tabButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === target));
+      tabPanels.forEach((panel) => panel.classList.toggle('active', panel.id === target));
+      modePanel.classList.toggle('active', target === 'mode');
+      versePanel.classList.toggle('active', target === 'verse');
+      listenPanel.classList.toggle('active', target === 'listen');
+      sharePanel.classList.toggle('active', target === 'share');
+    }
+
+    function showBookmarkMessage(message) {
+      bookmarkState.textContent = message;
+      bookmarkState.style.display = 'block';
+      clearTimeout(showBookmarkMessage.timer);
+      showBookmarkMessage.timer = setTimeout(() => {
+        bookmarkState.style.display = 'none';
+      }, 2400);
+    }
+
+    function formatSavedTime(isoValue) {
+      if (!isoValue) return '';
+      const date = new Date(isoValue);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function getLastRead() {
+      try {
+        const raw = localStorage.getItem(lastReadStorageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed.ayah !== 'number') return null;
+        if (parsed.ayah < 1 || parsed.ayah > totalVerses) return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(historyStorageKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && typeof item.ayah === 'number' && item.ayah >= 1 && item.ayah <= totalVerses);
+      } catch {
+        return [];
+      }
+    }
+
+    function getPinnedVerses() {
+      try {
+        const raw = localStorage.getItem(pinnedStorageKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && typeof item.ayah === 'number' && item.ayah >= 1 && item.ayah <= totalVerses);
+      } catch {
+        return [];
+      }
+    }
+
+    function getVerseNotes() {
+      try {
+        const raw = localStorage.getItem(verseNotesStorageKey);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function setVerseNotes(notes) {
+      localStorage.setItem(verseNotesStorageKey, JSON.stringify(notes));
     }
 
     function isVersePinned(ayah) {
-      return getPinnedVerses().includes(Number(ayah));
+      return getPinnedVerses().some((item) => item.ayah === Number(ayah));
+    }
+
+    function updateBookmarkUI() {
+      const lastRead = getLastRead();
+      const history = getHistory();
+      const pinned = getPinnedVerses();
+
+      if (lastRead) {
+        lastReadText.textContent = `Verse ${lastRead.ayah}${lastRead.savedAt ? `, saved ${formatSavedTime(lastRead.savedAt)}` : ''}`;
+        goLastRead.disabled = false;
+        bookmarkOpen.classList.add('has-last');
+        bookmarkOpen.textContent = `Bookmarks · ${lastRead.ayah}`;
+      } else {
+        lastReadText.textContent = 'No verse tracked yet.';
+        goLastRead.disabled = true;
+        bookmarkOpen.classList.remove('has-last');
+        bookmarkOpen.textContent = 'Bookmarks';
+      }
+
+      pinnedList.innerHTML = '';
+      if (!pinned.length) {
+        pinnedEmpty.style.display = 'block';
+      } else {
+        pinnedEmpty.style.display = 'none';
+        pinned.forEach((item) => {
+          const row = document.createElement('div');
+          row.className = 'bookmark-item';
+          row.innerHTML = `
+            <div class="bookmark-item-left">
+              <div class="bookmark-item-title">Verse ${item.ayah}</div>
+              <div class="bookmark-item-meta">${item.savedAt ? `Pinned ${escapeHtml(formatSavedTime(item.savedAt))}` : 'Pinned'}</div>
+            </div>
+            <div class="bookmark-item-actions">
+              <button class="bookmark-mini" type="button" data-go-pinned="${item.ayah}">Go to verse</button>
+              <button class="bookmark-mini-remove" type="button" data-remove-pinned="${item.ayah}">Remove</button>
+            </div>
+          `;
+          pinnedList.appendChild(row);
+        });
+      }
+
+      bookmarkList.innerHTML = '';
+      if (!history.length) {
+        bookmarkEmpty.style.display = 'block';
+      } else {
+        bookmarkEmpty.style.display = 'none';
+        history.forEach((item) => {
+          const row = document.createElement('div');
+          row.className = 'bookmark-item';
+          row.innerHTML = `
+            <div class="bookmark-item-left">
+              <div class="bookmark-item-title">Verse ${item.ayah}</div>
+              <div class="bookmark-item-meta">${item.savedAt ? `Visited ${escapeHtml(formatSavedTime(item.savedAt))}` : ''}</div>
+            </div>
+            <div class="bookmark-item-actions">
+              <button class="bookmark-mini" type="button" data-go-history="${item.ayah}">Go to verse</button>
+              <button class="bookmark-mini-remove" type="button" data-remove-history="${item.ayah}">Remove</button>
+            </div>
+          `;
+          bookmarkList.appendChild(row);
+        });
+      }
+
+      pinnedList.querySelectorAll('[data-go-pinned]').forEach((button) => {
+        button.addEventListener('click', () => {
+          jumpToVerse(Number(button.getAttribute('data-go-pinned')));
+          closeBookmarkPanel();
+        });
+      });
+      pinnedList.querySelectorAll('[data-remove-pinned]').forEach((button) => {
+        button.addEventListener('click', () => togglePinnedVerse(Number(button.getAttribute('data-remove-pinned'))));
+      });
+      bookmarkList.querySelectorAll('[data-go-history]').forEach((button) => {
+        button.addEventListener('click', () => {
+          jumpToVerse(Number(button.getAttribute('data-go-history')));
+          closeBookmarkPanel();
+        });
+      });
+      bookmarkList.querySelectorAll('[data-remove-history]').forEach((button) => {
+        button.addEventListener('click', () => removeHistoryVerse(Number(button.getAttribute('data-remove-history'))));
+      });
+    }
+
+    function saveLastReadAndHistory(ayahNumber) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+      localStorage.setItem(lastReadStorageKey, JSON.stringify({ ayah: safeVerse, savedAt: new Date().toISOString() }));
+      const history = getHistory().filter((item) => item.ayah !== safeVerse);
+      history.unshift({ ayah: safeVerse, savedAt: new Date().toISOString() });
+      localStorage.setItem(historyStorageKey, JSON.stringify(history.slice(0, historyLimit)));
+      updateBookmarkUI();
+    }
+
+    function clearBookmarkHistory() {
+      localStorage.removeItem(lastReadStorageKey);
+      localStorage.removeItem(historyStorageKey);
+      updateBookmarkUI();
+      showBookmarkMessage('Bookmark history cleared.');
     }
 
     function removeHistoryVerse(ayah) {
-      const safeAyah = Number(ayah);
-      setHistoryVerses(getHistoryVerses().filter((item) => Number(item?.ayah) !== safeAyah));
+      const filtered = getHistory().filter((item) => item.ayah !== ayah);
+      localStorage.setItem(historyStorageKey, JSON.stringify(filtered));
+      const lastRead = getLastRead();
+      if (lastRead && lastRead.ayah === ayah) {
+        if (filtered.length) localStorage.setItem(lastReadStorageKey, JSON.stringify(filtered[0]));
+        else localStorage.removeItem(lastReadStorageKey);
+      }
       updateBookmarkUI();
+      showBookmarkMessage(`Verse ${ayah} removed from bookmark history.`);
     }
 
     function togglePinnedVerse(ayah) {
       const safeAyah = Number(ayah);
-      const pins = getPinnedVerses();
-      const nextPins = pins.includes(safeAyah) ? pins.filter((item) => item !== safeAyah) : [...pins, safeAyah];
-      setPinnedVerses(nextPins);
+      const current = getPinnedVerses();
+      const exists = current.some((item) => item.ayah === safeAyah);
+      const next = exists
+        ? current.filter((item) => item.ayah !== safeAyah)
+        : [{ ayah: safeAyah, savedAt: new Date().toISOString() }, ...current.filter((item) => item.ayah !== safeAyah)];
+      localStorage.setItem(pinnedStorageKey, JSON.stringify(next.slice(0, 100)));
       updateBookmarkUI();
       refreshInlineStates();
-      showBookmarkMessage(nextPins.includes(safeAyah) ? `Verse ${safeAyah} pinned.` : `Verse ${safeAyah} unpinned.`);
+      showBookmarkMessage(exists ? `Verse ${safeAyah} removed from pinned verses.` : `Verse ${safeAyah} pinned.`);
+    }
+
+    function openBookmarkPanel() {
+      bookmarkPanel.classList.add('active');
+      bookmarkOpen.setAttribute('aria-expanded', 'true');
     }
 
     function closeBookmarkPanel() {
@@ -2046,211 +2539,120 @@
     }
 
     function toggleBookmarkPanel() {
-      const willOpen = !bookmarkPanel.classList.contains('active');
-      bookmarkPanel.classList.toggle('active', willOpen);
-      bookmarkOpen.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      bookmarkPanel.classList.toggle('active');
+      bookmarkOpen.setAttribute('aria-expanded', bookmarkPanel.classList.contains('active') ? 'true' : 'false');
     }
 
-    function clearBookmarkHistory() {
-      safeStorageRemove('localStorage', lastReadStorageKey);
-      safeStorageRemove('localStorage', historyStorageKey);
-      updateBookmarkUI();
-      showBookmarkMessage('Bookmark history cleared.');
+    function setCurrentVisibleVerse(ayahNumber, persist = true) {
+      const safeVerse = Number(ayahNumber);
+      if (!safeVerse || safeVerse < 1 || safeVerse > totalVerses) return;
+      currentVisibleVerse = safeVerse;
+      verseSelect.value = String(safeVerse);
+      if (persist) {
+        clearTimeout(readingSaveTimer);
+        readingSaveTimer = setTimeout(() => saveLastReadAndHistory(safeVerse), 180);
+      }
     }
 
-    function buildBookmarkItem(ayah, type) {
-      const english = getCurrentTranslationText(ayah);
-      const label = type === 'pinned' ? `Pinned · Verse ${ayah}` : `Verse ${ayah}`;
-      return `
-        <div class="bookmark-item">
-          <div class="bookmark-item-left">
-            <div class="bookmark-item-title" translate="no">${escapeHtml(label)}</div>
-            <div class="bookmark-item-meta" translate="no">${escapeHtml(english)}</div>
-          </div>
-          <div class="bookmark-item-actions">
-            <button class="bookmark-mini" type="button" data-bookmark-go="${ayah}" translate="no">Go</button>
-            <button class="bookmark-mini-remove" type="button" data-bookmark-remove="${ayah}" data-bookmark-kind="${type}" translate="no">Remove</button>
-          </div>
-        </div>
-      `;
+    function gentleScrollToElement(element, options = {}) {
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      const top = rect.top + window.scrollY;
+      const targetY = options.center ? Math.max(0, top - (window.innerHeight * 0.32)) : Math.max(0, top - 105);
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
     }
 
-    function attachBookmarkActions() {
-      document.querySelectorAll('[data-bookmark-go]').forEach((button) => {
-        button.addEventListener('click', () => {
-          jumpToVerse(Number(button.getAttribute('data-bookmark-go')));
-          closeBookmarkPanel();
-        });
-      });
-      document.querySelectorAll('[data-bookmark-remove]').forEach((button) => {
-        button.addEventListener('click', () => {
-          const ayah = Number(button.getAttribute('data-bookmark-remove'));
-          const kind = button.getAttribute('data-bookmark-kind');
-          if (kind === 'pinned') {
-            togglePinnedVerse(ayah);
-          } else {
-            removeHistoryVerse(ayah);
-          }
-        });
-      });
+    function clearAllHighlights() {
+      if (activeVerseNumber !== null) {
+        const oldVerse = document.getElementById(`ayah-${activeVerseNumber}`);
+        if (oldVerse) oldVerse.classList.remove('is-reciting');
+      }
+      if (activeWordKey) {
+        const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
+        if (oldWord) oldWord.classList.remove('word-active');
+      }
+      activeVerseNumber = null;
+      activeWordKey = null;
+      markBismillahReciting(false);
     }
 
-    function updateBookmarkUI() {
-      const lastRead = getLastRead();
-      lastReadText.textContent = lastRead ? `Verse ${lastRead.ayah}` : 'No verse tracked yet.';
-      goLastRead.disabled = !lastRead;
-
-      const pins = getPinnedVerses();
-      pinnedEmpty.style.display = pins.length ? 'none' : 'block';
-      pinnedList.innerHTML = pins.map((ayah) => buildBookmarkItem(ayah, 'pinned')).join('');
-
-      const history = getHistoryVerses();
-      bookmarkEmpty.style.display = history.length ? 'none' : 'block';
-      bookmarkList.innerHTML = history.map((item) => buildBookmarkItem(Number(item.ayah), 'history')).join('');
-
-      bookmarkOpen.classList.toggle('has-last', Boolean(lastRead || pins.length || history.length));
-      attachBookmarkActions();
+    function keepVerseVisible(ayahNumber) {
+      if (lastAutoScrolledVerse === ayahNumber) return;
+      const verse = document.getElementById(`ayah-${ayahNumber}`);
+      if (!verse) return;
+      lastAutoScrolledVerse = ayahNumber;
+      gentleScrollToElement(verse, { center: true });
     }
 
-    function setActiveTab(tab) {
-      const safeTab = String(tab || 'read');
-      tabButtons.forEach((button) => button.classList.toggle('active', button.dataset.tab === safeTab));
-      tabPanels.forEach((panel) => panel.classList.remove('active'));
-      modePanel.classList.remove('active');
-      versePanel.classList.remove('active');
-      listenPanel.classList.remove('active');
-      sharePanel.classList.remove('active');
+    function highlightVerseByNumber(ayahNumber, autoScroll = false) {
+      const safeAyah = Number(ayahNumber);
+      if (!safeAyah) return;
 
-      if (safeTab === 'overview') {
-        document.getElementById('overview').classList.add('active');
-        return;
+      if (activeVerseNumber !== null && activeVerseNumber !== safeAyah) {
+        const oldVerse = document.getElementById(`ayah-${activeVerseNumber}`);
+        if (oldVerse) oldVerse.classList.remove('is-reciting');
       }
 
-      document.getElementById('read').classList.add('active');
-      if (safeTab === 'mode') modePanel.classList.add('active');
-      if (safeTab === 'verse') versePanel.classList.add('active');
-      if (safeTab === 'listen') listenPanel.classList.add('active');
-      if (safeTab === 'share') sharePanel.classList.add('active');
+      const verse = document.getElementById(`ayah-${safeAyah}`);
+      if (!verse) return;
+
+      verse.classList.add('is-reciting');
+      activeVerseNumber = safeAyah;
+
+      if (autoScroll) keepVerseVisible(safeAyah);
     }
 
-    function buildVerseSelector() {
-      const options = Array.from({ length: totalVerses }, (_, index) => {
-        const verseNumber = index + 1;
-        return `<option value="${verseNumber}">Verse ${verseNumber}</option>`;
-      }).join('');
-      verseSelect.innerHTML = options;
-      shareSingleVerse.innerHTML = options;
-      shareRangeFrom.innerHTML = options;
-      shareRangeTo.innerHTML = options;
-      verseSelect.value = String(currentVisibleVerse || 1);
-      shareSingleVerse.value = '1';
-      shareRangeFrom.value = '1';
-      shareRangeTo.value = String(totalVerses);
-    }
+    function highlightWordByVerseIndex(ayahNumber, wordIndex) {
+      const nextKey = `${ayahNumber}-${wordIndex}`;
+      if (activeWordKey === nextKey) return;
 
-    function getSavedTranslationSelection() {
-      return parseStoredJson(translationSelectionStorageKey, null);
-    }
-
-    function saveTranslationSelection(selection) {
-      setStoredJson(translationSelectionStorageKey, selection);
-    }
-
-    async function loadTranslationResources() {
-      if (translationResources.length) return translationResources;
-      if (languageListLoadingPromise) return languageListLoadingPromise;
-      languageListLoadingPromise = Promise.resolve().then(() => {
-        translationResources = [
-          { id: 'en-fallback', name: 'English', language_code: 'en', level: 'full_live', liveTajweed: true },
-          { id: 'ar', name: 'Arabic', language_code: 'ar', level: 'arabic_only', liveTajweed: true }
-        ];
-        return translationResources;
-      }).finally(() => {
-        languageListLoadingPromise = null;
-      });
-      return languageListLoadingPromise;
-    }
-
-    function updateModeLabels() {
-      const isArabicOnlyTranslation = currentTranslationId === 'ar';
-      modeButtons.forEach((button) => {
-        if (button.dataset.mode === 'english-only') {
-          button.disabled = isArabicOnlyTranslation;
-          button.title = isArabicOnlyTranslation ? 'English only is unavailable when Arabic is selected.' : '';
-        }
-      });
-      if (isArabicOnlyTranslation && currentMode === 'english-only') {
-        applyMode('arabic-only');
+      if (activeWordKey) {
+        const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
+        if (oldWord) oldWord.classList.remove('word-active');
       }
-      languagesStatus.textContent = currentTranslationId === 'ar'
-        ? 'Arabic is active.'
-        : `${currentTranslationName} is active.`;
-    }
 
-    function updateLanguagesPanelText() {
-      languagesPanelText.textContent = 'Choose the language shown under the Arabic text.';
-      languageSelectionText.textContent = currentTranslationId === 'ar'
-        ? 'Arabic only'
-        : `Arabic on top · ${currentTranslationName} below`;
-      languagesStatus.textContent = currentTranslationId === 'ar'
-        ? 'Arabic is active.'
-        : `${currentTranslationName} is active.`;
-    }
-
-    async function activateTranslation(entry) {
-      const selected = entry || { id: 'en-fallback', name: 'English', language_code: 'en' };
-      if (String(selected.id) === 'ar') {
-        currentTranslationId = 'ar';
-        currentTranslationCode = 'ar';
-        currentTranslationName = 'Arabic';
-        currentTranslationVerses = Array.from({ length: totalVerses }, () => '');
-        currentWordLayerLanguageName = 'Arabic';
+      const nextWord = document.querySelector(`[data-word-key="${nextKey}"]`);
+      if (nextWord) {
+        nextWord.classList.add('word-active');
+        activeWordKey = nextKey;
       } else {
-        currentTranslationId = 'en-fallback';
-        currentTranslationCode = 'en';
-        currentTranslationName = 'English';
-        currentTranslationVerses = englishVerses.slice();
-        currentWordLayerLanguageName = 'English';
+        activeWordKey = null;
       }
-      saveTranslationSelection({ id: currentTranslationId });
-      renderVerses(verseDataCache.length ? verseDataCache : buildFallbackVerseData());
-      updateModeLabels();
-      updateLanguagesPanelText();
-      renderLanguageList();
     }
 
-    function renderLanguageList() {
-      const query = String(languagesSearchInput?.value || '').trim().toLowerCase();
-      const items = (translationResources.length ? translationResources : [
-        { id: 'en-fallback', name: 'English', language_code: 'en', level: 'full_live' },
-        { id: 'ar', name: 'Arabic', language_code: 'ar', level: 'arabic_only' }
-      ]).filter((item) => {
-        if (!query) return true;
-        return String(item.name || '').toLowerCase().includes(query) || String(item.language_code || '').toLowerCase().includes(query);
-      });
+    function clearActiveWordOnly() {
+      if (!activeWordKey) return;
+      const oldWord = document.querySelector(`[data-word-key="${activeWordKey}"]`);
+      if (oldWord) oldWord.classList.remove('word-active');
+      activeWordKey = null;
+    }
 
-      languagesList.innerHTML = items.map((item) => {
-        const active = String(item.id) === String(currentTranslationId);
-        const meta = item.id === 'ar' ? 'Arabic only' : 'Arabic + English';
-        return `
-          <button class="language-item ${active ? 'active' : ''}" type="button" data-language-id="${escapeHtml(item.id)}" translate="no">
-            <span class="language-item-label">
-              <span class="language-item-name">${escapeHtml(item.name)}</span>
-            </span>
-            <span class="language-item-meta">${escapeHtml(meta)}</span>
-          </button>
-        `;
-      }).join('');
+    function markBismillahReciting(isReciting) {
+      const bismillahBlock = document.getElementById('bismillah');
+      if (!bismillahBlock) return;
+      bismillahBlock.classList.toggle('is-reciting', Boolean(isReciting));
+    }
 
-      document.querySelectorAll('[data-language-id]').forEach((button) => {
-        button.addEventListener('click', async () => {
-          const nextId = button.getAttribute('data-language-id');
-          const next = translationResources.find((item) => String(item.id) === String(nextId));
-          await activateTranslation(next);
-          setActiveTab('read');
-          showBookmarkMessage(`${next?.name || 'Language'} selected.`);
-        });
+    function showPrompt(title, text, actions) {
+      promptTitle.textContent = title;
+      promptText.textContent = text;
+      promptActions.innerHTML = '';
+      actions.forEach((action) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = action.primary ? 'prompt-btn' : 'prompt-btn-secondary';
+        button.textContent = action.label;
+        button.addEventListener('click', action.onClick);
+        promptActions.appendChild(button);
       });
+      floatingPrompt.classList.add('active');
+    }
+
+    function hidePrompt() {
+      floatingPrompt.classList.remove('active');
+      promptTitle.textContent = '';
+      promptText.textContent = '';
+      promptActions.innerHTML = '';
     }
 
     function showActionPulse(button) {
@@ -2268,7 +2670,6 @@
       languagesToggleButton.setAttribute('aria-expanded', 'true');
       try {
         await loadTranslationResources();
-        updateModeLabels();
         updateLanguagesPanelText();
         renderLanguageList();
       } catch (error) {
@@ -2277,47 +2678,8 @@
         return;
       }
       gentleScrollToElement(languagesPanel, { center: false });
-      if (languagesSearchInput) {
-        languagesSearchInput.value = '';
-        languagesSearchInput.focus();
-      }
+      if (languagesSearchInput) languagesSearchInput.focus();
     }
-
-    function showPrompt(title, text, actions = []) {
-      promptTitle.textContent = String(title || '');
-      promptText.textContent = String(text || '');
-      promptActions.innerHTML = actions.map((action, index) => {
-        const cls = action.primary ? 'prompt-btn' : 'prompt-btn-secondary';
-        return `<button class="${cls}" type="button" data-prompt-action="${index}" translate="no">${escapeHtml(action.label || 'Action')}</button>`;
-      }).join('');
-      floatingPrompt.classList.add('active');
-      document.querySelectorAll('[data-prompt-action]').forEach((button) => {
-        button.addEventListener('click', async () => {
-          const action = actions[Number(button.getAttribute('data-prompt-action'))];
-          if (action && typeof action.onClick === 'function') {
-            await action.onClick();
-          }
-        });
-      });
-    }
-
-    function hidePrompt() {
-      floatingPrompt.classList.remove('active');
-      promptTitle.textContent = '';
-      promptText.textContent = '';
-      promptActions.innerHTML = '';
-    }
-
-    function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg>`; }
-    function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6"></path><path d="M10 4v5l-3 3v1h10v-1l-3-3V4"></path><path d="M12 13v7"></path></svg>`; }
-    function iconShare() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2"></circle><circle cx="6" cy="12" r="2"></circle><circle cx="18" cy="19" r="2"></circle><path d="M8 12l8-6"></path><path d="M8 12l8 6"></path></svg>`; }
-    function iconCopy() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="10" height="11" rx="2"></rect><path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path></svg>`; }
-    function iconNote() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h9l3 3v13H6z"></path><path d="M15 4v4h4"></path><path d="M9 12h6"></path><path d="M9 16h4"></path></svg>`; }
-    function iconWord() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h16"></path></svg>`; }
-    function iconPlay() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6l10 6-10 6z"></path></svg>`; }
-    function iconRepeat() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l3 3-3 3"></path><path d="M4 11V9a4 4 0 0 1 4-4h12"></path><path d="M7 22l-3-3 3-3"></path><path d="M20 13v2a4 4 0 0 1-4 4H4"></path></svg>`; }
-    function iconStartFromHere() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16"></path><path d="M9 6l10 6-10 6z"></path></svg>`; }
-    function iconLanguages() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M4 12h16"></path><path d="M12 4a12 12 0 0 1 0 16"></path><path d="M12 4a12 12 0 0 0 0 16"></path></svg>`; }
 
     function closeAllMenus(exceptId = null) {
       document.querySelectorAll('.verse-menu').forEach((menu) => {
@@ -2346,7 +2708,6 @@
     }
 
     function stopTajweedPlayback(resetUI = true) {
-      stopTranslationFlow(false);
       clearTimeout(tajweedWordStopTimer);
       tajweedWordStopTimer = null;
       tajweedAudio.pause();
@@ -2383,7 +2744,6 @@
     }
 
     function applyAudioView(view, autoMove = true) {
-      stopTranslationFlow(false);
       currentAudioView = view;
       audioViewButtons.forEach((button) => button.classList.toggle('active', button.dataset.audioView === view));
       updateVerseClickability();
@@ -2461,7 +2821,6 @@
 
     function resetToReadingView(scrollToContent = false) {
       hidePrompt();
-      stopTranslationFlow(true);
       closeAllMenus();
       closeBookmarkPanel();
       stopTajweedPlayback(true);
@@ -2480,6 +2839,76 @@
       }
     }
 
+    async function resetSurahExperience() {
+      hidePrompt();
+      closeAllMenus();
+      closeBookmarkPanel();
+      stopTajweedPlayback(true);
+      stopSyncedPlayback(true);
+      clearAllHighlights();
+      clearWordMeaningPanels();
+
+      localStorage.removeItem(lastReadStorageKey);
+      localStorage.removeItem(historyStorageKey);
+      localStorage.removeItem(pinnedStorageKey);
+      localStorage.removeItem(verseNotesStorageKey);
+      localStorage.removeItem(reflectionDraftStorageKey);
+      localStorage.removeItem(reflectionNameStorageKey);
+      localStorage.removeItem(reflectionEmailStorageKey);
+      localStorage.removeItem(translationSelectionStorageKey);
+
+      reflectionName.value = '';
+      reflectionEmail.value = '';
+      reflectionDraft.value = '';
+      reflectionFeedback.classList.remove('active');
+      reflectionFeedback.textContent = '';
+
+      clearShareInputs(false);
+      shareFeedback.classList.remove('active');
+      shareFeedback.textContent = '';
+
+      currentTranslationId = 'en-fallback';
+      currentTranslationCode = 'en';
+      currentTranslationName = 'English';
+      currentTranslationVerses = englishVerses.slice();
+      currentWordLayerLanguageName = 'English';
+      currentWordLayerLevel = 'full_live';
+      await applyActiveWordLayer('en', 'en-fallback', 'English');
+
+      currentMode = 'bilingual';
+      applyWordMode(false);
+      rerenderTranslationView();
+      applyMode('bilingual');
+      applyAudioView('standard', false);
+      setActiveTab('read');
+
+      reciterSelect.value = defaultReciterKey;
+      audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
+      currentAudioUrl = '';
+      syncTimestamps = [];
+      syncByVerse = {};
+      surahAudioPlayer.pause();
+      surahAudioPlayer.removeAttribute('src');
+      surahAudioPlayer.load();
+
+      setCurrentVisibleVerse(1, false);
+      verseSelect.value = '1';
+      shareSingleVerse.value = '1';
+      shareRangeFrom.value = '1';
+      shareRangeTo.value = String(totalVerses);
+
+      updateModeLabels();
+      updateLanguagesPanelText();
+      renderLanguageList();
+      updateBookmarkUI();
+      updateShareBuilder();
+      updateSyncBarState();
+
+      const topTarget = document.getElementById('bismillah') || document.getElementById('content');
+      if (topTarget) gentleScrollToElement(topTarget, { center: false });
+      showBookmarkMessage('Reset to Arabic + English default.');
+    }
+
     function updateNoteIndicator(ayah) {
       const notes = getVerseNotes();
       const indicator = document.querySelector(`.note-indicator[data-note-indicator="${ayah}"]`);
@@ -2494,16 +2923,13 @@
         const ayah = Number(button.getAttribute('data-pin-ayah'));
         button.classList.toggle('active', isVersePinned(ayah));
       });
-
       document.querySelectorAll('[data-wordtoggle-ayah]').forEach((button) => {
         button.classList.toggle('active', wordModeEnabled);
         button.disabled = currentAudioView === 'synced';
       });
-
       document.querySelectorAll('[data-play-ayah], [data-repeat-ayah]').forEach((button) => {
         button.disabled = currentAudioView === 'synced';
       });
-
       document.querySelectorAll('.note-indicator').forEach((indicator) => {
         updateNoteIndicator(indicator.getAttribute('data-note-indicator'));
       });
@@ -2701,9 +3127,9 @@ ${message}` : '';
     }
 
     function persistReflectionDraft() {
-      safeStorageSet('localStorage', reflectionDraftStorageKey, reflectionDraft.value || '');
-      safeStorageSet('localStorage', reflectionNameStorageKey, reflectionName.value || '');
-      safeStorageSet('localStorage', reflectionEmailStorageKey, reflectionEmail.value || '');
+      localStorage.setItem(reflectionDraftStorageKey, reflectionDraft.value || '');
+      localStorage.setItem(reflectionNameStorageKey, reflectionName.value || '');
+      localStorage.setItem(reflectionEmailStorageKey, reflectionEmail.value || '');
     }
 
     function isValidEmail(value) {
@@ -3275,9 +3701,9 @@ ${getVerseUrl(ayah)}`,
 
         reflectionFeedback.classList.add('active');
         reflectionFeedback.textContent = 'Reflection sent. Thank you for sharing your thoughts with us.';
-        safeStorageRemove('localStorage', reflectionDraftStorageKey);
-        safeStorageRemove('localStorage', reflectionNameStorageKey);
-        safeStorageRemove('localStorage', reflectionEmailStorageKey);
+        localStorage.removeItem(reflectionDraftStorageKey);
+        localStorage.removeItem(reflectionNameStorageKey);
+        localStorage.removeItem(reflectionEmailStorageKey);
         reflectionName.value = '';
         reflectionEmail.value = '';
         reflectionDraft.value = '';
@@ -3806,7 +4232,7 @@ ${getVerseUrl(ayah)}`,
     }
 
     function goToNextSurahWithRecitation() {
-      safeStorageSet('sessionStorage', autoplaySessionKey, '1');
+      sessionStorage.setItem(autoplaySessionKey, '1');
       window.location.href = `${nextSurahFile}?reciter=${encodeURIComponent(reciterSelect.value)}&view=synced&autoplay=1`;
     }
 
@@ -3886,7 +4312,7 @@ ${getVerseUrl(ayah)}`,
         document.documentElement.removeAttribute('data-theme');
         themeToggle.textContent = 'Dark';
       }
-      safeStorageSet('localStorage', 'site-theme', theme);
+      localStorage.setItem('site-theme', theme);
     }
 
     function stripEmbeddedVerseMarkers(text) {
@@ -3970,7 +4396,7 @@ ${getVerseUrl(ayah)}`,
                 <button class="menu-item-btn" type="button" data-play-ayah="${verse.number}">${iconPlay()}<span>Play verse</span></button>
                 <button class="menu-item-btn" type="button" data-repeat-ayah="${verse.number}">${iconRepeat()}<span>Repeat verse</span></button>
                 <button class="menu-item-btn" type="button" data-start-ayah="${verse.number}">${iconStartFromHere()}<span>Start recitation from here</span></button>
-                <button class="menu-item-btn" type="button" data-open-languages="true">${iconLanguages()}<span>Languages</span></button>
+                <button class="menu-item-btn" type="button" data-open-languages="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M4 12h16"></path><path d="M12 4a12 12 0 0 1 0 16"></path><path d="M12 4a12 12 0 0 0 0 16"></path></svg><span>Languages</span></button>
               </div>
             </div>
           </div>
@@ -4249,7 +4675,6 @@ ${getVerseUrl(ayah)}`,
         tests.push(['Share selector supports surah', Array.from(shareType.options).some((option) => option.value === 'surah')]);
         tests.push(['Selection blocks available', typeof buildSelectionBlocks === 'function']);
         tests.push(['Languages UI ready', Boolean(languagesToggleButton && languagesPanel && languagesList)]);
-        tests.push(['Translation audio removed', !document.querySelector('[data-translation-audio-ayah]')]);
         console.table(tests.map(([name, pass]) => ({ test: name, pass })));
       } catch (error) {
         console.warn('Smoke tests skipped.', error);
@@ -4278,9 +4703,9 @@ ${getVerseUrl(ayah)}`,
 
     async function loadSurah() {
       const restoreReflectionDrafts = () => {
-        const savedReflectionDraft = safeStorageGet('localStorage', reflectionDraftStorageKey);
-        const savedReflectionName = safeStorageGet('localStorage', reflectionNameStorageKey);
-        const savedReflectionEmail = safeStorageGet('localStorage', reflectionEmailStorageKey);
+        const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
+        const savedReflectionName = localStorage.getItem(reflectionNameStorageKey);
+        const savedReflectionEmail = localStorage.getItem(reflectionEmailStorageKey);
         if (savedReflectionDraft !== null) reflectionDraft.value = savedReflectionDraft;
         if (savedReflectionName !== null) reflectionName.value = savedReflectionName;
         if (savedReflectionEmail !== null) reflectionEmail.value = savedReflectionEmail;
@@ -4335,7 +4760,7 @@ ${getVerseUrl(ayah)}`,
         audioMeta.textContent = `Selected reciter: ${reciters[defaultReciterKey].name}`;
 
         if (!apiDegraded && shouldAutoplay) {
-          safeStorageRemove('sessionStorage', autoplaySessionKey);
+          sessionStorage.removeItem(autoplaySessionKey);
           await loadSelectedAudio();
 
           const wantsSynced = autoplayView === 'synced';
@@ -4487,6 +4912,9 @@ ${getVerseUrl(ayah)}`,
       closeBookmarkPanel();
     });
     clearHistory.addEventListener('click', clearBookmarkHistory);
+    resetMainButton.addEventListener('click', async () => {
+      await resetSurahExperience();
+    });
 
     loadAudioButton.addEventListener('click', async () => { await loadSelectedAudio(); });
     reciterSelect.addEventListener('change', () => {
@@ -4668,7 +5096,7 @@ ${getVerseUrl(ayah)}`,
       if (!event.target.closest('.verse-toolbar')) closeAllMenus();
     });
 
-    const savedTheme = safeStorageGet('localStorage', 'site-theme');
+    const savedTheme = localStorage.getItem('site-theme');
     applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
     buildVerseSelector();
     updateLanguagesPanelText();
@@ -4677,12 +5105,7 @@ ${getVerseUrl(ayah)}`,
     updateBookmarkUI();
     updateSyncBarState();
     updateShareBuilder();
-    loadSurah().catch((error) => {
-      console.error('Initial load failed.', error);
-      loadingState.style.display = 'none';
-      errorState.style.display = 'block';
-      errorState.textContent = 'The surah could not be loaded. Please refresh the page and try again.';
-    });
+    loadSurah();
   </script>
 </body>
 </html>
