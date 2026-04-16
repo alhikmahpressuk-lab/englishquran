@@ -3028,11 +3028,15 @@ Surah An-Naml, Ayah ${ayah}`;
     }
 
     function getExportFooterBrandText() {
-      return '© openquran.uk | The English Qur’an | By: A. K. Khan';
+      return '© The Open Quran';
     }
 
     function getExportFooterTranslatorText() {
-      return `Translated by ${getCurrentTranslatorAttribution()}`;
+      return `Original Translator: ${getCurrentTranslatorAttribution()}`;
+    }
+
+    function getExportFooterSourceText() {
+      return 'Source: TEQ - The English Qur’an site - By: Dr A. K. Khan';
     }
 
     function getSelectionRange() {
@@ -3233,6 +3237,7 @@ ${getVerseUrl(ayah)}`,
     function createExportHtml(payload) {
       const footerBrandText = getExportFooterBrandText();
       const footerTranslatorText = getExportFooterTranslatorText();
+      const footerSourceText = getExportFooterSourceText();
       const blocksHtml = payload.blocks.map((block) => {
         if (block.kind === 'bismillah') {
           return [
@@ -3292,11 +3297,11 @@ ${getVerseUrl(ayah)}`,
         '</head>',
         '<body>',
         '<div class="wrap">',
-        '<div class="brand">The English Qur’an</div>',
+        '<div class="brand">The Open Quran</div>',
         `<h1>${escapeHtml(payload.title)}</h1>`,
         blocksHtml,
         '</div>',
-        `<div class="foot"><div class="foot-left">${escapeHtml(footerBrandText)}<br>${escapeHtml(footerTranslatorText)}</div><div class="foot-right"><span class="page-number"></span></div></div>`,
+        `<div class="foot"><div class="foot-left">${escapeHtml(footerBrandText)}<br>${escapeHtml(footerTranslatorText)}<br>${escapeHtml(footerSourceText)}</div><div class="foot-right"><span class="page-number"></span></div></div>`,
         '</body>',
         '</html>'
       ].join('');
@@ -3382,6 +3387,7 @@ ${getVerseUrl(ayah)}`,
       const pages = [];
       const footerBrandText = getExportFooterBrandText();
       const footerTranslatorText = getExportFooterTranslatorText();
+      const footerSourceText = getExportFooterSourceText();
 
       let canvas = null;
       let ctx = null;
@@ -3398,7 +3404,7 @@ ${getVerseUrl(ayah)}`,
         ctx.fillStyle = '#1e6b5c';
         ctx.textAlign = 'left';
         ctx.font = '700 28px Inter, Arial, sans-serif';
-        ctx.fillText('The English Qur’an', paddingX, topPadding);
+        ctx.fillText('The Open Quran', paddingX, topPadding);
 
         y = topPadding + 56;
         ctx.fillStyle = '#182128';
@@ -3551,8 +3557,9 @@ ${getVerseUrl(ayah)}`,
         pageCtx.fillStyle = '#66727d';
         pageCtx.textAlign = 'left';
         pageCtx.font = '400 20px Inter, Arial, sans-serif';
-        pageCtx.fillText(footerBrandText, paddingX, footerY - 18);
-        pageCtx.fillText(footerTranslatorText, paddingX, footerY + 10);
+        pageCtx.fillText(footerBrandText, paddingX, footerY - 34);
+        pageCtx.fillText(footerTranslatorText, paddingX, footerY - 10);
+        pageCtx.fillText(footerSourceText, paddingX, footerY + 14);
 
         pageCtx.textAlign = 'right';
         pageCtx.fillText(`${index + 1}/${pages.length}`, width - paddingX, footerY + 10);
