@@ -1792,9 +1792,11 @@
     let currentTranslationId = 'en-fallback';
     let currentTranslationCode = 'en';
     let currentTranslationName = 'English';
+    let currentTranslationAttributionName = 'Dr A. K. Khan';
     let currentTranslationVerses = englishVerses.slice();
     let translationResources = [];
     const translationCache = { 'en-fallback': englishVerses.slice(), ar: Array.from({ length: totalVerses }, () => '') };
+    const bismillahTranslationCache = { 'en-fallback': bismillahEnglish, ar: '' };
     let languageListLoadingPromise = null;
     const wordLayerCache = { en: null, ar: null };
     const translationCapabilityMap = {
@@ -1990,6 +1992,20 @@
       return texts;
     }
 
+    async function fetchBismillahTranslation(translationId) {
+      const cacheKey = String(translationId);
+      if (Object.prototype.hasOwnProperty.call(bismillahTranslationCache, cacheKey)) {
+        return bismillahTranslationCache[cacheKey];
+      }
+      const payload = await safeFetchJson(`https://api.quran.com/api/v4/verses/by_key/1:1?translations=${translationId}&translation_fields=resource_name,language_name,text`);
+      const versePayload = payload && payload.verse ? payload.verse : payload;
+      const translations = Array.isArray(versePayload && versePayload.translations) ? versePayload.translations : [];
+      const first = translations[0] || null;
+      const text = first && first.text ? stripHtmlContent(first.text) : '';
+      bismillahTranslationCache[cacheKey] = text || bismillahEnglish;
+      return bismillahTranslationCache[cacheKey];
+    }
+
     function updateLanguagesPanelText() {
       const count = Array.isArray(translationResources) && translationResources.length ? translationResources.length : 70;
       if (languagesPanelText) {
@@ -2099,7 +2115,9 @@
         currentTranslationId = 'ar';
         currentTranslationCode = 'ar';
         currentTranslationName = 'Arabic';
+        currentTranslationAttributionName = 'Arabic';
         currentTranslationVerses = translationCache.ar.slice();
+        bismillahTranslationCache.ar = '';
         await applyActiveWordLayer('ar', 'ar', 'Arabic');
         currentMode = 'arabic-only';
         updateModeLabels();
@@ -2113,7 +2131,9 @@
         currentTranslationId = 'en-fallback';
         currentTranslationCode = 'en';
         currentTranslationName = 'English';
+        currentTranslationAttributionName = 'Dr A. K. Khan';
         currentTranslationVerses = englishVerses.slice();
+        bismillahTranslationCache['en-fallback'] = bismillahEnglish;
         await applyActiveWordLayer('en', 'en-fallback', 'English');
         if (currentMode === 'arabic-only') currentMode = 'bilingual';
         updateModeLabels();
@@ -2133,7 +2153,9 @@
       currentTranslationId = nextId;
       currentTranslationCode = item.languageCode || 'en';
       currentTranslationName = item.languageName || 'Translation';
+      currentTranslationAttributionName = item.resourceName || item.languageName || 'Translation';
       currentTranslationVerses = texts;
+      await fetchBismillahTranslation(nextId);
       await applyActiveWordLayer(currentTranslationCode, nextId, currentTranslationName);
       if (currentMode === 'arabic-only') currentMode = 'bilingual';
       updateModeLabels();
@@ -2982,6 +3004,41 @@ Surah An-Naml, Ayah ${ayah}`;
       return { arabic: true, transliteration: false, english: true };
     }
 
+    function getCurrentTranslatorAttribution() {
+      if (currentTranslationId === 'en-fallback') return 'Dr A. K. Khan';
+      return currentTranslationAttributionName || currentTranslationName || 'Translation';
+    }
+
+    function formatExportVerseNumber(verseNumber) {
+      if (currentTranslationId === 'en-fallback' || currentTranslationCode === 'en') return String(verseNumber);
+      if (currentTranslationCode === 'ar') return toArabicDigits(verseNumber);
+      try {
+        return new Intl.NumberFormat(currentTranslationCode || 'en').format(verseNumber);
+      } catch {
+        return String(verseNumber);
+      }
+    }
+
+    function getActiveBismillahTranslation() {
+      const cacheKey = String(currentTranslationId);
+      if (Object.prototype.hasOwnProperty.call(bismillahTranslationCache, cacheKey)) {
+        return bismillahTranslationCache[cacheKey];
+      }
+      return currentTranslationId === 'en-fallback' ? bismillahEnglish : '';
+    }
+
+    function getExportFooterBrandText() {
+      return '© openquran.uk';
+    }
+
+    function getExportFooterTranslatorText() {
+      return `Original Translator: ${getCurrentTranslatorAttribution()}`;
+    }
+
+    function getExportFooterSourceText() {
+      return 'Source: TEQ - The English Qur’an site - By: Dr A. K. Khan';
+    }
+
     function getSelectionRange() {
       const type = shareType.value;
       if (type === 'surah') {
@@ -3003,7 +3060,7 @@ Surah An-Naml, Ayah ${ayah}`;
           kind: 'bismillah',
           arabic: flags.arabic ? bismillahArabic : '',
           transliteration: '',
-          english: flags.english ? bismillahEnglish : ''
+          english: flags.english ? getActiveBismillahTranslation() : ''
         });
       }
 
@@ -3013,9 +3070,10 @@ Surah An-Naml, Ayah ${ayah}`;
         blocks.push({
           kind: 'verse',
           verseNumber,
-          arabic: flags.arabic ? `${stripEmbeddedVerseMarkers(verse.arabic || fallbackArabicVerses[verseNumber - 1] || `الآية ${verseNumber}`)} ﴿${toArabicDigits(verseNumber)}﴾` : '',
+          displayNumber: flags.english ? formatExportVerseNumber(verseNumber) : '',
+          arabic: flags.arabic ? stripEmbeddedVerseMarkers(verse.arabic || fallbackArabicVerses[verseNumber - 1] || `الآية ${verseNumber}`) : '',
           transliteration: flags.transliteration && verse.transliteration ? verse.transliteration : '',
-          english: flags.english ? `${verseNumber}. ${getCurrentTranslationText(verseNumber)}` : ''
+          english: flags.english ? getCurrentTranslationText(verseNumber) : ''
         });
       }
 
@@ -3177,6 +3235,9 @@ ${getVerseUrl(ayah)}`,
     }
 
     function createExportHtml(payload) {
+      const footerBrandText = getExportFooterBrandText();
+      const footerTranslatorText = getExportFooterTranslatorText();
+      const footerSourceText = getExportFooterSourceText();
       const blocksHtml = payload.blocks.map((block) => {
         if (block.kind === 'bismillah') {
           return [
@@ -3190,7 +3251,7 @@ ${getVerseUrl(ayah)}`,
         return [
           '<section class="export-verse-row">',
           '<div class="export-english-col">',
-          `<div class="export-number">${block.verseNumber}</div>`,
+          block.english ? `<div class="export-number">${escapeHtml(block.displayNumber || '')}</div>` : '',
           '<div class="export-english-stack">',
           block.english ? `<div class="export-english">${escapeHtml(block.english)}</div>` : '',
           block.transliteration ? `<div class="export-transliteration">${escapeHtml(block.transliteration)}</div>` : '',
@@ -3211,33 +3272,36 @@ ${getVerseUrl(ayah)}`,
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
         `<title>${escapeHtml(payload.title)}</title>`,
         '<style>',
-        'body{font-family:Inter,Arial,sans-serif;margin:0;padding:28px;color:#182128;background:#ffffff;line-height:1.7;}',
-        '.wrap{max-width:980px;margin:0 auto;}',
-        '.brand{font-size:14px;color:#1e6b5c;font-weight:700;margin-bottom:10px;letter-spacing:.04em;text-transform:uppercase;}',
-        'h1{margin:0 0 22px;font-size:28px;line-height:1.2;letter-spacing:-.02em;}',
-        '.export-bismillah{padding:0 0 22px;margin:0 0 18px;border-bottom:1px solid #e3e8ec;text-align:center;}',
-        '.export-bismillah-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:30px;line-height:2.05;margin-bottom:10px;direction:rtl;}',
-        '.export-bismillah-english{font-size:15px;color:#475467;line-height:1.8;}',
-        '.export-verse-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;padding:0 0 24px;margin:0 0 24px;border-bottom:1px solid #e3e8ec;page-break-inside:avoid;break-inside:avoid;}',
-        '.export-english-col{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;align-items:start;}',
-        '.export-number{width:44px;height:44px;border-radius:14px;background:#e8f3f0;color:#154d42;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;line-height:1;margin-top:2px;}',
-        '.export-english-stack{min-width:0;}',
-        '.export-english{font-size:16px;line-height:1.9;color:#182128;}',
-        '.export-transliteration{margin-top:8px;font-size:14px;line-height:1.8;font-style:italic;color:#66727d;}',
-        '.export-arabic-col{min-width:0;}',
-        '.export-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:28px;line-height:2.05;text-align:right;direction:rtl;color:#111827;}',
-        '.foot{margin-top:28px;padding-top:18px;border-top:1px solid #e3e8ec;font-size:13px;color:#66727d;}',
-        '@media print{body{padding:0}.wrap{max-width:none}.export-verse-row{gap:18px}}',
-        '@page{size:A4;margin:15mm 13mm;}',
+        'body{font-family:Inter,Arial,sans-serif;margin:0;padding:28px 28px 96px;color:#182128;background:#ffffff;line-height:1.7;counter-reset:page;} ',
+        '.wrap{max-width:980px;margin:0 auto;} ',
+        '.brand{font-size:14px;color:#1e6b5c;font-weight:700;margin-bottom:10px;letter-spacing:.04em;text-transform:uppercase;} ',
+        'h1{margin:0 0 22px;font-size:28px;line-height:1.2;letter-spacing:-.02em;} ',
+        '.export-bismillah{padding:0 0 22px;margin:0 0 18px;border-bottom:1px solid #e3e8ec;text-align:center;page-break-inside:avoid;break-inside:avoid;} ',
+        '.export-bismillah-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:30px;line-height:2.05;margin-bottom:10px;direction:rtl;} ',
+        '.export-bismillah-english{font-size:15px;color:#475467;line-height:1.8;} ',
+        '.export-verse-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;padding:0 0 24px;margin:0 0 24px;border-bottom:1px solid #e3e8ec;page-break-inside:avoid;break-inside:avoid;} ',
+        '.export-english-col{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;align-items:start;} ',
+        '.export-number{width:44px;height:44px;border-radius:14px;background:#e8f3f0;color:#154d42;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;line-height:1;margin-top:2px;} ',
+        '.export-english-stack{min-width:0;} ',
+        '.export-english{font-size:16px;line-height:1.9;color:#182128;} ',
+        '.export-transliteration{margin-top:8px;font-size:14px;line-height:1.8;font-style:italic;color:#66727d;} ',
+        '.export-arabic-col{min-width:0;} ',
+        '.export-arabic{font-family:"Amiri Quran","Amiri",serif;font-size:28px;line-height:2.05;text-align:right;direction:rtl;color:#111827;} ',
+        '.foot{position:fixed;left:28px;right:28px;bottom:16px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding-top:12px;border-top:1px solid #e3e8ec;background:#ffffff;} ',
+        '.foot-left{font-size:13px;color:#66727d;line-height:1.55;} ',
+        '.foot-right{font-size:13px;color:#66727d;text-align:right;} ',
+        '.page-number::after{content:counter(page) " / " counter(pages);} ',
+        '@media print{body{padding:0 0 82px}.wrap{max-width:none}.export-verse-row{gap:18px}} ',
+        '@page{size:A4;margin:15mm 13mm;} ',
         '</style>',
         '</head>',
         '<body>',
         '<div class="wrap">',
-        '<div class="brand">The English Qur’an</div>',
+        '<div class="brand">The Open Quran</div>',
         `<h1>${escapeHtml(payload.title)}</h1>`,
         blocksHtml,
-        `<div class="foot">${escapeHtml(exportAttribution)}</div>`,
         '</div>',
+        `<div class="foot"><div class="foot-left">${escapeHtml(footerBrandText)}<br>${escapeHtml(footerTranslatorText)}<br>${escapeHtml(footerSourceText)}</div><div class="foot-right"><span class="page-number"></span></div></div>`,
         '</body>',
         '</html>'
       ].join('');
@@ -3321,14 +3385,15 @@ ${getVerseUrl(ayah)}`,
       const rightColWidth = width - (paddingX * 2) - leftColWidth - gutter;
       const pageBottom = height - 118;
       const pages = [];
+      const footerBrandText = getExportFooterBrandText();
+      const footerTranslatorText = getExportFooterTranslatorText();
+      const footerSourceText = getExportFooterSourceText();
 
       let canvas = null;
       let ctx = null;
       let y = 0;
-      let pageNumber = 0;
 
       const startPage = (continued = false) => {
-        pageNumber += 1;
         canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
@@ -3339,7 +3404,7 @@ ${getVerseUrl(ayah)}`,
         ctx.fillStyle = '#1e6b5c';
         ctx.textAlign = 'left';
         ctx.font = '700 28px Inter, Arial, sans-serif';
-        ctx.fillText('The English Qur’an', paddingX, topPadding);
+        ctx.fillText('The Open Quran', paddingX, topPadding);
 
         y = topPadding + 56;
         ctx.fillStyle = '#182128';
@@ -3354,17 +3419,6 @@ ${getVerseUrl(ayah)}`,
       };
 
       const finishPage = () => {
-        ctx.strokeStyle = '#e3e8ec';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(paddingX, height - 78);
-        ctx.lineTo(width - paddingX, height - 78);
-        ctx.stroke();
-
-        ctx.fillStyle = '#66727d';
-        ctx.font = '400 22px Inter, Arial, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(exportAttribution, paddingX, footerY);
         pages.push(canvas);
       };
 
@@ -3432,28 +3486,30 @@ ${getVerseUrl(ayah)}`,
         const leftX = paddingX;
         const rightX = paddingX + leftColWidth + gutter;
 
-        ctx.fillStyle = '#e8f3f0';
-        const badgeX = leftX;
-        const badgeY = rowTop;
-        const badgeW = 48;
-        const badgeH = 48;
-        const badgeR = 14;
-        ctx.beginPath();
-        ctx.moveTo(badgeX + badgeR, badgeY);
-        ctx.lineTo(badgeX + badgeW - badgeR, badgeY);
-        ctx.quadraticCurveTo(badgeX + badgeW, badgeY, badgeX + badgeW, badgeY + badgeR);
-        ctx.lineTo(badgeX + badgeW, badgeY + badgeH - badgeR);
-        ctx.quadraticCurveTo(badgeX + badgeW, badgeY + badgeH, badgeX + badgeW - badgeR, badgeY + badgeH);
-        ctx.lineTo(badgeX + badgeR, badgeY + badgeH);
-        ctx.quadraticCurveTo(badgeX, badgeY + badgeH, badgeX, badgeY + badgeH - badgeR);
-        ctx.lineTo(badgeX, badgeY + badgeR);
-        ctx.quadraticCurveTo(badgeX, badgeY, badgeX + badgeR, badgeY);
-        ctx.closePath();
-        ctx.fill();
-        ctx.fillStyle = '#154d42';
-        ctx.font = '700 22px Inter, Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(String(block.verseNumber), badgeX + (badgeW / 2), badgeY + 31);
+        if (block.english) {
+          ctx.fillStyle = '#e8f3f0';
+          const badgeX = leftX;
+          const badgeY = rowTop;
+          const badgeW = 48;
+          const badgeH = 48;
+          const badgeR = 14;
+          ctx.beginPath();
+          ctx.moveTo(badgeX + badgeR, badgeY);
+          ctx.lineTo(badgeX + badgeW - badgeR, badgeY);
+          ctx.quadraticCurveTo(badgeX + badgeW, badgeY, badgeX + badgeW, badgeY + badgeR);
+          ctx.lineTo(badgeX + badgeW, badgeY + badgeH - badgeR);
+          ctx.quadraticCurveTo(badgeX + badgeW, badgeY + badgeH, badgeX + badgeW - badgeR, badgeY + badgeH);
+          ctx.lineTo(badgeX + badgeR, badgeY + badgeH);
+          ctx.quadraticCurveTo(badgeX, badgeY + badgeH, badgeX, badgeY + badgeH - badgeR);
+          ctx.lineTo(badgeX, badgeY + badgeR);
+          ctx.quadraticCurveTo(badgeX, badgeY, badgeX + badgeR, badgeY);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = '#154d42';
+          ctx.font = '700 22px Inter, Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(String(block.displayNumber || block.verseNumber || ''), badgeX + (badgeW / 2), badgeY + 31);
+        }
 
         let textY = rowTop + 28;
         ctx.fillStyle = '#182128';
@@ -3488,6 +3544,27 @@ ${getVerseUrl(ayah)}`,
       });
 
       finishPage();
+
+      pages.forEach((pageCanvas, index) => {
+        const pageCtx = pageCanvas.getContext('2d');
+        pageCtx.strokeStyle = '#e3e8ec';
+        pageCtx.lineWidth = 1;
+        pageCtx.beginPath();
+        pageCtx.moveTo(paddingX, height - 78);
+        pageCtx.lineTo(width - paddingX, height - 78);
+        pageCtx.stroke();
+
+        pageCtx.fillStyle = '#66727d';
+        pageCtx.textAlign = 'left';
+        pageCtx.font = '400 20px Inter, Arial, sans-serif';
+        pageCtx.fillText(footerBrandText, paddingX, footerY - 34);
+        pageCtx.fillText(footerTranslatorText, paddingX, footerY - 10);
+        pageCtx.fillText(footerSourceText, paddingX, footerY + 14);
+
+        pageCtx.textAlign = 'right';
+        pageCtx.fillText(`${index + 1}/${pages.length}`, width - paddingX, footerY + 10);
+      });
+
       return pages;
     }
 
