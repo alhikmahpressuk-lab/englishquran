@@ -1153,6 +1153,17 @@
       min-height: 42px;
     }
     .footer-links a:hover { background: var(--surface-soft); }
+    .footer-note {
+      width: 100%;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      padding-top: 6px;
+    }
+    .footer-note small {
+      display: block;
+    }
 
     .hidden-arabic .arabic-wrap,
     .hidden-arabic .bismillah-arabic { display: none; }
@@ -1550,6 +1561,7 @@
         <a href="index.html" translate="no">Homepage</a>
         <a href="surah-28.html" translate="no">Next Surah · Al-Qaṣaṣ</a>
       </div>
+      <div class="footer-note" id="pageFooterMeta" translate="no"></div>
     </div>
   </footer>
 
@@ -1900,6 +1912,16 @@
       return currentTranslationId === 'ar' ? 'Arabic' : currentTranslationName;
     }
 
+    function updatePageFooterMeta() {
+      const footerMeta = document.getElementById('pageFooterMeta');
+      if (!footerMeta) return;
+      const lines = ['© openquran.uk. All rights reserved.'];
+      if (currentTranslationId === 'en-fallback') {
+        lines.push('The English Qur’an | By: Dr A. K. Khan');
+      }
+      footerMeta.innerHTML = lines.map((line) => `<small>${escapeHtml(line)}</small>`).join('');
+    }
+
     function updateModeLabels() {
       const bilingualButton = document.querySelector('[data-mode="bilingual"]');
       const translationOnlyButton = document.querySelector('[data-mode="english-only"]');
@@ -1919,6 +1941,7 @@
       if (languagesStatus) {
         languagesStatus.textContent = getWordLayerStatusText();
       }
+      updatePageFooterMeta();
     }
 
     function getTranslationResourceList(payload) {
