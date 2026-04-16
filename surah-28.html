@@ -2490,8 +2490,7 @@
 
       pinnedList.querySelectorAll('[data-go-pinned]').forEach((button) => {
         button.addEventListener('click', () => {
-          jumpToVerse(Number(button.getAttribute('data-go-pinned')));
-          closeBookmarkPanel();
+          jumpToVerseFromBookmark(Number(button.getAttribute('data-go-pinned')));
         });
       });
       pinnedList.querySelectorAll('[data-remove-pinned]').forEach((button) => {
@@ -2499,8 +2498,7 @@
       });
       bookmarkList.querySelectorAll('[data-go-history]').forEach((button) => {
         button.addEventListener('click', () => {
-          jumpToVerse(Number(button.getAttribute('data-go-history')));
-          closeBookmarkPanel();
+          jumpToVerseFromBookmark(Number(button.getAttribute('data-go-history')));
         });
       });
       bookmarkList.querySelectorAll('[data-remove-history]').forEach((button) => {
@@ -4346,6 +4344,16 @@ ${getVerseUrl(ayah)}`,
       history.replaceState(null, '', `?ayah=${safeVerseNumber}#ayah-${safeVerseNumber}`);
     }
 
+    function jumpToVerseFromBookmark(verseNumber) {
+      const safeVerseNumber = Number(verseNumber);
+      if (!safeVerseNumber) return;
+      closeBookmarkPanel();
+      requestAnimationFrame(() => {
+        lockVerseNavigation(safeVerseNumber, 1500);
+        jumpToVerse(safeVerseNumber);
+      });
+    }
+
     function handleVerseClickForSyncedMode(event) {
       if (event.target.closest('.verse-toolbar') || event.target.closest('.verse-note-panel')) return;
       const verseNumber = Number(event.currentTarget.dataset.ayahNumber);
@@ -5001,8 +5009,7 @@ ${getVerseUrl(ayah)}`,
     goLastRead.addEventListener('click', () => {
       const saved = getLastRead();
       if (!saved) return;
-      jumpToVerse(saved.ayah);
-      closeBookmarkPanel();
+      jumpToVerseFromBookmark(saved.ayah);
     });
     clearHistory.addEventListener('click', clearBookmarkHistory);
     resetMainButton.addEventListener('click', async () => {
