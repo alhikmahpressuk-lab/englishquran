@@ -1414,6 +1414,11 @@
                   <option value="dussary">Yasser Ad-Dussary</option>
                   <option value="ali-jaber">Sheikh Ali Jaber</option>
                   <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
+                  <option value="abu-bakr-al-shatri">Abu Bakr al-Shatri</option>
+                  <option value="mahmoud-khalil-al-husary-learning">Mahmoud Khalil Al-Husary (Learning)</option>
+                  <option value="bandar-baleela">Sheikh Bander Baleela</option>
+                  <option value="maher-al-muaiqly">Sheikh Maher al-Muaiqly</option>
+                  <option value="saad-al-ghamdi">Saad al-Ghamdi</option>
                 </select>
               </div>
               <button class="jump-button" type="button" id="loadAudioButton" translate="no">Load recitation</button>
@@ -1668,7 +1673,12 @@
       shuraim: { name: 'Sheikh Saud ash-Shuraym', id: 10 },
       dussary: { name: 'Yasser Ad-Dussary', id: 174 },
       'ali-jaber': { name: 'Sheikh Ali Jaber', id: 158 },
-      'abdul-basit': { name: 'Sheikh Abdul Basit Abdul Samad', id: 2 }
+      'abdul-basit': { name: 'Sheikh Abdul Basit Abdul Samad', id: 2 },
+      'abu-bakr-al-shatri': { name: 'Abu Bakr al-Shatri', id: null, lookupNames: ['Abu Bakr al-Shatri'] },
+      'mahmoud-khalil-al-husary-learning': { name: 'Mahmoud Khalil Al-Husary (Learning)', id: null, lookupNames: ['Mahmoud Khalil Al-Husary Muallim', 'Mahmoud Khalil Al-Husary (Learning)', 'Mahmoud Khalil Al-Husary'] },
+      'bandar-baleela': { name: 'Sheikh Bander Baleela', id: null, lookupNames: ['Bandar Baleela', 'Bander Baleela'] },
+      'maher-al-muaiqly': { name: 'Sheikh Maher al-Muaiqly', id: null, lookupNames: ['Maher al-Muaiqly', 'Maher Al Muaiqly', 'Maher Almaiqly'] },
+      'saad-al-ghamdi': { name: 'Saad al-Ghamdi', id: null, lookupNames: ['Saad al-Ghamdi'] }
     };
 
     const blockedPatterns = [
@@ -1833,6 +1843,7 @@
     let tajweedContinueAllActive = false;
     let apiDegraded = false;
     let jsPdfLoaderPromise = null;
+    let chapterRecitersLookupPromise = null;
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
     function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
@@ -3845,6 +3856,33 @@ ${getVerseUrl(ayah)}`,
         });
     }
 
+    function normaliseReciterLookupName(value) {
+      return String(value || '').toLowerCase().split('(')[0].replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+
+    async function resolveChapterReciterId(reciterKey) {
+      const reciter = reciters[reciterKey];
+      if (!reciter) return null;
+      if (Number.isFinite(reciter.id)) return reciter.id;
+      if (!chapterRecitersLookupPromise) {
+        chapterRecitersLookupPromise = safeFetchJson('https://api.quran.com/api/v4/resources/chapter_reciters?language=en');
+      }
+      const payload = await chapterRecitersLookupPromise;
+      const items = Array.isArray(payload?.reciters) ? payload.reciters : [];
+      const expected = [reciter.name, ...(Array.isArray(reciter.lookupNames) ? reciter.lookupNames : [])]
+        .map((name) => normaliseReciterLookupName(name))
+        .filter(Boolean);
+      const match = items.find((item) => {
+        const names = [item?.name, item?.translated_name?.name].map((name) => normaliseReciterLookupName(name));
+        return names.some((name) => expected.includes(name));
+      });
+      if (match && Number.isFinite(Number(match.id))) {
+        reciter.id = Number(match.id);
+        return reciter.id;
+      }
+      return null;
+    }
+
     async function fetchReciterAudio(reciterId) {
       const payload = await safeFetchJson(`https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${surahNumber}?segments=true`);
       const audioFile = payload?.audio_file;
@@ -4621,7 +4659,16 @@ ${getVerseUrl(ayah)}`,
       loadAudioButton.disabled = true;
       loadAudioButton.textContent = 'Loading...';
       try {
-        const result = await fetchReciterAudio(reciter.id);
+        const resolvedId = await resolveChapterReciterId(reciterSelect.value);
+        if (!resolvedId) {
+          currentAudioUrl = '';
+          syncTimestamps = [];
+          syncByVerse = {};
+          audioMeta.textContent = `Recitation is unavailable for ${reciter.name} right now.`;
+          showBookmarkMessage('That reciter is unavailable right now.');
+          return;
+        }
+        const result = await fetchReciterAudio(resolvedId);
         await fetchIntroBismillahAudio();
         if (!result?.audioUrl) {
           currentAudioUrl = '';
