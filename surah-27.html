@@ -1348,10 +1348,10 @@
 
         <div class="controls">
           <button class="tab-button active" type="button" data-tab="read" translate="no">Read</button>
+          <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
           <button class="tab-button" type="button" data-tab="overview" translate="no">Overview</button>
           <button class="tab-button" type="button" data-tab="mode" translate="no">Mode</button>
           <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
-          <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
           <button class="tab-button" type="button" data-tab="share" translate="no">Share</button>
           <button class="main-reset-button" type="button" id="resetMainButton" title="All saved data will be reset to normal." aria-label="Reset all saved data to normal" translate="no">Reset</button>
         </div>
@@ -1674,11 +1674,11 @@
       dussary: { name: 'Yasser Ad-Dussary', id: 174 },
       'ali-jaber': { name: 'Sheikh Ali Jaber', id: 158 },
       'abdul-basit': { name: 'Sheikh Abdul Basit Abdul Samad', id: 2 },
-      'abu-bakr-al-shatri': { name: 'Abu Bakr al-Shatri', id: null, lookupNames: ['Abu Bakr al-Shatri'] },
-      'mahmoud-khalil-al-husary-learning': { name: 'Mahmoud Khalil Al-Husary (Learning)', id: null, lookupNames: ['Mahmoud Khalil Al-Husary Muallim', 'Mahmoud Khalil Al-Husary (Learning)', 'Mahmoud Khalil Al-Husary'] },
-      'bandar-baleela': { name: 'Sheikh Bander Baleela', id: null, lookupNames: ['Bandar Baleela', 'Bander Baleela'] },
-      'maher-al-muaiqly': { name: 'Sheikh Maher al-Muaiqly', id: null, lookupNames: ['Maher al-Muaiqly', 'Maher Al Muaiqly', 'Maher Almaiqly'] },
-      'saad-al-ghamdi': { name: 'Saad al-Ghamdi', id: null, lookupNames: ['Saad al-Ghamdi'] }
+      'abu-bakr-al-shatri': { name: 'Abu Bakr al-Shatri', id: null, lookupNames: ['Abu Bakr al-Shatri', 'Abu Bakr Ash-Shatri', 'Abu Bakr Al-Shatri'] },
+      'mahmoud-khalil-al-husary-learning': { name: 'Mahmoud Khalil Al-Husary (Learning)', id: null, lookupNames: ['Mahmoud Khalil Al-Husary Muallim', 'Mahmoud Khalil Al-Husary (Learning)', 'Mahmoud Khalil Al-Husary', 'Al-Husary Muallim'] },
+      'bandar-baleela': { name: 'Sheikh Bander Baleela', id: null, lookupNames: ['Bandar Baleela', 'Bander Baleela', 'Bandar Balila', 'Bander Balila'] },
+      'maher-al-muaiqly': { name: 'Sheikh Maher al-Muaiqly', id: null, lookupNames: ['Maher al-Muaiqly', 'Maher Al Muaiqly', 'Maher Almaiqly', 'Maher Al-Muaiqly', 'Maher Al Muaiqli'] },
+      'saad-al-ghamdi': { name: 'Saad al-Ghamdi', id: null, lookupNames: ['Saad al-Ghamdi', 'Saad Al Ghamdi', 'Saad Al-Ghamdi'] }
     };
 
     const blockedPatterns = [
@@ -3868,14 +3868,27 @@ ${getVerseUrl(ayah)}`,
         chapterRecitersLookupPromise = safeFetchJson('https://api.quran.com/api/v4/resources/chapter_reciters?language=en');
       }
       const payload = await chapterRecitersLookupPromise;
-      const items = Array.isArray(payload?.reciters) ? payload.reciters : [];
+      const items = [];
+      if (Array.isArray(payload?.reciters)) items.push(...payload.reciters);
+      if (Array.isArray(payload?.chapter_reciters)) items.push(...payload.chapter_reciters);
+      if (Array.isArray(payload?.readers)) items.push(...payload.readers);
+      if (Array.isArray(payload?.data)) items.push(...payload.data);
+
       const expected = [reciter.name, ...(Array.isArray(reciter.lookupNames) ? reciter.lookupNames : [])]
         .map((name) => normaliseReciterLookupName(name))
         .filter(Boolean);
+
       const match = items.find((item) => {
-        const names = [item?.name, item?.translated_name?.name].map((name) => normaliseReciterLookupName(name));
+        const names = [
+          item?.name,
+          item?.translated_name?.name,
+          item?.author_name,
+          item?.reader_name,
+          item?.resource_name
+        ].map((name) => normaliseReciterLookupName(name)).filter(Boolean);
         return names.some((name) => expected.includes(name));
       });
+
       if (match && Number.isFinite(Number(match.id))) {
         reciter.id = Number(match.id);
         return reciter.id;
@@ -3885,10 +3898,11 @@ ${getVerseUrl(ayah)}`,
 
     async function fetchReciterAudio(reciterId) {
       const payload = await safeFetchJson(`https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${surahNumber}?segments=true`);
-      const audioFile = payload?.audio_file;
-      if (!audioFile?.audio_url) return null;
-      const audioUrl = normaliseAudioUrl(audioFile.audio_url);
-      const rawTimestamps = Array.isArray(audioFile.timestamps) ? audioFile.timestamps : [];
+      const audioFile = payload?.audio_file || payload?.chapter_recitation || payload?.audio_files?.[0] || null;
+      const rawUrl = audioFile?.audio_url || audioFile?.url || audioFile?.audio || '';
+      if (!rawUrl) return null;
+      const audioUrl = normaliseAudioUrl(rawUrl);
+      const rawTimestamps = Array.isArray(audioFile?.timestamps) ? audioFile.timestamps : [];
       const timestamps = rawTimestamps
         .map((item) => ({
           verseNumber: Number(String(item.verse_key).split(':')[1]),
