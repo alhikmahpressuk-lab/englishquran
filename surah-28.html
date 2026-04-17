@@ -1165,6 +1165,68 @@
       display: block;
     }
 
+    .mushaf-shell {
+      display: grid;
+      gap: 14px;
+    }
+    .mushaf-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .mushaf-toolbar select {
+      min-height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 14px;
+      min-width: 220px;
+    }
+    .mushaf-status {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: color-mix(in srgb, var(--text) 88%, white);
+      font-size: 0.94rem;
+    }
+    .mushaf-pages {
+      display: flex;
+      flex-direction: row;
+      gap: 18px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 8px 4px 12px;
+      direction: rtl;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
+    }
+    .mushaf-page {
+      flex: 0 0 auto;
+      width: min(720px, calc(100vw - 76px));
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 12px;
+      box-shadow: var(--shadow);
+      scroll-snap-align: start;
+    }
+    .mushaf-page canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      background: #fff;
+    }
+    .mushaf-page-meta {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
     .hidden-arabic .arabic-wrap,
     .hidden-arabic .bismillah-arabic { display: none; }
     .hidden-english .english,
@@ -1363,6 +1425,7 @@
           <button class="tab-button" type="button" data-tab="mode" translate="no">Mode</button>
           <button class="tab-button" type="button" data-tab="verse" translate="no">Verse</button>
           <button class="tab-button" type="button" data-tab="listen" translate="no">Listen</button>
+          <button class="tab-button" type="button" data-tab="mushaf" translate="no">Mushaf</button>
           <button class="tab-button" type="button" data-tab="share" translate="no">Share</button>
           <button class="main-reset-button" type="button" id="resetMainButton" title="All saved data will be reset to normal." aria-label="Reset all saved data to normal" translate="no">Reset</button>
         </div>
@@ -1547,6 +1610,16 @@
           <div class="tab-panel" id="mode"></div>
           <div class="tab-panel" id="verse"></div>
           <div class="tab-panel" id="listen"></div>
+          <div class="tab-panel" id="mushaf">
+            <div class="mushaf-shell notranslate" translate="no">
+              <div class="mushaf-toolbar">
+                <select id="mushafSourceSelect" aria-label="Select Mushaf source" translate="no"></select>
+                <button class="jump-button" type="button" id="mushafReloadButton" translate="no">Load Mushaf</button>
+              </div>
+              <div class="mushaf-status" id="mushafStatus" translate="no">The uploaded Arabic Mushaf PDF will load here in right-to-left reading order for recitation.</div>
+              <div class="mushaf-pages notranslate" id="mushafPages" translate="no"></div>
+            </div>
+          </div>
           <div class="tab-panel" id="share"></div>
         </div>
       </div>
@@ -1709,6 +1782,10 @@
     const sharePanel = document.getElementById('sharePanel');
     const resetMainButton = document.getElementById('resetMainButton');
     const overviewRoot = document.querySelector('#overview .overview');
+    const mushafSourceSelect = document.getElementById('mushafSourceSelect');
+    const mushafReloadButton = document.getElementById('mushafReloadButton');
+    const mushafStatus = document.getElementById('mushafStatus');
+    const mushafPages = document.getElementById('mushafPages');
 
     const modeButtons = document.querySelectorAll('.mode-button');
     const audioViewButtons = document.querySelectorAll('.audio-view-button');
@@ -1851,6 +1928,19 @@
     let tajweedContinueAllActive = false;
     let apiDegraded = false;
     let jsPdfLoaderPromise = null;
+    let pdfJsLoaderPromise = null;
+    const mushafPdfCache = {};
+    let mushafInitialised = false;
+
+    const mushafSources = [
+      {
+        id: 'arabic-pdf-1',
+        name: 'Arabic Mushaf (Surah An-Naml)',
+        file: "THE ARABIC QUR'AN.pdf",
+        startPage: 463,
+        endPage: 471
+      }
+    ];
 
     function iconMore() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>`; }
     function iconPin() { return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8"></path><path d="M10 5v5l-3 3v1h10v-1l-3-3V5"></path><path d="M12 14v5"></path></svg>`; }
@@ -2019,22 +2109,6 @@
 
     async function translateOverviewForActiveLanguage() {
       if (!overviewRoot || !overviewSourceContent) return;
-      const targetLanguage = String(currentTranslationCode || 'en').trim().toLowerCase();
-      if (String(currentTranslationId || 'en-fallback') === 'en-fallback' || targetLanguage === 'en') {
-        renderOverviewContent(overviewSourceContent);
-        return;
-      }
-
-      try {
-        const translated = await buildLiveTranslatedOverview(targetLanguage);
-        if (translated) {
-          renderOverviewContent(translated);
-          return;
-        }
-      } catch (error) {
-        console.warn('Overview translation could not be loaded.', error);
-      }
-
       renderOverviewContent(overviewSourceContent);
     }
 
@@ -4938,6 +5012,85 @@ ${getVerseUrl(ayah)}`,
       }
     }
 
+    function populateMushafSources() {
+      if (!mushafSourceSelect) return;
+      mushafSourceSelect.innerHTML = mushafSources.map((source) => `<option value="${escapeHtml(source.id)}">${escapeHtml(source.name)}</option>`).join('');
+    }
+
+    function ensurePdfJs() {
+      if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+      if (pdfJsLoaderPromise) return pdfJsLoaderPromise;
+      pdfJsLoaderPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        script.async = true;
+        script.onload = () => {
+          if (!window.pdfjsLib) {
+            reject(new Error('PDF reader could not be loaded.'));
+            return;
+          }
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          resolve(window.pdfjsLib);
+        };
+        script.onerror = () => reject(new Error('PDF reader could not be loaded.'));
+        document.head.appendChild(script);
+      });
+      return pdfJsLoaderPromise;
+    }
+
+    async function getMushafPdfDocument(source) {
+      await ensurePdfJs();
+      if (mushafPdfCache[source.file]) return mushafPdfCache[source.file];
+      const loadingTask = window.pdfjsLib.getDocument(source.file);
+      const pdf = await loadingTask.promise;
+      mushafPdfCache[source.file] = pdf;
+      return pdf;
+    }
+
+    async function renderMushafSource(sourceId) {
+      const source = mushafSources.find((item) => item.id === sourceId) || mushafSources[0];
+      if (!source || !mushafPages || !mushafStatus) return;
+      mushafStatus.textContent = `Loading ${source.name}...`;
+      mushafPages.innerHTML = '';
+      try {
+        const pdf = await getMushafPdfDocument(source);
+        for (let pageNumber = source.startPage; pageNumber <= source.endPage; pageNumber += 1) {
+          const page = await pdf.getPage(pageNumber);
+          const viewport = page.getViewport({ scale: 1.9 });
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          await page.render({ canvasContext: context, viewport }).promise;
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'mushaf-page';
+          const meta = document.createElement('div');
+          meta.className = 'mushaf-page-meta';
+          meta.textContent = `PDF page ${pageNumber}`;
+          wrapper.appendChild(canvas);
+          wrapper.appendChild(meta);
+          mushafPages.appendChild(wrapper);
+        }
+        mushafStatus.textContent = `${source.name} loaded in right-to-left reading order. Scroll right and left to navigate the pages.`;
+        requestAnimationFrame(() => {
+          mushafPages.scrollLeft = mushafPages.scrollWidth;
+        });
+      } catch (error) {
+        console.error(error);
+        mushafStatus.textContent = 'The Mushaf PDF could not be loaded right now.';
+      }
+    }
+
+    async function initMushafView() {
+      if (!mushafSourceSelect || !mushafPages || !mushafStatus) return;
+      if (!mushafInitialised) {
+        populateMushafSources();
+        mushafInitialised = true;
+      }
+      await renderMushafSource(mushafSourceSelect.value || mushafSources[0].id);
+    }
+
     async function loadSurah() {
       const restoreReflectionDrafts = () => {
         const savedReflectionDraft = localStorage.getItem(reflectionDraftStorageKey);
@@ -5077,12 +5230,15 @@ ${getVerseUrl(ayah)}`,
     shareClearButton.addEventListener('click', () => clearShareInputs(true));
     reflectionSendButton.addEventListener('click', submitReflection);
 
-    tabButtons.forEach((button) => button.addEventListener('click', () => {
+    tabButtons.forEach((button) => button.addEventListener('click', async () => {
       if (button.dataset.tab === 'read') {
         resetToReadingView(false);
         return;
       }
       setActiveTab(button.dataset.tab);
+      if (button.dataset.tab === 'mushaf') {
+        await initMushafView();
+      }
     }));
     modeButtons.forEach((button) => button.addEventListener('click', () => { applyMode(button.dataset.mode); setActiveTab('read'); }));
     audioViewButtons.forEach((button) => button.addEventListener('click', async () => {
@@ -5151,6 +5307,18 @@ ${getVerseUrl(ayah)}`,
     resetMainButton.addEventListener('click', async () => {
       await resetSurahExperience();
     });
+
+    if (mushafSourceSelect) {
+      mushafSourceSelect.addEventListener('change', async () => {
+        await renderMushafSource(mushafSourceSelect.value || mushafSources[0].id);
+      });
+    }
+
+    if (mushafReloadButton) {
+      mushafReloadButton.addEventListener('click', async () => {
+        await initMushafView();
+      });
+    }
 
     loadAudioButton.addEventListener('click', async () => { await loadSelectedAudio(); });
     reciterSelect.addEventListener('change', () => {
