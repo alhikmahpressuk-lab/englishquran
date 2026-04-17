@@ -72,7 +72,7 @@
       color: #fff;
       display: grid;
       place-items: center;
-      font-size: 1rem;
+      font-size: 1.35rem;
       font-weight: 800;
       box-shadow: var(--shadow);
       flex-shrink: 0;
@@ -96,7 +96,6 @@
       flex-wrap: wrap;
     }
     .nav a,
-    .nav button,
     .toolbar-btn,
     .page-pill {
       min-height: 44px;
@@ -115,7 +114,6 @@
       white-space: nowrap;
     }
     .nav a:hover,
-    .nav button:hover,
     .toolbar-btn:hover {
       background: var(--surface-soft);
       border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
@@ -175,12 +173,8 @@
       max-width: 72ch;
     }
 
-    .section {
-      padding: 10px 0 34px;
-    }
-    .viewer-card {
-      padding: 18px;
-    }
+    .section { padding: 10px 0 34px; }
+    .viewer-card { padding: 18px; }
     .mushaf-toolbar {
       display: flex;
       align-items: center;
@@ -205,7 +199,6 @@
       font-size: 0.95rem;
       margin-bottom: 14px;
     }
-
     .mushaf-frame-shell {
       border-radius: 20px;
       border: 1px solid var(--line);
@@ -236,15 +229,9 @@
     }
 
     @media (max-width: 760px) {
-      .topbar-inner {
-        align-items: stretch;
-      }
-      .nav {
-        width: 100%;
-      }
-      .mushaf-frame {
-        min-height: 74vh;
-      }
+      .topbar-inner { align-items: stretch; }
+      .nav { width: 100%; }
+      .mushaf-frame { min-height: 74vh; }
     }
   </style>
 </head>
@@ -259,7 +246,7 @@
         </div>
       </div>
       <nav class="nav" aria-label="Primary">
-        <a href="index.html" translate="no">Back to Surah 27</a>
+        <a href="surah-27.html" translate="no">Back to Surah 27</a>
         <a class="cta" href="#mushafReader" translate="no">Open Mushaf</a>
       </nav>
     </div>
@@ -293,7 +280,7 @@
           </div>
           <div class="status" id="mushafStatus" translate="no">Preparing Surah 27 Mushaf…</div>
           <div class="mushaf-frame-shell">
-            <iframe id="mushafFrame" class="mushaf-frame" title="Surah 27 Mushaf PDF" loading="lazy"></iframe>
+            <iframe id="mushafFrame" class="mushaf-frame" title="Surah 27 Mushaf" loading="lazy"></iframe>
           </div>
         </div>
       </div>
@@ -329,7 +316,7 @@
       return (currentPage - mushafConfig.startPage) + 1;
     }
 
-    function buildPdfUrl(pageNumber) {
+    function buildMushafUrl(pageNumber) {
       const safePage = Math.min(mushafConfig.endPage, Math.max(mushafConfig.startPage, Number(pageNumber) || mushafConfig.startPage));
       return `${mushafConfig.file}#page=${safePage}&zoom=page-width`;
     }
@@ -340,7 +327,7 @@
       currentPagePill.textContent = `Page ${getDisplayPageNumber()}`;
       prevPageButton.disabled = currentPage <= mushafConfig.startPage;
       nextPageButton.disabled = currentPage >= mushafConfig.endPage;
-      mushafFrame.src = buildPdfUrl(currentPage);
+      mushafFrame.src = buildMushafUrl(currentPage);
       mushafStatus.textContent = `${mushafConfig.title} is ready. Use Previous and Next to continue reading.`;
     }
 
@@ -352,6 +339,11 @@
       updateMushafFrame(currentPage + 1);
     });
 
+    quickLoadButton.addEventListener('click', () => {
+      mushafStatus.textContent = 'Preparing Surah 27 Mushaf…';
+      updateMushafFrame(currentPage || mushafConfig.startPage);
+    });
+
     mushafFrame.addEventListener('load', () => {
       mushafStatus.textContent = `${mushafConfig.title} is ready. Continue reading with the minimal controls above.`;
     });
@@ -360,13 +352,7 @@
       mushafStatus.textContent = 'The Mushaf could not be displayed right now. Use Quick Load to try again.';
     });
 
-    quickLoadButton.addEventListener('click', () => {
-      mushafStatus.textContent = 'Preparing Surah 27 Mushaf…';
-      updateMushafFrame(currentPage || mushafConfig.startPage);
-    });
-
     updateMushafFrame(mushafConfig.startPage);
   </script>
 </body>
 </html>
-
