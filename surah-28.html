@@ -1740,6 +1740,7 @@
     const totalVerses = 93;
     const nextSurahFile = 'surah-28.html';
     const nextSurahName = 'Al-Qaṣaṣ';
+    const mushafPageFile = 'surah-27-mushaf-1.html';
     const introBismillahRecitationId = 7;
     const tajweedRecitationId = 1;
     const autoplaySessionKey = 'teq-index-autoplay';
@@ -5235,10 +5236,11 @@ ${getVerseUrl(ayah)}`,
         resetToReadingView(false);
         return;
       }
-      setActiveTab(button.dataset.tab);
       if (button.dataset.tab === 'mushaf') {
-        await initMushafView();
+        window.location.href = mushafPageFile;
+        return;
       }
+      setActiveTab(button.dataset.tab);
     }));
     modeButtons.forEach((button) => button.addEventListener('click', () => { applyMode(button.dataset.mode); setActiveTab('read'); }));
     audioViewButtons.forEach((button) => button.addEventListener('click', async () => {
