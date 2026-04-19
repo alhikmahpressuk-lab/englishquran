@@ -1,1 +1,1174 @@
+<!-- file: mushaf-27.html -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr" translate="no" class="notranslate">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="google" content="notranslate" />
+  <meta name="translate" content="no" />
+  <title>Open Quran Tilawah (Recitation) | Surah 27 | Mushaf Shell</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri+Quran&display=swap');
 
+    :root {
+      --bg: #efe8da;
+      --bg-deep: #e5dbc6;
+      --surface: #fbf7ef;
+      --surface-soft: #f5efe3;
+      --surface-deep: #ece3d1;
+      --line: #d8cab0;
+      --text: #1c221e;
+      --muted: #6f776f;
+      --accent: #1f6a55;
+      --accent-deep: #174c3d;
+      --accent-soft: rgba(31, 106, 85, 0.1);
+      --shadow: 0 18px 48px rgba(39, 33, 20, 0.12);
+      --page-shadow: 0 28px 80px rgba(39, 33, 20, 0.16);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --bar-h: 72px;
+      --page-ratio: 2 / 3;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f1312;
+      --bg-deep: #161b19;
+      --surface: #171d1b;
+      --surface-soft: #1e2623;
+      --surface-deep: #222c28;
+      --line: #2b3832;
+      --text: #f4f5f2;
+      --muted: #a8b0ab;
+      --accent: #4ca287;
+      --accent-deep: #2f7962;
+      --accent-soft: rgba(76, 162, 135, 0.14);
+      --shadow: 0 20px 54px rgba(0, 0, 0, 0.28);
+      --page-shadow: 0 34px 96px rgba(0, 0, 0, 0.36);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior: none;
+      touch-action: pan-x;
+      background: radial-gradient(circle at top, var(--bg) 0%, var(--bg-deep) 100%);
+      color: var(--text);
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    button, select, input {
+      font: inherit;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: var(--bar-h) 1fr;
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      min-height: var(--bar-h);
+      padding: 12px 18px;
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-copy h1 {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-copy p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .page-meta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 90%, transparent);
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .menu-toggle {
+      appearance: none;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .menu-toggle:hover,
+    .menu-toggle.active {
+      background: var(--surface);
+      border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+    }
+
+    .menu-toggle svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .book-shell {
+      position: relative;
+      width: min(94vw, 720px);
+      height: min(calc(100vh - var(--bar-h) - 36px), 84vh);
+      display: grid;
+      place-items: center;
+      user-select: none;
+    }
+
+    .page-frame {
+      position: relative;
+      width: min(100%, calc(min(100vh - var(--bar-h) - 48px, 84vh) * 0.6667));
+      aspect-ratio: var(--page-ratio);
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0) 18%),
+        linear-gradient(135deg, var(--surface) 0%, var(--surface-soft) 100%);
+      border: 1px solid color-mix(in srgb, var(--line) 94%, transparent);
+      box-shadow: var(--page-shadow);
+      overflow: hidden;
+      transform: translateZ(0);
+    }
+
+    .page-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 30%),
+        linear-gradient(90deg, rgba(0,0,0,0.03) 0%, rgba(255,255,255,0) 8%, rgba(255,255,255,0) 92%, rgba(0,0,0,0.03) 100%);
+    }
+
+    .page-content {
+      position: absolute;
+      inset: 0;
+      padding: 22px 22px 26px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 10px;
+    }
+
+    .page-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+    }
+
+    .page-head-title {
+      min-width: 0;
+    }
+
+    .page-head-title .ar {
+      display: block;
+      direction: rtl;
+      text-align: right;
+      font-family: "Amiri Quran", serif;
+      font-size: 1.25rem;
+      line-height: 1.7;
+    }
+
+    .page-head-title .en {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .script-chip {
+      flex-shrink: 0;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    html[data-theme="dark"] .script-chip {
+      color: #d7fff1;
+    }
+
+    .ornament {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding-top: 2px;
+    }
+
+    .page-body {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      align-content: start;
+      gap: 16px;
+      padding: 4px 4px 0;
+    }
+
+    .arabic-page {
+      direction: rtl;
+      text-align: justify;
+      text-align-last: center;
+      font-family: "Amiri Quran", serif;
+      font-size: clamp(1.45rem, 2.4vw, 1.95rem);
+      line-height: 2.15;
+      color: var(--text);
+      letter-spacing: 0;
+      word-spacing: 0.02em;
+      min-height: 0;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .translation-page {
+      display: none;
+      direction: ltr;
+      text-align: left;
+      color: color-mix(in srgb, var(--text) 88%, transparent);
+      font-size: 0.98rem;
+      line-height: 1.9;
+      border-top: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+      padding-top: 14px;
+    }
+
+    .translation-page.active {
+      display: block;
+    }
+
+    .page-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 8px;
+      border-top: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .foot-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .page-turn-zone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 20%;
+      z-index: 5;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .page-turn-zone.prev { left: 0; }
+    .page-turn-zone.next { right: 0; }
+
+    .page-turn-zone:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--accent) 60%, white);
+      outline-offset: -2px;
+    }
+
+    .page-anim {
+      animation: pageIn 240ms ease;
+    }
+
+    @keyframes pageIn {
+      from {
+        opacity: 0;
+        transform: translateX(12px) scale(0.992);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    .gesture-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      box-shadow: var(--shadow);
+    }
+
+    .menu-panel {
+      position: absolute;
+      top: calc(var(--bar-h) - 6px);
+      right: 18px;
+      z-index: 40;
+      width: min(92vw, 360px);
+      max-height: calc(100vh - var(--bar-h) - 22px);
+      overflow: auto;
+      padding: 12px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 96%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      display: none;
+    }
+
+    .menu-panel.active {
+      display: block;
+    }
+
+    .menu-section {
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+      background: color-mix(in srgb, var(--surface-soft) 88%, transparent);
+      margin-bottom: 10px;
+    }
+
+    .menu-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .menu-section h2 {
+      margin: 0 0 10px;
+      font-size: 0.94rem;
+      letter-spacing: -0.02em;
+    }
+
+    .menu-row,
+    .menu-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .segment {
+      appearance: none;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .segment:hover {
+      background: var(--surface-deep);
+    }
+
+    .segment.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+    }
+
+    .field select:focus,
+    .field input:focus {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .menu-note {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.6;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .link-btn {
+      appearance: none;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .primary-btn {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .primary-btn:hover {
+      background: var(--accent-deep);
+    }
+
+    .secondary-btn,
+    .link-btn {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .secondary-btn:hover,
+    .link-btn:hover {
+      background: var(--surface-deep);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    html[data-theme="dark"] .status-pill {
+      color: #d7fff1;
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(10px);
+      z-index: 50;
+      min-height: 42px;
+      max-width: min(88vw, 460px);
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 96%, transparent);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .toast.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 35;
+      display: none;
+      background: rgba(0, 0, 0, 0.12);
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+          "brand menu"
+          "meta meta";
+        gap: 10px;
+        padding: 12px 14px;
+      }
+
+      .brand { grid-area: brand; }
+      .menu-toggle { grid-area: menu; justify-self: end; }
+      .page-meta { grid-area: meta; justify-self: start; }
+
+      .stage {
+        padding: 12px;
+      }
+
+      .page-frame {
+        width: min(100%, calc((100vh - var(--bar-h) - 32px) * 0.6667));
+      }
+
+      .page-content {
+        padding: 18px 16px 22px;
+      }
+
+      .arabic-page {
+        font-size: clamp(1.32rem, 4.8vw, 1.72rem);
+        line-height: 2.05;
+      }
+
+      .translation-page {
+        font-size: 0.92rem;
+        line-height: 1.8;
+      }
+
+      .menu-panel {
+        right: 12px;
+        width: min(94vw, 360px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .brand-copy h1 { font-size: 0.92rem; }
+      .brand-copy p { font-size: 0.82rem; }
+      .page-head-title .ar { font-size: 1.12rem; }
+      .page-head-title .en { font-size: 0.76rem; }
+      .page-foot { font-size: 0.78rem; }
+      .gesture-hint { font-size: 0.76rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">٢٧</div>
+        <div class="brand-copy">
+          <h1>Open Quran Tilawah (Recitation)</h1>
+          <p>Surah 27 · An-Naml · Muṣḥaf Shell</p>
+        </div>
+      </div>
+
+      <div class="page-meta" id="pageMeta">Page 1 / 8</div>
+
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        type="button"
+        aria-label="Open reader menu"
+        aria-expanded="false"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="6" cy="12" r="1.5"></circle>
+          <circle cx="12" cy="12" r="1.5"></circle>
+          <circle cx="18" cy="12" r="1.5"></circle>
+        </svg>
+      </button>
+    </header>
+
+    <main class="stage">
+      <div class="book-shell" id="bookShell">
+        <div class="page-frame page-anim" id="pageFrame" aria-live="polite">
+          <button class="page-turn-zone prev" id="prevZone" type="button" aria-label="Previous page"></button>
+          <button class="page-turn-zone next" id="nextZone" type="button" aria-label="Next page"></button>
+
+          <div class="page-content">
+            <div class="page-head">
+              <div class="page-head-title">
+                <span class="ar" id="surahArabicTitle">سورة النمل</span>
+                <span class="en" id="surahEnglishTitle">Surah 27 · An-Naml</span>
+              </div>
+              <div class="script-chip" id="scriptChip">Uthmani</div>
+            </div>
+
+            <div class="ornament" id="ornamentText">Open Quran Tilawah</div>
+
+            <div class="page-body">
+              <div class="arabic-page" id="arabicPage" dir="rtl" lang="ar"></div>
+              <div class="translation-page" id="translationPage"></div>
+            </div>
+
+            <div class="page-foot">
+              <div id="footLeft">Right to left · swipe to turn</div>
+              <div class="foot-center" id="footCenter">Surah 27</div>
+              <div id="footRight">١</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gesture-hint" id="gestureHint">Swipe or tap page edges</div>
+      </div>
+    </main>
+
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="menu-panel" id="menuPanel" aria-hidden="true">
+      <section class="menu-section">
+        <h2>Read</h2>
+        <div class="menu-row">
+          <button class="segment active" type="button" data-script="uthmani">Uthmani</button>
+          <button class="segment" type="button" data-script="indopak">IndoPak</button>
+        </div>
+        <div class="menu-actions" style="margin-top: 10px;">
+          <button class="segment active" type="button" id="translationOff">Translation Off</button>
+          <button class="segment" type="button" id="translationOn">Translation On</button>
+        </div>
+        <div class="field" style="margin-top: 10px;">
+          <label for="languageSelect">Language under Arabic</label>
+          <select id="languageSelect">
+            <option value="en" selected>English</option>
+            <option value="ur">Urdu</option>
+            <option value="fr">French</option>
+            <option value="tr">Turkish</option>
+          </select>
+        </div>
+        <div class="menu-note">
+          The shell keeps the page quiet. Script, translation, and future reading options stay here in the top-right ecosystem menu.
+        </div>
+      </section>
+
+      <section class="menu-section">
+        <h2>Listen</h2>
+        <div class="field">
+          <label for="reciterSelect">Reciter</label>
+          <select id="reciterSelect">
+            <option value="shuraim" selected>Sheikh Saud ash-Shuraym</option>
+            <option value="sudais">Sheikh Abdur-Rahman as-Sudais</option>
+            <option value="dussary">Yasser Ad-Dussary</option>
+            <option value="ali-jaber">Sheikh Ali Jaber</option>
+            <option value="abdul-basit">Sheikh Abdul Basit Abdul Samad</option>
+          </select>
+        </div>
+        <div class="menu-actions">
+          <button class="primary-btn" id="playPauseButton" type="button">Play</button>
+          <button class="secondary-btn" id="restartButton" type="button">Restart</button>
+        </div>
+        <div style="margin-top: 10px;">
+          <span class="status-pill" id="listenStatus">Recitation idle</span>
+        </div>
+      </section>
+
+      <section class="menu-section">
+        <h2>Navigate</h2>
+        <div class="field">
+          <label for="pageSelect">Go to page</label>
+          <select id="pageSelect"></select>
+        </div>
+        <div class="field">
+          <label for="ayahInput">Go to ayah</label>
+          <input id="ayahInput" type="number" min="1" max="93" placeholder="1 to 93" />
+        </div>
+        <div class="menu-actions">
+          <button class="secondary-btn" id="goPageButton" type="button">Go page</button>
+          <button class="secondary-btn" id="goAyahButton" type="button">Go ayah</button>
+        </div>
+      </section>
+
+      <section class="menu-section">
+        <h2>Settings</h2>
+        <div class="menu-actions">
+          <button class="secondary-btn" id="themeButton" type="button">Dark mode</button>
+          <button class="secondary-btn" id="resetButton" type="button">Reset</button>
+        </div>
+        <div class="menu-note" style="margin-top: 10px;">
+          Reset returns the shell to Arabic-only view, Uthmani mode, first page, and stopped recitation.
+        </div>
+      </section>
+
+      <section class="menu-section">
+        <h2>Ecosystem</h2>
+        <div class="menu-actions">
+          <a class="link-btn" href="index.html">Back to index</a>
+          <button class="secondary-btn" id="futureToolsButton" type="button">Future tools</button>
+        </div>
+        <div class="menu-note" style="margin-top: 10px;">
+          This section is reserved for the wider EnglishQuran.uk ecosystem, tilawah flows, and future shared reader tools.
+        </div>
+      </section>
+    </aside>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script>
+    const initialState = {
+      page: 1,
+      script: 'uthmani',
+      translationEnabled: false,
+      language: 'en',
+      reciter: 'shuraim',
+      playing: false,
+      theme: 'light'
+    };
+
+    const state = { ...initialState };
+
+    const mushafPages = Array.from({ length: 8 }, (_, index) => {
+      const pageNumber = index + 1;
+      return {
+        number: pageNumber,
+        ayahRange: pageNumber === 1
+          ? '1–12'
+          : pageNumber === 2
+            ? '13–24'
+            : pageNumber === 3
+              ? '25–36'
+              : pageNumber === 4
+                ? '37–48'
+                : pageNumber === 5
+                  ? '49–60'
+                  : pageNumber === 6
+                    ? '61–72'
+                    : pageNumber === 7
+                      ? '73–84'
+                      : '85–93',
+        arabicUthmani: pageNumber === 1
+          ? 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\n\nهذا نموذجٌ أوّليٌّ لواجهة المصحف الخاصة بسورة النمل. ستُدرج هنا الصفحات الفعلية للمصحف مع التقسيم الصحيح، ووضع القراءة الهادئ، والتنقّل بلا تمرير، والانتقال بين الصفحات بالسحب من اليمين إلى اليسار أو بالعكس بحسب اتجاه القراءة.'
+          : `هذه صفحةٌ تجريبية رقم ${pageNumber} من غلاف المصحف. سيُستبدل هذا المحتوى لاحقًا بصفحات السورة الحقيقية مع التقسيم المعتمد للمصحف، وربط الآيات، والتلاوة، والانتقال الهادئ بين الصفحات دون أي ازدحام في الواجهة.`,
+        arabicIndopak: pageNumber === 1
+          ? 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ\n\nیہ سورۃ النمل کے مصحفی خول کا ابتدائی نمونہ ہے۔ بعد میں یہاں اصل صفحات، درست صفحاتی تقسیم، بغیر اسکرول مطالعہ، اور صفحہ بدلنے کا حقیقی کتابی تجربہ شامل کیا جائے گا۔'
+          : `یہ تجرباتی صفحہ نمبر ${pageNumber} ہے۔ بعد میں اس جگہ اصل عربی صفحات، ریسیٹیشن کے اختیارات، اور مکمل ماحولیاتی کنٹرولز تین نقطوں کے مینو کے اندر شامل کیے جائیں گے۔`,
+        translations: {
+          en: pageNumber === 1
+            ? 'This is the first shell page for the Surah 27 Muṣḥaf reader. Real Mushaf page data, script-aware pagination, recitation sync, and ecosystem controls will be plugged into this quiet book layout.'
+            : `This is sample shell page ${pageNumber}. It will later be replaced with real Surah 27 page content, proper Mushaf boundaries, recitation links, and the shared Open Quran reading engine.`,
+          ur: pageNumber === 1
+            ? 'یہ سورۃ 27 کے مصحفی قاری کے لیے ابتدائی خول ہے۔ بعد میں اصل صفحات، درست صفحاتی تقسیم، اور ریسیٹیشن انجن اسی سادہ کتابی ڈیزائن میں شامل کیے جائیں گے۔'
+            : `یہ نمونہ صفحہ ${pageNumber} ہے۔ بعد میں اسے اصل مصحفی مواد اور مکمل انجن سے بدل دیا جائے گا۔`,
+          fr: pageNumber === 1
+            ? 'Ceci est la première page de démonstration du lecteur Muṣḥaf pour la sourate 27. Les vraies pages, la pagination Mushaf et le moteur de récitation seront ajoutés ici.'
+            : `Ceci est la page de démonstration ${pageNumber}. Elle sera remplacée plus tard par le contenu réel du Muṣḥaf et par le moteur complet.`,
+          tr: pageNumber === 1
+            ? 'Bu, 27. sure için Mushaf okuyucusunun ilk iskelet sayfasıdır. Gerçek sayfa verileri, Mushaf düzeni ve tilavet motoru daha sonra bu sade kitap görünümüne eklenecektir.'
+            : `Bu örnek sayfa ${pageNumber}. Daha sonra gerçek Mushaf sayfaları ve tam motor ile değiştirilecektir.`
+        }
+      };
+    });
+
+    const pageMeta = document.getElementById('pageMeta');
+    const pageFrame = document.getElementById('pageFrame');
+    const arabicPage = document.getElementById('arabicPage');
+    const translationPage = document.getElementById('translationPage');
+    const footRight = document.getElementById('footRight');
+    const footCenter = document.getElementById('footCenter');
+    const scriptChip = document.getElementById('scriptChip');
+    const menuToggle = document.getElementById('menuToggle');
+    const menuPanel = document.getElementById('menuPanel');
+    const overlay = document.getElementById('overlay');
+    const toast = document.getElementById('toast');
+    const themeButton = document.getElementById('themeButton');
+    const resetButton = document.getElementById('resetButton');
+    const translationOff = document.getElementById('translationOff');
+    const translationOn = document.getElementById('translationOn');
+    const languageSelect = document.getElementById('languageSelect');
+    const reciterSelect = document.getElementById('reciterSelect');
+    const playPauseButton = document.getElementById('playPauseButton');
+    const restartButton = document.getElementById('restartButton');
+    const listenStatus = document.getElementById('listenStatus');
+    const pageSelect = document.getElementById('pageSelect');
+    const ayahInput = document.getElementById('ayahInput');
+    const goPageButton = document.getElementById('goPageButton');
+    const goAyahButton = document.getElementById('goAyahButton');
+    const prevZone = document.getElementById('prevZone');
+    const nextZone = document.getElementById('nextZone');
+    const futureToolsButton = document.getElementById('futureToolsButton');
+
+    const totalPages = mushafPages.length;
+    const ayahToPageMap = [
+      { start: 1, end: 12, page: 1 },
+      { start: 13, end: 24, page: 2 },
+      { start: 25, end: 36, page: 3 },
+      { start: 37, end: 48, page: 4 },
+      { start: 49, end: 60, page: 5 },
+      { start: 61, end: 72, page: 6 },
+      { start: 73, end: 84, page: 7 },
+      { start: 85, end: 93, page: 8 }
+    ];
+
+    function toArabicDigits(value) {
+      return String(value).replace(/\d/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[digit]);
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('active');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.classList.remove('active');
+      }, 1800);
+    }
+
+    function setTheme(theme) {
+      state.theme = theme;
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeButton.textContent = 'Light mode';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeButton.textContent = 'Dark mode';
+      }
+      localStorage.setItem('mushaf-27-theme', theme);
+    }
+
+    function getCurrentPageData() {
+      return mushafPages[state.page - 1];
+    }
+
+    function getCurrentArabicText(pageData) {
+      return state.script === 'indopak' ? pageData.arabicIndopak : pageData.arabicUthmani;
+    }
+
+    function getCurrentTranslationText(pageData) {
+      return pageData.translations[state.language] || pageData.translations.en || '';
+    }
+
+    function updateSegmentState() {
+      document.querySelectorAll('[data-script]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.script === state.script);
+      });
+      translationOff.classList.toggle('active', !state.translationEnabled);
+      translationOn.classList.toggle('active', state.translationEnabled);
+    }
+
+    function updateListenState() {
+      playPauseButton.textContent = state.playing ? 'Pause' : 'Play';
+      listenStatus.textContent = state.playing
+        ? `Reciting · ${reciterSelect.options[reciterSelect.selectedIndex].text}`
+        : 'Recitation idle';
+    }
+
+    function renderPage() {
+      const pageData = getCurrentPageData();
+      arabicPage.textContent = getCurrentArabicText(pageData);
+      translationPage.textContent = getCurrentTranslationText(pageData);
+      translationPage.classList.toggle('active', state.translationEnabled);
+      scriptChip.textContent = state.script === 'indopak' ? 'IndoPak' : 'Uthmani';
+      pageMeta.textContent = `Page ${state.page} / ${totalPages}`;
+      footRight.textContent = toArabicDigits(pageData.number);
+      footCenter.textContent = `Ayahs ${pageData.ayahRange}`;
+      pageSelect.value = String(state.page);
+      reciterSelect.value = state.reciter;
+      languageSelect.value = state.language;
+      updateSegmentState();
+      updateListenState();
+
+      pageFrame.classList.remove('page-anim');
+      void pageFrame.offsetWidth;
+      pageFrame.classList.add('page-anim');
+    }
+
+    function goToPage(page) {
+      const nextPage = Math.max(1, Math.min(totalPages, Number(page) || 1));
+      if (nextPage === state.page) return;
+      state.page = nextPage;
+      renderPage();
+    }
+
+    function nextPage() {
+      if (state.page >= totalPages) {
+        showToast('You are on the last shell page.');
+        return;
+      }
+      state.page += 1;
+      renderPage();
+    }
+
+    function previousPage() {
+      if (state.page <= 1) {
+        showToast('You are on the first shell page.');
+        return;
+      }
+      state.page -= 1;
+      renderPage();
+    }
+
+    function getPageByAyah(ayah) {
+      const safeAyah = Number(ayah);
+      const match = ayahToPageMap.find((item) => safeAyah >= item.start && safeAyah <= item.end);
+      return match ? match.page : null;
+    }
+
+    function resetShell() {
+      Object.assign(state, initialState);
+      setTheme(initialState.theme);
+      renderPage();
+      showToast('Reader reset to original shell state.');
+    }
+
+    function openMenu() {
+      menuPanel.classList.add('active');
+      overlay.classList.add('active');
+      menuToggle.classList.add('active');
+      menuToggle.setAttribute('aria-expanded', 'true');
+      menuPanel.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeMenu() {
+      menuPanel.classList.remove('active');
+      overlay.classList.remove('active');
+      menuToggle.classList.remove('active');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuPanel.setAttribute('aria-hidden', 'true');
+    }
+
+    function toggleMenu() {
+      if (menuPanel.classList.contains('active')) closeMenu();
+      else openMenu();
+    }
+
+    function buildPageSelect() {
+      pageSelect.innerHTML = mushafPages
+        .map((page) => `<option value="${page.number}">Page ${page.number} · Ayahs ${page.ayahRange}</option>`)
+        .join('');
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
+
+    document.querySelectorAll('[data-script]').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.script = button.dataset.script;
+        renderPage();
+        showToast(`${state.script === 'indopak' ? 'IndoPak' : 'Uthmani'} mode active.`);
+      });
+    });
+
+    translationOff.addEventListener('click', () => {
+      state.translationEnabled = false;
+      renderPage();
+      showToast('Translation hidden.');
+    });
+
+    translationOn.addEventListener('click', () => {
+      state.translationEnabled = true;
+      renderPage();
+      showToast('Translation shown under Arabic.');
+    });
+
+    languageSelect.addEventListener('change', (event) => {
+      state.language = event.target.value;
+      if (!state.translationEnabled) state.translationEnabled = true;
+      renderPage();
+      showToast(`Language set to ${languageSelect.options[languageSelect.selectedIndex].text}.`);
+    });
+
+    reciterSelect.addEventListener('change', (event) => {
+      state.reciter = event.target.value;
+      updateListenState();
+      showToast(`Reciter set to ${reciterSelect.options[reciterSelect.selectedIndex].text}.`);
+    });
+
+    playPauseButton.addEventListener('click', () => {
+      state.playing = !state.playing;
+      updateListenState();
+      showToast(state.playing ? 'Recitation started.' : 'Recitation paused.');
+    });
+
+    restartButton.addEventListener('click', () => {
+      state.playing = false;
+      updateListenState();
+      showToast('Recitation restarted from beginning.');
+    });
+
+    themeButton.addEventListener('click', () => {
+      setTheme(state.theme === 'dark' ? 'light' : 'dark');
+      showToast(`${state.theme === 'dark' ? 'Dark' : 'Light'} mode active.`);
+    });
+
+    resetButton.addEventListener('click', resetShell);
+
+    goPageButton.addEventListener('click', () => {
+      goToPage(pageSelect.value);
+      showToast(`Moved to page ${state.page}.`);
+    });
+
+    goAyahButton.addEventListener('click', () => {
+      const page = getPageByAyah(ayahInput.value);
+      if (!page) {
+        showToast('Enter an ayah from 1 to 93.');
+        return;
+      }
+      goToPage(page);
+      showToast(`Moved to the page holding ayah ${ayahInput.value}.`);
+    });
+
+    prevZone.addEventListener('click', previousPage);
+    nextZone.addEventListener('click', nextPage);
+
+    futureToolsButton.addEventListener('click', () => {
+      showToast('Future ecosystem tools will live inside this menu.');
+    });
+
+    pageSelect.addEventListener('change', () => {
+      goToPage(pageSelect.value);
+    });
+
+    ayahInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') goAyahButton.click();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') nextPage();
+      if (event.key === 'ArrowRight') previousPage();
+      if (event.key === 'Escape') closeMenu();
+    });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    pageFrame.addEventListener('touchstart', (event) => {
+      const touch = event.changedTouches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+
+    pageFrame.addEventListener('touchend', (event) => {
+      const touch = event.changedTouches[0];
+      touchEndX = touch.clientX;
+      touchEndY = touch.clientY;
+
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = Math.abs(touchEndY - touchStartY);
+
+      if (Math.abs(deltaX) < 40 || deltaY > 60) return;
+
+      if (deltaX < 0) nextPage();
+      if (deltaX > 0) previousPage();
+    }, { passive: true });
+
+    const savedTheme = localStorage.getItem('mushaf-27-theme');
+    setTheme(savedTheme === 'dark' ? 'dark' : 'light');
+    buildPageSelect();
+    renderPage();
+  </script>
+</body>
+</html>
