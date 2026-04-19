@@ -1,176 +1,215 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" translate="no" class="notranslate">
+<html lang="en" translate="no" class="notranslate">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="google" content="notranslate" />
   <meta name="translate" content="no" />
-  <title>Open Quran Tilawah (Recitation) | Surah 27 | Arabic Book</title>
+  <meta http-equiv="Content-Language" content="en" />
+  <title>Open Quran Tilawah (Recitation) | mushaf-2.html</title>
+  <meta name="description" content="Arabic Quran book reader with Uthmani and IndoPak modes, page turning, and recitation." />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri+Quran&display=swap');
 
     :root {
-      --bg: #efe7d5;
-      --bg-deep: #e3d6bd;
-      --surface: #fbf7ee;
-      --surface-soft: #f4ecdd;
-      --surface-deep: #ece0ca;
-      --line: #d6c6aa;
-      --text: #161d19;
-      --muted: #6c736c;
-      --accent: #1f6b58;
-      --accent-deep: #164d3f;
-      --accent-soft: rgba(31, 107, 88, 0.1);
-      --danger: #b42318;
-      --danger-soft: rgba(180, 35, 24, 0.1);
-      --shadow: 0 20px 58px rgba(39, 30, 16, 0.12);
-      --page-shadow: 0 30px 90px rgba(39, 30, 16, 0.18);
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f6;
+      --surface-deep: #edf4f2;
+      --text: #182128;
+      --muted: #66727d;
+      --line: #e3e8ec;
+      --accent: #1e6b5c;
+      --accent-deep: #154d42;
+      --accent-soft: #e8f3f0;
+      --shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+      --menu-shadow: 0 20px 52px rgba(16, 24, 40, 0.14);
       --radius: 22px;
-      --bar-h: 72px;
-      --page-ratio: 2 / 3;
+      --radius-sm: 16px;
+      --max: 1180px;
+      --book-width: min(92vw, 760px);
+      --book-height: min(78vh, calc(var(--book-width) * 1.5));
+      --page-bg: linear-gradient(180deg, #fffef9 0%, #fffdf6 100%);
+      --page-line: rgba(24, 33, 40, 0.06);
+      --page-shadow: 0 24px 80px rgba(16, 24, 40, 0.12);
+      --ayah-active-bg: rgba(30, 107, 92, 0.09);
+      --ayah-active-line: rgba(30, 107, 92, 0.28);
+      --overlay: rgba(15, 20, 24, 0.42);
     }
 
     html[data-theme="dark"] {
-      --bg: #0f1412;
-      --bg-deep: #131917;
-      --surface: #171e1b;
-      --surface-soft: #1d2622;
-      --surface-deep: #24302a;
-      --line: #2c3933;
-      --text: #f4f7f4;
-      --muted: #a9b1ac;
-      --accent: #4ea48a;
-      --accent-deep: #2f7b63;
-      --accent-soft: rgba(78, 164, 138, 0.16);
-      --danger: #ff8a80;
-      --danger-soft: rgba(255, 138, 128, 0.12);
-      --shadow: 0 22px 64px rgba(0, 0, 0, 0.32);
-      --page-shadow: 0 34px 96px rgba(0, 0, 0, 0.4);
+      --bg: #0f1418;
+      --surface: #182128;
+      --surface-soft: #1f2a33;
+      --surface-deep: #22303a;
+      --text: #f3f7fa;
+      --muted: #a8b5bf;
+      --line: #2d3a44;
+      --accent: #38a189;
+      --accent-deep: #2c7a67;
+      --accent-soft: rgba(56, 161, 137, 0.16);
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+      --menu-shadow: 0 20px 52px rgba(0, 0, 0, 0.38);
+      --page-bg: linear-gradient(180deg, #1b242c 0%, #151d24 100%);
+      --page-line: rgba(243, 247, 250, 0.08);
+      --page-shadow: 0 24px 90px rgba(0, 0, 0, 0.44);
+      --ayah-active-bg: rgba(56, 161, 137, 0.14);
+      --ayah-active-line: rgba(56, 161, 137, 0.34);
+      --overlay: rgba(0, 0, 0, 0.56);
     }
 
     * { box-sizing: border-box; }
-
     html, body {
       width: 100%;
       height: 100%;
       margin: 0;
       overflow: hidden;
-      overscroll-behavior: none;
-      touch-action: pan-x;
       -webkit-text-size-adjust: 100%;
-      background: radial-gradient(circle at top, var(--bg) 0%, var(--bg-deep) 100%);
+      overscroll-behavior: none;
+      background: var(--bg);
       color: var(--text);
       font-family: "Inter", Arial, sans-serif;
     }
-
-    button, select, input {
-      font: inherit;
-    }
+    body { transition: background 0.2s ease, color 0.2s ease; }
+    a { color: inherit; text-decoration: none; }
+    button, select, input { font: inherit; }
+    .notranslate { translate: no; }
 
     .app {
       width: 100%;
       height: 100%;
       display: grid;
-      grid-template-rows: var(--bar-h) 1fr;
-      position: relative;
+      grid-template-rows: auto 1fr auto;
+      overflow: hidden;
     }
 
     .topbar {
       position: relative;
-      z-index: 30;
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      align-items: center;
-      gap: 12px;
-      min-height: var(--bar-h);
-      padding: 12px 18px;
-      border-bottom: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      z-index: 10;
       backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 95%, transparent);
+    }
+
+    .topbar-inner,
+    .footer-inner,
+    .reader-shell {
+      width: min(var(--max), calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
 
     .brand {
-      min-width: 0;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
+      min-width: 0;
     }
 
     .brand-mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
       background: linear-gradient(135deg, var(--accent), var(--accent-deep));
       color: #fff;
+      display: grid;
+      place-items: center;
       font-weight: 800;
-      font-size: 1rem;
       box-shadow: var(--shadow);
       flex-shrink: 0;
     }
 
-    .brand-copy {
-      min-width: 0;
-    }
-
-    .brand-copy h1 {
+    .brand-text h1 {
       margin: 0;
-      font-size: 0.98rem;
-      line-height: 1.1;
+      font-size: 1.05rem;
+      line-height: 1.08;
       letter-spacing: -0.02em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    .brand-copy p {
+    .brand-text p {
       margin: 4px 0 0;
       color: var(--muted);
-      font-size: 0.88rem;
+      font-size: 0.92rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .page-meta {
-      display: inline-flex;
+    .topbar-actions,
+    .pager-controls,
+    .audio-controls,
+    .drawer-actions,
+    .section-actions,
+    .translation-meta,
+    .footer-row {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 0 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--surface) 90%, transparent);
-      color: var(--muted);
-      font-size: 0.92rem;
-      font-weight: 700;
-      white-space: nowrap;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .menu-toggle {
+    .chip,
+    .ghost-button,
+    .icon-button,
+    .primary-button,
+    .secondary-button,
+    .segmented-button,
+    .translation-item,
+    .surah-item,
+    .reciter-item {
       appearance: none;
-      width: 44px;
-      height: 44px;
       border: 1px solid var(--line);
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      background: var(--surface);
       color: var(--text);
+      min-height: 44px;
+      border-radius: 999px;
+      padding: 0 14px;
       cursor: pointer;
+      transition: 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: 0.2s ease;
-      box-shadow: var(--shadow);
+      line-height: 1;
+      font-weight: 600;
     }
 
-    .menu-toggle:hover,
-    .menu-toggle.active {
-      background: var(--surface);
-      border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+    .ghost-button:hover,
+    .icon-button:hover,
+    .secondary-button:hover,
+    .segmented-button:hover,
+    .translation-item:hover,
+    .surah-item:hover,
+    .reciter-item:hover {
+      background: var(--surface-soft);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
     }
 
-    .menu-toggle svg {
+    .primary-button {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .primary-button:hover {
+      background: var(--accent-deep);
+      border-color: var(--accent-deep);
+    }
+
+    .icon-button {
+      width: 44px;
+      padding: 0;
+    }
+
+    .icon-button svg,
+    .menu-item-icon,
+    .brand-mark svg {
       width: 20px;
       height: 20px;
       stroke: currentColor;
@@ -178,194 +217,216 @@
       stroke-width: 1.8;
       stroke-linecap: round;
       stroke-linejoin: round;
+      flex-shrink: 0;
     }
 
-    .stage {
-      position: relative;
+    .chip {
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--surface-soft);
+    }
+
+    .reader-shell {
+      width: min(var(--max), calc(100% - 28px));
+      height: 100%;
+      display: grid;
+      grid-template-rows: 1fr;
+      align-items: center;
+      justify-items: center;
+      overflow: hidden;
+      padding: 18px 0;
+    }
+
+    .book-stage {
       width: 100%;
       height: 100%;
       display: grid;
       place-items: center;
-      padding: 18px;
-      overflow: hidden;
-    }
-
-    .book-shell {
       position: relative;
-      width: min(94vw, 780px);
-      height: min(calc(100vh - var(--bar-h) - 36px), 84vh);
-      display: grid;
-      place-items: center;
+      overflow: hidden;
+      touch-action: pan-x;
       user-select: none;
     }
 
-    .page-frame {
-      position: relative;
-      width: min(100%, calc(min(100vh - var(--bar-h) - 48px, 84vh) * 0.6667));
-      aspect-ratio: var(--page-ratio);
-      border-radius: 28px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.36) 0%, rgba(255,255,255,0) 18%),
-        linear-gradient(135deg, var(--surface) 0%, var(--surface-soft) 100%);
-      border: 1px solid color-mix(in srgb, var(--line) 94%, transparent);
-      box-shadow: var(--page-shadow);
-      overflow: hidden;
-      transform: translateZ(0);
+    .book-shadow {
+      position: absolute;
+      width: min(96vw, 860px);
+      height: min(82vh, 620px);
+      border-radius: 34px;
+      background: radial-gradient(circle at 50% 50%, rgba(30, 107, 92, 0.10), transparent 72%);
+      filter: blur(10px);
+      pointer-events: none;
     }
 
-    .page-frame::before {
+    .book-frame {
+      position: relative;
+      width: var(--book-width);
+      height: var(--book-height);
+      max-height: 100%;
+      background: color-mix(in srgb, var(--surface) 76%, transparent);
+      border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+      border-radius: 30px;
+      padding: 14px;
+      box-shadow: var(--page-shadow);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .book-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 24px;
+      background: color-mix(in srgb, var(--surface) 84%, transparent);
+      border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+    }
+
+    .page-strip {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+
+    .mushaf-page {
+      flex: 0 0 100%;
+      height: 100%;
+      padding: 18px;
+      background: var(--page-bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mushaf-page::before,
+    .mushaf-page::after {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: 12px;
+      border-radius: 18px;
       pointer-events: none;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.26) 0%, rgba(255,255,255,0) 30%),
-        linear-gradient(90deg, rgba(0,0,0,0.03) 0%, rgba(255,255,255,0) 8%, rgba(255,255,255,0) 92%, rgba(0,0,0,0.03) 100%);
+    }
+
+    .mushaf-page::before {
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--page-line));
+    }
+
+    .mushaf-page::after {
+      inset: 22px;
+      border: 1px solid var(--page-line);
     }
 
     .page-content {
-      position: absolute;
-      inset: 0;
-      padding: 22px 22px 26px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
       display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      gap: 10px;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+      overflow: hidden;
     }
 
     .page-head {
-      display: flex;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .page-kicker {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
-    }
-
-    .page-head-title {
-      min-width: 0;
-    }
-
-    .page-head-title .ar {
-      display: block;
-      direction: rtl;
-      text-align: right;
-      font-family: "Amiri Quran", serif;
-      font-size: 1.25rem;
-      line-height: 1.7;
-    }
-
-    .page-head-title .en {
-      display: block;
-      color: var(--muted);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    .script-chip {
-      flex-shrink: 0;
+      gap: 8px;
       min-height: 34px;
       padding: 0 12px;
       border-radius: 999px;
-      border: 1px solid var(--line);
       background: var(--accent-soft);
       color: var(--accent-deep);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.82rem;
-      font-weight: 800;
-      white-space: nowrap;
+      font-weight: 700;
+      font-size: 0.84rem;
     }
 
-    html[data-theme="dark"] .script-chip { color: #d7fff1; }
+    .page-title-ar {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.7rem, 2.8vw, 2.3rem);
+      line-height: 1.6;
+      direction: rtl;
+    }
 
-    .ornament {
-      display: grid;
-      place-items: center;
+    .page-title-en {
+      font-size: 0.96rem;
       color: var(--muted);
-      font-size: 0.78rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      padding-top: 2px;
+      letter-spacing: -0.01em;
     }
 
-    .page-body {
-      position: relative;
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: 1fr auto;
-      gap: 16px;
-      padding: 4px 2px 0;
-      min-height: 0;
+    .bismillah {
+      text-align: center;
+      font-family: "Amiri Quran", "Amiri", serif;
+      direction: rtl;
+      padding: 6px 0 2px;
+      font-size: clamp(1.35rem, 2vw, 1.85rem);
+      line-height: 1.9;
+      color: color-mix(in srgb, var(--text) 95%, white);
     }
 
-    .lines-wrap {
+    .ayah-list {
       min-height: 0;
       overflow: hidden;
       display: grid;
       align-content: start;
-      gap: 2px;
+      gap: 6px;
+      padding: 2px 2px 0;
     }
 
-    .arabic-line {
-      direction: rtl;
-      text-align: justify;
-      text-align-last: justify;
-      font-family: "Amiri Quran", serif;
-      font-size: clamp(1.32rem, 2.22vw, 1.8rem);
-      line-height: 2.02;
-      color: var(--text);
-      min-height: 2.02em;
-      display: block;
-      white-space: nowrap;
+    .ayah-card {
+      border-radius: 16px;
+      padding: 10px 12px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      border: 1px solid transparent;
+      position: relative;
       overflow: hidden;
     }
 
-    .arabic-line.center {
-      text-align: center;
-      text-align-last: center;
+    .ayah-card.active {
+      background: var(--ayah-active-bg);
+      border-color: var(--ayah-active-line);
     }
 
-    .ayah-marker {
-      display: inline-block;
-      margin-inline: 0.22em;
-      white-space: nowrap;
+    .ayah-arabic {
+      font-family: "Amiri Quran", "Amiri", serif;
+      font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+      line-height: 2.05;
+      direction: rtl;
+      text-align: right;
+      color: color-mix(in srgb, var(--text) 96%, white);
+      word-spacing: 0.04em;
     }
 
-    .translation-page {
-      display: none;
-      direction: ltr;
+    .ayah-card.compact .ayah-arabic { font-size: clamp(1.06rem, 1.45vw, 1.28rem); line-height: 1.95; }
+    .ayah-card.dense .ayah-arabic { font-size: clamp(0.98rem, 1.3vw, 1.16rem); line-height: 1.88; }
+
+    .ayah-translation {
+      margin-top: 6px;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: color-mix(in srgb, var(--text) 84%, white);
       text-align: left;
-      color: color-mix(in srgb, var(--text) 88%, transparent);
-      font-size: 0.92rem;
-      line-height: 1.74;
-      border-top: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-      padding-top: 12px;
-      max-height: 28%;
-      overflow: auto;
-      scrollbar-width: thin;
     }
 
-    .translation-page.active {
-      display: block;
+    .ayah-end {
+      white-space: nowrap;
+      font-family: "Amiri Quran", "Amiri", serif;
+      color: var(--accent-deep);
+      padding-inline-start: 4px;
+      font-size: 0.96em;
     }
 
-    .translation-item {
-      margin-bottom: 10px;
-    }
-
-    .translation-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .translation-number {
-      display: inline-block;
-      min-width: 28px;
-      font-weight: 800;
-      color: var(--accent);
+    html[data-theme="dark"] .ayah-end {
+      color: #c8fff0;
     }
 
     .page-foot {
@@ -373,518 +434,827 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding-top: 8px;
-      border-top: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+      padding-top: 2px;
       color: var(--muted);
-      font-size: 0.84rem;
-      font-weight: 700;
-    }
-
-    .foot-center {
-      text-align: center;
-      flex: 1;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 34px;
-      padding: 0 12px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--accent-soft);
-      color: var(--accent-deep);
       font-size: 0.82rem;
-      font-weight: 800;
     }
 
-    .status-badge.error {
-      background: var(--danger-soft);
-      color: var(--danger);
+    .page-foot .page-no {
+      font-weight: 700;
+      color: var(--accent-deep);
     }
 
-    .page-turn-zone {
+    html[data-theme="dark"] .page-foot .page-no {
+      color: #d8fff4;
+    }
+
+    .reader-hint {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 20%;
-      z-index: 5;
-      cursor: pointer;
-      background: transparent;
-    }
-
-    .page-turn-zone.prev { left: 0; }
-    .page-turn-zone.next { right: 0; }
-
-    .page-anim {
-      animation: pageIn 240ms ease;
-    }
-
-    @keyframes pageIn {
-      from { opacity: 0; transform: translateX(12px) scale(0.992); }
-      to { opacity: 1; transform: translateX(0) scale(1); }
-    }
-
-    .gesture-hint {
-      position: absolute;
+      bottom: 18px;
       left: 50%;
-      bottom: 14px;
       transform: translateX(-50%);
+      z-index: 2;
       min-height: 34px;
       padding: 0 12px;
       border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
       background: color-mix(in srgb, var(--surface) 92%, transparent);
+      border: 1px solid var(--line);
       color: var(--muted);
       font-size: 0.8rem;
-      font-weight: 700;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       pointer-events: none;
-      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
     }
 
-    .menu-panel {
-      position: absolute;
-      top: calc(var(--bar-h) - 6px);
-      right: 18px;
-      z-index: 40;
-      width: min(92vw, 380px);
-      max-height: calc(100vh - var(--bar-h) - 22px);
-      overflow: auto;
-      padding: 12px;
-      border-radius: 22px;
+    .footer {
+      position: relative;
+      z-index: 10;
+      padding: 0 0 14px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-card {
+      width: 100%;
+      background: var(--surface);
       border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--surface) 96%, transparent);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      display: none;
-    }
-
-    .menu-panel.active { display: block; }
-
-    .menu-section {
+      border-radius: 22px;
       padding: 12px;
-      border-radius: 18px;
-      border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
-      background: color-mix(in srgb, var(--surface-soft) 88%, transparent);
-      margin-bottom: 10px;
+      box-shadow: var(--shadow);
     }
 
-    .menu-section:last-child { margin-bottom: 0; }
+    .footer-row {
+      justify-content: space-between;
+    }
 
-    .menu-section h2 {
-      margin: 0 0 10px;
-      font-size: 0.94rem;
+    .status-line {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .status-line strong {
+      color: var(--text);
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay);
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.2s ease;
+      z-index: 30;
+    }
+
+    .drawer-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 100vw);
+      height: 100%;
+      background: var(--surface);
+      border-left: 1px solid var(--line);
+      box-shadow: var(--menu-shadow);
+      transform: translateX(100%);
+      transition: transform 0.24s ease;
+      z-index: 31;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      overflow: hidden;
+    }
+
+    .drawer.active {
+      transform: translateX(0);
+    }
+
+    .drawer-head,
+    .drawer-foot {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .drawer-foot {
+      border-bottom: none;
+      border-top: 1px solid var(--line);
+    }
+
+    .drawer-head h2 {
+      margin: 0;
+      font-size: 1.05rem;
       letter-spacing: -0.02em;
     }
 
-    .menu-row,
-    .menu-actions {
+    .drawer-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .drawer-body {
+      overflow: auto;
+      padding: 16px;
+      display: grid;
+      align-content: start;
+      gap: 16px;
+      background: var(--surface-soft);
+    }
+
+    .drawer-section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .drawer-section h3 {
+      margin: 0;
+      font-size: 0.98rem;
+      letter-spacing: -0.02em;
+    }
+
+    .drawer-section p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    .segmented {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
     }
 
-    .segment {
-      appearance: none;
-      min-height: 40px;
-      padding: 0 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 700;
-      transition: 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
+    .segmented-button.active,
+    .translation-item.active,
+    .surah-item.active,
+    .reciter-item.active {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
     }
 
-    .segment:hover { background: var(--surface-deep); }
-
-    .segment.active {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: #fff;
+    html[data-theme="dark"] .segmented-button.active,
+    html[data-theme="dark"] .translation-item.active,
+    html[data-theme="dark"] .surah-item.active,
+    html[data-theme="dark"] .reciter-item.active {
+      color: #d8fff4;
     }
 
-    .field {
+    .field,
+    .field-inline {
       display: grid;
-      gap: 6px;
-      width: 100%;
-      margin-bottom: 10px;
+      gap: 8px;
     }
 
-    .field:last-child { margin-bottom: 0; }
+    .field-inline {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
 
     .field label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.92rem;
     }
 
-    .field select,
-    .field input {
+    .field input,
+    .field select {
       width: 100%;
-      min-height: 44px;
-      padding: 10px 12px;
+      min-height: 46px;
       border-radius: 14px;
       border: 1px solid var(--line);
       background: var(--surface);
       color: var(--text);
+      padding: 12px 14px;
       outline: none;
     }
 
-    .field select:focus,
-    .field input:focus {
-      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    .field input:focus,
+    .field select:focus {
+      border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
     }
 
-    .menu-note {
+    .translation-list,
+    .surah-list,
+    .reciter-list {
+      display: grid;
+      gap: 8px;
+      max-height: 240px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .translation-item,
+    .surah-item,
+    .reciter-item {
+      width: 100%;
+      min-height: 50px;
+      justify-content: space-between;
+      text-align: left;
+      border-radius: 16px;
+      padding: 10px 14px;
+      line-height: 1.2;
+    }
+
+    .translation-item small,
+    .surah-item small,
+    .reciter-item small {
       color: var(--muted);
-      font-size: 0.84rem;
+      font-weight: 500;
+      font-size: 0.8rem;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .loader,
+    .empty-state {
+      min-height: 52px;
+      border-radius: 16px;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      background: var(--surface-soft);
+      padding: 14px;
+      display: grid;
+      place-items: center;
+      text-align: center;
       line-height: 1.6;
     }
 
-    .primary-btn,
-    .secondary-btn,
-    .link-btn {
-      appearance: none;
-      min-height: 42px;
-      padding: 0 14px;
-      border-radius: 999px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-      text-decoration: none;
-    }
-
-    .primary-btn {
-      border: none;
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .primary-btn:hover { background: var(--accent-deep); }
-
-    .secondary-btn,
-    .link-btn {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-    }
-
-    .secondary-btn:hover,
-    .link-btn:hover {
-      background: var(--surface-deep);
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 34px;
-      padding: 0 12px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--accent-soft);
-      color: var(--accent-deep);
-      font-size: 0.82rem;
-      font-weight: 800;
-    }
-
-    html[data-theme="dark"] .status-pill { color: #d7fff1; }
-
     .toast {
-      position: absolute;
+      position: fixed;
       left: 50%;
       bottom: 18px;
-      transform: translateX(-50%) translateY(10px);
+      transform: translateX(-50%);
       z-index: 50;
       min-height: 42px;
-      max-width: min(88vw, 520px);
       padding: 0 16px;
       border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
       border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--surface) 96%, transparent);
       box-shadow: var(--shadow);
-      color: var(--text);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      color: var(--text);
       opacity: 0;
-      pointer-events: none;
+      visibility: hidden;
       transition: 0.2s ease;
-      font-size: 0.9rem;
-      font-weight: 700;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
     }
 
     .toast.active {
       opacity: 1;
-      transform: translateX(-50%) translateY(0);
+      visibility: visible;
     }
 
-    .overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 35;
-      display: none;
-      background: rgba(0, 0, 0, 0.12);
+    @media (max-width: 900px) {
+      :root {
+        --book-width: min(96vw, 680px);
+        --book-height: min(78vh, calc(var(--book-width) * 1.5));
+      }
     }
-
-    .overlay.active { display: block; }
 
     @media (max-width: 760px) {
-      .topbar {
-        grid-template-columns: 1fr auto;
-        grid-template-areas:
-          "brand menu"
-          "meta meta";
+      .topbar-inner {
+        min-height: 72px;
+      }
+
+      .brand-mark {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+      }
+
+      .reader-shell {
+        padding: 12px 0;
+      }
+
+      .book-frame {
+        width: min(98vw, 620px);
+        height: min(73vh, calc(98vw * 1.5));
+        padding: 10px;
+        border-radius: 24px;
+      }
+
+      .mushaf-page {
+        padding: 14px;
+      }
+
+      .page-title-ar {
+        font-size: clamp(1.45rem, 5vw, 2rem);
+      }
+
+      .ayah-arabic {
+        font-size: clamp(1.04rem, 3.8vw, 1.3rem);
+      }
+
+      .footer-inner {
         gap: 10px;
-        padding: 12px 14px;
       }
 
-      .brand { grid-area: brand; }
-      .menu-toggle { grid-area: menu; justify-self: end; }
-      .page-meta { grid-area: meta; justify-self: start; }
+      .footer-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
 
-      .stage { padding: 12px; }
-
-      .page-frame {
-        width: min(100%, calc((100vh - var(--bar-h) - 32px) * 0.6667));
+    @media (max-width: 560px) {
+      :root {
+        --book-width: 100vw;
+        --book-height: min(70vh, calc(100vw * 1.5));
       }
 
-      .page-content { padding: 18px 16px 22px; }
-      .arabic-line { font-size: clamp(1.22rem, 4.2vw, 1.56rem); line-height: 1.96; min-height: 1.96em; }
-      .translation-page { font-size: 0.9rem; }
-      .menu-panel { right: 12px; width: min(94vw, 380px); }
+      .topbar-inner,
+      .reader-shell,
+      .footer-inner {
+        width: calc(100% - 18px);
+      }
+
+      .brand-text h1 {
+        font-size: 0.98rem;
+      }
+
+      .brand-text p {
+        font-size: 0.86rem;
+      }
+
+      .chip {
+        display: none;
+      }
+
+      .book-frame {
+        border-radius: 18px;
+        padding: 8px;
+      }
+
+      .book-inner {
+        border-radius: 16px;
+      }
+
+      .mushaf-page {
+        padding: 10px;
+      }
+
+      .mushaf-page::before {
+        inset: 8px;
+      }
+
+      .mushaf-page::after {
+        inset: 14px;
+      }
+
+      .page-kicker {
+        font-size: 0.78rem;
+      }
+
+      .page-title-en {
+        font-size: 0.84rem;
+      }
+
+      .bismillah {
+        font-size: 1.18rem;
+        line-height: 1.8;
+      }
+
+      .ayah-card {
+        padding: 8px 10px;
+        border-radius: 14px;
+      }
+
+      .ayah-arabic {
+        font-size: clamp(0.98rem, 4.2vw, 1.18rem);
+        line-height: 1.86;
+      }
+
+      .ayah-translation {
+        font-size: 0.82rem;
+      }
+
+      .footer-card {
+        padding: 10px;
+        border-radius: 18px;
+      }
+
+      .pager-controls,
+      .audio-controls,
+      .drawer-actions,
+      .section-actions {
+        width: 100%;
+      }
+
+      .pager-controls > *,
+      .audio-controls > *,
+      .drawer-actions > *,
+      .section-actions > * {
+        flex: 1 1 auto;
+      }
     }
   </style>
 </head>
-<body>
-  <div class="app">
+<body translate="no" class="notranslate">
+  <div class="app notranslate" translate="no">
     <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">٢٧</div>
-        <div class="brand-copy">
-          <h1>Open Quran Tilawah (Recitation)</h1>
-          <p>Surah 27 · An-Naml · Arabic Book</p>
-        </div>
-      </div>
-
-      <div class="page-meta" id="pageMeta"><span class="status-badge">Loading…</span></div>
-
-      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open reader menu" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="6" cy="12" r="1.5"></circle>
-          <circle cx="12" cy="12" r="1.5"></circle>
-          <circle cx="18" cy="12" r="1.5"></circle>
-        </svg>
-      </button>
-    </header>
-
-    <main class="stage">
-      <div class="book-shell">
-        <div class="page-frame page-anim" id="pageFrame" aria-live="polite">
-          <button class="page-turn-zone prev" id="prevZone" type="button" aria-label="Previous page"></button>
-          <button class="page-turn-zone next" id="nextZone" type="button" aria-label="Next page"></button>
-
-          <div class="page-content">
-            <div class="page-head">
-              <div class="page-head-title">
-                <span class="ar">سورة النمل</span>
-                <span class="en">Surah 27 · An-Naml</span>
-              </div>
-              <div class="script-chip" id="scriptChip">Uthmani</div>
-            </div>
-
-            <div class="ornament" id="ornamentText">Open Quran Tilawah</div>
-
-            <div class="page-body">
-              <div class="lines-wrap" id="linesWrap"></div>
-              <div class="translation-page" id="translationPage"></div>
-            </div>
-
-            <div class="page-foot">
-              <div id="footLeft">6×9 Arabic book</div>
-              <div class="foot-center" id="footCenter">Waiting for page data</div>
-              <div id="footRight">—</div>
-            </div>
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-mark" id="brandMark">٢٧</div>
+          <div class="brand-text">
+            <h1>Open Quran Tilawah</h1>
+            <p id="brandSubtitle">Surah 27 · An-Naml</p>
           </div>
         </div>
 
-        <div class="gesture-hint">Swipe right for next · tap page edges</div>
+        <div class="topbar-actions">
+          <div class="chip" id="modeChip">Uthmani · Arabic only</div>
+          <button class="icon-button" type="button" id="playPauseTopButton" aria-label="Play or pause recitation">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.5L18 12L8 17.5Z"></path></svg>
+          </button>
+          <button class="icon-button" type="button" id="menuButton" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg>
+          </button>
+        </div>
       </div>
+    </header>
+
+    <main class="reader-shell">
+      <section class="book-stage" id="bookStage" aria-label="Quran book reader">
+        <div class="book-shadow" aria-hidden="true"></div>
+        <div class="book-frame">
+          <div class="book-inner">
+            <div class="page-strip" id="pageStrip"></div>
+          </div>
+        </div>
+        <div class="reader-hint" id="readerHint">Swipe right for next page · Swipe left for previous</div>
+      </section>
     </main>
 
-    <div class="overlay" id="overlay"></div>
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-card">
+          <div class="footer-row">
+            <div class="pager-controls">
+              <button class="secondary-button" type="button" id="prevPageButton">Previous</button>
+              <button class="secondary-button" type="button" id="pageIndicatorButton">Page 1 / 1</button>
+              <button class="secondary-button" type="button" id="nextPageButton">Next</button>
+            </div>
 
-    <aside class="menu-panel" id="menuPanel" aria-hidden="true">
-      <section class="menu-section">
-        <h2>Read</h2>
-        <div class="menu-row">
-          <button class="segment active" type="button" data-script="uthmani">Uthmani</button>
-          <button class="segment" type="button" data-script="indopak">IndoPak</button>
+            <div class="audio-controls">
+              <button class="primary-button" type="button" id="playPauseButton">Play</button>
+              <button class="secondary-button" type="button" id="startCurrentPageButton">Start here</button>
+            </div>
+          </div>
+          <div class="footer-row" style="margin-top: 10px;">
+            <div class="status-line" id="statusLine">Loading Surah 27…</div>
+            <div class="status-line" id="audioLine"><strong>Reciter:</strong> Sheikh Saud ash-Shuraym</div>
+          </div>
         </div>
-        <div class="menu-actions" style="margin-top: 10px;">
-          <button class="segment active" type="button" id="translationOff">Translation Off</button>
-          <button class="segment" type="button" id="translationOn">Translation On</button>
-        </div>
-        <div class="field" style="margin-top: 10px;">
-          <label for="translationSelect">Language under Arabic</label>
-          <select id="translationSelect"></select>
-        </div>
-        <div class="menu-note" id="translationNote">
-          Arabic pages are live. Translation loads under the Arabic only when selected.
-        </div>
-      </section>
-
-      <section class="menu-section">
-        <h2>Listen</h2>
-        <div class="field">
-          <label for="reciterSelect">Reciter</label>
-          <select id="reciterSelect">
-            <option value="10" selected>Sheikh Saud ash-Shuraym</option>
-            <option value="3">Sheikh Abdur-Rahman as-Sudais</option>
-            <option value="174">Yasser Ad-Dussary</option>
-            <option value="158">Sheikh Ali Jaber</option>
-            <option value="2">Sheikh Abdul Basit Abdul Samad</option>
-          </select>
-        </div>
-        <div class="menu-actions">
-          <button class="primary-btn" id="playPauseButton" type="button">Load & Play</button>
-          <button class="secondary-btn" id="restartButton" type="button">Restart</button>
-        </div>
-        <div class="menu-note" style="margin-top: 10px;" id="listenNote">
-          Recitation will auto-advance the book page when the current verse moves to the next page.
-        </div>
-        <div style="margin-top: 10px;">
-          <span class="status-pill" id="listenStatus">Recitation idle</span>
-        </div>
-        <audio id="audioPlayer" preload="none"></audio>
-      </section>
-
-      <section class="menu-section">
-        <h2>Navigate</h2>
-        <div class="field">
-          <label for="pageSelect">Go to page</label>
-          <select id="pageSelect"></select>
-        </div>
-        <div class="field">
-          <label for="ayahInput">Go to ayah</label>
-          <input id="ayahInput" type="number" min="1" max="93" placeholder="1 to 93" />
-        </div>
-        <div class="menu-actions">
-          <button class="secondary-btn" id="goPageButton" type="button">Go page</button>
-          <button class="secondary-btn" id="goAyahButton" type="button">Go ayah</button>
-        </div>
-      </section>
-
-      <section class="menu-section">
-        <h2>Settings</h2>
-        <div class="menu-actions">
-          <button class="secondary-btn" id="themeButton" type="button">Dark mode</button>
-          <button class="secondary-btn" id="resetButton" type="button">Reset</button>
-        </div>
-        <div class="menu-note" style="margin-top: 10px;">
-          Reset returns to Uthmani, Arabic-only, first page, and stopped recitation.
-        </div>
-      </section>
-
-      <section class="menu-section">
-        <h2>Ecosystem</h2>
-        <div class="menu-actions">
-          <a class="link-btn" href="index.html">Back to index</a>
-          <button class="secondary-btn" id="futureToolsButton" type="button">Future tools</button>
-        </div>
-        <div class="menu-note" style="margin-top: 10px;">
-          This keeps the main page calm while the wider EnglishQuran.uk ecosystem stays behind the 3-dots reader menu.
-        </div>
-      </section>
-    </aside>
-
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+    </footer>
   </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <aside class="drawer notranslate" id="drawer" aria-hidden="true" translate="no">
+    <div class="drawer-head">
+      <h2>Open Quran Tilawah</h2>
+      <p>Keep the page calm. Use the menu for script, translation, recitation, surah, and reset.</p>
+    </div>
+
+    <div class="drawer-body">
+      <section class="drawer-section">
+        <h3>Book mode</h3>
+        <p>Switch the Arabic script while keeping the reader in book-page mode.</p>
+        <div class="segmented" id="scriptButtons">
+          <button class="segmented-button active" type="button" data-script="uthmani">Uthmani</button>
+          <button class="segmented-button" type="button" data-script="indopak">IndoPak</button>
+        </div>
+        <div class="segmented" id="themeButtons">
+          <button class="segmented-button active" type="button" data-theme-mode="light">Light</button>
+          <button class="segmented-button" type="button" data-theme-mode="dark">Dark</button>
+        </div>
+      </section>
+
+      <section class="drawer-section">
+        <h3>Translation under Arabic</h3>
+        <p>Arabic stays primary. Translation appears only when you select one.</p>
+        <div class="translation-meta" id="translationMeta">
+          <span class="chip" id="translationChip">Arabic only</span>
+          <button class="secondary-button" type="button" id="clearTranslationButton">Clear translation</button>
+        </div>
+        <div class="field">
+          <label for="translationSearchInput">Search languages</label>
+          <input id="translationSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="Find a language" />
+        </div>
+        <div class="translation-list" id="translationList">
+          <div class="loader">Loading language list…</div>
+        </div>
+      </section>
+
+      <section class="drawer-section">
+        <h3>Recitation</h3>
+        <p>Play the full surah and let the page turn automatically as the recitation advances.</p>
+        <div class="reciter-list" id="reciterList"></div>
+        <div class="section-actions">
+          <button class="primary-button" type="button" id="drawerPlayPauseButton">Play</button>
+          <button class="secondary-button" type="button" id="drawerStartCurrentPageButton">Start current page</button>
+        </div>
+        <div class="segmented">
+          <button class="segmented-button active" type="button" id="autoTurnButton">Auto-turn pages</button>
+        </div>
+      </section>
+
+      <section class="drawer-section">
+        <h3>Surah</h3>
+        <p>Surah 27 is the starting model, but this file is ready to move across all 114 surahs.</p>
+        <div class="field">
+          <label for="surahSearchInput">Search surah</label>
+          <input id="surahSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="Find a surah" />
+        </div>
+        <div class="surah-list" id="surahList"></div>
+      </section>
+    </div>
+
+    <div class="drawer-foot">
+      <div class="drawer-actions">
+        <a class="secondary-button" href="index.html">Back to index</a>
+        <button class="secondary-button" type="button" id="resetButton">Reset</button>
+        <button class="primary-button" type="button" id="closeDrawerButton">Done</button>
+      </div>
+    </div>
+  </aside>
+
+  <audio id="surahAudioPlayer" preload="none"></audio>
+  <div class="toast" id="toast"></div>
 
   <script>
     const API_BASE = 'https://api.quran.com/api/v4';
-    const SURAH_NUMBER = 27;
-    const BISMILLAH = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
-    const STORAGE_KEY = 'open-quran-tilawah-surah-27-book-state';
+    const STORAGE_KEY = 'open-quran-tilawah-mushaf-2';
+    const DEFAULT_SURAH = 27;
+    const DEFAULT_RECITER = 'shuraim';
+    const DEFAULT_SCRIPT = 'uthmani';
+    const DEFAULT_THEME = 'light';
 
-    const initialState = {
-      pageIndex: 0,
-      script: 'uthmani',
-      translationEnabled: false,
-      translationId: '',
-      translationName: 'English',
-      reciterId: '10',
-      theme: 'light',
-      playing: false,
-      audioLoaded: false
+    const RECITERS = {
+      sudais: { key: 'sudais', name: 'Sheikh Abdur-Rahman as-Sudais', id: 3 },
+      shuraim: { key: 'shuraim', name: 'Sheikh Saud ash-Shuraym', id: 10 },
+      dussary: { key: 'dussary', name: 'Yasser Ad-Dussary', id: 174 },
+      'ali-jaber': { key: 'ali-jaber', name: 'Sheikh Ali Jaber', id: 158 },
+      'abdul-basit': { key: 'abdul-basit', name: 'Sheikh Abdul Basit Abdul Samad', id: 2 }
     };
 
-    const state = { ...initialState };
-    let chapterVerses = [];
-    let pageNumbers = [];
-    let pages = [];
-    let translationResources = [];
-    let translationMap = new Map();
-    let audioData = { audioUrl: '', byVerse: {}, timestamps: [] };
-    let visibleVerse = null;
-    let toastTimer = null;
-    let touchStartX = 0;
-    let touchStartY = 0;
+    const SURAHS = [
+      { number: 1, arabic: 'الفاتحة', english: 'Al-Fatihah' },
+      { number: 2, arabic: 'البقرة', english: 'Al-Baqarah' },
+      { number: 3, arabic: 'آل عمران', english: 'Ali Imran' },
+      { number: 4, arabic: 'النساء', english: 'An-Nisa' },
+      { number: 5, arabic: 'المائدة', english: 'Al-Ma’idah' },
+      { number: 6, arabic: 'الأنعام', english: 'Al-An’am' },
+      { number: 7, arabic: 'الأعراف', english: 'Al-A’raf' },
+      { number: 8, arabic: 'الأنفال', english: 'Al-Anfal' },
+      { number: 9, arabic: 'التوبة', english: 'At-Tawbah' },
+      { number: 10, arabic: 'يونس', english: 'Yunus' },
+      { number: 11, arabic: 'هود', english: 'Hud' },
+      { number: 12, arabic: 'يوسف', english: 'Yusuf' },
+      { number: 13, arabic: 'الرعد', english: 'Ar-Ra’d' },
+      { number: 14, arabic: 'إبراهيم', english: 'Ibrahim' },
+      { number: 15, arabic: 'الحجر', english: 'Al-Hijr' },
+      { number: 16, arabic: 'النحل', english: 'An-Nahl' },
+      { number: 17, arabic: 'الإسراء', english: 'Al-Isra' },
+      { number: 18, arabic: 'الكهف', english: 'Al-Kahf' },
+      { number: 19, arabic: 'مريم', english: 'Maryam' },
+      { number: 20, arabic: 'طه', english: 'Ta-Ha' },
+      { number: 21, arabic: 'الأنبياء', english: 'Al-Anbiya' },
+      { number: 22, arabic: 'الحج', english: 'Al-Hajj' },
+      { number: 23, arabic: 'المؤمنون', english: 'Al-Mu’minun' },
+      { number: 24, arabic: 'النور', english: 'An-Nur' },
+      { number: 25, arabic: 'الفرقان', english: 'Al-Furqan' },
+      { number: 26, arabic: 'الشعراء', english: 'Ash-Shu’ara' },
+      { number: 27, arabic: 'النمل', english: 'An-Naml' },
+      { number: 28, arabic: 'القصص', english: 'Al-Qasas' },
+      { number: 29, arabic: 'العنكبوت', english: 'Al-’Ankabut' },
+      { number: 30, arabic: 'الروم', english: 'Ar-Rum' },
+      { number: 31, arabic: 'لقمان', english: 'Luqman' },
+      { number: 32, arabic: 'السجدة', english: 'As-Sajdah' },
+      { number: 33, arabic: 'الأحزاب', english: 'Al-Ahzab' },
+      { number: 34, arabic: 'سبأ', english: 'Saba' },
+      { number: 35, arabic: 'فاطر', english: 'Fatir' },
+      { number: 36, arabic: 'يس', english: 'Ya-Sin' },
+      { number: 37, arabic: 'الصافات', english: 'As-Saffat' },
+      { number: 38, arabic: 'ص', english: 'Sad' },
+      { number: 39, arabic: 'الزمر', english: 'Az-Zumar' },
+      { number: 40, arabic: 'غافر', english: 'Ghafir' },
+      { number: 41, arabic: 'فصلت', english: 'Fussilat' },
+      { number: 42, arabic: 'الشورى', english: 'Ash-Shura' },
+      { number: 43, arabic: 'الزخرف', english: 'Az-Zukhruf' },
+      { number: 44, arabic: 'الدخان', english: 'Ad-Dukhan' },
+      { number: 45, arabic: 'الجاثية', english: 'Al-Jathiyah' },
+      { number: 46, arabic: 'الأحقاف', english: 'Al-Ahqaf' },
+      { number: 47, arabic: 'محمد', english: 'Muhammad' },
+      { number: 48, arabic: 'الفتح', english: 'Al-Fath' },
+      { number: 49, arabic: 'الحجرات', english: 'Al-Hujurat' },
+      { number: 50, arabic: 'ق', english: 'Qaf' },
+      { number: 51, arabic: 'الذاريات', english: 'Adh-Dhariyat' },
+      { number: 52, arabic: 'الطور', english: 'At-Tur' },
+      { number: 53, arabic: 'النجم', english: 'An-Najm' },
+      { number: 54, arabic: 'القمر', english: 'Al-Qamar' },
+      { number: 55, arabic: 'الرحمن', english: 'Ar-Rahman' },
+      { number: 56, arabic: 'الواقعة', english: 'Al-Waqi’ah' },
+      { number: 57, arabic: 'الحديد', english: 'Al-Hadid' },
+      { number: 58, arabic: 'المجادلة', english: 'Al-Mujadilah' },
+      { number: 59, arabic: 'الحشر', english: 'Al-Hashr' },
+      { number: 60, arabic: 'الممتحنة', english: 'Al-Mumtahanah' },
+      { number: 61, arabic: 'الصف', english: 'As-Saff' },
+      { number: 62, arabic: 'الجمعة', english: 'Al-Jumu’ah' },
+      { number: 63, arabic: 'المنافقون', english: 'Al-Munafiqun' },
+      { number: 64, arabic: 'التغابن', english: 'At-Taghabun' },
+      { number: 65, arabic: 'الطلاق', english: 'At-Talaq' },
+      { number: 66, arabic: 'التحريم', english: 'At-Tahrim' },
+      { number: 67, arabic: 'الملك', english: 'Al-Mulk' },
+      { number: 68, arabic: 'القلم', english: 'Al-Qalam' },
+      { number: 69, arabic: 'الحاقة', english: 'Al-Haqqah' },
+      { number: 70, arabic: 'المعارج', english: 'Al-Ma’arij' },
+      { number: 71, arabic: 'نوح', english: 'Nuh' },
+      { number: 72, arabic: 'الجن', english: 'Al-Jinn' },
+      { number: 73, arabic: 'المزمل', english: 'Al-Muzzammil' },
+      { number: 74, arabic: 'المدثر', english: 'Al-Muddaththir' },
+      { number: 75, arabic: 'القيامة', english: 'Al-Qiyamah' },
+      { number: 76, arabic: 'الإنسان', english: 'Al-Insan' },
+      { number: 77, arabic: 'المرسلات', english: 'Al-Mursalat' },
+      { number: 78, arabic: 'النبأ', english: 'An-Naba' },
+      { number: 79, arabic: 'النازعات', english: 'An-Nazi’at' },
+      { number: 80, arabic: 'عبس', english: 'Abasa' },
+      { number: 81, arabic: 'التكوير', english: 'At-Takwir' },
+      { number: 82, arabic: 'الإنفطار', english: 'Al-Infitar' },
+      { number: 83, arabic: 'المطففين', english: 'Al-Mutaffifin' },
+      { number: 84, arabic: 'الإنشقاق', english: 'Al-Inshiqaq' },
+      { number: 85, arabic: 'البروج', english: 'Al-Buruj' },
+      { number: 86, arabic: 'الطارق', english: 'At-Tariq' },
+      { number: 87, arabic: 'الأعلى', english: 'Al-A’la' },
+      { number: 88, arabic: 'الغاشية', english: 'Al-Ghashiyah' },
+      { number: 89, arabic: 'الفجر', english: 'Al-Fajr' },
+      { number: 90, arabic: 'البلد', english: 'Al-Balad' },
+      { number: 91, arabic: 'الشمس', english: 'Ash-Shams' },
+      { number: 92, arabic: 'الليل', english: 'Al-Layl' },
+      { number: 93, arabic: 'الضحى', english: 'Ad-Duha' },
+      { number: 94, arabic: 'الشرح', english: 'Ash-Sharh' },
+      { number: 95, arabic: 'التين', english: 'At-Tin' },
+      { number: 96, arabic: 'العلق', english: 'Al-’Alaq' },
+      { number: 97, arabic: 'القدر', english: 'Al-Qadr' },
+      { number: 98, arabic: 'البينة', english: 'Al-Bayyinah' },
+      { number: 99, arabic: 'الزلزلة', english: 'Az-Zalzalah' },
+      { number: 100, arabic: 'العاديات', english: 'Al-’Adiyat' },
+      { number: 101, arabic: 'القارعة', english: 'Al-Qari’ah' },
+      { number: 102, arabic: 'التكاثر', english: 'At-Takathur' },
+      { number: 103, arabic: 'العصر', english: 'Al-’Asr' },
+      { number: 104, arabic: 'الهمزة', english: 'Al-Humazah' },
+      { number: 105, arabic: 'الفيل', english: 'Al-Fil' },
+      { number: 106, arabic: 'قريش', english: 'Quraysh' },
+      { number: 107, arabic: 'الماعون', english: 'Al-Ma’un' },
+      { number: 108, arabic: 'الكوثر', english: 'Al-Kawthar' },
+      { number: 109, arabic: 'الكافرون', english: 'Al-Kafirun' },
+      { number: 110, arabic: 'النصر', english: 'An-Nasr' },
+      { number: 111, arabic: 'المسد', english: 'Al-Masad' },
+      { number: 112, arabic: 'الإخلاص', english: 'Al-Ikhlas' },
+      { number: 113, arabic: 'الفلق', english: 'Al-Falaq' },
+      { number: 114, arabic: 'الناس', english: 'An-Nas' }
+    ];
 
-    const pageMeta = document.getElementById('pageMeta');
-    const pageFrame = document.getElementById('pageFrame');
-    const linesWrap = document.getElementById('linesWrap');
-    const translationPage = document.getElementById('translationPage');
-    const footCenter = document.getElementById('footCenter');
-    const footRight = document.getElementById('footRight');
-    const scriptChip = document.getElementById('scriptChip');
-    const menuToggle = document.getElementById('menuToggle');
-    const menuPanel = document.getElementById('menuPanel');
-    const overlay = document.getElementById('overlay');
-    const toast = document.getElementById('toast');
-    const translationSelect = document.getElementById('translationSelect');
-    const translationOff = document.getElementById('translationOff');
-    const translationOn = document.getElementById('translationOn');
-    const translationNote = document.getElementById('translationNote');
-    const reciterSelect = document.getElementById('reciterSelect');
+    const state = {
+      surah: DEFAULT_SURAH,
+      script: DEFAULT_SCRIPT,
+      theme: DEFAULT_THEME,
+      translationId: null,
+      translationName: '',
+      reciter: DEFAULT_RECITER,
+      autoTurn: true,
+      currentPageIndex: 0,
+      verses: [],
+      pages: [],
+      verseToPage: {},
+      translationResources: [],
+      recitation: null,
+      audioLoadedFor: null,
+      isLoading: false,
+      translationSearch: '',
+      surahSearch: '',
+      activeVerseNumber: null,
+      touchStartX: 0,
+      touchStartY: 0
+    };
+
+    const audio = document.getElementById('surahAudioPlayer');
+    const pageStrip = document.getElementById('pageStrip');
+    const statusLine = document.getElementById('statusLine');
+    const audioLine = document.getElementById('audioLine');
+    const brandMark = document.getElementById('brandMark');
+    const brandSubtitle = document.getElementById('brandSubtitle');
+    const modeChip = document.getElementById('modeChip');
+    const pageIndicatorButton = document.getElementById('pageIndicatorButton');
     const playPauseButton = document.getElementById('playPauseButton');
-    const restartButton = document.getElementById('restartButton');
-    const listenStatus = document.getElementById('listenStatus');
-    const listenNote = document.getElementById('listenNote');
-    const audioPlayer = document.getElementById('audioPlayer');
-    const pageSelect = document.getElementById('pageSelect');
-    const ayahInput = document.getElementById('ayahInput');
-    const goPageButton = document.getElementById('goPageButton');
-    const goAyahButton = document.getElementById('goAyahButton');
-    const themeButton = document.getElementById('themeButton');
+    const playPauseTopButton = document.getElementById('playPauseTopButton');
+    const drawerPlayPauseButton = document.getElementById('drawerPlayPauseButton');
+    const startCurrentPageButton = document.getElementById('startCurrentPageButton');
+    const drawerStartCurrentPageButton = document.getElementById('drawerStartCurrentPageButton');
+    const prevPageButton = document.getElementById('prevPageButton');
+    const nextPageButton = document.getElementById('nextPageButton');
+    const menuButton = document.getElementById('menuButton');
+    const drawer = document.getElementById('drawer');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const closeDrawerButton = document.getElementById('closeDrawerButton');
     const resetButton = document.getElementById('resetButton');
-    const prevZone = document.getElementById('prevZone');
-    const nextZone = document.getElementById('nextZone');
-    const futureToolsButton = document.getElementById('futureToolsButton');
+    const translationList = document.getElementById('translationList');
+    const translationSearchInput = document.getElementById('translationSearchInput');
+    const translationChip = document.getElementById('translationChip');
+    const clearTranslationButton = document.getElementById('clearTranslationButton');
+    const reciterList = document.getElementById('reciterList');
+    const autoTurnButton = document.getElementById('autoTurnButton');
+    const surahList = document.getElementById('surahList');
+    const surahSearchInput = document.getElementById('surahSearchInput');
+    const toast = document.getElementById('toast');
+    const readerHint = document.getElementById('readerHint');
+    const bookStage = document.getElementById('bookStage');
 
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add('active');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.remove('active');
-      }, 2000);
+    function iconPause() {
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h3v12H8z" fill="currentColor" stroke="none"></path><path d="M13 6h3v12h-3z" fill="currentColor" stroke="none"></path></svg>';
+    }
+
+    function iconPlay() {
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.5L18 12L8 17.5Z"></path></svg>';
+    }
+
+    function getCurrentSurahMeta() {
+      return SURAHS.find((item) => item.number === state.surah) || SURAHS[DEFAULT_SURAH - 1];
+    }
+
+    function saveState() {
+      const payload = {
+        surah: state.surah,
+        script: state.script,
+        theme: state.theme,
+        translationId: state.translationId,
+        translationName: state.translationName,
+        reciter: state.reciter,
+        autoTurn: state.autoTurn,
+        currentPageIndex: state.currentPageIndex
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    }
+
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return;
+        state.surah = Number(parsed.surah) || DEFAULT_SURAH;
+        state.script = parsed.script === 'indopak' ? 'indopak' : DEFAULT_SCRIPT;
+        state.theme = parsed.theme === 'dark' ? 'dark' : DEFAULT_THEME;
+        state.translationId = parsed.translationId || null;
+        state.translationName = parsed.translationName || '';
+        state.reciter = RECITERS[parsed.reciter] ? parsed.reciter : DEFAULT_RECITER;
+        state.autoTurn = parsed.autoTurn !== false;
+        state.currentPageIndex = Number.isFinite(parsed.currentPageIndex) ? Math.max(0, parsed.currentPageIndex) : 0;
+      } catch {}
+    }
+
+    function getUrlSurah() {
+      const params = new URLSearchParams(window.location.search);
+      const surah = Number(params.get('surah'));
+      return Number.isInteger(surah) && surah >= 1 && surah <= 114 ? surah : null;
+    }
+
+    function setUrlState() {
+      const params = new URLSearchParams(window.location.search);
+      params.set('surah', String(state.surah));
+      params.set('page', String(state.currentPageIndex + 1));
+      history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+    }
+
+    function toArabicDigits(value) {
+      return String(value).replace(/\d/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[digit]);
+    }
+
+    function stripHtml(value) {
+      const temp = document.createElement('div');
+      temp.innerHTML = String(value || '');
+      return String(temp.textContent || temp.innerText || '').trim();
     }
 
     function escapeHtml(value) {
@@ -896,16 +1266,6 @@
         .replace(/'/g, '&#039;');
     }
 
-    function stripHtml(value) {
-      const temp = document.createElement('div');
-      temp.innerHTML = String(value || '');
-      return String(temp.textContent || temp.innerText || '').trim();
-    }
-
-    function toArabicDigits(value) {
-      return String(value).replace(/\d/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[digit]);
-    }
-
     function normaliseAudioUrl(url) {
       if (!url) return '';
       if (/^https?:\/\//i.test(url)) return url;
@@ -913,686 +1273,672 @@
     }
 
     async function safeFetchJson(url) {
-      const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
-      if (!response.ok) throw new Error(`Request failed: ${response.status}`);
-      return response.json();
-    }
-
-    function openMenu() {
-      menuPanel.classList.add('active');
-      overlay.classList.add('active');
-      menuToggle.classList.add('active');
-      menuToggle.setAttribute('aria-expanded', 'true');
-      menuPanel.setAttribute('aria-hidden', 'false');
-    }
-
-    function closeMenu() {
-      menuPanel.classList.remove('active');
-      overlay.classList.remove('active');
-      menuToggle.classList.remove('active');
-      menuToggle.setAttribute('aria-expanded', 'false');
-      menuPanel.setAttribute('aria-hidden', 'true');
-    }
-
-    function toggleMenu() {
-      if (menuPanel.classList.contains('active')) closeMenu();
-      else openMenu();
-    }
-
-    function setTheme(theme) {
-      state.theme = theme;
-      if (theme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        themeButton.textContent = 'Light mode';
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-        themeButton.textContent = 'Dark mode';
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        pageIndex: state.pageIndex,
-        script: state.script,
-        translationEnabled: state.translationEnabled,
-        translationId: state.translationId,
-        translationName: state.translationName,
-        reciterId: state.reciterId,
-        theme: state.theme
-      }));
-    }
-
-    function restoreState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const saved = JSON.parse(raw);
-        if (saved && typeof saved === 'object') {
-          if (typeof saved.pageIndex === 'number') state.pageIndex = saved.pageIndex;
-          if (typeof saved.script === 'string') state.script = saved.script;
-          if (typeof saved.translationEnabled === 'boolean') state.translationEnabled = saved.translationEnabled;
-          if (typeof saved.translationId === 'string') state.translationId = saved.translationId;
-          if (typeof saved.translationName === 'string') state.translationName = saved.translationName;
-          if (typeof saved.reciterId === 'string') state.reciterId = saved.reciterId;
-          if (typeof saved.theme === 'string') state.theme = saved.theme;
-        }
-      } catch {}
-    }
-
-    function setLoadingMeta(text = 'Loading…') {
-      pageMeta.innerHTML = `<span class="status-badge">${escapeHtml(text)}</span>`;
-    }
-
-    function setErrorMeta(text = 'Load failed') {
-      pageMeta.innerHTML = `<span class="status-badge error">${escapeHtml(text)}</span>`;
-    }
-
-    async function fetchChapterVerses() {
-      const urls = [1, 2].map((page) =>
-        `${API_BASE}/verses/by_chapter/${SURAH_NUMBER}?per_page=50&page=${page}&words=true&fields=text_uthmani,text_indopak,page_number&word_fields=text_uthmani,text_indopak,line_number,verse_key,position,char_type_name`
-      );
-      const results = await Promise.all(urls.map((url) => safeFetchJson(url)));
-      const verses = results
-        .flatMap((payload) => Array.isArray(payload?.verses) ? payload.verses : [])
-        .filter((verse) => verse && Number(verse.verse_number))
-        .sort((a, b) => a.verse_number - b.verse_number);
-      if (!verses.length) throw new Error('No verse data returned.');
-      return verses;
-    }
-
-    function extractPageNumbers(verses) {
-      return Array.from(new Set(verses.map((verse) => Number(verse.page_number)).filter(Number.isFinite))).sort((a, b) => a - b);
-    }
-
-    async function fetchMadaniPage(pageNumber) {
-      const url = `${API_BASE}/verses/by_page/${pageNumber}?per_page=50&words=true&fields=text_uthmani,text_indopak,page_number&word_fields=text_uthmani,text_indopak,line_number,verse_key,position,char_type_name`;
-      const payload = await safeFetchJson(url);
-      return (Array.isArray(payload?.verses) ? payload.verses : [])
-        .filter((verse) => Number(verse.chapter_id) === SURAH_NUMBER || String(verse.verse_key || '').startsWith(`${SURAH_NUMBER}:`))
-        .sort((a, b) => a.verse_number - b.verse_number);
-    }
-
-    function buildLineData(pageVerses, isFirstPage) {
-      const lineMap = new Map();
-
-      if (isFirstPage) {
-        lineMap.set(0, [{ type: 'bismillah', text: BISMILLAH }]);
+        const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        console.warn('Fetch failed', url, error);
+        return null;
       }
+    }
 
-      pageVerses.forEach((verse) => {
-        const words = Array.isArray(verse.words) ? verse.words : [];
-        const contentWords = words.filter((word) => String(word.char_type_name || '').toLowerCase() !== 'end');
-        contentWords.forEach((word, index) => {
-          const lineNumber = Number(word.line_number || 1);
-          if (!lineMap.has(lineNumber)) lineMap.set(lineNumber, []);
-          lineMap.get(lineNumber).push({
-            type: 'word',
-            verseNumber: Number(verse.verse_number),
-            textUthmani: word.text_uthmani || '',
-            textIndopak: word.text_indopak || word.text_uthmani || '',
-            isLast: index === contentWords.length - 1
-          });
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('active');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('active'), 2200);
+    }
+
+    function applyTheme(theme) {
+      state.theme = theme === 'dark' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', state.theme === 'dark' ? 'dark' : 'light');
+      document.querySelectorAll('[data-theme-mode]').forEach((button) => {
+        button.classList.toggle('active', button.getAttribute('data-theme-mode') === state.theme);
+      });
+      saveState();
+    }
+
+    function getScriptLabel() {
+      return state.script === 'indopak' ? 'IndoPak' : 'Uthmani';
+    }
+
+    function getTranslationLabel() {
+      return state.translationId ? state.translationName || 'Translation' : 'Arabic only';
+    }
+
+    function getDisplayText(verse) {
+      return state.script === 'indopak' ? (verse.text_indopak || verse.text_uthmani || '') : (verse.text_uthmani || verse.text_indopak || '');
+    }
+
+    function buildPagesFromVerses(verses) {
+      const grouped = new Map();
+      verses.forEach((verse) => {
+        const key = Number(verse.page_number || 0) || 0;
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(verse);
+      });
+
+      const pages = Array.from(grouped.entries())
+        .sort((a, b) => a[0] - b[0])
+        .map(([mushafPage, items], index) => ({
+          index,
+          mushafPage,
+          verses: items.sort((a, b) => a.verse_number - b.verse_number)
+        }));
+
+      const verseToPage = {};
+      pages.forEach((page) => {
+        page.verses.forEach((verse) => {
+          verseToPage[verse.verse_number] = page.index;
         });
       });
 
-      return Array.from(lineMap.entries())
-        .sort((a, b) => a[0] - b[0])
-        .map(([lineNumber, tokens]) => ({ lineNumber, tokens }));
+      return { pages, verseToPage };
     }
 
-    function buildPageObject(pageVerses, shellIndex, madaniPage) {
-      const ayahStart = Number(pageVerses[0]?.verse_number || 1);
-      const ayahEnd = Number(pageVerses[pageVerses.length - 1]?.verse_number || ayahStart);
-      const lines = buildLineData(pageVerses, shellIndex === 0);
-      return {
-        shellIndex,
-        madaniPage,
-        ayahStart,
-        ayahEnd,
-        ayahRange: `${ayahStart}–${ayahEnd}`,
-        verses: pageVerses.map((verse) => ({
-          verseNumber: Number(verse.verse_number),
-          verseKey: verse.verse_key || `${SURAH_NUMBER}:${verse.verse_number}`
-        })),
-        lines
-      };
+    function estimateVerseDensity(text, translation) {
+      const total = String(text || '').length + String(translation || '').length;
+      if (total > 320) return 'dense';
+      if (total > 220) return 'compact';
+      return 'regular';
     }
 
-    async function buildPages() {
-      const madaniPages = extractPageNumbers(chapterVerses);
-      const pageResponses = await Promise.all(madaniPages.map((pageNumber) => fetchMadaniPage(pageNumber).catch(() => [])));
-      const builtPages = pageResponses
-        .map((pageVerses, index) => pageVerses.length ? buildPageObject(pageVerses, index, madaniPages[index]) : null)
-        .filter(Boolean);
-
-      if (!builtPages.length) {
-        return [
-          {
-            shellIndex: 0,
-            madaniPage: '—',
-            ayahStart: 1,
-            ayahEnd: 93,
-            ayahRange: '1–93',
-            verses: [],
-            lines: [
-              { lineNumber: 0, tokens: [{ type: 'bismillah', text: BISMILLAH }] },
-              { lineNumber: 1, tokens: [{ type: 'word', verseNumber: 1, textUthmani: 'تعذّر', textIndopak: 'تعذّر' }, { type: 'word', verseNumber: 1, textUthmani: 'تحميل', textIndopak: 'تحميل' }, { type: 'word', verseNumber: 1, textUthmani: 'الصفحات', textIndopak: 'الصفحات', isLast: true }] }
-            ]
-          }
-        ];
-      }
-
-      return builtPages;
+    function shouldShowBismillah() {
+      return state.surah !== 1 && state.surah !== 9;
     }
 
-    function renderTranslationPanel(page) {
-      if (!state.translationEnabled || !state.translationId) {
-        translationPage.classList.remove('active');
-        translationPage.innerHTML = '';
-        translationNote.textContent = 'Arabic pages are live. Translation loads under the Arabic only when selected.';
+    function renderPages() {
+      const meta = getCurrentSurahMeta();
+      if (!state.pages.length) {
+        pageStrip.innerHTML = '<div class="mushaf-page"><div class="page-content"><div class="loader">No pages available.</div></div></div>';
+        updateReaderMeta();
         return;
       }
 
-      const items = page.verses
-        .map((entry) => {
-          const text = translationMap.get(entry.verseNumber);
-          if (!text) return '';
-          return `<div class="translation-item"><span class="translation-number">${entry.verseNumber}.</span> ${escapeHtml(text)}</div>`;
-        })
-        .filter(Boolean);
+      pageStrip.innerHTML = state.pages.map((page) => {
+        const showBismillah = page.index === 0 && shouldShowBismillah();
+        const ayahs = page.verses.map((verse) => {
+          const translation = state.translationId && verse.translation_text ? `<div class="ayah-translation">${escapeHtml(verse.translation_text)}</div>` : '';
+          const density = estimateVerseDensity(getDisplayText(verse), verse.translation_text);
+          const isActive = state.activeVerseNumber === verse.verse_number ? 'active' : '';
+          return `
+            <article class="ayah-card ${density} ${isActive}" data-verse-number="${verse.verse_number}">
+              <div class="ayah-arabic" lang="ar" dir="rtl">
+                ${escapeHtml(getDisplayText(verse))}
+                <span class="ayah-end">﴿${toArabicDigits(verse.verse_number)}﴾</span>
+              </div>
+              ${translation}
+            </article>
+          `;
+        }).join('');
 
-      translationPage.innerHTML = items.length
-        ? items.join('')
-        : `<div class="translation-item">Translation is still loading for this page.</div>`;
+        return `
+          <section class="mushaf-page" data-page-index="${page.index}" aria-label="Mushaf page ${page.index + 1}">
+            <div class="page-content">
+              <div class="page-head">
+                <div class="page-kicker">Open Quran Tilawah</div>
+                <div class="page-title-ar" lang="ar" dir="rtl">${escapeHtml(meta.arabic)}</div>
+                <div class="page-title-en">${escapeHtml(meta.english)} · ${escapeHtml(getScriptLabel())}</div>
+              </div>
 
-      translationPage.classList.add('active');
-      translationNote.textContent = `${state.translationName} is active under the Arabic page.`;
-    }
+              <div class="ayah-list">
+                ${showBismillah ? `<div class="bismillah" lang="ar" dir="rtl">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>` : ''}
+                ${ayahs}
+              </div>
 
-    function renderLines(page) {
-      const html = page.lines.map((line) => {
-        if (line.tokens.some((token) => token.type === 'bismillah')) {
-          const token = line.tokens.find((item) => item.type === 'bismillah');
-          return `<div class="arabic-line center">${escapeHtml(token.text)}</div>`;
-        }
-
-        const content = line.tokens.map((token) => {
-          const wordText = state.script === 'indopak'
-            ? (token.textIndopak || token.textUthmani)
-            : token.textUthmani;
-          const marker = token.isLast ? ` <span class="ayah-marker">﴿${toArabicDigits(token.verseNumber)}﴾</span>` : '';
-          return `${escapeHtml(wordText)}${marker}`;
-        }).join(' ');
-        return `<div class="arabic-line">${content}</div>`;
+              <div class="page-foot">
+                <div>Mushaf page ${page.mushafPage || '—'}</div>
+                <div class="page-no">Page ${page.index + 1} / ${state.pages.length}</div>
+              </div>
+            </div>
+          </section>
+        `;
       }).join('');
 
-      linesWrap.innerHTML = html;
+      goToPage(state.currentPageIndex, false);
+      updateReaderMeta();
     }
 
-    function updateSegmentState() {
-      document.querySelectorAll('[data-script]').forEach((button) => {
-        button.classList.toggle('active', button.dataset.script === state.script);
-      });
-      translationOff.classList.toggle('active', !state.translationEnabled);
-      translationOn.classList.toggle('active', state.translationEnabled);
-    }
-
-    function updateListenState() {
-      const reciterName = reciterSelect.options[reciterSelect.selectedIndex]?.text || 'Reciter';
-      if (!state.audioLoaded) {
-        listenStatus.textContent = 'Audio not loaded';
-        playPauseButton.textContent = 'Load & Play';
-        return;
-      }
-      if (state.playing) {
-        listenStatus.textContent = visibleVerse ? `Reciting · Ayah ${visibleVerse}` : `Reciting · ${reciterName}`;
-        playPauseButton.textContent = 'Pause';
-      } else {
-        listenStatus.textContent = `Ready · ${reciterName}`;
-        playPauseButton.textContent = 'Play';
-      }
-    }
-
-    function renderPageSelect() {
-      pageSelect.innerHTML = pages.map((page, index) => {
-        const label = page.madaniPage === '—'
-          ? `Page ${index + 1} · Ayahs ${page.ayahRange}`
-          : `Page ${index + 1} · Madani ${page.madaniPage} · Ayahs ${page.ayahRange}`;
-        return `<option value="${index}">${escapeHtml(label)}</option>`;
-      }).join('');
-    }
-
-    function renderPage() {
-      const page = pages[state.pageIndex];
-      if (!page) return;
-
-      pageMeta.textContent = `Page ${state.pageIndex + 1} / ${pages.length}`;
-      scriptChip.textContent = state.script === 'indopak' ? 'IndoPak' : 'Uthmani';
-      footCenter.textContent = page.madaniPage === '—'
-        ? `Fallback page · Ayahs ${page.ayahRange}`
-        : `Madani page ${page.madaniPage} · Ayahs ${page.ayahRange}`;
-      footRight.textContent = page.madaniPage === '—' ? '—' : toArabicDigits(page.madaniPage);
-      renderLines(page);
-      renderTranslationPanel(page);
-      pageSelect.value = String(state.pageIndex);
-      updateSegmentState();
-      updateListenState();
+    function updateReaderMeta() {
+      const meta = getCurrentSurahMeta();
+      brandMark.textContent = toArabicDigits(meta.number);
+      brandSubtitle.textContent = `Surah ${meta.number} · ${meta.english}`;
+      modeChip.textContent = `${getScriptLabel()} · ${getTranslationLabel()}`;
+      translationChip.textContent = getTranslationLabel();
+      pageIndicatorButton.textContent = `Page ${state.currentPageIndex + 1} / ${Math.max(1, state.pages.length)}`;
+      statusLine.innerHTML = `<strong>${escapeHtml(meta.english)}</strong> · ${escapeHtml(meta.arabic)} · ${escapeHtml(getScriptLabel())}`;
+      audioLine.innerHTML = `<strong>Reciter:</strong> ${escapeHtml(RECITERS[state.reciter].name)}`;
+      updatePlayButtons();
+      setUrlState();
       saveState();
-
-      pageFrame.classList.remove('page-anim');
-      void pageFrame.offsetWidth;
-      pageFrame.classList.add('page-anim');
     }
 
-    function goToPageIndex(index) {
-      const nextIndex = Math.max(0, Math.min(pages.length - 1, Number(index) || 0));
-      if (nextIndex === state.pageIndex) return;
-      state.pageIndex = nextIndex;
-      renderPage();
+    function goToPage(index, announce = true) {
+      if (!state.pages.length) return;
+      state.currentPageIndex = Math.max(0, Math.min(index, state.pages.length - 1));
+      pageStrip.style.transform = `translateX(-${state.currentPageIndex * 100}%)`;
+      pageIndicatorButton.textContent = `Page ${state.currentPageIndex + 1} / ${state.pages.length}`;
+      setUrlState();
+      saveState();
+      if (announce) {
+        const page = state.pages[state.currentPageIndex];
+        showToast(`Page ${state.currentPageIndex + 1}${page && page.mushafPage ? ` · Mushaf ${page.mushafPage}` : ''}`);
+      }
     }
 
     function nextPage() {
-      if (state.pageIndex >= pages.length - 1) {
-        showToast('You are on the last page.');
-        return;
-      }
-      state.pageIndex += 1;
-      renderPage();
+      if (!state.pages.length) return;
+      goToPage(state.currentPageIndex + 1);
     }
 
-    function previousPage() {
-      if (state.pageIndex <= 0) {
-        showToast('You are on the first page.');
-        return;
-      }
-      state.pageIndex -= 1;
-      renderPage();
+    function prevPage() {
+      if (!state.pages.length) return;
+      goToPage(state.currentPageIndex - 1);
     }
 
-    function pageIndexForAyah(ayahNumber) {
-      return pages.findIndex((page) => ayahNumber >= page.ayahStart && ayahNumber <= page.ayahEnd);
+    function updatePlayButtons() {
+      const playing = !audio.paused && !!audio.src;
+      const label = playing ? 'Pause' : 'Play';
+      playPauseButton.textContent = label;
+      drawerPlayPauseButton.textContent = label;
+      playPauseTopButton.innerHTML = playing ? iconPause() : iconPlay();
     }
 
-    function goToAyah(ayahNumber) {
-      const safeAyah = Number(ayahNumber);
-      if (!Number.isInteger(safeAyah) || safeAyah < 1 || safeAyah > 93) {
-        showToast('Enter an ayah from 1 to 93.');
-        return;
+    async function fetchVersesForSurah(surahNumber, translationId) {
+      const all = [];
+      let page = 1;
+      let totalPages = 1;
+
+      while (page <= totalPages) {
+        const query = new URLSearchParams({
+          per_page: '50',
+          page: String(page),
+          fields: 'text_uthmani,text_indopak,page_number'
+        });
+
+        if (translationId) {
+          query.set('translations', String(translationId));
+          query.set('translation_fields', 'resource_name,language_name,text');
+        }
+
+        const payload = await safeFetchJson(`${API_BASE}/verses/by_chapter/${surahNumber}?${query.toString()}`);
+        if (!payload || !Array.isArray(payload.verses)) break;
+
+        all.push(...payload.verses.map((verse) => ({
+          verse_number: Number(verse.verse_number),
+          page_number: Number(verse.page_number || 0),
+          text_uthmani: verse.text_uthmani || '',
+          text_indopak: verse.text_indopak || '',
+          translation_text: Array.isArray(verse.translations) && verse.translations[0] ? stripHtml(verse.translations[0].text) : ''
+        })));
+
+        totalPages = Number(payload.pagination && payload.pagination.total_pages) || page;
+        page += 1;
       }
-      const targetIndex = pageIndexForAyah(safeAyah);
-      if (targetIndex === -1) {
-        showToast('That ayah could not be resolved.');
-        return;
-      }
-      state.pageIndex = targetIndex;
-      renderPage();
-      showToast(`Moved to the page holding ayah ${safeAyah}.`);
+
+      return all.sort((a, b) => a.verse_number - b.verse_number);
     }
 
-    function parseTranslationResources(payload) {
-      const rawItems = Array.isArray(payload?.translations)
+    async function fetchTranslationResources() {
+      if (state.translationResources.length) return state.translationResources;
+      const payload = await safeFetchJson(`${API_BASE}/resources/translations`);
+      const resources = Array.isArray(payload && payload.translations)
         ? payload.translations
-        : Array.isArray(payload?.resources)
+        : Array.isArray(payload && payload.resources)
           ? payload.resources
-          : Array.isArray(payload)
-            ? payload
+          : Array.isArray(payload && payload.data)
+            ? payload.data
             : [];
 
-      const seen = new Set();
-      return rawItems
-        .map((item) => {
-          const id = Number(item?.id);
-          const languageCode = String(item?.language_code || item?.iso_code || '').trim().toLowerCase();
-          const languageName = String(item?.language_name || item?.name || item?.resource_name || '').trim();
-          const resourceName = String(item?.resource_name || item?.name || languageName || '').trim();
-          if (!id || !languageCode || !languageName) return null;
-          const key = `${languageCode}:${id}`;
-          if (seen.has(key)) return null;
-          seen.add(key);
-          return { id: String(id), languageCode, languageName, resourceName };
-        })
-        .filter(Boolean)
-        .sort((a, b) => {
-          if (a.languageCode === 'en') return -1;
-          if (b.languageCode === 'en') return 1;
-          return a.languageName.localeCompare(b.languageName, 'en', { sensitivity: 'base' });
-        });
+      const cleaned = resources
+        .map((item) => ({
+          id: Number(item.id),
+          languageCode: String(item.language_code || (item.language && item.language.iso_code) || item.iso_code || '').toLowerCase(),
+          languageName: String(item.language_name || (item.language && item.language.name) || (item.translated_name && item.translated_name.name) || item.name || item.resource_name || '').trim(),
+          resourceName: String((item.translated_name && item.translated_name.name) || item.resource_name || item.name || '').trim()
+        }))
+        .filter((item) => item.id && item.languageName)
+        .sort((a, b) => a.languageName.localeCompare(b.languageName, 'en', { sensitivity: 'base' }));
+
+      state.translationResources = cleaned;
+      return cleaned;
     }
 
-    async function loadTranslationResources() {
-      try {
-        const payload = await safeFetchJson(`${API_BASE}/resources/translations`);
-        translationResources = parseTranslationResources(payload);
-      } catch {
-        translationResources = [];
-      }
+    function renderTranslationList() {
+      const query = state.translationSearch.trim().toLowerCase();
+      const items = state.translationResources.filter((item) => {
+        if (!query) return true;
+        return item.languageName.toLowerCase().includes(query)
+          || item.resourceName.toLowerCase().includes(query)
+          || item.languageCode.toLowerCase().includes(query);
+      });
 
-      const preferred = translationResources.filter((item) => ['en', 'ur', 'fr', 'tr', 'id', 'ms'].includes(item.languageCode));
-      const list = preferred.length ? preferred : translationResources.slice(0, 20);
-
-      translationSelect.innerHTML = `<option value="">Select language</option>` + list.map((item) => (
-        `<option value="${escapeHtml(item.id)}" data-name="${escapeHtml(item.languageName)}">${escapeHtml(item.languageName)} · ${escapeHtml(item.resourceName)}</option>`
-      )).join('');
-
-      if (state.translationId) {
-        const option = Array.from(translationSelect.options).find((opt) => opt.value === state.translationId);
-        if (option) {
-          translationSelect.value = state.translationId;
-        } else {
-          state.translationId = '';
-          state.translationEnabled = false;
-        }
-      }
-    }
-
-    async function loadTranslationMap(resourceId) {
-      if (!resourceId) {
-        translationMap = new Map();
-        renderPage();
+      if (!items.length) {
+        translationList.innerHTML = '<div class="empty-state">No languages matched your search.</div>';
         return;
       }
 
-      translationMap = new Map();
-      const urls = [1, 2].map((page) =>
-        `${API_BASE}/verses/by_chapter/${SURAH_NUMBER}?per_page=50&page=${page}&translations=${resourceId}&translation_fields=verse_number,resource_name,language_name,text`
-      );
+      translationList.innerHTML = items.map((item) => {
+        const active = String(state.translationId) === String(item.id) ? 'active' : '';
+        return `
+          <button class="translation-item ${active}" type="button" data-translation-id="${item.id}">
+            <span>
+              ${escapeHtml(item.languageName)}
+              <small>${escapeHtml(item.resourceName || item.languageCode || 'Translation')}</small>
+            </span>
+          </button>
+        `;
+      }).join('');
 
-      const results = await Promise.all(urls.map((url) => safeFetchJson(url)));
-      const verses = results.flatMap((payload) => Array.isArray(payload?.verses) ? payload.verses : []);
-      verses.forEach((verse) => {
-        const translation = Array.isArray(verse.translations) ? verse.translations[0] : null;
-        if (translation && Number(verse.verse_number)) {
-          translationMap.set(Number(verse.verse_number), stripHtml(translation.text));
-        }
+      translationList.querySelectorAll('[data-translation-id]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const id = Number(button.getAttribute('data-translation-id'));
+          const match = state.translationResources.find((item) => item.id === id);
+          if (!match) return;
+          state.translationId = id;
+          state.translationName = match.languageName;
+          translationChip.textContent = match.languageName;
+          await loadSurah(state.surah, { keepPage: true, reloadAudio: false });
+          renderTranslationList();
+          showToast(`${match.languageName} added under the Arabic verses.`);
+        });
       });
-
-      const selectedOption = translationSelect.options[translationSelect.selectedIndex];
-      state.translationName = selectedOption ? selectedOption.text.split(' · ')[0] : 'Translation';
-      renderPage();
     }
 
-    async function loadAudio() {
-      const reciterId = reciterSelect.value;
-      state.reciterId = reciterId;
-      listenStatus.textContent = 'Loading audio…';
+    function renderReciterList() {
+      reciterList.innerHTML = Object.values(RECITERS).map((reciter) => {
+        const active = state.reciter === reciter.key ? 'active' : '';
+        return `
+          <button class="reciter-item ${active}" type="button" data-reciter-key="${reciter.key}">
+            <span>
+              ${escapeHtml(reciter.name)}
+              <small>Chapter recitation</small>
+            </span>
+          </button>
+        `;
+      }).join('');
 
-      const payload = await safeFetchJson(`${API_BASE}/chapter_recitations/${reciterId}/${SURAH_NUMBER}?segments=true`);
-      const file = payload?.audio_file;
-      if (!file?.audio_url) throw new Error('Audio unavailable.');
+      reciterList.querySelectorAll('[data-reciter-key]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const key = button.getAttribute('data-reciter-key');
+          if (!RECITERS[key]) return;
+          state.reciter = key;
+          state.recitation = null;
+          state.audioLoadedFor = null;
+          audio.pause();
+          audio.removeAttribute('src');
+          audio.load();
+          renderReciterList();
+          updateReaderMeta();
+          showToast(`${RECITERS[key].name} selected.`);
+        });
+      });
+    }
 
-      const timestamps = Array.isArray(file.timestamps) ? file.timestamps : [];
-      const byVerse = {};
-      timestamps.forEach((item) => {
-        const verseNumber = Number(String(item.verse_key || '').split(':')[1]);
-        if (verseNumber) {
-          byVerse[verseNumber] = {
-            from: Number(item.timestamp_from || 0),
-            to: Number(item.timestamp_to || 0)
-          };
-        }
+    function renderSurahList() {
+      const query = state.surahSearch.trim().toLowerCase();
+      const filtered = SURAHS.filter((item) => {
+        if (!query) return true;
+        return item.english.toLowerCase().includes(query)
+          || item.arabic.includes(query)
+          || String(item.number).includes(query);
       });
 
-      audioData = {
-        audioUrl: normaliseAudioUrl(file.audio_url),
-        byVerse,
-        timestamps
+      surahList.innerHTML = filtered.map((item) => {
+        const active = item.number === state.surah ? 'active' : '';
+        return `
+          <button class="surah-item ${active}" type="button" data-surah-number="${item.number}">
+            <span>
+              ${escapeHtml(item.english)}
+              <small>${escapeHtml(item.arabic)} · Surah ${item.number}</small>
+            </span>
+          </button>
+        `;
+      }).join('');
+
+      surahList.querySelectorAll('[data-surah-number]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const surah = Number(button.getAttribute('data-surah-number'));
+          if (!Number.isInteger(surah) || surah < 1 || surah > 114 || surah === state.surah) return;
+          state.surah = surah;
+          state.currentPageIndex = 0;
+          state.activeVerseNumber = null;
+          await loadSurah(state.surah, { keepPage: false, reloadAudio: true });
+          renderSurahList();
+          showToast(`Surah ${surah} loaded.`);
+        });
+      });
+    }
+
+    async function ensureAudioLoaded() {
+      if (state.audioLoadedFor === `${state.reciter}:${state.surah}` && state.recitation && state.recitation.audioUrl) {
+        return true;
+      }
+
+      const reciter = RECITERS[state.reciter];
+      if (!reciter) return false;
+      statusLine.innerHTML = `<strong>${escapeHtml(getCurrentSurahMeta().english)}</strong> · Loading recitation…`;
+
+      const payload = await safeFetchJson(`${API_BASE}/chapter_recitations/${reciter.id}/${state.surah}?segments=true`);
+      const audioFile = payload && payload.audio_file ? payload.audio_file : null;
+      if (!audioFile || !audioFile.audio_url) {
+        showToast('Recitation could not be loaded right now.');
+        updateReaderMeta();
+        return false;
+      }
+
+      const timestamps = Array.isArray(audioFile.timestamps)
+        ? audioFile.timestamps
+            .map((item) => ({
+              verseNumber: Number(String(item.verse_key || '').split(':')[1]),
+              timestampFrom: Number(item.timestamp_from),
+              timestampTo: Number(item.timestamp_to)
+            }))
+            .filter((item) => item.verseNumber && Number.isFinite(item.timestampFrom) && Number.isFinite(item.timestampTo))
+        : [];
+
+      state.recitation = {
+        audioUrl: normaliseAudioUrl(audioFile.audio_url),
+        timings: timestamps,
+        byVerse: Object.fromEntries(timestamps.map((item) => [item.verseNumber, item]))
       };
 
-      audioPlayer.src = audioData.audioUrl;
-      audioPlayer.load();
-      state.audioLoaded = true;
-      updateListenState();
+      state.audioLoadedFor = `${state.reciter}:${state.surah}`;
+      audio.src = state.recitation.audioUrl;
+      audio.load();
+      updateReaderMeta();
+      return true;
     }
 
-    function currentVerseFromAudio(currentMs) {
-      if (!audioData.timestamps.length) return null;
-      const match = audioData.timestamps.find((item) => currentMs >= Number(item.timestamp_from || 0) && currentMs <= Number(item.timestamp_to || 0));
-      if (!match) return null;
-      const verseNumber = Number(String(match.verse_key || '').split(':')[1]);
-      return Number.isFinite(verseNumber) ? verseNumber : null;
+    function getCurrentPageFirstVerse() {
+      const page = state.pages[state.currentPageIndex];
+      return page && page.verses.length ? page.verses[0].verse_number : 1;
     }
 
-    function syncPageWithAudio() {
-      if (!state.audioLoaded) return;
-      const currentMs = Math.floor(audioPlayer.currentTime * 1000);
-      const verseNumber = currentVerseFromAudio(currentMs);
-      if (!verseNumber) return;
-      visibleVerse = verseNumber;
-      const targetIndex = pageIndexForAyah(verseNumber);
-      if (targetIndex !== -1 && targetIndex !== state.pageIndex) {
-        state.pageIndex = targetIndex;
-        renderPage();
-      } else {
-        updateListenState();
+    function getTimingForVerse(verseNumber) {
+      return state.recitation && state.recitation.byVerse ? state.recitation.byVerse[verseNumber] || null : null;
+    }
+
+    async function startRecitationFromVerse(verseNumber) {
+      const ready = await ensureAudioLoaded();
+      if (!ready || !state.recitation) return;
+
+      const timing = getTimingForVerse(verseNumber);
+      if (!timing) {
+        showToast('Timing for that verse is not available right now.');
+        return;
       }
+
+      audio.pause();
+      try {
+        if (audio.readyState >= 1) {
+          audio.currentTime = Math.max(0, timing.timestampFrom / 1000);
+          await audio.play();
+        } else {
+          audio.addEventListener('loadedmetadata', async function onLoaded() {
+            audio.removeEventListener('loadedmetadata', onLoaded);
+            audio.currentTime = Math.max(0, timing.timestampFrom / 1000);
+            try { await audio.play(); } catch {}
+          }, { once: true });
+          audio.load();
+        }
+      } catch {
+        showToast('Tap play again to start recitation.');
+      }
+    }
+
+    async function togglePlayback() {
+      if (!audio.src || state.audioLoadedFor !== `${state.reciter}:${state.surah}`) {
+        const ready = await ensureAudioLoaded();
+        if (!ready) return;
+      }
+
+      if (audio.paused) {
+        try {
+          await audio.play();
+        } catch {
+          showToast('Playback could not start right now.');
+        }
+      } else {
+        audio.pause();
+      }
+    }
+
+    function updateActiveVerseByTime() {
+      if (!state.recitation || !state.recitation.timings.length) return;
+      const currentMs = Math.floor(audio.currentTime * 1000);
+      let active = null;
+
+      for (const item of state.recitation.timings) {
+        if (currentMs >= item.timestampFrom && currentMs <= item.timestampTo) {
+          active = item;
+          break;
+        }
+      }
+
+      if (!active) return;
+      if (state.activeVerseNumber === active.verseNumber) return;
+
+      state.activeVerseNumber = active.verseNumber;
+      const nextPage = state.verseToPage[active.verseNumber];
+      if (state.autoTurn && Number.isInteger(nextPage) && nextPage !== state.currentPageIndex) {
+        goToPage(nextPage, false);
+      }
+
+      document.querySelectorAll('.ayah-card.active').forEach((element) => element.classList.remove('active'));
+      const activeCard = document.querySelector(`.ayah-card[data-verse-number="${active.verseNumber}"]`);
+      if (activeCard) activeCard.classList.add('active');
+      updateReaderMeta();
+    }
+
+    async function loadSurah(surahNumber, options = {}) {
+      const { keepPage = false, reloadAudio = true } = options;
+      state.isLoading = true;
+      statusLine.textContent = `Loading Surah ${surahNumber}…`;
+      pageStrip.innerHTML = '<section class="mushaf-page"><div class="page-content"><div class="loader">Loading book pages…</div></div></section>';
+
+      const verses = await fetchVersesForSurah(surahNumber, state.translationId);
+      if (!verses.length) {
+        pageStrip.innerHTML = '<section class="mushaf-page"><div class="page-content"><div class="empty-state">The surah could not be loaded. Please try again.</div></div></section>';
+        state.isLoading = false;
+        return;
+      }
+
+      state.verses = verses;
+      const pageData = buildPagesFromVerses(verses);
+      state.pages = pageData.pages;
+      state.verseToPage = pageData.verseToPage;
+      state.currentPageIndex = keepPage ? Math.min(state.currentPageIndex, Math.max(0, state.pages.length - 1)) : 0;
+      state.activeVerseNumber = null;
+      renderPages();
+      renderSurahList();
+      state.isLoading = false;
+
+      if (reloadAudio) {
+        state.recitation = null;
+        state.audioLoadedFor = null;
+        audio.pause();
+        audio.removeAttribute('src');
+        audio.load();
+      }
+
+      updateReaderMeta();
+    }
+
+    function openDrawer() {
+      drawer.classList.add('active');
+      drawerBackdrop.classList.add('active');
+      drawer.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('active');
+      drawerBackdrop.classList.remove('active');
+      drawer.setAttribute('aria-hidden', 'true');
     }
 
     function resetReader() {
-      const theme = state.theme;
-      Object.assign(state, initialState);
-      state.theme = theme;
-      setTheme(theme);
-      translationSelect.value = '';
-      translationMap = new Map();
-      audioPlayer.pause();
-      audioPlayer.removeAttribute('src');
-      audioPlayer.load();
-      state.audioLoaded = false;
-      state.playing = false;
-      visibleVerse = null;
-      reciterSelect.value = state.reciterId;
-      renderPage();
-      showToast('Reader reset to original book state.');
-    }
-
-    async function bootstrap() {
-      restoreState();
-      setTheme(state.theme);
-      reciterSelect.value = state.reciterId;
-      setLoadingMeta('Loading Surah 27…');
-
-      try {
-        chapterVerses = await fetchChapterVerses();
-        pageNumbers = extractPageNumbers(chapterVerses);
-        pages = await buildPages();
-        renderPageSelect();
-        await loadTranslationResources();
-        if (state.translationId) {
-          translationSelect.value = state.translationId;
-          await loadTranslationMap(state.translationId);
-        }
-        state.pageIndex = Math.max(0, Math.min(state.pageIndex, pages.length - 1));
-        renderPage();
-      } catch (error) {
-        console.error(error);
-        setErrorMeta('Load failed');
-        pages = [
-          {
-            shellIndex: 0,
-            madaniPage: '—',
-            ayahStart: 1,
-            ayahEnd: 93,
-            ayahRange: '1–93',
-            verses: [],
-            lines: [
-              { lineNumber: 0, tokens: [{ type: 'bismillah', text: BISMILLAH }] },
-              { lineNumber: 1, tokens: [{ type: 'word', verseNumber: 1, textUthmani: 'تعذّر', textIndopak: 'تعذّر' }, { type: 'word', verseNumber: 1, textUthmani: 'تحميل', textIndopak: 'تحميل' }, { type: 'word', verseNumber: 1, textUthmani: 'البيانات', textIndopak: 'البيانات', isLast: true }] }
-            ]
-          }
-        ];
-        renderPageSelect();
-        renderPage();
-      }
-    }
-
-    menuToggle.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', closeMenu);
-
-    document.querySelectorAll('[data-script]').forEach((button) => {
-      button.addEventListener('click', () => {
-        state.script = button.dataset.script;
-        renderPage();
-        showToast(`${state.script === 'indopak' ? 'IndoPak' : 'Uthmani'} mode active.`);
+      state.surah = DEFAULT_SURAH;
+      state.script = DEFAULT_SCRIPT;
+      state.translationId = null;
+      state.translationName = '';
+      state.reciter = DEFAULT_RECITER;
+      state.autoTurn = true;
+      state.currentPageIndex = 0;
+      state.activeVerseNumber = null;
+      state.translationSearch = '';
+      state.surahSearch = '';
+      translationSearchInput.value = '';
+      surahSearchInput.value = '';
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      state.recitation = null;
+      state.audioLoadedFor = null;
+      applyTheme(DEFAULT_THEME);
+      document.querySelectorAll('[data-script]').forEach((button) => {
+        button.classList.toggle('active', button.getAttribute('data-script') === DEFAULT_SCRIPT);
       });
-    });
+      autoTurnButton.classList.toggle('active', true);
+      renderReciterList();
+      renderTranslationList();
+      loadSurah(DEFAULT_SURAH, { keepPage: false, reloadAudio: true });
+      showToast('Reset to the original tilawah reader state.');
+    }
 
-    translationOff.addEventListener('click', () => {
-      state.translationEnabled = false;
-      renderPage();
-      showToast('Translation hidden.');
-    });
+    function bindStaticEvents() {
+      menuButton.addEventListener('click', openDrawer);
+      drawerBackdrop.addEventListener('click', closeDrawer);
+      closeDrawerButton.addEventListener('click', closeDrawer);
+      resetButton.addEventListener('click', resetReader);
+      prevPageButton.addEventListener('click', prevPage);
+      nextPageButton.addEventListener('click', nextPage);
+      pageIndicatorButton.addEventListener('click', () => showToast(`Mushaf page ${state.pages[state.currentPageIndex] ? state.pages[state.currentPageIndex].mushafPage || '—' : '—'}`));
+      playPauseButton.addEventListener('click', togglePlayback);
+      playPauseTopButton.addEventListener('click', togglePlayback);
+      drawerPlayPauseButton.addEventListener('click', togglePlayback);
+      startCurrentPageButton.addEventListener('click', () => startRecitationFromVerse(getCurrentPageFirstVerse()));
+      drawerStartCurrentPageButton.addEventListener('click', () => startRecitationFromVerse(getCurrentPageFirstVerse()));
+      clearTranslationButton.addEventListener('click', async () => {
+        if (!state.translationId) return;
+        state.translationId = null;
+        state.translationName = '';
+        await loadSurah(state.surah, { keepPage: true, reloadAudio: false });
+        renderTranslationList();
+        showToast('Translation cleared. Arabic only is active.');
+      });
 
-    translationOn.addEventListener('click', async () => {
-      if (!translationSelect.value) {
-        showToast('Select a language first.');
-        return;
-      }
-      state.translationEnabled = true;
-      if (!translationMap.size || state.translationId !== translationSelect.value) {
-        state.translationId = translationSelect.value;
-        await loadTranslationMap(state.translationId);
-      } else {
-        renderPage();
-      }
-      showToast('Translation shown under Arabic.');
-    });
+      document.querySelectorAll('[data-script]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const next = button.getAttribute('data-script');
+          if (!next || next === state.script) return;
+          state.script = next === 'indopak' ? 'indopak' : 'uthmani';
+          document.querySelectorAll('[data-script]').forEach((item) => item.classList.toggle('active', item === button));
+          renderPages();
+          showToast(`${getScriptLabel()} script is active.`);
+        });
+      });
 
-    translationSelect.addEventListener('change', async () => {
-      state.translationId = translationSelect.value;
-      state.translationEnabled = Boolean(state.translationId);
-      if (state.translationId) {
-        await loadTranslationMap(state.translationId);
-        showToast('Translation language updated.');
-      } else {
-        translationMap = new Map();
-        renderPage();
-      }
-    });
+      document.querySelectorAll('[data-theme-mode]').forEach((button) => {
+        button.addEventListener('click', () => {
+          applyTheme(button.getAttribute('data-theme-mode'));
+        });
+      });
 
-    reciterSelect.addEventListener('change', () => {
-      state.reciterId = reciterSelect.value;
-      state.audioLoaded = false;
-      state.playing = false;
-      visibleVerse = null;
-      audioPlayer.pause();
-      audioPlayer.removeAttribute('src');
-      audioPlayer.load();
-      updateListenState();
-      showToast(`Reciter set to ${reciterSelect.options[reciterSelect.selectedIndex].text}.`);
-    });
+      autoTurnButton.addEventListener('click', () => {
+        state.autoTurn = !state.autoTurn;
+        autoTurnButton.classList.toggle('active', state.autoTurn);
+        autoTurnButton.textContent = state.autoTurn ? 'Auto-turn pages' : 'Manual pages only';
+        saveState();
+      });
 
-    playPauseButton.addEventListener('click', async () => {
-      try {
-        if (!state.audioLoaded) {
-          await loadAudio();
+      translationSearchInput.addEventListener('input', () => {
+        state.translationSearch = translationSearchInput.value || '';
+        renderTranslationList();
+      });
+
+      surahSearchInput.addEventListener('input', () => {
+        state.surahSearch = surahSearchInput.value || '';
+        renderSurahList();
+      });
+
+      audio.addEventListener('play', updatePlayButtons);
+      audio.addEventListener('pause', updatePlayButtons);
+      audio.addEventListener('ended', () => {
+        state.activeVerseNumber = null;
+        document.querySelectorAll('.ayah-card.active').forEach((element) => element.classList.remove('active'));
+        updatePlayButtons();
+      });
+      audio.addEventListener('timeupdate', updateActiveVerseByTime);
+
+      bookStage.addEventListener('touchstart', (event) => {
+        const touch = event.changedTouches[0];
+        state.touchStartX = touch.clientX;
+        state.touchStartY = touch.clientY;
+      }, { passive: true });
+
+      bookStage.addEventListener('touchend', (event) => {
+        const touch = event.changedTouches[0];
+        const dx = touch.clientX - state.touchStartX;
+        const dy = touch.clientY - state.touchStartY;
+        if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+        if (dx > 0) nextPage();
+        else prevPage();
+      }, { passive: true });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeDrawer();
+          return;
         }
-
-        if (audioPlayer.paused) {
-          await audioPlayer.play();
-          state.playing = true;
-        } else {
-          audioPlayer.pause();
-          state.playing = false;
+        if (event.key === 'ArrowRight') {
+          prevPage();
+          return;
         }
-
-        updateListenState();
-      } catch (error) {
-        console.error(error);
-        state.audioLoaded = false;
-        state.playing = false;
-        updateListenState();
-        showToast('Recitation could not be loaded right now.');
-      }
-    });
-
-    restartButton.addEventListener('click', async () => {
-      try {
-        if (!state.audioLoaded) {
-          await loadAudio();
+        if (event.key === 'ArrowLeft') {
+          nextPage();
+          return;
         }
-        audioPlayer.currentTime = 0;
-        await audioPlayer.play();
-        state.playing = true;
-        visibleVerse = null;
-        state.pageIndex = 0;
-        renderPage();
-        showToast('Recitation restarted from the beginning.');
-      } catch {
-        showToast('Recitation could not be restarted.');
+        if (event.key === ' ') {
+          event.preventDefault();
+          togglePlayback();
+        }
+      });
+    }
+
+    async function init() {
+      loadSavedState();
+      const urlSurah = getUrlSurah();
+      if (urlSurah) state.surah = urlSurah;
+      applyTheme(state.theme);
+      autoTurnButton.classList.toggle('active', state.autoTurn);
+      autoTurnButton.textContent = state.autoTurn ? 'Auto-turn pages' : 'Manual pages only';
+      renderReciterList();
+      renderSurahList();
+      bindStaticEvents();
+      loadSurah(state.surah, { keepPage: true, reloadAudio: true });
+
+      fetchTranslationResources().then(() => {
+        renderTranslationList();
+        if (state.translationId && !state.translationName) {
+          const match = state.translationResources.find((item) => item.id === Number(state.translationId));
+          if (match) {
+            state.translationName = match.languageName;
+            translationChip.textContent = match.languageName;
+            updateReaderMeta();
+          }
+        }
+      }).catch(() => {
+        translationList.innerHTML = '<div class="empty-state">Languages could not be loaded right now.</div>';
+      });
+
+      if (window.innerWidth <= 560) {
+        readerHint.textContent = 'Swipe right for next page';
       }
-    });
+    }
 
-    audioPlayer.addEventListener('timeupdate', syncPageWithAudio);
-    audioPlayer.addEventListener('play', () => {
-      state.playing = true;
-      updateListenState();
-    });
-    audioPlayer.addEventListener('pause', () => {
-      state.playing = false;
-      updateListenState();
-    });
-    audioPlayer.addEventListener('ended', () => {
-      state.playing = false;
-      visibleVerse = null;
-      updateListenState();
-      showToast('Surah recitation finished.');
-    });
-
-    pageSelect.addEventListener('change', () => {
-      goToPageIndex(pageSelect.value);
-    });
-
-    goPageButton.addEventListener('click', () => {
-      goToPageIndex(pageSelect.value);
-      showToast(`Moved to page ${state.pageIndex + 1}.`);
-    });
-
-    goAyahButton.addEventListener('click', () => {
-      goToAyah(ayahInput.value);
-    });
-
-    ayahInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') goToAyah(ayahInput.value);
-    });
-
-    themeButton.addEventListener('click', () => {
-      setTheme(state.theme === 'dark' ? 'light' : 'dark');
-      renderPage();
-      showToast(`${state.theme === 'dark' ? 'Dark' : 'Light'} mode active.`);
-    });
-
-    resetButton.addEventListener('click', resetReader);
-
-    futureToolsButton.addEventListener('click', () => {
-      showToast('Future ecosystem tools will live inside this 3-dots menu.');
-    });
-
-    prevZone.addEventListener('click', previousPage);
-    nextZone.addEventListener('click', nextPage);
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') nextPage();
-      if (event.key === 'ArrowLeft') previousPage();
-      if (event.key === 'Escape') closeMenu();
-    });
-
-    pageFrame.addEventListener('touchstart', (event) => {
-      const touch = event.changedTouches[0];
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-    }, { passive: true });
-
-    pageFrame.addEventListener('touchend', (event) => {
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - touchStartX;
-      const deltaY = Math.abs(touch.clientY - touchStartY);
-
-      if (Math.abs(deltaX) < 40 || deltaY > 60) return;
-      if (deltaX > 0) nextPage();
-      if (deltaX < 0) previousPage();
-    }, { passive: true });
-
-    bootstrap();
+    init();
   </script>
 </body>
 </html>
