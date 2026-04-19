@@ -19,10 +19,10 @@
       --accent: #0f6a52;
       --accent-soft: rgba(15, 106, 82, 0.08);
       --shadow: 0 18px 50px rgba(40, 32, 18, 0.08);
-      --page-width: min(780px, calc(100vw - 1rem));
-      --arabic-size: clamp(1.64rem, 2.15vw, 2.2rem);
-      --english-size: 0.98rem;
-      --title-size: clamp(1.3rem, 2vw, 1.7rem);
+      --page-width: min(900px, calc(100vw - 2rem));
+      --arabic-size: clamp(1.95rem, 2.5vw, 2.55rem);
+      --english-size: 0.96rem;
+      --title-size: clamp(1.18rem, 1.85vw, 1.45rem);
       --ui-size: 0.95rem;
     }
 
@@ -38,7 +38,9 @@
       --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     html {
       height: 100%;
@@ -232,7 +234,7 @@
     .main {
       min-width: 0;
       height: 100dvh;
-      padding: 0.75rem;
+      padding: 0.85rem;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -240,11 +242,11 @@
 
     .topbar {
       width: var(--page-width);
-      margin: 0 auto 0.5rem;
+      margin: 0 auto 0.75rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 0.5rem;
+      gap: 0.65rem;
       align-items: center;
       position: relative;
     }
@@ -332,8 +334,7 @@
       outline: none;
     }
 
-    .btn,
-    .page-jump select {
+    .btn {
       border: 1px solid var(--line);
       background: var(--surface);
       color: var(--text);
@@ -346,23 +347,10 @@
     }
 
     .btn:hover,
-    .btn:focus-visible,
-    .page-jump select:hover,
-    .page-jump select:focus-visible {
+    .btn:focus-visible {
       transform: translateY(-1px);
       outline: none;
       border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
-    }
-
-    .btn.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: white;
-    }
-
-    body.dark .btn.primary {
-      color: #072017;
-      font-weight: 700;
     }
 
     .reader-shell {
@@ -372,7 +360,7 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 0.45rem;
+      gap: 0.6rem;
     }
 
     .page {
@@ -380,7 +368,7 @@
       border: 1px solid var(--line);
       border-radius: 28px;
       box-shadow: var(--shadow);
-      padding: clamp(0.6rem, 1.5vw, 1rem);
+      padding: clamp(0.75rem, 2vw, 1.1rem);
       flex: 1;
       min-height: 0;
       display: flex;
@@ -390,8 +378,8 @@
     .page-inner {
       border: 1px solid var(--line);
       border-radius: 22px;
-      padding: clamp(0.55rem, 1.4vw, 0.9rem);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 90%, transparent), color-mix(in srgb, var(--surface-2) 65%, transparent));
+      padding: clamp(0.85rem, 1.6vw, 1.1rem);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, transparent), color-mix(in srgb, var(--surface-2) 58%, transparent));
       overflow: hidden;
       overflow-wrap: anywhere;
       flex: 1;
@@ -418,14 +406,14 @@
 
     .surah-header {
       text-align: center;
-      padding-bottom: 0.4rem;
+      padding-bottom: 0.7rem;
       border-bottom: 1px solid var(--line);
-      margin-bottom: 0.45rem;
+      margin-bottom: 0.85rem;
     }
 
     .surah-header .arabic-name {
       direction: rtl;
-      font-size: clamp(1.55rem, 2.35vw, 2rem);
+      font-size: clamp(1.65rem, 2.45vw, 2.1rem);
       line-height: 1.25;
       margin: 0;
       font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
@@ -433,13 +421,13 @@
     }
 
     .surah-header .english-name {
-      margin: 0.35rem 0 0;
-      font-size: clamp(1.02rem, 1.45vw, 1.28rem);
+      margin: 0.42rem 0 0;
+      font-size: clamp(1.04rem, 1.5vw, 1.3rem);
       font-weight: 700;
     }
 
     .surah-subtitle {
-      margin-top: 0.3rem;
+      margin-top: 0.32rem;
       color: var(--muted);
       font-size: 0.88rem;
     }
@@ -448,8 +436,8 @@
       direction: rtl;
       text-align: center;
       font-size: var(--arabic-size);
-      line-height: 1.78;
-      margin: 0 0 0.35rem;
+      line-height: 1.84;
+      margin: 0 0 0.55rem;
       font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
       font-weight: 700;
     }
@@ -458,73 +446,15 @@
       display: block;
     }
 
-    .page-inner.compact-page .verses {
-      display: block;
-    }
-
-    .page-inner.compact-page .mushaf-block {
-      direction: rtl;
-      text-align: justify;
-      text-justify: inter-word;
-      font-size: var(--arabic-size);
-      line-height: 1.9;
-      font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
-      word-spacing: 0.015em;
-      padding-top: 0.05rem;
-    }
-
-    .page-inner.surah-one-page .verses {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .page-inner.surah-one-page .mushaf-block {
-      font-size: clamp(1.9rem, 2.6vw, 2.7rem);
-      line-height: 2.18;
-      text-align: center;
-      word-spacing: 0.02em;
-    }
-
-    .page-inner.surah-one-page .verse-meta {
-      margin-top: 0.6rem;
-    }
-
-    .page-inner.dense-page {
-      padding: 0.42rem;
-    }
-
-    .page-inner.dense-page .surah-header {
-      padding-bottom: 0.28rem;
-      margin-bottom: 0.28rem;
-    }
-
-    .page-inner.dense-page .bismillah {
-      margin-bottom: 0.22rem;
-      line-height: 1.68;
-    }
-
-    .page-inner.dense-page .mushaf-block {
-      font-size: clamp(1.56rem, 2vw, 2.05rem);
-      line-height: 1.72;
-      word-spacing: 0.01em;
-      padding-top: 0;
-    }
-
-    .page-inner.dense-page .verse-meta {
-      margin-top: 0.22rem;
-    }
-
     .mushaf-block {
       direction: rtl;
       text-align: justify;
       text-justify: inter-word;
       font-size: var(--arabic-size);
-      line-height: 1.86;
+      line-height: 2.04;
       font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
       word-spacing: 0.02em;
-      padding-top: 0.1rem;
+      padding-top: 0.08rem;
     }
 
     .ayah-inline {
@@ -552,27 +482,24 @@
       overflow: hidden;
     }
 
-    .page-inner.surah-one-page .ayah-marker {
-      min-width: 2.08em;
-      width: 2.08em;
-      height: 2.08em;
-      font-size: 0.48em;
-    }
-
-    .verse-meta {
-      margin-top: 0.35rem;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
     .pagination {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.6rem;
       margin-top: 0;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .nav-arrow {
+      width: 44px;
+      min-width: 44px;
+      height: 44px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
       flex: 0 0 auto;
     }
 
@@ -588,10 +515,20 @@
     .page-jump {
       display: flex;
       align-items: center;
-      gap: 0.55rem;
-      color: var(--muted);
-      font-size: 0.95rem;
+      gap: 0.5rem;
     }
+
+    .page-jump select {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.72rem 1rem;
+      min-height: 44px;
+      cursor: pointer;
+    }
+
+    
 
     .loading,
     .empty,
@@ -608,25 +545,74 @@
       display: none;
     }
 
-    @media (max-width: 980px) {
-      .main {
-        padding: 0.85rem;
-      }
+    .page-inner.dense-page {
+      padding: 0.58rem 0.72rem;
+    }
 
+    .page-inner.dense-page .surah-header {
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .page-inner.dense-page .bismillah {
+      margin-bottom: 0.38rem;
+      line-height: 1.76;
+    }
+
+    .page-inner.dense-page .mushaf-block {
+      font-size: clamp(1.82rem, 2.25vw, 2.3rem);
+      line-height: 1.92;
+      word-spacing: 0.018em;
+      padding-top: 0;
+    }
+
+    .page-inner.surah-one-page .verses {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .page-inner.surah-one-page .mushaf-block {
+      font-size: clamp(2rem, 2.7vw, 2.75rem);
+      line-height: 2.16;
+      text-align: center;
+      word-spacing: 0.02em;
+    }
+
+    .page-inner.surah-one-page .ayah-marker {
+      min-width: 2.08em;
+      width: 2.08em;
+      height: 2.08em;
+      font-size: 0.48em;
+    }
+
+    @media (max-width: 980px) {
       .topbar,
       .reader-shell {
-        width: min(100%, 780px);
+        width: min(100%, 860px);
       }
     }
 
     @media (max-width: 640px) {
+      :root {
+        --page-width: 100%;
+        --arabic-size: clamp(1.7rem, 6.1vw, 2.15rem);
+      }
+
       .main {
-        padding: 0.45rem;
+        padding: 0.5rem;
       }
 
       .topbar,
       .reader-shell {
         width: 100%;
+      }
+
+      .topbar {
+        margin-bottom: 0.45rem;
+        gap: 0.4rem;
+        align-items: flex-start;
       }
 
       .pagination,
@@ -639,21 +625,10 @@
         flex: 1 1 auto;
       }
 
-      .btn,
-      .page-jump select {
+      .btn {
         width: 100%;
         min-height: 40px;
         text-align: center;
-      }
-
-      .page-jump {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .topbar {
-        align-items: flex-start;
-        gap: 0.35rem;
       }
 
       .menu-wrap {
@@ -666,22 +641,22 @@
       }
 
       .page {
-        border-radius: 20px;
-        padding: 0.5rem;
+        border-radius: 22px;
+        padding: 0.55rem;
       }
 
       .page-inner {
-        border-radius: 14px;
-        padding: 0.5rem;
+        border-radius: 16px;
+        padding: 0.7rem;
       }
 
       .surah-header {
-        padding-bottom: 0.32rem;
-        margin-bottom: 0.38rem;
+        padding-bottom: 0.45rem;
+        margin-bottom: 0.55rem;
       }
 
-      .bottom-note {
-        display: none;
+      .page-inner.dense-page {
+        padding: 0.55rem;
       }
     }
   </style>
@@ -726,13 +701,14 @@
           </div>
         </div>
         <div class="pagination" id="pagination" hidden>
+          <button class="btn nav-arrow" id="prevPageBtn" type="button" aria-label="Previous page">←</button>
           <div class="pagination-center">
             <button class="btn" id="homeBtn" type="button">Home</button>
             <div class="page-jump">
-              <label for="pageSelect">Page</label>
-              <select id="pageSelect" aria-label="Select page"></select>
+              <select id="pageSelect" aria-label="Verse indicator list"></select>
             </div>
           </div>
+          <button class="btn nav-arrow" id="nextPageBtn" type="button" aria-label="Next page">→</button>
         </div>
         <div class="bottom-note" id="bottomNote">Uthmani text is fetched live for the selected surah.</div>
       </section>
@@ -890,6 +866,8 @@
       readerContent: document.getElementById('readerContent'),
       pagination: document.getElementById('pagination'),
       homeBtn: document.getElementById('homeBtn'),
+      prevPageBtn: document.getElementById('prevPageBtn'),
+      nextPageBtn: document.getElementById('nextPageBtn'),
       pageSelect: document.getElementById('pageSelect'),
       bottomNote: document.getElementById('bottomNote')
     };
@@ -994,7 +972,7 @@
 
     function fallbackPaginateVerses(verses) {
       const surah = getSelectedSurah();
-      const targetUnits = window.innerWidth < 640 ? 30 : window.innerWidth < 900 ? 36 : 42;
+      const targetUnits = window.innerWidth < 640 ? 22 : window.innerWidth < 900 ? 28 : 32;
       const pages = [];
       let current = [];
       let used = 0;
@@ -1037,9 +1015,10 @@
       return pageVerses.map((verse) => {
         const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
         const arabic = shouldStripBismillah ? stripLeadingBismillah(verse.arabic) || verse.arabic : verse.arabic;
+        const marker = verse.showMarker === false ? '' : ` <span class="ayah-marker">${toArabicDigits(verse.number)}</span>`;
 
         return `
-          <span class="ayah-inline">${escapeHtml(arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></span>
+          <span class="ayah-inline">${escapeHtml(arabic)}${marker}</span>
         `;
       }).join(' ');
     }
@@ -1087,21 +1066,66 @@
         <header class="surah-header">
           <p class="arabic-name">${escapeHtml(surah.ar)}</p>
           <p class="english-name">${escapeHtml(surah.en)}</p>
-          <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}, verses ${firstVerse} to ${lastVerse}</div>
+          <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}</div>
         </header>
         ${includeBismillah ? '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
         <div class="verses">
           <div class="mushaf-block">${buildMushafText(pageVerses)}</div>
-          <div class="verse-meta">${surah.id}:${firstVerse}-${lastVerse}</div>
+          
         </div>
       `;
+    }
+
+    function splitVerseForPage(verse, surah, includeBismillah, measureRoot, maxHeight, dense) {
+      const words = String(verse.arabic).split(' ').filter(Boolean);
+      if (words.length < 2) return null;
+
+      let low = 1;
+      let high = words.length - 1;
+      let bestFit = 0;
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        const candidate = {
+          ...verse,
+          arabic: words.slice(0, mid).join(' '),
+          showMarker: false
+        };
+
+        measureRoot.classList.toggle('compact-page', false);
+        measureRoot.classList.toggle('surah-one-page', surah.id === 1);
+        measureRoot.classList.toggle('dense-page', dense);
+        measureRoot.innerHTML = buildReaderMarkup(surah, [candidate], includeBismillah);
+
+        if (measureRoot.scrollHeight <= maxHeight) {
+          bestFit = mid;
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+
+      if (!bestFit || bestFit >= words.length) return null;
+
+      return {
+        fit: {
+          ...verse,
+          arabic: words.slice(0, bestFit).join(' '),
+          showMarker: false
+        },
+        rest: {
+          ...verse,
+          arabic: words.slice(bestFit).join(' '),
+          showMarker: verse.showMarker
+        }
+      };
     }
 
     function paginateVerses(verses) {
       const surah = getSelectedSurah();
       const maxHeight = els.readerContent.clientHeight;
       const pageWidth = els.readerContent.offsetWidth;
-      const minimumVerses = window.innerWidth < 640 ? 10 : 12;
+      const minimumVerses = surah.ayahs <= 12 ? surah.ayahs : surah.ayahs <= 40 ? 7 : window.innerWidth < 640 ? 6 : 8;
 
       if (!verses.length) return [];
       if (!maxHeight || !pageWidth) return fallbackPaginateVerses(verses);
@@ -1110,16 +1134,20 @@
         const measureRoot = ensureMeasureRoot();
         measureRoot.style.width = `${pageWidth}px`;
 
+        const queue = verses.map((verse) => ({
+          ...verse,
+          showMarker: verse.showMarker !== false
+        }));
         const pages = [];
-        let index = 0;
 
-        while (index < verses.length) {
+        while (queue.length) {
           const pageVerses = [];
           const includeBismillah = surah.id !== 1 && surah.id !== 9 && pages.length === 0;
           let dense = false;
 
-          while (index < verses.length) {
-            pageVerses.push(verses[index]);
+          while (queue.length) {
+            const verse = queue[0];
+            pageVerses.push(verse);
             measureRoot.classList.toggle('compact-page', false);
             measureRoot.classList.toggle('surah-one-page', surah.id === 1);
             measureRoot.classList.toggle('dense-page', dense);
@@ -1132,21 +1160,28 @@
                 measureRoot.innerHTML = buildReaderMarkup(surah, pageVerses, includeBismillah);
 
                 if (measureRoot.scrollHeight <= maxHeight) {
-                  index += 1;
+                  queue.shift();
                   continue;
                 }
               }
 
-              pageVerses.pop();
+              if (pageVerses.length === 1) {
+                const split = splitVerseForPage(verse, surah, includeBismillah, measureRoot, maxHeight, dense);
+                if (split) {
+                  pageVerses[0] = split.fit;
+                  queue[0] = split.rest;
+                  break;
+                }
+              }
 
+              pageVerses.pop();
               if (!pageVerses.length) {
-                pageVerses.push(verses[index]);
-                index += 1;
+                pageVerses.push(queue.shift());
               }
               break;
             }
 
-            index += 1;
+            queue.shift();
           }
 
           pages.push({ verses: [...pageVerses], dense });
@@ -1231,12 +1266,15 @@
     }
 
     function renderPageSelect() {
-      const options = state.pages.map((pageData, index) => {
-        const first = pageData.verses[0]?.number ?? 1;
-        const last = pageData.verses[pageData.verses.length - 1]?.number ?? first;
+      const pageData = state.pages[state.currentPage] || { verses: [] };
+      const firstVerse = pageData.verses[0]?.number ?? 1;
+      const lastVerse = pageData.verses[pageData.verses.length - 1]?.number ?? firstVerse;
+
+      els.pageSelect.innerHTML = state.pages.map((page, index) => {
+        const first = page.verses[0]?.number ?? 1;
+        const last = page.verses[page.verses.length - 1]?.number ?? first;
         return `<option value="${index}" ${index === state.currentPage ? 'selected' : ''}>${index + 1} • ${first}-${last}</option>`;
       }).join('');
-      els.pageSelect.innerHTML = options;
     }
 
     function updateLocationHash() {
@@ -1260,6 +1298,8 @@
       els.readerContent.classList.toggle('dense-page', Boolean(pageData.dense));
       els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
       els.pagination.hidden = false;
+      els.prevPageBtn.disabled = state.selectedSurahId === 1 && state.currentPage === 0;
+      els.nextPageBtn.disabled = state.selectedSurahId === 114 && state.currentPage >= state.pages.length - 1;
       els.statusText.textContent = `${surah.en} • Page ${state.currentPage + 1} of ${state.pages.length}`;
       renderPageSelect();
     }
@@ -1468,9 +1508,21 @@
         openIndexPanel();
       });
 
+      els.prevPageBtn.addEventListener('click', () => {
+        goToPreviousPage();
+      });
+
+      els.nextPageBtn.addEventListener('click', () => {
+        goToNextPage();
+      });
+
       els.pageSelect.addEventListener('change', (event) => {
         goToPage(Number(event.target.value));
       });
+
+      
+
+      
 
       let touchStartX = 0;
       let touchStartY = 0;
