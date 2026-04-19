@@ -570,21 +570,21 @@
     }
 
     .page-inner.dense-page {
-      padding: 0.72rem 0.86rem;
+      padding: 0.72rem 0.88rem;
     }
 
     .page-inner.dense-page .surah-header {
-      padding-bottom: 0.55rem;
-      margin-bottom: 0.65rem;
+      padding-bottom: 0.56rem;
+      margin-bottom: 0.68rem;
     }
 
     .page-inner.dense-page .bismillah {
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.42rem;
       line-height: 1.78;
     }
 
     .page-inner.dense-page .mushaf-block {
-      font-size: clamp(1.86rem, 2.38vw, 2.42rem);
+      font-size: var(--arabic-size);
       line-height: 1.92;
       word-spacing: 0.018em;
       padding-top: 0.04rem;
@@ -1272,7 +1272,7 @@
       `;
     }
 
-    function splitVerseForPage(verse, surah, includeBismillah, measureRoot, maxHeight, dense) {
+    function splitVerseForPage(verse, existingVerses, surah, includeBismillah, measureRoot, maxHeight, dense) {
       const words = String(verse.arabic).split(' ').filter(Boolean);
       if (words.length < 2) return null;
 
@@ -1291,7 +1291,7 @@
         measureRoot.classList.toggle('compact-page', false);
         measureRoot.classList.toggle('surah-one-page', surah.id === 1);
         measureRoot.classList.toggle('dense-page', dense);
-        measureRoot.innerHTML = buildReaderMarkup(surah, [candidate], includeBismillah);
+        measureRoot.innerHTML = buildReaderMarkup(surah, [...existingVerses, candidate], includeBismillah);
 
         if (measureRoot.scrollHeight <= maxHeight) {
           bestFit = mid;
@@ -1363,13 +1363,19 @@
                 measureRoot.classList.remove('dense-page');
               }
 
-              if (pageVerses.length === 1) {
-                const split = splitVerseForPage(verse, surah, includeBismillah, measureRoot, maxHeight, dense);
-                if (split) {
-                  pageVerses[0] = split.fit;
-                  queue[0] = split.rest;
-                  break;
-                }
+              const split = splitVerseForPage(
+                verse,
+                pageVerses.slice(0, -1),
+                surah,
+                includeBismillah,
+                measureRoot,
+                maxHeight,
+                dense
+              );
+              if (split) {
+                pageVerses[pageVerses.length - 1] = split.fit;
+                queue[0] = split.rest;
+                break;
               }
 
               pageVerses.pop();
