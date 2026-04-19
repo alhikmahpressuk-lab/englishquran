@@ -19,8 +19,8 @@
       --accent: #0f6a52;
       --accent-soft: rgba(15, 106, 82, 0.08);
       --shadow: 0 18px 50px rgba(40, 32, 18, 0.08);
-      --page-width: min(900px, calc(100vw - 2rem));
-      --arabic-size: clamp(2rem, 2.9vw, 2.9rem);
+      --page-width: min(980px, calc(100vw - 1rem));
+      --arabic-size: clamp(1.64rem, 2.15vw, 2.2rem);
       --english-size: 0.98rem;
       --title-size: clamp(1.3rem, 2vw, 1.7rem);
       --ui-size: 0.95rem;
@@ -41,11 +41,14 @@
     * { box-sizing: border-box; }
 
     html {
-      scroll-behavior: smooth;
+      height: 100%;
+      scroll-behavior: auto;
     }
 
     body {
+      height: 100%;
       margin: 0;
+      overflow: hidden;
       background: var(--bg);
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -59,7 +62,9 @@
     }
 
     .app {
-      min-height: 100vh;
+      height: 100dvh;
+      min-height: 100dvh;
+      overflow: hidden;
       display: block;
     }
 
@@ -226,16 +231,20 @@
 
     .main {
       min-width: 0;
-      padding: 1rem;
+      height: 100dvh;
+      padding: 0.75rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .topbar {
       width: var(--page-width);
-      margin: 0 auto 1rem;
+      margin: 0 auto 0.5rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 0.8rem;
+      gap: 0.5rem;
       align-items: center;
       position: relative;
     }
@@ -359,6 +368,11 @@
     .reader-shell {
       width: var(--page-width);
       margin: 0 auto;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
     }
 
     .page {
@@ -366,51 +380,76 @@
       border: 1px solid var(--line);
       border-radius: 28px;
       box-shadow: var(--shadow);
-      padding: clamp(1rem, 3vw, 1.6rem);
+      padding: clamp(0.6rem, 1.5vw, 1rem);
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      overflow: hidden;
     }
 
     .page-inner {
       border: 1px solid var(--line);
       border-radius: 22px;
-      padding: clamp(1rem, 3vw, 2rem);
+      padding: clamp(0.55rem, 1.4vw, 0.9rem);
       background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 90%, transparent), color-mix(in srgb, var(--surface-2) 65%, transparent));
+      overflow: hidden;
       overflow-wrap: anywhere;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      touch-action: pan-x;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .page-measure {
+      position: fixed;
+      left: -99999px;
+      top: 0;
+      visibility: hidden;
+      pointer-events: none;
+      height: auto !important;
+      min-height: 0 !important;
+      flex: none !important;
+      z-index: -1;
     }
 
     .surah-header {
       text-align: center;
-      padding-bottom: 1rem;
+      padding-bottom: 0.4rem;
       border-bottom: 1px solid var(--line);
-      margin-bottom: 1.2rem;
+      margin-bottom: 0.45rem;
     }
 
     .surah-header .arabic-name {
       direction: rtl;
-      font-size: clamp(1.9rem, 3vw, 2.5rem);
-      line-height: 1.3;
+      font-size: clamp(1.55rem, 2.35vw, 2rem);
+      line-height: 1.25;
       margin: 0;
       font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
       font-weight: 700;
     }
 
     .surah-header .english-name {
-      margin: 0.5rem 0 0;
-      font-size: var(--title-size);
+      margin: 0.35rem 0 0;
+      font-size: clamp(1.02rem, 1.45vw, 1.28rem);
       font-weight: 700;
     }
 
     .surah-subtitle {
-      margin-top: 0.45rem;
+      margin-top: 0.3rem;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.88rem;
     }
 
     .bismillah {
       direction: rtl;
       text-align: center;
-      font-size: clamp(2rem, 3vw, 2.6rem);
-      line-height: 1.85;
-      margin: 0 0 1.3rem;
+      font-size: var(--arabic-size);
+      line-height: 1.78;
+      margin: 0 0 0.35rem;
       font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
       font-weight: 700;
     }
@@ -419,15 +458,30 @@
       display: block;
     }
 
+    .page-inner.compact-page .verses {
+      display: block;
+    }
+
+    .page-inner.compact-page .mushaf-block {
+      direction: rtl;
+      text-align: justify;
+      text-justify: inter-word;
+      font-size: var(--arabic-size);
+      line-height: 1.74;
+      font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      word-spacing: 0.01em;
+      padding-top: 0.05rem;
+    }
+
     .mushaf-block {
       direction: rtl;
       text-align: justify;
       text-justify: inter-word;
       font-size: var(--arabic-size);
-      line-height: 2.25;
+      line-height: 1.86;
       font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
-      word-spacing: 0.05em;
-      padding-top: 0.25rem;
+      word-spacing: 0.02em;
+      padding-top: 0.1rem;
     }
 
     .ayah-inline {
@@ -437,15 +491,15 @@
     .ayah-marker {
       display: inline-grid;
       place-items: center;
-      width: 1.9em;
-      height: 1.9em;
-      margin: 0 0.14em 0 0.22em;
+      width: 1.62em;
+      height: 1.62em;
+      margin: 0 0.08em 0 0.16em;
       color: var(--accent);
       border: 1px solid currentColor;
       border-radius: 50%;
       background: transparent;
       white-space: nowrap;
-      font-size: 0.68em;
+      font-size: 0.6em;
       line-height: 1;
       font-weight: 700;
       vertical-align: middle;
@@ -453,19 +507,20 @@
     }
 
     .verse-meta {
-      margin-top: 0.8rem;
+      margin-top: 0.35rem;
       text-align: center;
       color: var(--muted);
-      font-size: var(--english-size);
+      font-size: 0.9rem;
     }
 
     .pagination {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 0.8rem;
-      margin-top: 1rem;
+      gap: 0.55rem;
+      margin-top: 0;
       flex-wrap: wrap;
+      flex: 0 0 auto;
     }
 
     .pagination-center {
@@ -496,9 +551,10 @@
 
     .bottom-note {
       text-align: center;
-      margin-top: 0.9rem;
+      margin-top: 0;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.86rem;
+      flex: 0 0 auto;
     }
 
     @media (max-width: 980px) {
@@ -513,6 +569,15 @@
     }
 
     @media (max-width: 640px) {
+      .main {
+        padding: 0.45rem;
+      }
+
+      .topbar,
+      .reader-shell {
+        width: 100%;
+      }
+
       .pagination,
       .pagination-center {
         width: 100%;
@@ -526,6 +591,7 @@
       .btn,
       .page-jump select {
         width: 100%;
+        min-height: 40px;
         text-align: center;
       }
 
@@ -536,6 +602,7 @@
 
       .topbar {
         align-items: flex-start;
+        gap: 0.35rem;
       }
 
       .menu-wrap {
@@ -548,16 +615,23 @@
       }
 
       .page {
-        border-radius: 22px;
-        padding: 0.8rem;
+        border-radius: 20px;
+        padding: 0.5rem;
       }
 
       .page-inner {
-        border-radius: 16px;
-        padding: 0.85rem;
+        border-radius: 14px;
+        padding: 0.5rem;
       }
 
-      
+      .surah-header {
+        padding-bottom: 0.32rem;
+        margin-bottom: 0.38rem;
+      }
+
+      .bottom-note {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -788,9 +862,7 @@
 
     function applyTheme() {
       document.body.classList.toggle('dark', state.settings.theme === 'dark');
-      if (els.themeToggle) {
-        els.themeToggle.textContent = state.settings.theme === 'dark' ? 'Light mode' : 'Dark mode';
-      }
+      els.themeToggle.textContent = state.settings.theme === 'dark' ? 'Light mode' : 'Dark mode';
     }
 
     function getSelectedSurah() {
@@ -849,17 +921,38 @@
       return Math.max(1, Math.ceil(text.length / 34));
     }
 
-    function paginateVerses(verses) {
+    async function fetchJsonWithTimeout(url, timeout = 12000) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            Accept: 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+
+        return await response.json();
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    function fallbackPaginateVerses(verses) {
       const surah = getSelectedSurah();
-      const targetUnits = window.innerWidth < 640 ? 20 : window.innerWidth < 900 ? 26 : 30;
+      const targetUnits = window.innerWidth < 640 ? 30 : window.innerWidth < 900 ? 36 : 42;
       const pages = [];
       let current = [];
       let used = 0;
 
       verses.forEach((verse, index) => {
         const weight = estimateVerseWeight(verse);
-        const isFirstVerse = index === 0;
-        const extra = isFirstVerse && surah.id !== 9 ? 3 : 0;
+        const extra = index === 0 && surah.id !== 1 && surah.id !== 9 ? 3 : 0;
 
         if (current.length && used + weight + extra > targetUnits) {
           pages.push(current);
@@ -875,44 +968,211 @@
       return pages;
     }
 
+    function ensureMeasureRoot() {
+      let measureRoot = document.getElementById('pageMeasure');
+      if (!measureRoot) {
+        measureRoot = document.createElement('div');
+        measureRoot.id = 'pageMeasure';
+        measureRoot.className = 'page-inner page-measure';
+        document.body.appendChild(measureRoot);
+      }
+      return measureRoot;
+    }
+
+    function buildMushafText(pageVerses) {
+      const surah = getSelectedSurah();
+
+      return pageVerses.map((verse) => {
+        const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
+        const arabic = shouldStripBismillah ? stripLeadingBismillah(verse.arabic) || verse.arabic : verse.arabic;
+
+        return `
+          <span class="ayah-inline">${escapeHtml(arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></span>
+        `;
+      }).join(' ');
+    }
+
+    function stripLeadingBismillah(text) {
+      const original = String(text).trim();
+      const marks = ['َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ْ', 'ّ', 'ٰ', 'ٔ', 'ٖ', 'ٗ', 'ۡ', 'ۢ', 'ۣ', 'ۤ', 'ۥ', 'ۦ', 'ۧ', 'ۨ', '۪', '۫', '۬', 'ۭ', 'ـ'];
+      const tailVariants = ['الرَّحِيمِ', 'الرَّحِيم', 'ٱلرَّحِيمِ', 'ٱلرَّحِيم', 'الرحيم'];
+
+      const normalizeArabic = (value) => {
+        let result = String(value).normalize('NFKD');
+        for (const mark of marks) {
+          result = result.split(mark).join('');
+        }
+        return result
+          .split('أ').join('ا')
+          .split('إ').join('ا')
+          .split('آ').join('ا')
+          .split('ٱ').join('ا')
+          .split('ى').join('ي')
+          .split('  ').join(' ')
+          .trim();
+      };
+
+      const normalized = normalizeArabic(original);
+      if (!normalized.startsWith('بسم الله الرحمن الرحيم')) {
+        return original;
+      }
+
+      for (const tail of tailVariants) {
+        const index = original.indexOf(tail);
+        if (index !== -1) {
+          return original.slice(index + tail.length).trim();
+        }
+      }
+
+      return original;
+    }
+
+    function buildReaderMarkup(surah, pageVerses, includeBismillah) {
+      const firstVerse = pageVerses[0]?.number;
+      const lastVerse = pageVerses[pageVerses.length - 1]?.number;
+
+      return `
+        <header class="surah-header">
+          <p class="arabic-name">${escapeHtml(surah.ar)}</p>
+          <p class="english-name">${escapeHtml(surah.en)}</p>
+          <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}, verses ${firstVerse} to ${lastVerse}</div>
+        </header>
+        ${includeBismillah ? '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
+        <div class="verses">
+          <div class="mushaf-block">${buildMushafText(pageVerses)}</div>
+          <div class="verse-meta">${surah.id}:${firstVerse}-${lastVerse}</div>
+        </div>
+      `;
+    }
+
+    function paginateVerses(verses) {
+      const surah = getSelectedSurah();
+      const maxHeight = els.readerContent.clientHeight;
+      const pageWidth = els.readerContent.offsetWidth;
+
+      if (!verses.length) return [];
+      if (!maxHeight || !pageWidth) return fallbackPaginateVerses(verses);
+
+      try {
+        const measureRoot = ensureMeasureRoot();
+        measureRoot.style.width = `${pageWidth}px`;
+
+        const pages = [];
+        let index = 0;
+
+        while (index < verses.length) {
+          const pageVerses = [];
+          const includeBismillah = surah.id !== 1 && surah.id !== 9 && pages.length === 0;
+
+          while (index < verses.length) {
+            pageVerses.push(verses[index]);
+            measureRoot.classList.toggle('compact-page', pageVerses.length <= 6);
+            measureRoot.innerHTML = buildReaderMarkup(surah, pageVerses, includeBismillah);
+
+            if (measureRoot.scrollHeight > maxHeight) {
+              pageVerses.pop();
+              if (!pageVerses.length) {
+                pageVerses.push(verses[index]);
+                index += 1;
+              }
+              break;
+            }
+
+            index += 1;
+          }
+
+          pages.push([...pageVerses]);
+        }
+
+        return pages.length ? pages : fallbackPaginateVerses(verses);
+      } catch (error) {
+        console.error('Pagination fallback used', error);
+        return fallbackPaginateVerses(verses);
+      }
+    }
+
     async function fetchSurahVerses(surahId) {
       if (state.cache.has(surahId)) {
         return state.cache.get(surahId);
       }
 
-      const surah = SURAHS.find((item) => item.id === surahId);
-      const perPage = 50;
-      const pages = Math.ceil(surah.ayahs / perPage);
-      const requests = [];
+      const normaliseQuranComVerses = (payload) => {
+        return (payload.verses || payload.data?.verses || [])
+          .map((verse) => {
+            const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
+            return {
+              number: verseNumber,
+              arabic: verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(verse.text_uthmani) || verse.text_uthmani : verse.text_uthmani
+            };
+          })
+          .filter((verse) => verse.number && verse.arabic)
+          .sort((a, b) => a.number - b.number);
+      };
 
-      for (let page = 1; page <= pages; page += 1) {
-        requests.push(
-          fetch(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani&per_page=${perPage}&page=${page}`)
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(`Could not load surah ${surahId}, page ${page}`);
-              }
-              return response.json();
-            })
-        );
+      try {
+        const cloudPayload = await fetchJsonWithTimeout(`https://api.alquran.cloud/v1/surah/${surahId}/quran-uthmani`);
+        const verses = (cloudPayload.data?.ayahs || [])
+          .map((ayah) => ({
+            number: ayah.numberInSurah,
+            arabic: ayah.numberInSurah === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(ayah.text) || ayah.text : ayah.text
+          }))
+          .filter((verse) => verse.number && verse.arabic)
+          .sort((a, b) => a.number - b.number);
+
+        if (!verses.length) {
+          throw new Error(`No verses returned for surah ${surahId}`);
+        }
+
+        state.cache.set(surahId, verses);
+        return verses;
+      } catch (cloudError) {
+        console.warn('Al Quran Cloud failed, falling back', cloudError);
       }
 
-      const payloads = await Promise.all(requests);
-      const verses = payloads
-        .flatMap((payload) => payload.verses || payload.data?.verses || [])
-        .filter((verse) => verse.verse_number && verse.text_uthmani)
-        .sort((a, b) => a.verse_number - b.verse_number)
-        .map((verse) => ({
-          number: verse.verse_number,
-          arabic: verse.text_uthmani
-        }));
+      try {
+        const uthmaniPayload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
+        const verses = normaliseQuranComVerses(uthmaniPayload);
 
+        if (!verses.length) {
+          throw new Error(`No verses returned for surah ${surahId}`);
+        }
+
+        state.cache.set(surahId, verses);
+        return verses;
+      } catch (primaryError) {
+        console.warn('Quran.com Uthmani endpoint failed, falling back', primaryError);
+      }
+
+      const surah = SURAHS.find((item) => item.id === surahId);
+      const perPage = 50;
+      const totalPages = Math.ceil(surah.ayahs / perPage);
+      const payloads = await Promise.all(
+        Array.from({ length: totalPages }, (_, index) => {
+          const page = index + 1;
+          return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani&per_page=${perPage}&page=${page}`);
+        })
+      );
+
+      const verses = payloads.flatMap(normaliseQuranComVerses);
       if (!verses.length) {
         throw new Error(`No verses returned for surah ${surahId}`);
       }
 
       state.cache.set(surahId, verses);
       return verses;
+    }
+
+    function renderPageSelect() {
+      const options = state.pages.map((_, index) => {
+        const first = state.pages[index][0]?.number ?? 1;
+        const last = state.pages[index][state.pages[index].length - 1]?.number ?? first;
+        return `<option value="${index}" ${index === state.currentPage ? 'selected' : ''}>${index + 1} • ${first}-${last}</option>`;
+      }).join('');
+      els.pageSelect.innerHTML = options;
+    }
+
+    function updateLocationHash() {
+      history.replaceState(null, '', `#surah-${state.selectedSurahId}-page-${state.currentPage + 1}`);
     }
 
     function renderReader() {
@@ -925,42 +1185,52 @@
         return;
       }
 
-      const firstVerse = pageVerses[0]?.number;
-      const lastVerse = pageVerses[pageVerses.length - 1]?.number;
-      const showBismillah = surah.id !== 9 && state.currentPage === 0;
-
-      const mushafText = pageVerses.map((verse) => `
-        <span class="ayah-inline">${escapeHtml(verse.arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></span>
-      `).join(' ');
-
-      els.readerContent.innerHTML = `
-        <header class="surah-header">
-          <p class="arabic-name">${escapeHtml(surah.ar)}</p>
-          <p class="english-name">${escapeHtml(surah.en)}</p>
-          <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}, verses ${firstVerse} to ${lastVerse}</div>
-        </header>
-        ${showBismillah ? '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
-        <div class="verses">
-          <div class="mushaf-block">${mushafText}</div>
-          <div class="verse-meta">${surah.id}:${firstVerse}-${lastVerse}</div>
-        </div>
-      `;
-
+      const showBismillah = surah.id !== 1 && surah.id !== 9 && state.currentPage === 0;
+      els.readerContent.classList.toggle('compact-page', pageVerses.length <= 6);
+      els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
       els.pagination.hidden = false;
-      els.prevPageBtn.disabled = state.currentPage === 0;
-      els.nextPageBtn.disabled = state.currentPage >= state.pages.length - 1;
+      els.prevPageBtn.disabled = state.selectedSurahId === 1 && state.currentPage === 0;
+      els.nextPageBtn.disabled = state.selectedSurahId === 114 && state.currentPage >= state.pages.length - 1;
       els.statusText.textContent = `${surah.en} • Page ${state.currentPage + 1} of ${state.pages.length}`;
-      els.bottomNote.textContent = `Showing Surah ${surah.id} in Uthmani script. Bookmark saves surah and page.`;
+      els.bottomNote.textContent = 'Swipe right for next page or next surah. Swipe left to go back.';
       renderPageSelect();
     }
 
-    function renderPageSelect() {
-      const options = state.pages.map((_, index) => {
-        const first = state.pages[index][0]?.number ?? 1;
-        const last = state.pages[index][state.pages[index].length - 1]?.number ?? first;
-        return `<option value="${index}" ${index === state.currentPage ? 'selected' : ''}>${index + 1} • ${first}-${last}</option>`;
-      }).join('');
-      els.pageSelect.innerHTML = options;
+    function goToPage(pageIndex) {
+      const nextPage = Math.max(0, Math.min(pageIndex, state.pages.length - 1));
+      if (nextPage === state.currentPage) return false;
+      state.currentPage = nextPage;
+      renderReader();
+      updateLocationHash();
+      return true;
+    }
+
+    async function goToPreviousPage() {
+      if (state.loading) return false;
+
+      if (state.currentPage > 0) {
+        return goToPage(state.currentPage - 1);
+      }
+
+      const previousSurah = SURAHS.find((surah) => surah.id === state.selectedSurahId - 1);
+      if (!previousSurah) return false;
+
+      await selectSurah(previousSurah.id, Number.MAX_SAFE_INTEGER);
+      return true;
+    }
+
+    async function goToNextPage() {
+      if (state.loading) return false;
+
+      if (state.currentPage < state.pages.length - 1) {
+        return goToPage(state.currentPage + 1);
+      }
+
+      const nextSurah = SURAHS.find((surah) => surah.id === state.selectedSurahId + 1);
+      if (!nextSurah) return false;
+
+      await selectSurah(nextSurah.id, 0);
+      return true;
     }
 
     async function selectSurah(surahId, preferredPage = 0) {
@@ -974,14 +1244,20 @@
       try {
         const verses = await fetchSurahVerses(surahId);
         state.verses = verses;
+        state.pages = fallbackPaginateVerses(verses);
+        state.currentPage = Math.min(Math.max(preferredPage, 0), Math.max(state.pages.length - 1, 0));
+        renderReader();
+
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+
         state.pages = paginateVerses(verses);
         state.currentPage = Math.min(Math.max(preferredPage, 0), Math.max(state.pages.length - 1, 0));
         renderReader();
-        history.replaceState(null, '', `#surah-${surahId}-page-${state.currentPage + 1}`);
+        updateLocationHash();
       } catch (error) {
         console.error(error);
         els.statusText.textContent = 'Could not load the surah';
-        els.readerContent.innerHTML = '<div class="error">The surah could not be loaded from the API right now. Please try again.</div>';
+        els.readerContent.innerHTML = '<div class="error">The surah could not be loaded right now. Please try again.</div>';
         els.pagination.hidden = true;
       } finally {
         state.loading = false;
@@ -1039,8 +1315,7 @@
     }
 
     function toggleMenu() {
-      const isOpen = els.menuPanel.classList.contains('open');
-      if (isOpen) {
+      if (els.menuPanel.classList.contains('open')) {
         closeMenu();
       } else {
         openMenu();
@@ -1111,40 +1386,66 @@
           closeMenu();
           closeIndexPanel();
         }
+
+        if (event.key === 'ArrowLeft') {
+          goToPreviousPage();
+        }
+
+        if (event.key === 'ArrowRight') {
+          goToNextPage();
+        }
       });
 
       els.prevPageBtn.addEventListener('click', () => {
-        if (state.currentPage > 0) {
-          state.currentPage -= 1;
-          renderReader();
-          history.replaceState(null, '', `#surah-${state.selectedSurahId}-page-${state.currentPage + 1}`);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        goToPreviousPage();
       });
 
       els.nextPageBtn.addEventListener('click', () => {
-        if (state.currentPage < state.pages.length - 1) {
-          state.currentPage += 1;
-          renderReader();
-          history.replaceState(null, '', `#surah-${state.selectedSurahId}-page-${state.currentPage + 1}`);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        goToNextPage();
       });
 
       els.pageSelect.addEventListener('change', (event) => {
-        state.currentPage = Number(event.target.value);
-        renderReader();
-        history.replaceState(null, '', `#surah-${state.selectedSurahId}-page-${state.currentPage + 1}`);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        goToPage(Number(event.target.value));
       });
 
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      els.readerContent.addEventListener('touchstart', (event) => {
+        if (event.touches.length !== 1) return;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+      }, { passive: true });
+
+      els.readerContent.addEventListener('touchend', (event) => {
+        const touch = event.changedTouches[0];
+        if (!touch) return;
+
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+
+        if (Math.abs(deltaX) < 45 || Math.abs(deltaX) <= Math.abs(deltaY)) {
+          return;
+        }
+
+        if (deltaX > 0) {
+          goToNextPage();
+        } else {
+          goToPreviousPage();
+        }
+      }, { passive: true });
+
+      let resizeFrame = 0;
       window.addEventListener('resize', () => {
         if (!state.verses.length) return;
-        const currentVerse = state.pages[state.currentPage]?.[0]?.number || 1;
-        state.pages = paginateVerses(state.verses);
-        const newPageIndex = state.pages.findIndex((page) => page[0]?.number === currentVerse);
-        state.currentPage = newPageIndex >= 0 ? newPageIndex : 0;
-        renderReader();
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = requestAnimationFrame(() => {
+          const currentVerse = state.pages[state.currentPage]?.[0]?.number || 1;
+          state.pages = paginateVerses(state.verses);
+          const newPageIndex = state.pages.findIndex((page) => page[0]?.number === currentVerse);
+          state.currentPage = newPageIndex >= 0 ? newPageIndex : 0;
+          renderReader();
+        });
       });
     }
 
