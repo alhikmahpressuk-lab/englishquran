@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Grand Mushaf 1x</title>
   <meta name="description" content="Simple Arabic Qur'an book style reader with Uthmani script, light and dark mode, bookmarks, and all 114 surahs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #f4f1e8;
@@ -371,6 +374,7 @@
       border-radius: 22px;
       padding: clamp(1rem, 3vw, 2rem);
       background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 90%, transparent), color-mix(in srgb, var(--surface-2) 65%, transparent));
+      overflow-wrap: anywhere;
     }
 
     .surah-header {
@@ -386,6 +390,7 @@
       line-height: 1.3;
       margin: 0;
       font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      font-weight: 700;
     }
 
     .surah-header .english-name {
@@ -407,38 +412,49 @@
       line-height: 1.85;
       margin: 0 0 1.3rem;
       font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      font-weight: 700;
     }
 
     .verses {
-      display: grid;
-      gap: 1rem;
+      display: block;
     }
 
-    .verse {
-      border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-      border-radius: 18px;
-      padding: 0.95rem 1rem 1rem;
-      background: color-mix(in srgb, var(--surface) 88%, var(--surface-2));
-    }
-
-    .verse-ar {
+    .mushaf-block {
       direction: rtl;
-      text-align: right;
+      text-align: justify;
+      text-justify: inter-word;
       font-size: var(--arabic-size);
-      line-height: 2.1;
-      font-family: "Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
-      word-spacing: 0.04em;
+      line-height: 2.25;
+      font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      word-spacing: 0.05em;
+      padding-top: 0.25rem;
+    }
+
+    .ayah-inline {
+      white-space: normal;
     }
 
     .ayah-marker {
+      display: inline-grid;
+      place-items: center;
+      width: 1.9em;
+      height: 1.9em;
+      margin: 0 0.14em 0 0.22em;
       color: var(--accent);
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      background: transparent;
       white-space: nowrap;
-      font-size: 0.82em;
+      font-size: 0.68em;
+      line-height: 1;
+      font-weight: 700;
+      vertical-align: middle;
+      box-sizing: border-box;
     }
 
     .verse-meta {
-      margin-top: 0.35rem;
-      text-align: left;
+      margin-top: 0.8rem;
+      text-align: center;
       color: var(--muted);
       font-size: var(--english-size);
     }
@@ -541,9 +557,7 @@
         padding: 0.85rem;
       }
 
-      .verse {
-        padding: 0.85rem;
-      }
+      
     }
   </style>
 </head>
@@ -915,6 +929,10 @@
       const lastVerse = pageVerses[pageVerses.length - 1]?.number;
       const showBismillah = surah.id !== 9 && state.currentPage === 0;
 
+      const mushafText = pageVerses.map((verse) => `
+        <span class="ayah-inline">${escapeHtml(verse.arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></span>
+      `).join(' ');
+
       els.readerContent.innerHTML = `
         <header class="surah-header">
           <p class="arabic-name">${escapeHtml(surah.ar)}</p>
@@ -923,12 +941,8 @@
         </header>
         ${showBismillah ? '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
         <div class="verses">
-          ${pageVerses.map((verse) => `
-            <article class="verse">
-              <div class="verse-ar">${escapeHtml(verse.arabic)} <span class="ayah-marker">۝ ${toArabicDigits(verse.number)}</span></div>
-              <div class="verse-meta">${surah.id}:${verse.number}</div>
-            </article>
-          `).join('')}
+          <div class="mushaf-block">${mushafText}</div>
+          <div class="verse-meta">${surah.id}:${firstVerse}-${lastVerse}</div>
         </div>
       `;
 
