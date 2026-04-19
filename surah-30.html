@@ -7,7 +7,7 @@
   <meta name="description" content="Simple Arabic Qur'an book style reader with Uthmani script, light and dark mode, bookmarks, and all 114 surahs." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Harmattan:wght@400;700&family=Lateef:wght@400;700&family=Markazi+Text:wght@400;700&family=Noto+Kufi+Arabic:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Reem+Kufi:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #f4f1e8;
@@ -24,6 +24,7 @@
       --english-size: 0.96rem;
       --title-size: clamp(1.18rem, 1.85vw, 1.45rem);
       --ui-size: 0.95rem;
+      --arabic-font: "Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
     }
 
     body.dark {
@@ -226,7 +227,7 @@
       font-size: 1.15rem;
       direction: rtl;
       text-align: right;
-      font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      font-family: var(--arabic-font);
     }
 
     .surah-en {
@@ -440,7 +441,7 @@
       font-size: clamp(1.65rem, 2.45vw, 2.1rem);
       line-height: 1.25;
       margin: 0;
-      font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      font-family: var(--arabic-font);
       font-weight: 700;
     }
 
@@ -462,7 +463,7 @@
       font-size: var(--arabic-size);
       line-height: 1.84;
       margin: 0 0 0.55rem;
-      font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      font-family: var(--arabic-font);
       font-weight: 700;
     }
 
@@ -476,7 +477,7 @@
       text-justify: inter-word;
       font-size: var(--arabic-size);
       line-height: 2.04;
-      font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      font-family: var(--arabic-font);
       word-spacing: 0.02em;
       padding-top: 0.08rem;
     }
@@ -609,6 +610,56 @@
       width: 2.08em;
       height: 2.08em;
       font-size: 0.48em;
+    }
+
+    body.mushaf-indopak {
+      --arabic-font: "Scheherazade New", "Amiri Quran", "Amiri", serif;
+    }
+
+    body.mushaf-indopak .mushaf-block {
+      line-height: 2.14;
+      word-spacing: 0.025em;
+    }
+
+    body.mushaf-indopak .bismillah {
+      line-height: 1.92;
+    }
+
+    body.mushaf-nastaliq {
+      --arabic-font: "Noto Nastaliq Urdu", "Scheherazade New", "Amiri", serif;
+    }
+
+    body.mushaf-nastaliq .mushaf-block {
+      line-height: 2.22;
+      word-spacing: 0.03em;
+    }
+
+    body.mushaf-nastaliq .bismillah {
+      line-height: 2;
+    }
+
+    .menu-group {
+      padding: 0.35rem 0.2rem 0.15rem;
+    }
+
+    .menu-label {
+      display: block;
+      margin: 0 0 0.35rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .menu-select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 0.72rem 0.8rem;
+      min-height: 44px;
+      outline: none;
     }
 
     @media (max-width: 980px) {
@@ -884,6 +935,29 @@
             <button class="menu-item" id="openIndexBtn" type="button">Index</button>
             <button class="menu-item" id="bookmarkBtn" type="button">Bookmark this page</button>
             <button class="menu-item" id="resumeBtn" type="button">Resume bookmark</button>
+            <div class="menu-group">
+              <label class="menu-label" for="mushafSelect">Mushaf</label>
+              <select class="menu-select" id="mushafSelect" aria-label="Mushaf selection">
+                <optgroup label="Mushaf / Text">
+                  <option value="amiri-quran">Amiri Quran</option>
+                  <option value="amiri">Amiri</option>
+                  <option value="scheherazade-new">Scheherazade New</option>
+                  <option value="noto-naskh">Noto Naskh Arabic</option>
+                  <option value="harmattan">Harmattan</option>
+                  <option value="lateef">Lateef</option>
+                  <option value="markazi-text">Markazi Text</option>
+                </optgroup>
+                <optgroup label="Display / Kufi">
+                  <option value="aref-ruqaa">Aref Ruqaa</option>
+                  <option value="reem-kufi">Reem Kufi</option>
+                  <option value="noto-kufi">Noto Kufi Arabic</option>
+                </optgroup>
+                <optgroup label="South Asian">
+                  <option value="indopak">Indo-Pak</option>
+                  <option value="noto-nastaliq">Noto Nastaliq Urdu</option>
+                </optgroup>
+              </select>
+            </div>
             <button class="menu-item" id="themeToggle" type="button">Dark mode</button>
           </div>
         </div>
@@ -1042,7 +1116,8 @@
       loading: false,
       cache: new Map(),
       settings: {
-        theme: 'light'
+        theme: 'light',
+        mushaf: 'amiri-quran'
       }
     };
 
@@ -1054,6 +1129,7 @@
       surahSearch: document.getElementById('surahSearch'),
       statusText: document.getElementById('statusText'),
       themeToggle: document.getElementById('themeToggle'),
+      mushafSelect: document.getElementById('mushafSelect'),
       bookmarkBtn: document.getElementById('bookmarkBtn'),
       resumeBtn: document.getElementById('resumeBtn'),
       openIndexBtn: document.getElementById('openIndexBtn'),
@@ -1086,6 +1162,55 @@
     function applyTheme() {
       document.body.classList.toggle('dark', state.settings.theme === 'dark');
       els.themeToggle.textContent = state.settings.theme === 'dark' ? 'Light mode' : 'Dark mode';
+    }
+
+    const MUSHAF_STYLES = {
+      'amiri-quran': {
+        font: '"Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif'
+      },
+      amiri: {
+        font: '"Amiri", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif'
+      },
+      'scheherazade-new': {
+        font: '"Scheherazade New", "Amiri Quran", "Amiri", "Noto Naskh Arabic", serif'
+      },
+      'noto-naskh': {
+        font: '"Noto Naskh Arabic", "Amiri Quran", "Scheherazade New", "Amiri", serif'
+      },
+      harmattan: {
+        font: '"Harmattan", "Noto Naskh Arabic", "Scheherazade New", "Amiri", serif'
+      },
+      lateef: {
+        font: '"Lateef", "Scheherazade New", "Amiri Quran", "Amiri", serif'
+      },
+      'markazi-text': {
+        font: '"Markazi Text", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif'
+      },
+      'aref-ruqaa': {
+        font: '"Aref Ruqaa", "Scheherazade New", "Amiri", serif'
+      },
+      'reem-kufi': {
+        font: '"Reem Kufi", "Noto Kufi Arabic", "Noto Naskh Arabic", serif'
+      },
+      'noto-kufi': {
+        font: '"Noto Kufi Arabic", "Reem Kufi", "Noto Naskh Arabic", serif'
+      },
+      indopak: {
+        font: '"Scheherazade New", "Amiri Quran", "Amiri", serif'
+      },
+      'noto-nastaliq': {
+        font: '"Noto Nastaliq Urdu", "Scheherazade New", "Amiri", serif'
+      },
+    };
+
+    function applyMushafStyle() {
+      const style = MUSHAF_STYLES[state.settings.mushaf] || MUSHAF_STYLES['amiri-quran'];
+      document.documentElement.style.setProperty('--arabic-font', style.font);
+      document.body.classList.toggle('mushaf-indopak', state.settings.mushaf === 'indopak');
+      document.body.classList.toggle('mushaf-nastaliq', state.settings.mushaf === 'noto-nastaliq');
+      if (els.mushafSelect) {
+        els.mushafSelect.value = state.settings.mushaf;
+      }
     }
 
     function getSelectedSurah() {
@@ -1670,6 +1795,12 @@
         closeMenu();
       });
 
+      els.mushafSelect.addEventListener('change', (event) => {
+        state.settings.mushaf = event.target.value;
+        applyMushafStyle();
+        saveSettings();
+      });
+
       els.bookmarkBtn.addEventListener('click', () => {
         saveBookmark();
         closeMenu();
@@ -1785,6 +1916,7 @@
     async function init() {
       loadSettings();
       applyTheme();
+      applyMushafStyle();
       renderSurahList();
       bindEvents();
 
