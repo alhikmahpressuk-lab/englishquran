@@ -45,12 +45,14 @@
     html {
       height: 100%;
       scroll-behavior: auto;
+      overscroll-behavior: none;
     }
 
     body {
       height: 100%;
       margin: 0;
       overflow: hidden;
+      overscroll-behavior: none;
       background: var(--bg);
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -64,6 +66,8 @@
     }
 
     .app {
+      position: fixed;
+      inset: 0;
       height: 100dvh;
       min-height: 100dvh;
       overflow: hidden;
@@ -128,6 +132,15 @@
 
     .brand-copy {
       min-width: 0;
+    }
+
+    .brand-kicker {
+      margin: 0 0 0.22rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .brand h1 {
@@ -363,6 +376,16 @@
       gap: 0.6rem;
     }
 
+    .qbox-title {
+      width: 100%;
+      text-align: left;
+      color: var(--muted);
+      font-size: 0.96rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding-left: 0.2rem;
+    }
+
     .page {
       background: var(--surface);
       border: 1px solid var(--line);
@@ -387,6 +410,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      overscroll-behavior: none;
       touch-action: pan-x;
       user-select: none;
       -webkit-user-select: none;
@@ -546,24 +570,24 @@
     }
 
     .page-inner.dense-page {
-      padding: 0.58rem 0.72rem;
+      padding: 0.72rem 0.86rem;
     }
 
     .page-inner.dense-page .surah-header {
-      padding-bottom: 0.5rem;
-      margin-bottom: 0.55rem;
+      padding-bottom: 0.55rem;
+      margin-bottom: 0.65rem;
     }
 
     .page-inner.dense-page .bismillah {
-      margin-bottom: 0.38rem;
-      line-height: 1.76;
+      margin-bottom: 0.4rem;
+      line-height: 1.78;
     }
 
     .page-inner.dense-page .mushaf-block {
-      font-size: clamp(1.82rem, 2.25vw, 2.3rem);
+      font-size: clamp(1.86rem, 2.38vw, 2.42rem);
       line-height: 1.92;
       word-spacing: 0.018em;
-      padding-top: 0;
+      padding-top: 0.04rem;
     }
 
     .page-inner.surah-one-page .verses {
@@ -597,11 +621,11 @@
     @media (max-width: 640px) {
       :root {
         --page-width: 100%;
-        --arabic-size: clamp(1.7rem, 6.1vw, 2.15rem);
+        --arabic-size: clamp(1.62rem, 5.7vw, 2.02rem);
       }
 
       .main {
-        padding: 0.5rem;
+        padding: 0.35rem;
       }
 
       .topbar,
@@ -610,73 +634,68 @@
       }
 
       .topbar {
-        margin-bottom: 0.45rem;
-        gap: 0.4rem;
-        align-items: flex-start;
+        margin-bottom: 0.28rem;
+        gap: 0.28rem;
+        align-items: center;
       }
 
-      .pagination,
-      .pagination-center {
+      .status {
+        font-size: 0.84rem;
+      }
+
+      .qbox-title {
+        font-size: 0.84rem;
+        padding-left: 0.08rem;
+      }
+
+      .pagination {
         width: 100%;
+        gap: 0.35rem;
+        flex-wrap: nowrap;
       }
 
-      .pagination > *,
-      .pagination-center > * {
+      .pagination-center {
         flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        gap: 0.35rem;
+        flex-wrap: nowrap;
+      }
+
+      .pagination > * {
+        flex: 0 0 auto;
+      }
+
+      .nav-arrow {
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
       }
 
       .btn {
+        min-height: 36px;
+        padding: 0.48rem 0.78rem;
+        width: auto;
+      }
+
+      #homeBtn {
+        flex: 0 0 auto;
+      }
+
+      .page-jump {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .page-jump select {
         width: 100%;
-        min-height: 40px;
-        text-align: center;
+        min-width: 0;
+        min-height: 36px;
+        padding: 0.48rem 0.78rem;
       }
 
       .menu-wrap {
         margin-left: 0;
-      }
-
-      .menu-panel {
-        right: 0;
-        min-width: 200px;
-      }
-
-      .page {
-        border-radius: 22px;
-        padding: 0.55rem;
-      }
-
-      .page-inner {
-        border-radius: 16px;
-        padding: 0.7rem;
-      }
-
-      .surah-header {
-        padding-bottom: 0.45rem;
-        margin-bottom: 0.55rem;
-      }
-
-      .page-inner.dense-page {
-        padding: 0.55rem;
-      }
-    }
-
-    @media (orientation: landscape) and (max-height: 540px) {
-      :root {
-        --page-width: min(100vw - 0.7rem, 1200px);
-        --arabic-size: clamp(1.6rem, 2.7vw, 2.1rem);
-      }
-
-      .main {
-        padding: 0.35rem;
-      }
-
-      .topbar {
-        margin-bottom: 0.3rem;
-        gap: 0.3rem;
-      }
-
-      .status {
-        font-size: 0.86rem;
       }
 
       .menu-trigger {
@@ -684,57 +703,154 @@
         height: 42px;
       }
 
+      .menu-panel {
+        right: 0;
+        min-width: 190px;
+      }
+
       .reader-shell {
-        gap: 0.3rem;
+        gap: 0.32rem;
       }
 
       .page {
-        padding: 0.4rem;
         border-radius: 20px;
+        padding: 0.42rem;
       }
 
       .page-inner {
-        padding: 0.48rem 0.62rem;
         border-radius: 14px;
+        padding: 0.58rem 0.62rem;
       }
 
       .surah-header {
-        padding-bottom: 0.3rem;
-        margin-bottom: 0.35rem;
+        padding-bottom: 0.34rem;
+        margin-bottom: 0.42rem;
       }
 
       .surah-header .arabic-name {
-        font-size: clamp(1.35rem, 2vw, 1.7rem);
+        font-size: clamp(1.35rem, 5vw, 1.72rem);
       }
 
       .surah-header .english-name {
-        margin-top: 0.24rem;
+        margin-top: 0.2rem;
         font-size: 0.98rem;
       }
 
       .surah-subtitle {
-        margin-top: 0.2rem;
-        font-size: 0.8rem;
+        margin-top: 0.18rem;
+        font-size: 0.78rem;
       }
 
       .bismillah {
+        margin-bottom: 0.3rem;
+        line-height: 1.72;
+      }
+
+      .page-inner.dense-page {
+        padding: 0.5rem 0.58rem;
+      }
+
+      .page-inner.dense-page .surah-header {
+        padding-bottom: 0.3rem;
+        margin-bottom: 0.36rem;
+      }
+
+      .page-inner.dense-page .bismillah {
+        margin-bottom: 0.24rem;
+      }
+
+      .page-inner.dense-page .mushaf-block {
+        line-height: 1.82;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 540px) {
+      :root {
+        --page-width: min(100vw - 0.5rem, 1200px);
+        --arabic-size: clamp(1.52rem, 2.45vw, 1.95rem);
+      }
+
+      .main {
+        padding: 0.25rem;
+      }
+
+      .topbar {
+        margin-bottom: 0.22rem;
+        gap: 0.22rem;
+      }
+
+      .status {
+        font-size: 0.8rem;
+      }
+
+      .menu-trigger {
+        width: 38px;
+        height: 38px;
+      }
+
+      .reader-shell {
+        gap: 0.24rem;
+      }
+
+      .page {
+        padding: 0.32rem;
+        border-radius: 18px;
+      }
+
+      .page-inner {
+        padding: 0.42rem 0.55rem;
+        border-radius: 12px;
+      }
+
+      .surah-header {
+        padding-bottom: 0.24rem;
         margin-bottom: 0.28rem;
       }
 
+      .surah-header .arabic-name {
+        font-size: clamp(1.22rem, 1.8vw, 1.55rem);
+      }
+
+      .surah-header .english-name {
+        margin-top: 0.16rem;
+        font-size: 0.9rem;
+      }
+
+      .surah-subtitle {
+        margin-top: 0.14rem;
+        font-size: 0.74rem;
+      }
+
+      .bismillah {
+        margin-bottom: 0.18rem;
+      }
+
       .pagination {
-        gap: 0.35rem;
+        gap: 0.28rem;
+      }
+
+      .pagination-center {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        flex-wrap: nowrap;
+      }
+
+      .page-jump {
+        flex: 1 1 auto;
+        min-width: 0;
       }
 
       .btn,
       .page-jump select {
-        min-height: 36px;
-        padding: 0.5rem 0.82rem;
+        min-height: 34px;
+        padding: 0.4rem 0.7rem;
       }
 
       .nav-arrow {
-        width: 38px;
-        min-width: 38px;
-        height: 38px;
+        width: 34px;
+        min-width: 34px;
+        height: 34px;
       }
     }
   </style>
@@ -745,6 +861,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-copy">
+          <div class="brand-kicker">The Open Quran</div>
           <h1>Grand Mushaf 1x</h1>
           <p>Simple Arabic Qur’an book reading with Uthmani script, light and dark mode, and bookmarks.</p>
         </div>
@@ -773,6 +890,7 @@
       </div>
 
       <section class="reader-shell">
+        <div class="qbox-title">The Open Quran</div>
         <div class="page">
           <div class="page-inner" id="readerContent">
             <div class="loading">Loading…</div>
@@ -1203,8 +1321,7 @@
       const surah = getSelectedSurah();
       const maxHeight = els.readerContent.clientHeight;
       const pageWidth = els.readerContent.offsetWidth;
-      const minimumVerses = surah.ayahs <= 12 ? surah.ayahs : surah.ayahs <= 40 ? 7 : window.innerWidth < 640 ? 6 : 8;
-
+      
       if (!verses.length) return [];
       if (!maxHeight || !pageWidth) return fallbackPaginateVerses(verses);
 
@@ -1232,7 +1349,7 @@
             measureRoot.innerHTML = buildReaderMarkup(surah, pageVerses, includeBismillah);
 
             if (measureRoot.scrollHeight > maxHeight) {
-              if (!dense && surah.id !== 1 && pageVerses.length <= minimumVerses) {
+              if (!dense && surah.id !== 1) {
                 dense = true;
                 measureRoot.classList.add('dense-page');
                 measureRoot.innerHTML = buildReaderMarkup(surah, pageVerses, includeBismillah);
@@ -1241,6 +1358,9 @@
                   queue.shift();
                   continue;
                 }
+
+                dense = false;
+                measureRoot.classList.remove('dense-page');
               }
 
               if (pageVerses.length === 1) {
@@ -1611,6 +1731,18 @@
         touchStartX = event.touches[0].clientX;
         touchStartY = event.touches[0].clientY;
       }, { passive: true });
+
+      els.readerContent.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];
+        if (!touch) return;
+
+        const deltaX = Math.abs(touch.clientX - touchStartX);
+        const deltaY = Math.abs(touch.clientY - touchStartY);
+
+        if (deltaY > deltaX) {
+          event.preventDefault();
+        }
+      }, { passive: false });
 
       els.readerContent.addEventListener('touchend', (event) => {
         const touch = event.changedTouches[0];
