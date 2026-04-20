@@ -24,7 +24,7 @@
       --english-size: 0.96rem;
       --title-size: clamp(1.18rem, 1.85vw, 1.45rem);
       --ui-size: 0.95rem;
-      --arabic-font: "Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      --arabic-font: "Amiri", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif;
     }
 
     body.dark {
@@ -143,6 +143,28 @@
       overflow: auto;
       user-select: text;
       -webkit-user-select: text;
+      touch-action: auto;
+    }
+
+    .study-topbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 0.65rem;
+    }
+
+    .study-back-btn {
+      min-height: 38px;
+      padding: 0.48rem 0.85rem;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .study-back-btn .study-back-ar {
+      font-family: var(--arabic-font);
+      direction: rtl;
+      line-height: 1;
     }
 
     .page-inner.study-mode .verses {
@@ -471,12 +493,27 @@
 
     .qbox-title {
       width: 100%;
-      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
       color: var(--muted);
       font-size: 0.96rem;
-      font-weight: 700;
       letter-spacing: 0.02em;
       padding-left: 0.2rem;
+    }
+
+    .qbox-title-main {
+      font-weight: 700;
+    }
+
+    .qbox-title-meta {
+      font-size: 0.84rem;
+      font-weight: 400;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .page {
@@ -1051,6 +1088,7 @@
             <div class="menu-group">
               <label class="menu-label" for="mushafSelect">Mushaf</label>
               <select class="menu-select" id="mushafSelect" aria-label="Mushaf selection">
+                <option value="normal">Normal (Original)</option>
                 <optgroup label="Mushaf / Text">
                   <option value="amiri-quran">Amiri Quran</option>
                   <option value="amiri">Amiri</option>
@@ -1077,7 +1115,7 @@
       </div>
 
       <section class="reader-shell">
-        <div class="qbox-title">The Open Quran</div>
+        <div class="qbox-title"><span class="qbox-title-main">The Open Quran</span><span class="qbox-title-meta" id="qboxMeta"></span></div>
         <div class="page">
           <div class="page-inner" id="readerContent">
             <div class="loading">Loading…</div>
@@ -1240,7 +1278,7 @@
       },
       settings: {
         theme: 'light',
-        mushaf: 'amiri-quran'
+        mushaf: 'normal'
       }
     };
 
@@ -1271,7 +1309,24 @@
       prevPageBtn: document.getElementById('prevPageBtn'),
       nextPageBtn: document.getElementById('nextPageBtn'),
       pageSelect: document.getElementById('pageSelect'),
-      bottomNote: document.getElementById('bottomNote')
+      bottomNote: document.getElementById('bottomNote'),
+      qboxMeta: document.getElementById('qboxMeta')
+    };
+
+    const MUSHAF_STYLES = {
+      normal: { font: '"Amiri", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif' },
+      'amiri-quran': { font: '"Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif' },
+      amiri: { font: '"Amiri", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif' },
+      'scheherazade-new': { font: '"Scheherazade New", "Amiri Quran", "Amiri", "Noto Naskh Arabic", serif' },
+      'noto-naskh': { font: '"Noto Naskh Arabic", "Amiri Quran", "Scheherazade New", "Amiri", serif' },
+      harmattan: { font: '"Harmattan", "Noto Naskh Arabic", "Scheherazade New", "Amiri", serif' },
+      lateef: { font: '"Lateef", "Scheherazade New", "Amiri Quran", "Amiri", serif' },
+      'markazi-text': { font: '"Markazi Text", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif' },
+      'aref-ruqaa': { font: '"Aref Ruqaa", "Scheherazade New", "Amiri", serif' },
+      'reem-kufi': { font: '"Reem Kufi", "Noto Kufi Arabic", "Noto Naskh Arabic", serif' },
+      'noto-kufi': { font: '"Noto Kufi Arabic", "Reem Kufi", "Noto Naskh Arabic", serif' },
+      indopak: { font: '"Scheherazade New", "Amiri Quran", "Amiri", serif' },
+      'noto-nastaliq': { font: '"Noto Nastaliq Urdu", "Scheherazade New", "Amiri", serif' }
     };
 
     function loadSettings() {
@@ -1294,45 +1349,6 @@
       els.themeToggle.textContent = state.settings.theme === 'dark' ? 'Light mode' : 'Dark mode';
     }
 
-    const MUSHAF_STYLES = {
-      'amiri-quran': {
-        font: '"Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif'
-      },
-      amiri: {
-        font: '"Amiri", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif'
-      },
-      'scheherazade-new': {
-        font: '"Scheherazade New", "Amiri Quran", "Amiri", "Noto Naskh Arabic", serif'
-      },
-      'noto-naskh': {
-        font: '"Noto Naskh Arabic", "Amiri Quran", "Scheherazade New", "Amiri", serif'
-      },
-      harmattan: {
-        font: '"Harmattan", "Noto Naskh Arabic", "Scheherazade New", "Amiri", serif'
-      },
-      lateef: {
-        font: '"Lateef", "Scheherazade New", "Amiri Quran", "Amiri", serif'
-      },
-      'markazi-text': {
-        font: '"Markazi Text", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif'
-      },
-      'aref-ruqaa': {
-        font: '"Aref Ruqaa", "Scheherazade New", "Amiri", serif'
-      },
-      'reem-kufi': {
-        font: '"Reem Kufi", "Noto Kufi Arabic", "Noto Naskh Arabic", serif'
-      },
-      'noto-kufi': {
-        font: '"Noto Kufi Arabic", "Reem Kufi", "Noto Naskh Arabic", serif'
-      },
-      indopak: {
-        font: '"Scheherazade New", "Amiri Quran", "Amiri", serif'
-      },
-      'noto-nastaliq': {
-        font: '"Noto Nastaliq Urdu", "Scheherazade New", "Amiri", serif'
-      },
-    };
-
     function applyMushafStyle() {
       const style = MUSHAF_STYLES[state.settings.mushaf] || MUSHAF_STYLES['amiri-quran'];
       document.documentElement.style.setProperty('--arabic-font', style.font);
@@ -1353,6 +1369,30 @@
       return (temp.textContent || '').trim();
     }
 
+    function escapeHtml(text) {
+      return String(text)
+        .split('&').join('&amp;')
+        .split('<').join('&lt;')
+        .split('>').join('&gt;')
+        .split('"').join('&quot;')
+        .split("'").join('&#039;');
+    }
+
+    function toArabicDigits(value) {
+      const digits = '٠١٢٣٤٥٦٧٨٩';
+      return String(value).split('').map((char) => {
+        const code = char.charCodeAt(0) - 48;
+        return code >= 0 && code <= 9 ? digits[code] : char;
+      }).join('');
+    }
+
+    function normaliseText(text) {
+      return Array.from(String(text).toLowerCase().normalize('NFKD')).filter((char) => {
+        const code = char.codePointAt(0);
+        return !(code >= 768 && code <= 879);
+      }).join('');
+    }
+
     function findPreferredResource(resources, patterns) {
       return resources.find((resource) => {
         const haystack = `${resource.name || ''} ${resource.author_name || ''}`.toLowerCase();
@@ -1360,132 +1400,27 @@
       }) || resources[0] || null;
     }
 
-    async function fetchPanelResources() {
-      if (state.panel.translationResources.length && state.panel.tafsirResources.length) {
+    function updateQboxMeta() {
+      if (!state.panel.studyMode) {
+        els.qboxMeta.textContent = '';
         return;
       }
 
-      const [translationPayload, tafsirPayload] = await Promise.all([
-        fetchJsonWithTimeout(`${API_BASE}/resources/translations?language=en`),
-        fetchJsonWithTimeout(`${API_BASE}/resources/tafsirs?language=en`)
-      ]);
-
-      state.panel.translationResources = translationPayload.translations || translationPayload.data?.translations || translationPayload.resources || [];
-      state.panel.tafsirResources = tafsirPayload.tafsirs || tafsirPayload.data?.tafsirs || tafsirPayload.resources || [];
-
-      const defaultTranslation = findPreferredResource(state.panel.translationResources, ['sahih international', 'saheeh international', 'pickthall', 'asad']);
-      const defaultTafsir = findPreferredResource(state.panel.tafsirResources, ['ibn kathir', 'maarif', 'jalalayn', 'saadi']);
-
-      state.panel.selectedTranslationId = state.panel.selectedTranslationId || defaultTranslation?.id || null;
-      state.panel.selectedTafsirId = state.panel.selectedTafsirId || defaultTafsir?.id || null;
-
-      els.translationSelect.innerHTML = state.panel.translationResources.map((resource) => `
-        <option value="${resource.id}" ${resource.id === state.panel.selectedTranslationId ? 'selected' : ''}>${escapeHtml(resource.name || resource.author_name || `Translation ${resource.id}`)}</option>
-      `).join('');
-
-      els.tafsirSelect.innerHTML = state.panel.tafsirResources.map((resource) => `
-        <option value="${resource.id}" ${resource.id === state.panel.selectedTafsirId ? 'selected' : ''}>${escapeHtml(resource.name || resource.author_name || `Tafsir ${resource.id}`)}</option>
-      `).join('');
+      const translation = state.panel.translationResources.find((item) => String(item.id) === state.panel.selectedTranslationId);
+      const tafsir = state.panel.tafsirResources.find((item) => String(item.id) === state.panel.selectedTafsirId);
+      const parts = [translation?.name, tafsir?.name].filter(Boolean);
+      els.qboxMeta.textContent = parts.join(' • ');
     }
 
-    async function fetchPanelText(type, resourceId, surahId) {
-      const cache = type === 'translation' ? state.panel.translationCache : state.panel.tafsirCache;
-      const cacheKey = `${type}:${resourceId}:${surahId}`;
-      if (cache.has(cacheKey)) {
-        return cache.get(cacheKey);
-      }
-
-      const endpoint = type === 'translation'
-        ? `${API_BASE}/quran/translations/${resourceId}?chapter_number=${surahId}`
-        : `${API_BASE}/quran/tafsirs/${resourceId}?chapter_number=${surahId}`;
-
-      const payload = await fetchJsonWithTimeout(endpoint);
-      const items = payload.translations || payload.tafsirs || payload.data?.translations || payload.data?.tafsirs || [];
-      const mapped = new Map(
-        items.map((item, index) => {
-          const verseNumber = item.verse_number || Number(String(item.verse_key || '').split(':')[1]) || index + 1;
-          const text = item.text || item.translation || item.content || '';
-          return [verseNumber, stripTags(text)];
-        })
-      );
-
-      cache.set(cacheKey, mapped);
-      return mapped;
-    }
-
-    async function renderPanelContent() {
-      if (!state.panel.open) return;
-
-      try {
-        await fetchPanelResources();
-        const surah = getSelectedSurah();
-        const pageData = state.pages[state.currentPage] || { verses: [] };
-        const pageVerses = pageData.verses || [];
-
-        const [translations, tafsir] = await Promise.all([
-          state.panel.selectedTranslationId ? fetchPanelText('translation', state.panel.selectedTranslationId, surah.id) : new Map(),
-          state.panel.selectedTafsirId ? fetchPanelText('tafsir', state.panel.selectedTafsirId, surah.id) : new Map()
-        ]);
-
-        els.panelContent.innerHTML = pageVerses.map((verse) => {
-          const translationText = translations.get(verse.number) || 'Translation not available for this ayah.';
-          const tafsirText = tafsir.get(verse.number) || 'Tafsir not available for this ayah.';
-          return `
-            <article class="panel-card">
-              <div class="panel-card-header">${surah.id}:${verse.number}</div>
-              <div class="panel-card-translation">${escapeHtml(translationText)}</div>
-              <div class="panel-card-tafsir">${escapeHtml(tafsirText)}</div>
-            </article>
-          `;
-        }).join('') || '<div class="empty">No panel text available for this page.</div>';
-      } catch (error) {
-        console.error(error);
-        els.panelContent.innerHTML = '<div class="error">Could not load translation and tafsir right now.</div>';
-      }
-    }
-
-    function openSidepanel() {
-      state.panel.open = true;
-      state.panel.studyMode = true;
-      els.sidepanel.classList.add('open');
-      els.panelBackdrop.classList.add('open');
-      renderPanelContent();
-      renderReader();
-    }
-
-    function closeSidepanel() {
-      state.panel.open = false;
-      els.sidepanel.classList.remove('open');
-      els.panelBackdrop.classList.remove('open');
-      renderReader();
-    }
-
-    function toArabicDigits(value) {
-      return String(value).replace(/\d/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[Number(digit)]);
-    }
-
-    function normaliseText(text) {
-      return String(text)
-        .toLowerCase()
-        .normalize('NFKD')
-        .replace(/[\u0300-\u036f]/g, '');
-    }
-
-    function escapeHtml(text) {
-      return String(text)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+    function syncStudyMode() {
+      state.panel.studyMode = Boolean(state.panel.selectedTranslationId || state.panel.selectedTafsirId);
+      updateQboxMeta();
     }
 
     function filteredSurahs() {
       const q = normaliseText(state.query.trim());
       if (!q) return SURAHS;
-      return SURAHS.filter((surah) => {
-        return [surah.en, surah.ar, String(surah.id), surah.place].some((field) => normaliseText(field).includes(q));
-      });
+      return SURAHS.filter((surah) => [surah.en, surah.ar, String(surah.id), surah.place].some((field) => normaliseText(field).includes(q)));
     }
 
     function renderSurahList() {
@@ -1519,19 +1454,121 @@
       try {
         const response = await fetch(url, {
           signal: controller.signal,
-          headers: {
-            Accept: 'application/json'
-          }
+          headers: { Accept: 'application/json' }
         });
-
         if (!response.ok) {
           throw new Error(`Request failed: ${response.status}`);
         }
-
         return await response.json();
       } finally {
         clearTimeout(timeoutId);
       }
+    }
+
+    async function fetchPanelResources() {
+      if (state.panel.translationResources.length && state.panel.tafsirResources.length) {
+        return;
+      }
+
+      const [translationPayload, tafsirPayload] = await Promise.all([
+        fetchJsonWithTimeout(`${API_BASE}/resources/translations?language=en`),
+        fetchJsonWithTimeout(`${API_BASE}/resources/tafsirs?language=en`)
+      ]);
+
+      state.panel.translationResources = translationPayload.translations || translationPayload.data?.translations || translationPayload.resources || [];
+      state.panel.tafsirResources = tafsirPayload.tafsirs || tafsirPayload.data?.tafsirs || tafsirPayload.resources || [];
+
+      els.translationSelect.innerHTML = ['<option value="">Select</option>', ...state.panel.translationResources.map((resource) => `
+        <option value="${resource.id}">${escapeHtml(resource.name || resource.author_name || `Translation ${resource.id}`)}</option>
+      `)].join('');
+
+      els.tafsirSelect.innerHTML = ['<option value="">Select</option>', ...state.panel.tafsirResources.map((resource) => `
+        <option value="${resource.id}">${escapeHtml(resource.name || resource.author_name || `Tafsir ${resource.id}`)}</option>
+      `)].join('');
+    }
+
+    async function fetchPanelText(type, resourceId, surahId) {
+      if (!resourceId) return new Map();
+
+      const cache = type === 'translation' ? state.panel.translationCache : state.panel.tafsirCache;
+      const cacheKey = `${type}:${resourceId}:${surahId}`;
+      if (cache.has(cacheKey)) {
+        return cache.get(cacheKey);
+      }
+
+      const endpoint = type === 'translation'
+        ? `${API_BASE}/quran/translations/${resourceId}?chapter_number=${surahId}`
+        : `${API_BASE}/quran/tafsirs/${resourceId}?chapter_number=${surahId}`;
+
+      const payload = await fetchJsonWithTimeout(endpoint);
+      const items = payload.translations || payload.tafsirs || payload.data?.translations || payload.data?.tafsirs || [];
+      const mapped = new Map(items.map((item, index) => {
+        const verseNumber = item.verse_number || Number(String(item.verse_key || '').split(':')[1]) || index + 1;
+        const text = item.text || item.translation || item.content || '';
+        return [verseNumber, stripTags(text)];
+      }));
+
+      cache.set(cacheKey, mapped);
+      return mapped;
+    }
+
+    async function renderPanelContent() {
+      if (!state.panel.open) return;
+
+      await fetchPanelResources();
+      const surah = getSelectedSurah();
+      const pageData = state.pages[state.currentPage] || { verses: [] };
+      const pageVerses = pageData.verses || [];
+
+      if (!state.panel.selectedTranslationId && !state.panel.selectedTafsirId) {
+        els.panelContent.innerHTML = '<div class="empty">Select a translation or tafsir to display it in the Q-box.</div>';
+        return;
+      }
+
+      try {
+        const [translations, tafsir] = await Promise.all([
+          fetchPanelText('translation', state.panel.selectedTranslationId, surah.id),
+          fetchPanelText('tafsir', state.panel.selectedTafsirId, surah.id)
+        ]);
+
+        els.panelContent.innerHTML = pageVerses.map((verse) => {
+          const translationText = state.panel.selectedTranslationId ? translations.get(verse.number) : '';
+          const tafsirText = state.panel.selectedTafsirId ? tafsir.get(verse.number) : '';
+          return `
+            <article class="panel-card">
+              <div class="panel-card-header">${surah.id}:${verse.number}</div>
+              ${translationText ? `<div class="panel-card-translation">${escapeHtml(translationText)}</div>` : ''}
+              ${tafsirText ? `<div class="panel-card-tafsir">${escapeHtml(tafsirText)}</div>` : ''}
+            </article>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error(error);
+        els.panelContent.innerHTML = '<div class="error">Could not load translation and tafsir right now.</div>';
+      }
+    }
+
+    async function openSidepanel() {
+      state.panel.open = true;
+      els.sidepanel.classList.add('open');
+      els.panelBackdrop.classList.add('open');
+      await fetchPanelResources();
+      renderPanelContent();
+    }
+
+    function closeSidepanel() {
+      state.panel.open = false;
+      els.sidepanel.classList.remove('open');
+      els.panelBackdrop.classList.remove('open');
+    }
+
+    function disableStudyMode() {
+      state.panel.studyMode = false;
+      state.panel.open = false;
+      els.sidepanel.classList.remove('open');
+      els.panelBackdrop.classList.remove('open');
+      updateQboxMeta();
+      renderReader();
     }
 
     function fallbackPaginateVerses(verses) {
@@ -1544,13 +1581,11 @@
       verses.forEach((verse, index) => {
         const weight = estimateVerseWeight(verse);
         const extra = index === 0 && surah.id !== 1 && surah.id !== 9 ? 3 : 0;
-
         if (current.length && used + weight + extra > targetUnits) {
           pages.push({ verses: [...current], dense: false });
           current = [];
           used = 0;
         }
-
         current.push(verse);
         used += weight + extra;
       });
@@ -1558,7 +1593,6 @@
       if (current.length) {
         pages.push({ verses: [...current], dense: false });
       }
-
       return pages;
     }
 
@@ -1573,59 +1607,33 @@
       return measureRoot;
     }
 
-    function buildMushafText(pageVerses) {
-      const surah = getSelectedSurah();
-
-      return pageVerses.map((verse) => {
-        const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
-        const arabic = shouldStripBismillah ? stripLeadingBismillah(verse.arabic) || verse.arabic : verse.arabic;
-        const marker = verse.showMarker === false ? '' : ` <span class="ayah-marker">${toArabicDigits(verse.number)}</span>`;
-
-        return `
-          <span class="ayah-inline">${escapeHtml(arabic)}${marker}</span>
-        `;
-      }).join(' ');
-    }
-
     function stripLeadingBismillah(text) {
       const original = String(text).trim();
-      const marks = ['َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ْ', 'ّ', 'ٰ', 'ٔ', 'ٖ', 'ٗ', 'ۡ', 'ۢ', 'ۣ', 'ۤ', 'ۥ', 'ۦ', 'ۧ', 'ۨ', '۪', '۫', '۬', 'ۭ', 'ـ'];
       const tailVariants = ['الرَّحِيمِ', 'الرَّحِيم', 'ٱلرَّحِيمِ', 'ٱلرَّحِيم', 'الرحيم'];
-
-      const normalizeArabic = (value) => {
-        let result = String(value).normalize('NFKD');
-        for (const mark of marks) {
-          result = result.split(mark).join('');
-        }
-        return result
-          .split('أ').join('ا')
-          .split('إ').join('ا')
-          .split('آ').join('ا')
-          .split('ٱ').join('ا')
-          .split('ى').join('ي')
-          .split('  ').join(' ')
-          .trim();
-      };
-
-      const normalized = normalizeArabic(original);
-      if (!normalized.startsWith('بسم الله الرحمن الرحيم')) {
+      const normalized = original.normalize('NFKD');
+      if (normalized.indexOf('بسم') !== 0) {
         return original;
       }
-
       for (const tail of tailVariants) {
         const index = original.indexOf(tail);
         if (index !== -1) {
           return original.slice(index + tail.length).trim();
         }
       }
-
       return original;
     }
 
-    function buildReaderMarkup(surah, pageVerses, includeBismillah) {
-      const firstVerse = pageVerses[0]?.number;
-      const lastVerse = pageVerses[pageVerses.length - 1]?.number;
+    function buildMushafText(pageVerses) {
+      const surah = getSelectedSurah();
+      return pageVerses.map((verse) => {
+        const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
+        const arabic = shouldStripBismillah ? stripLeadingBismillah(verse.arabic) || verse.arabic : verse.arabic;
+        const marker = verse.showMarker === false ? '' : ` <span class="ayah-marker">${toArabicDigits(verse.number)}</span>`;
+        return `<span class="ayah-inline">${escapeHtml(arabic)}${marker}</span>`;
+      }).join(' ');
+    }
 
+    function buildReaderMarkup(surah, pageVerses, includeBismillah) {
       return `
         <header class="surah-header">
           <p class="arabic-name">${escapeHtml(surah.ar)}</p>
@@ -1633,10 +1641,7 @@
           <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}</div>
         </header>
         ${includeBismillah ? '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
-        <div class="verses">
-          <div class="mushaf-block">${buildMushafText(pageVerses)}</div>
-          
-        </div>
+        <div class="verses"><div class="mushaf-block">${buildMushafText(pageVerses)}</div></div>
       `;
     }
 
@@ -1650,17 +1655,11 @@
 
       while (low <= high) {
         const mid = Math.floor((low + high) / 2);
-        const candidate = {
-          ...verse,
-          arabic: words.slice(0, mid).join(' '),
-          showMarker: false
-        };
-
+        const candidate = { ...verse, arabic: words.slice(0, mid).join(' '), showMarker: false };
         measureRoot.classList.toggle('compact-page', false);
         measureRoot.classList.toggle('surah-one-page', surah.id === 1);
         measureRoot.classList.toggle('dense-page', dense);
         measureRoot.innerHTML = buildReaderMarkup(surah, [...existingVerses, candidate], includeBismillah);
-
         if (measureRoot.scrollHeight <= maxHeight) {
           bestFit = mid;
           low = mid + 1;
@@ -1670,18 +1669,9 @@
       }
 
       if (!bestFit || bestFit >= words.length) return null;
-
       return {
-        fit: {
-          ...verse,
-          arabic: words.slice(0, bestFit).join(' '),
-          showMarker: false
-        },
-        rest: {
-          ...verse,
-          arabic: words.slice(bestFit).join(' '),
-          showMarker: verse.showMarker
-        }
+        fit: { ...verse, arabic: words.slice(0, bestFit).join(' '), showMarker: false },
+        rest: { ...verse, arabic: words.slice(bestFit).join(' '), showMarker: verse.showMarker }
       };
     }
 
@@ -1689,18 +1679,13 @@
       const surah = getSelectedSurah();
       const maxHeight = els.readerContent.clientHeight;
       const pageWidth = els.readerContent.offsetWidth;
-      
       if (!verses.length) return [];
       if (!maxHeight || !pageWidth) return fallbackPaginateVerses(verses);
 
       try {
         const measureRoot = ensureMeasureRoot();
         measureRoot.style.width = `${pageWidth}px`;
-
-        const queue = verses.map((verse) => ({
-          ...verse,
-          showMarker: verse.showMarker !== false
-        }));
+        const queue = verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false }));
         const pages = [];
 
         while (queue.length) {
@@ -1721,25 +1706,15 @@
                 dense = true;
                 measureRoot.classList.add('dense-page');
                 measureRoot.innerHTML = buildReaderMarkup(surah, pageVerses, includeBismillah);
-
                 if (measureRoot.scrollHeight <= maxHeight) {
                   queue.shift();
                   continue;
                 }
-
                 dense = false;
                 measureRoot.classList.remove('dense-page');
               }
 
-              const split = splitVerseForPage(
-                verse,
-                pageVerses.slice(0, -1),
-                surah,
-                includeBismillah,
-                measureRoot,
-                maxHeight,
-                dense
-              );
+              const split = splitVerseForPage(verse, pageVerses.slice(0, -1), surah, includeBismillah, measureRoot, maxHeight, dense);
               if (split) {
                 pageVerses[pageVerses.length - 1] = split.fit;
                 queue[0] = split.rest;
@@ -1759,7 +1734,7 @@
           pages.push({ verses: [...pageVerses], dense });
         }
 
-        return pages.length ? pages : fallbackPaginateVerses(verses);
+        return pages;
       } catch (error) {
         console.error('Pagination fallback used', error);
         return fallbackPaginateVerses(verses);
@@ -1771,57 +1746,34 @@
         return state.cache.get(surahId);
       }
 
-      const normaliseQuranComVerses = (payload) => {
-        return (payload.verses || payload.data?.verses || [])
-          .map((verse) => {
-            const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
-            return {
-              number: verseNumber,
-              arabic: verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(verse.text_uthmani) || verse.text_uthmani : verse.text_uthmani
-            };
-          })
-          .filter((verse) => verse.number && verse.arabic)
-          .sort((a, b) => a.number - b.number);
-      };
+      const normaliseQuranComVerses = (payload) => (payload.verses || payload.data?.verses || []).map((verse) => {
+        const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
+        return {
+          number: verseNumber,
+          arabic: verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(verse.text_uthmani) || verse.text_uthmani : verse.text_uthmani
+        };
+      }).filter((verse) => verse.number && verse.arabic).sort((a, b) => a.number - b.number);
 
       try {
-        const uthmaniPayload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
-        const verses = normaliseQuranComVerses(uthmaniPayload);
-
-        if (!verses.length) {
-          throw new Error(`No verses returned for surah ${surahId}`);
-        }
-
+        const payload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
+        const verses = normaliseQuranComVerses(payload);
+        if (!verses.length) throw new Error('No verses returned');
         state.cache.set(surahId, verses);
         return verses;
-      } catch (primaryError) {
-        console.warn('Quran.com Uthmani endpoint failed, falling back', primaryError);
-      }
-
-      const surah = SURAHS.find((item) => item.id === surahId);
-      const perPage = 50;
-      const totalPages = Math.ceil(surah.ayahs / perPage);
-      const payloads = await Promise.all(
-        Array.from({ length: totalPages }, (_, index) => {
+      } catch (error) {
+        const surah = getSelectedSurah();
+        const totalPages = Math.ceil(surah.ayahs / 50);
+        const payloads = await Promise.all(Array.from({ length: totalPages }, (_, index) => {
           const page = index + 1;
-          return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani&per_page=${perPage}&page=${page}`);
-        })
-      );
-
-      const verses = payloads.flatMap(normaliseQuranComVerses);
-      if (!verses.length) {
-        throw new Error(`No verses returned for surah ${surahId}`);
+          return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani&per_page=50&page=${page}`);
+        }));
+        const verses = payloads.flatMap(normaliseQuranComVerses);
+        state.cache.set(surahId, verses);
+        return verses;
       }
-
-      state.cache.set(surahId, verses);
-      return verses;
     }
 
     function renderPageSelect() {
-      const pageData = state.pages[state.currentPage] || { verses: [] };
-      const firstVerse = pageData.verses[0]?.number ?? 1;
-      const lastVerse = pageData.verses[pageData.verses.length - 1]?.number ?? firstVerse;
-
       els.pageSelect.innerHTML = state.pages.map((page, index) => {
         const first = page.verses[0]?.number ?? 1;
         const last = page.verses[page.verses.length - 1]?.number ?? first;
@@ -1837,6 +1789,7 @@
       const surah = getSelectedSurah();
       const pageData = state.pages[state.currentPage] || { verses: [], dense: false };
       const pageVerses = pageData.verses || [];
+      const studyVerses = state.panel.studyMode ? state.verses : pageVerses;
 
       if (!pageVerses.length) {
         els.readerContent.innerHTML = '<div class="empty">No verses to show.</div>';
@@ -1854,25 +1807,29 @@
         try {
           await fetchPanelResources();
           const [translations, tafsir] = await Promise.all([
-            state.panel.selectedTranslationId ? fetchPanelText('translation', state.panel.selectedTranslationId, surah.id) : new Map(),
-            state.panel.selectedTafsirId ? fetchPanelText('tafsir', state.panel.selectedTafsirId, surah.id) : new Map()
+            fetchPanelText('translation', state.panel.selectedTranslationId, surah.id),
+            fetchPanelText('tafsir', state.panel.selectedTafsirId, surah.id)
           ]);
 
-          const studyMarkup = pageVerses.map((verse) => {
+          const studyMarkup = studyVerses.map((verse) => {
             const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
             const arabic = shouldStripBismillah ? stripLeadingBismillah(verse.arabic) || verse.arabic : verse.arabic;
-            const translationText = translations.get(verse.number) || 'Translation not available for this ayah.';
-            const tafsirText = tafsir.get(verse.number) || 'Tafsir not available for this ayah.';
+            const translationText = state.panel.selectedTranslationId ? translations.get(verse.number) : '';
+            const tafsirText = state.panel.selectedTafsirId ? tafsir.get(verse.number) : '';
             return `
               <article class="study-ayah">
                 <div class="study-arabic">${escapeHtml(arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></div>
-                <div class="study-translation">${escapeHtml(translationText)}</div>
-                <div class="study-tafsir">${escapeHtml(tafsirText)}</div>
+                ${translationText ? `<div class="study-translation">${escapeHtml(translationText)}</div>` : ''}
+                ${tafsirText ? `<div class="study-tafsir">${escapeHtml(tafsirText)}</div>` : ''}
               </article>
             `;
           }).join('');
 
+          updateQboxMeta();
           els.readerContent.innerHTML = `
+            <div class="study-topbar">
+              <button class="btn study-back-btn" type="button" data-study-reset="true"><span>Tilawah</span><span class="study-back-ar">تلاوة</span></button>
+            </div>
             <header class="surah-header">
               <p class="arabic-name">${escapeHtml(surah.ar)}</p>
               <p class="english-name">${escapeHtml(surah.en)}</p>
@@ -1886,14 +1843,19 @@
           els.readerContent.innerHTML = '<div class="error">Could not load translation and tafsir inside the Q-box right now.</div>';
         }
       } else {
+        els.qboxMeta.textContent = '';
         els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
       }
 
-      els.pagination.hidden = false;
+      els.pagination.hidden = state.panel.studyMode;
       els.prevPageBtn.disabled = state.selectedSurahId === 114 && state.currentPage >= state.pages.length - 1;
       els.nextPageBtn.disabled = state.selectedSurahId === 1 && state.currentPage === 0;
-      els.statusText.textContent = `${surah.en} • Page ${state.currentPage + 1} of ${state.pages.length}`;
-      renderPageSelect();
+      els.statusText.textContent = state.panel.studyMode
+        ? `${surah.en} • Translation & Tafsir`
+        : `${surah.en} • Page ${state.currentPage + 1} of ${state.pages.length}`;
+      if (!state.panel.studyMode) {
+        renderPageSelect();
+      }
       if (state.panel.open) {
         renderPanelContent();
       }
@@ -1910,28 +1872,18 @@
 
     async function goToPreviousPage() {
       if (state.loading) return false;
-
-      if (state.currentPage > 0) {
-        return goToPage(state.currentPage - 1);
-      }
-
+      if (state.currentPage > 0) return goToPage(state.currentPage - 1);
       const previousSurah = SURAHS.find((surah) => surah.id === state.selectedSurahId - 1);
       if (!previousSurah) return false;
-
       await selectSurah(previousSurah.id, Number.MAX_SAFE_INTEGER);
       return true;
     }
 
     async function goToNextPage() {
       if (state.loading) return false;
-
-      if (state.currentPage < state.pages.length - 1) {
-        return goToPage(state.currentPage + 1);
-      }
-
+      if (state.currentPage < state.pages.length - 1) return goToPage(state.currentPage + 1);
       const nextSurah = SURAHS.find((surah) => surah.id === state.selectedSurahId + 1);
       if (!nextSurah) return false;
-
       await selectSurah(nextSurah.id, 0);
       return true;
     }
@@ -1947,16 +1899,13 @@
       try {
         const verses = await fetchSurahVerses(surahId);
         state.verses = verses;
-
         await new Promise((resolve) => requestAnimationFrame(resolve));
-
         state.pages = paginateVerses(verses);
         if (!state.pages.length) {
           state.pages = fallbackPaginateVerses(verses);
         }
-
         state.currentPage = Math.min(Math.max(preferredPage, 0), Math.max(state.pages.length - 1, 0));
-        renderReader();
+        await renderReader();
         updateLocationHash();
       } catch (error) {
         console.error(error);
@@ -1970,20 +1919,18 @@
 
     function saveBookmark() {
       const surah = getSelectedSurah();
-      const payload = {
+      localStorage.setItem(BOOKMARK_KEY, JSON.stringify({
         surahId: surah.id,
         page: state.currentPage,
         savedAt: new Date().toISOString()
-      };
-      localStorage.setItem(BOOKMARK_KEY, JSON.stringify(payload));
+      }));
       els.statusText.textContent = `Bookmark saved for ${surah.en}, page ${state.currentPage + 1}`;
     }
 
     function loadBookmark() {
       try {
         const bookmark = JSON.parse(localStorage.getItem(BOOKMARK_KEY));
-        if (!bookmark || !bookmark.surahId) return null;
-        return bookmark;
+        return bookmark && bookmark.surahId ? bookmark : null;
       } catch (error) {
         console.warn('Could not load bookmark', error);
         return null;
@@ -2000,10 +1947,11 @@
     }
 
     function parseHash() {
-      const match = window.location.hash.match(/surah-(\d+)-page-(\d+)/i);
-      if (!match) return null;
-      const surahId = Number(match[1]);
-      const page = Math.max(0, Number(match[2]) - 1);
+      const hash = window.location.hash.split('#').join('');
+      const parts = hash.split('-');
+      if (parts.length < 4 || parts[0] !== 'surah' || parts[2] !== 'page') return null;
+      const surahId = Number(parts[1]);
+      const page = Math.max(0, Number(parts[3]) - 1);
       if (!SURAHS.find((surah) => surah.id === surahId)) return null;
       return { surahId, page };
     }
@@ -2019,11 +1967,7 @@
     }
 
     function toggleMenu() {
-      if (els.menuPanel.classList.contains('open')) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
+      els.menuPanel.classList.contains('open') ? closeMenu() : openMenu();
     }
 
     function openIndexPanel() {
@@ -2082,22 +2026,24 @@
         openIndexPanel();
       });
 
-      els.panelToggleBtn.addEventListener('click', () => {
+      els.panelToggleBtn.addEventListener('click', async () => {
         closeMenu();
-        openSidepanel();
+        await openSidepanel();
       });
 
       els.panelClose.addEventListener('click', closeSidepanel);
       els.panelBackdrop.addEventListener('click', closeSidepanel);
 
       els.translationSelect.addEventListener('change', async (event) => {
-        state.panel.selectedTranslationId = Number(event.target.value);
+        state.panel.selectedTranslationId = event.target.value || null;
+        syncStudyMode();
         await renderPanelContent();
         await renderReader();
       });
 
       els.tafsirSelect.addEventListener('change', async (event) => {
-        state.panel.selectedTafsirId = Number(event.target.value);
+        state.panel.selectedTafsirId = event.target.value || null;
+        syncStudyMode();
         await renderPanelContent();
         await renderReader();
       });
@@ -2117,35 +2063,25 @@
           closeIndexPanel();
           closeSidepanel();
         }
-
-        if (event.key === 'ArrowLeft') {
+        if (event.key === 'ArrowLeft' && !state.panel.studyMode) {
           goToPreviousPage();
         }
-
-        if (event.key === 'ArrowRight') {
+        if (event.key === 'ArrowRight' && !state.panel.studyMode) {
           goToNextPage();
         }
       });
 
-      els.homeBtn.addEventListener('click', () => {
-        openIndexPanel();
+      els.homeBtn.addEventListener('click', openIndexPanel);
+      els.prevPageBtn.addEventListener('click', () => goToNextPage());
+      els.nextPageBtn.addEventListener('click', () => goToPreviousPage());
+      els.pageSelect.addEventListener('change', (event) => goToPage(Number(event.target.value)));
+
+      els.readerContent.addEventListener('click', (event) => {
+        const resetButton = event.target.closest('[data-study-reset]');
+        if (resetButton) {
+          disableStudyMode();
+        }
       });
-
-      els.prevPageBtn.addEventListener('click', () => {
-        goToNextPage();
-      });
-
-      els.nextPageBtn.addEventListener('click', () => {
-        goToPreviousPage();
-      });
-
-      els.pageSelect.addEventListener('change', (event) => {
-        goToPage(Number(event.target.value));
-      });
-
-      
-
-      
 
       let touchStartX = 0;
       let touchStartY = 0;
@@ -2157,28 +2093,25 @@
       }, { passive: true });
 
       els.readerContent.addEventListener('touchmove', (event) => {
+        if (state.panel.studyMode) return;
         const touch = event.touches[0];
         if (!touch) return;
-
         const deltaX = Math.abs(touch.clientX - touchStartX);
         const deltaY = Math.abs(touch.clientY - touchStartY);
-
         if (deltaY > deltaX) {
           event.preventDefault();
         }
       }, { passive: false });
 
       els.readerContent.addEventListener('touchend', (event) => {
+        if (state.panel.studyMode) return;
         const touch = event.changedTouches[0];
         if (!touch) return;
-
         const deltaX = touch.clientX - touchStartX;
         const deltaY = touch.clientY - touchStartY;
-
         if (Math.abs(deltaX) < 45 || Math.abs(deltaX) <= Math.abs(deltaY)) {
           return;
         }
-
         if (deltaX > 0) {
           goToNextPage();
         } else {
@@ -2190,12 +2123,12 @@
       window.addEventListener('resize', () => {
         if (!state.verses.length) return;
         cancelAnimationFrame(resizeFrame);
-        resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = requestAnimationFrame(async () => {
           const currentVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
           state.pages = paginateVerses(state.verses);
           const newPageIndex = state.pages.findIndex((page) => page.verses[0]?.number === currentVerse);
           state.currentPage = newPageIndex >= 0 ? newPageIndex : 0;
-          renderReader();
+          await renderReader();
         });
       });
     }
@@ -2209,17 +2142,14 @@
 
       const hashState = parseHash();
       const bookmark = loadBookmark();
-
       if (hashState) {
         await selectSurah(hashState.surahId, hashState.page);
         return;
       }
-
       if (bookmark) {
         await selectSurah(bookmark.surahId, bookmark.page || 0);
         return;
       }
-
       await selectSurah(1, 0);
     }
 
