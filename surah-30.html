@@ -1235,7 +1235,8 @@
         selectedTafsirId: null,
         translationCache: new Map(),
         tafsirCache: new Map(),
-        open: false
+        open: false,
+        studyMode: false
       },
       settings: {
         theme: 'light',
@@ -1445,6 +1446,7 @@
 
     function openSidepanel() {
       state.panel.open = true;
+      state.panel.studyMode = true;
       els.sidepanel.classList.add('open');
       els.panelBackdrop.classList.add('open');
       renderPanelContent();
@@ -1844,11 +1846,11 @@
 
       const showBismillah = surah.id !== 1 && surah.id !== 9 && state.currentPage === 0;
       els.readerContent.classList.toggle('compact-page', false);
-      els.readerContent.classList.toggle('surah-one-page', surah.id === 1 && !state.panel.open);
-      els.readerContent.classList.toggle('dense-page', Boolean(pageData.dense) && !state.panel.open);
-      els.readerContent.classList.toggle('study-mode', state.panel.open);
+      els.readerContent.classList.toggle('surah-one-page', surah.id === 1 && !state.panel.studyMode);
+      els.readerContent.classList.toggle('dense-page', Boolean(pageData.dense) && !state.panel.studyMode);
+      els.readerContent.classList.toggle('study-mode', state.panel.studyMode);
 
-      if (state.panel.open) {
+      if (state.panel.studyMode) {
         try {
           await fetchPanelResources();
           const [translations, tafsir] = await Promise.all([
@@ -2091,11 +2093,13 @@
       els.translationSelect.addEventListener('change', async (event) => {
         state.panel.selectedTranslationId = Number(event.target.value);
         await renderPanelContent();
+        await renderReader();
       });
 
       els.tafsirSelect.addEventListener('change', async (event) => {
         state.panel.selectedTafsirId = Number(event.target.value);
         await renderPanelContent();
+        await renderReader();
       });
 
       els.sidebarClose.addEventListener('click', closeIndexPanel);
