@@ -645,7 +645,40 @@
       text-overflow: ellipsis;
     }
 
+    .qbox-theme-btn {
+      position: absolute;
+      top: clamp(0.78rem, 1.3vw, 0.95rem);
+      right: clamp(0.78rem, 1.3vw, 0.95rem);
+      width: 30px;
+      min-width: 30px;
+      height: 30px;
+      min-height: 30px;
+      padding: 0;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      z-index: 3;
+    }
+
+    .qbox-theme-icon {
+      width: 14px;
+      height: 14px;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .qbox-theme-icon svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     .page {
+      position: relative;
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 28px;
@@ -702,6 +735,7 @@
       display: flex;
       justify-content: flex-start;
       align-items: center;
+      gap: 0.38rem;
       margin: 0;
       z-index: 1;
     }
@@ -726,6 +760,8 @@
       border-right-width: 5px;
       border-top-width: 5px;
     }
+
+    
 
     .surah-header .arabic-name {
       direction: rtl;
@@ -963,6 +999,13 @@
         min-height: 28px;
         padding: 0.24rem 0.56rem;
         font-size: 0.72rem;
+      }
+
+      .qbox-theme-btn {
+        width: 28px;
+        min-width: 28px;
+        height: 28px;
+        min-height: 28px;
       }
 
       .status {
@@ -1311,23 +1354,14 @@
                 </select>
               </div>
             </div>
-            <button class="menu-entry" id="themeToggle" type="button">
-              <span class="menu-entry-main">
-                <span class="menu-entry-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M20 14.5A7.5 7.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"></path>
-                  </svg>
-                </span>
-                <span class="menu-entry-label" id="themeToggleLabel">Dark mode</span>
-              </span>
-            </button>
-          </div>
+            </div>
         </div>
       </div>
 
       <section class="reader-shell">
         <div class="qbox-title"><span class="qbox-title-main">The Open Quran</span><span class="qbox-title-meta" id="qboxMeta"></span></div>
         <div class="page">
+          <button class="btn qbox-theme-btn" id="qboxThemeBtn" type="button" aria-label="Switch theme"><span class="qbox-theme-icon" id="qboxThemeIcon" aria-hidden="true"></span></button>
           <div class="page-inner" id="readerContent">
             <div class="loading">Loading…</div>
           </div>
@@ -1500,8 +1534,7 @@
       surahList: document.getElementById('surahList'),
       surahSearch: document.getElementById('surahSearch'),
       statusText: document.getElementById('statusText'),
-      themeToggle: document.getElementById('themeToggle'),
-      themeToggleLabel: document.getElementById('themeToggleLabel'),
+      
       mushafSelect: document.getElementById('mushafSelect'),
       panelToggleBtn: document.getElementById('panelToggleBtn'),
       sidepanel: document.getElementById('sidepanel'),
@@ -1524,7 +1557,9 @@
       nextPageBtn: document.getElementById('nextPageBtn'),
       pageSelect: document.getElementById('pageSelect'),
       bottomNote: document.getElementById('bottomNote'),
-      qboxMeta: document.getElementById('qboxMeta')
+      qboxMeta: document.getElementById('qboxMeta'),
+      qboxThemeBtn: document.getElementById('qboxThemeBtn'),
+      qboxThemeIcon: document.getElementById('qboxThemeIcon')
     };
 
     const MUSHAF_STYLES = {
@@ -1558,11 +1593,17 @@
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
     }
 
+    function getThemeIconSvg(theme) {
+      return theme === 'dark'
+        ? `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2.5"></path><path d="M12 19v2.5"></path><path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path><path d="M2.5 12H5"></path><path d="M19 12h2.5"></path><path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path></svg>`
+        : `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A7.5 7.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"></path></svg>`;
+    }
+
     function applyTheme() {
-      const isDark = state.settings.theme === 'dark';
-      document.body.classList.toggle('dark', isDark);
-      if (els.themeToggleLabel) {
-        els.themeToggleLabel.textContent = isDark ? 'Light mode' : 'Dark mode';
+      document.body.classList.toggle('dark', state.settings.theme === 'dark');
+      if (els.qboxThemeIcon && els.qboxThemeBtn) {
+        els.qboxThemeIcon.innerHTML = getThemeIconSvg(state.settings.theme);
+        els.qboxThemeBtn.setAttribute('aria-label', state.settings.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
       }
     }
 
@@ -1858,6 +1899,7 @@
               <span class="bookmark-icon" aria-hidden="true"></span>
               <span>Save</span>
             </button>
+            
           </div>
           <p class="arabic-name">${escapeHtml(surah.ar)}</p>
           <p class="english-name">${escapeHtml(surah.en)}</p>
@@ -2085,7 +2127,7 @@
       if (!state.panel.studyMode) {
         renderPageSelect();
       }
-      const activeTopBookmarkBtn = document.getElementById('topBookmarkBtn');
+      const activeTopBookmarkBtn = els.readerContent.querySelector('#topBookmarkBtn');
       if (activeTopBookmarkBtn) {
         activeTopBookmarkBtn.addEventListener('click', () => {
           saveCurrentBookmark();
@@ -2347,6 +2389,7 @@
       els.menuPanel.classList.remove('open');
       els.menuTrigger.setAttribute('aria-expanded', 'false');
       setMenuSection('saved', false);
+      setMenuSection('mushaf', false);
     }
 
     function openMenu() {
@@ -2386,16 +2429,15 @@
         toggleMenu();
       });
 
-            els.themeToggle.addEventListener('click', () => {
-        state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
-        applyTheme();
-        saveSettings();
-        closeMenu();
-      });
-
             els.mushafSelect.addEventListener('change', (event) => {
         state.settings.mushaf = event.target.value;
         applyMushafStyle();
+        saveSettings();
+      });
+
+      els.qboxThemeBtn.addEventListener('click', () => {
+        state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
+        applyTheme();
         saveSettings();
       });
 
