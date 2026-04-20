@@ -96,6 +96,98 @@
       transform: translateX(0);
     }
 
+    .sidepanel {
+      left: auto;
+      right: 0;
+      transform: translateX(100%);
+      border-right: 0;
+      border-left: 1px solid var(--line);
+    }
+
+    .sidepanel.open {
+      transform: translateX(0);
+    }
+
+    .panel-controls {
+      display: block;
+    }
+
+    .panel-content {
+      overflow: auto;
+      padding: 0.6rem;
+    }
+
+    .panel-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      padding: 0.8rem 0.9rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .panel-card-header {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .panel-card-translation,
+    .panel-card-tafsir {
+      margin-top: 0.55rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .page-inner.study-mode {
+      overflow: auto;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .page-inner.study-mode .verses {
+      display: block;
+    }
+
+    .study-ayah {
+      border-top: 1px solid var(--line);
+      padding-top: 0.8rem;
+      margin-top: 0.8rem;
+    }
+
+    .study-ayah:first-child {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .study-arabic {
+      direction: rtl;
+      text-align: justify;
+      font-family: var(--arabic-font);
+      font-size: calc(var(--arabic-size) * 0.92);
+      line-height: 1.95;
+      margin-bottom: 0.65rem;
+    }
+
+    .study-translation {
+      font-size: 0.97rem;
+      line-height: 1.65;
+      margin-bottom: 0.55rem;
+    }
+
+    .study-tafsir {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .panel-card-tafsir {
+      margin-top: 0.55rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
     .sidebar-backdrop {
       position: fixed;
       inset: 0;
@@ -909,6 +1001,26 @@
 <body>
   <div class="app">
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <div class="sidebar-backdrop" id="panelBackdrop"></div>
+    <aside class="sidebar sidepanel" id="sidepanel">
+      <div class="brand">
+        <div class="brand-copy">
+          <div class="brand-kicker">The Open Quran</div>
+          <h1>Translations & Tafsir</h1>
+          <p>Read the current page with translation and tafsir while keeping the Mushaf view intact.</p>
+        </div>
+        <button class="sidebar-close" id="panelClose" type="button" aria-label="Close translations panel">×</button>
+      </div>
+      <div class="search-wrap panel-controls">
+        <label class="menu-label" for="translationSelect">Translation</label>
+        <select class="menu-select" id="translationSelect" aria-label="Translation selection"></select>
+        <label class="menu-label" for="tafsirSelect">Tafsir</label>
+        <select class="menu-select" id="tafsirSelect" aria-label="Tafsir selection"></select>
+      </div>
+      <div class="surah-list panel-content" id="panelContent">
+        <div class="loading">Loading panel…</div>
+      </div>
+    </aside>
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-copy">
@@ -935,6 +1047,7 @@
             <button class="menu-item" id="openIndexBtn" type="button">Index</button>
             <button class="menu-item" id="bookmarkBtn" type="button">Bookmark this page</button>
             <button class="menu-item" id="resumeBtn" type="button">Resume bookmark</button>
+            <button class="menu-item" id="panelToggleBtn" type="button">Translations & Tafsir</button>
             <div class="menu-group">
               <label class="menu-label" for="mushafSelect">Mushaf</label>
               <select class="menu-select" id="mushafSelect" aria-label="Mushaf selection">
@@ -1115,6 +1228,15 @@
       query: '',
       loading: false,
       cache: new Map(),
+      panel: {
+        translationResources: [],
+        tafsirResources: [],
+        selectedTranslationId: null,
+        selectedTafsirId: null,
+        translationCache: new Map(),
+        tafsirCache: new Map(),
+        open: false
+      },
       settings: {
         theme: 'light',
         mushaf: 'amiri-quran'
@@ -1130,6 +1252,13 @@
       statusText: document.getElementById('statusText'),
       themeToggle: document.getElementById('themeToggle'),
       mushafSelect: document.getElementById('mushafSelect'),
+      panelToggleBtn: document.getElementById('panelToggleBtn'),
+      sidepanel: document.getElementById('sidepanel'),
+      panelBackdrop: document.getElementById('panelBackdrop'),
+      panelClose: document.getElementById('panelClose'),
+      translationSelect: document.getElementById('translationSelect'),
+      tafsirSelect: document.getElementById('tafsirSelect'),
+      panelContent: document.getElementById('panelContent'),
       bookmarkBtn: document.getElementById('bookmarkBtn'),
       resumeBtn: document.getElementById('resumeBtn'),
       openIndexBtn: document.getElementById('openIndexBtn'),
@@ -1215,6 +1344,118 @@
 
     function getSelectedSurah() {
       return SURAHS.find((surah) => surah.id === state.selectedSurahId) || SURAHS[0];
+    }
+
+    function stripTags(text) {
+      const temp = document.createElement('div');
+      temp.innerHTML = String(text || '');
+      return (temp.textContent || '').trim();
+    }
+
+    function findPreferredResource(resources, patterns) {
+      return resources.find((resource) => {
+        const haystack = `${resource.name || ''} ${resource.author_name || ''}`.toLowerCase();
+        return patterns.some((pattern) => haystack.includes(pattern));
+      }) || resources[0] || null;
+    }
+
+    async function fetchPanelResources() {
+      if (state.panel.translationResources.length && state.panel.tafsirResources.length) {
+        return;
+      }
+
+      const [translationPayload, tafsirPayload] = await Promise.all([
+        fetchJsonWithTimeout(`${API_BASE}/resources/translations?language=en`),
+        fetchJsonWithTimeout(`${API_BASE}/resources/tafsirs?language=en`)
+      ]);
+
+      state.panel.translationResources = translationPayload.translations || translationPayload.data?.translations || translationPayload.resources || [];
+      state.panel.tafsirResources = tafsirPayload.tafsirs || tafsirPayload.data?.tafsirs || tafsirPayload.resources || [];
+
+      const defaultTranslation = findPreferredResource(state.panel.translationResources, ['sahih international', 'saheeh international', 'pickthall', 'asad']);
+      const defaultTafsir = findPreferredResource(state.panel.tafsirResources, ['ibn kathir', 'maarif', 'jalalayn', 'saadi']);
+
+      state.panel.selectedTranslationId = state.panel.selectedTranslationId || defaultTranslation?.id || null;
+      state.panel.selectedTafsirId = state.panel.selectedTafsirId || defaultTafsir?.id || null;
+
+      els.translationSelect.innerHTML = state.panel.translationResources.map((resource) => `
+        <option value="${resource.id}" ${resource.id === state.panel.selectedTranslationId ? 'selected' : ''}>${escapeHtml(resource.name || resource.author_name || `Translation ${resource.id}`)}</option>
+      `).join('');
+
+      els.tafsirSelect.innerHTML = state.panel.tafsirResources.map((resource) => `
+        <option value="${resource.id}" ${resource.id === state.panel.selectedTafsirId ? 'selected' : ''}>${escapeHtml(resource.name || resource.author_name || `Tafsir ${resource.id}`)}</option>
+      `).join('');
+    }
+
+    async function fetchPanelText(type, resourceId, surahId) {
+      const cache = type === 'translation' ? state.panel.translationCache : state.panel.tafsirCache;
+      const cacheKey = `${type}:${resourceId}:${surahId}`;
+      if (cache.has(cacheKey)) {
+        return cache.get(cacheKey);
+      }
+
+      const endpoint = type === 'translation'
+        ? `${API_BASE}/quran/translations/${resourceId}?chapter_number=${surahId}`
+        : `${API_BASE}/quran/tafsirs/${resourceId}?chapter_number=${surahId}`;
+
+      const payload = await fetchJsonWithTimeout(endpoint);
+      const items = payload.translations || payload.tafsirs || payload.data?.translations || payload.data?.tafsirs || [];
+      const mapped = new Map(
+        items.map((item, index) => {
+          const verseNumber = item.verse_number || Number(String(item.verse_key || '').split(':')[1]) || index + 1;
+          const text = item.text || item.translation || item.content || '';
+          return [verseNumber, stripTags(text)];
+        })
+      );
+
+      cache.set(cacheKey, mapped);
+      return mapped;
+    }
+
+    async function renderPanelContent() {
+      if (!state.panel.open) return;
+
+      try {
+        await fetchPanelResources();
+        const surah = getSelectedSurah();
+        const pageData = state.pages[state.currentPage] || { verses: [] };
+        const pageVerses = pageData.verses || [];
+
+        const [translations, tafsir] = await Promise.all([
+          state.panel.selectedTranslationId ? fetchPanelText('translation', state.panel.selectedTranslationId, surah.id) : new Map(),
+          state.panel.selectedTafsirId ? fetchPanelText('tafsir', state.panel.selectedTafsirId, surah.id) : new Map()
+        ]);
+
+        els.panelContent.innerHTML = pageVerses.map((verse) => {
+          const translationText = translations.get(verse.number) || 'Translation not available for this ayah.';
+          const tafsirText = tafsir.get(verse.number) || 'Tafsir not available for this ayah.';
+          return `
+            <article class="panel-card">
+              <div class="panel-card-header">${surah.id}:${verse.number}</div>
+              <div class="panel-card-translation">${escapeHtml(translationText)}</div>
+              <div class="panel-card-tafsir">${escapeHtml(tafsirText)}</div>
+            </article>
+          `;
+        }).join('') || '<div class="empty">No panel text available for this page.</div>';
+      } catch (error) {
+        console.error(error);
+        els.panelContent.innerHTML = '<div class="error">Could not load translation and tafsir right now.</div>';
+      }
+    }
+
+    function openSidepanel() {
+      state.panel.open = true;
+      els.sidepanel.classList.add('open');
+      els.panelBackdrop.classList.add('open');
+      renderPanelContent();
+      renderReader();
+    }
+
+    function closeSidepanel() {
+      state.panel.open = false;
+      els.sidepanel.classList.remove('open');
+      els.panelBackdrop.classList.remove('open');
+      renderReader();
     }
 
     function toArabicDigits(value) {
@@ -1542,26 +1783,6 @@
       };
 
       try {
-        const cloudPayload = await fetchJsonWithTimeout(`https://api.alquran.cloud/v1/surah/${surahId}/quran-uthmani`);
-        const verses = (cloudPayload.data?.ayahs || [])
-          .map((ayah) => ({
-            number: ayah.numberInSurah,
-            arabic: ayah.numberInSurah === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(ayah.text) || ayah.text : ayah.text
-          }))
-          .filter((verse) => verse.number && verse.arabic)
-          .sort((a, b) => a.number - b.number);
-
-        if (!verses.length) {
-          throw new Error(`No verses returned for surah ${surahId}`);
-        }
-
-        state.cache.set(surahId, verses);
-        return verses;
-      } catch (cloudError) {
-        console.warn('Al Quran Cloud failed, falling back', cloudError);
-      }
-
-      try {
         const uthmaniPayload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
         const verses = normaliseQuranComVerses(uthmaniPayload);
 
@@ -1610,7 +1831,7 @@
       history.replaceState(null, '', `#surah-${state.selectedSurahId}-page-${state.currentPage + 1}`);
     }
 
-    function renderReader() {
+    async function renderReader() {
       const surah = getSelectedSurah();
       const pageData = state.pages[state.currentPage] || { verses: [], dense: false };
       const pageVerses = pageData.verses || [];
@@ -1623,14 +1844,57 @@
 
       const showBismillah = surah.id !== 1 && surah.id !== 9 && state.currentPage === 0;
       els.readerContent.classList.toggle('compact-page', false);
-      els.readerContent.classList.toggle('surah-one-page', surah.id === 1);
-      els.readerContent.classList.toggle('dense-page', Boolean(pageData.dense));
-      els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
+      els.readerContent.classList.toggle('surah-one-page', surah.id === 1 && !state.panel.open);
+      els.readerContent.classList.toggle('dense-page', Boolean(pageData.dense) && !state.panel.open);
+      els.readerContent.classList.toggle('study-mode', state.panel.open);
+
+      if (state.panel.open) {
+        try {
+          await fetchPanelResources();
+          const [translations, tafsir] = await Promise.all([
+            state.panel.selectedTranslationId ? fetchPanelText('translation', state.panel.selectedTranslationId, surah.id) : new Map(),
+            state.panel.selectedTafsirId ? fetchPanelText('tafsir', state.panel.selectedTafsirId, surah.id) : new Map()
+          ]);
+
+          const studyMarkup = pageVerses.map((verse) => {
+            const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
+            const arabic = shouldStripBismillah ? stripLeadingBismillah(verse.arabic) || verse.arabic : verse.arabic;
+            const translationText = translations.get(verse.number) || 'Translation not available for this ayah.';
+            const tafsirText = tafsir.get(verse.number) || 'Tafsir not available for this ayah.';
+            return `
+              <article class="study-ayah">
+                <div class="study-arabic">${escapeHtml(arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></div>
+                <div class="study-translation">${escapeHtml(translationText)}</div>
+                <div class="study-tafsir">${escapeHtml(tafsirText)}</div>
+              </article>
+            `;
+          }).join('');
+
+          els.readerContent.innerHTML = `
+            <header class="surah-header">
+              <p class="arabic-name">${escapeHtml(surah.ar)}</p>
+              <p class="english-name">${escapeHtml(surah.en)}</p>
+              <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}</div>
+            </header>
+            ${showBismillah ? '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
+            <div class="verses">${studyMarkup}</div>
+          `;
+        } catch (error) {
+          console.error(error);
+          els.readerContent.innerHTML = '<div class="error">Could not load translation and tafsir inside the Q-box right now.</div>';
+        }
+      } else {
+        els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
+      }
+
       els.pagination.hidden = false;
       els.prevPageBtn.disabled = state.selectedSurahId === 114 && state.currentPage >= state.pages.length - 1;
       els.nextPageBtn.disabled = state.selectedSurahId === 1 && state.currentPage === 0;
       els.statusText.textContent = `${surah.en} • Page ${state.currentPage + 1} of ${state.pages.length}`;
       renderPageSelect();
+      if (state.panel.open) {
+        renderPanelContent();
+      }
     }
 
     function goToPage(pageIndex) {
@@ -1816,6 +2080,24 @@
         openIndexPanel();
       });
 
+      els.panelToggleBtn.addEventListener('click', () => {
+        closeMenu();
+        openSidepanel();
+      });
+
+      els.panelClose.addEventListener('click', closeSidepanel);
+      els.panelBackdrop.addEventListener('click', closeSidepanel);
+
+      els.translationSelect.addEventListener('change', async (event) => {
+        state.panel.selectedTranslationId = Number(event.target.value);
+        await renderPanelContent();
+      });
+
+      els.tafsirSelect.addEventListener('change', async (event) => {
+        state.panel.selectedTafsirId = Number(event.target.value);
+        await renderPanelContent();
+      });
+
       els.sidebarClose.addEventListener('click', closeIndexPanel);
       els.sidebarBackdrop.addEventListener('click', closeIndexPanel);
 
@@ -1829,6 +2111,7 @@
         if (event.key === 'Escape') {
           closeMenu();
           closeIndexPanel();
+          closeSidepanel();
         }
 
         if (event.key === 'ArrowLeft') {
