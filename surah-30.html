@@ -406,24 +406,24 @@
 
     .bookmark-icon {
       width: 12px;
-      height: 16px;
-      border: 1.5px solid currentColor;
-      border-bottom: 0;
-      border-radius: 2px 2px 0 0;
-      position: relative;
-      display: inline-block;
+      height: 15px;
+      display: inline-grid;
+      place-items: center;
       flex: 0 0 auto;
     }
 
+    .bookmark-icon svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     .bookmark-icon::after {
-      content: '';
-      position: absolute;
-      left: -1.5px;
-      right: -1.5px;
-      bottom: -7px;
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-top: 7px solid currentColor;
+      content: none;
     }
 
     .menu-wrap {
@@ -597,6 +597,8 @@
       outline: none;
     }
 
+    
+
     .bookmark-select option[disabled] {
       color: var(--muted);
     }
@@ -762,17 +764,12 @@
     }
 
     .surah-bookmark-btn .bookmark-icon {
-      width: 9px;
-      height: 12px;
+      width: 11px;
+      height: 14px;
     }
 
     .surah-bookmark-btn .bookmark-icon::after {
-      left: -1px;
-      right: -1px;
-      bottom: -5px;
-      border-left-width: 5px;
-      border-right-width: 5px;
-      border-top-width: 5px;
+      content: none;
     }
 
     
@@ -1567,7 +1564,7 @@
       panelContent: document.getElementById('panelContent'),
       topBookmarkBtn: document.getElementById('topBookmarkBtn'),
       bookmarkSelect: document.getElementById('bookmarkSelect'),
-      savedToggleBtn: document.getElementById('savedToggleBtn'),
+            savedToggleBtn: document.getElementById('savedToggleBtn'),
       mushafToggleBtn: document.getElementById('mushafToggleBtn'),
       openIndexBtn: document.getElementById('openIndexBtn'),
       menuTrigger: document.getElementById('menuTrigger'),
@@ -1918,7 +1915,7 @@
         <header class="surah-header">
           <div class="surah-header-bar">
             <button class="btn bookmark-save-btn surah-bookmark-btn" id="topBookmarkBtn" type="button">
-              <span class="bookmark-icon" aria-hidden="true"></span>
+              <span class="bookmark-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 5.5h10a1 1 0 0 1 1 1V20l-6-3-6 3V6.5a1 1 0 0 1 1-1z"></path></svg></span>
               <span>Save</span>
             </button>
             
@@ -2120,7 +2117,7 @@
             <header class="surah-header">
               <div class="surah-header-bar">
                 <button class="btn bookmark-save-btn surah-bookmark-btn" id="topBookmarkBtn" type="button">
-                  <span class="bookmark-icon" aria-hidden="true"></span>
+                  <span class="bookmark-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 5.5h10a1 1 0 0 1 1 1V20l-6-3-6 3V6.5a1 1 0 0 1 1-1z"></path></svg></span>
                   <span>Save</span>
                 </button>
               </div>
@@ -2299,8 +2296,11 @@
         </optgroup>
       ` : '';
 
-      els.bookmarkSelect.innerHTML = `<option value="">Saved</option>${tilawahOptions}${studyOptions}`;
-      els.bookmarkSelect.disabled = !tilawah.length && !study.length;
+      const resetOption = (tilawah.length || study.length) ? '<option value="reset">Reset Saved</option>' : '';
+      els.bookmarkSelect.innerHTML = `<option value="">Saved</option>${tilawahOptions}${studyOptions}${resetOption}`;
+      els.bookmarkSelect.value = '';
+      const hasBookmarks = Boolean(tilawah.length || study.length);
+      els.bookmarkSelect.disabled = !hasBookmarks;
     }
 
     function saveBookmark(mode) {
@@ -2324,6 +2324,13 @@
     function saveCurrentBookmark() {
       saveBookmark(state.panel.studyMode ? 'study' : 'tilawah');
       renderReader();
+    }
+
+    function resetBookmarks() {
+      localStorage.removeItem(BOOKMARK_KEY);
+      renderBookmarkBar();
+      els.statusText.textContent = 'Saved bookmarks reset';
+      closeMenu();
     }
 
     function findPageIndexForVerse(verseNumber) {
@@ -2476,6 +2483,11 @@
                   els.bookmarkSelect.addEventListener('change', async (event) => {
         const value = event.target.value;
         if (!value) return;
+        if (value === 'reset') {
+          resetBookmarks();
+          event.target.value = '';
+          return;
+        }
         const [mode, indexText] = value.split(':');
         const index = Number(indexText || 0);
         await resumeBookmark(mode, Number.isNaN(index) ? 0 : index);
