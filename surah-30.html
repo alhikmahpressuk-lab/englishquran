@@ -388,14 +388,8 @@
     .topbar-left {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
       min-width: 0;
       flex: 1 1 auto;
-    }
-
-    .topbar-bookmark-btn {
-      flex: 0 0 auto;
-      white-space: nowrap;
     }
 
     .topbar-left .status {
@@ -403,6 +397,42 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .surah-header-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin: 0;
+      z-index: 1;
+    }
+
+    .surah-bookmark-btn {
+      min-height: 30px;
+      padding: 0.28rem 0.62rem;
+      font-size: 0.76rem;
+      gap: 0.42rem;
+    }
+
+    .surah-bookmark-btn .bookmark-icon {
+      width: 9px;
+      height: 12px;
+    }
+
+    .surah-bookmark-btn .bookmark-icon::after {
+      left: -1px;
+      right: -1px;
+      bottom: -5px;
+      border-left-width: 5px;
+      border-right-width: 5px;
+      border-top-width: 5px;
+    }
+
+    .bookmark-select option[disabled] {
+      color: var(--muted);
     }
 
     .bookmark-menu-item {
@@ -537,12 +567,33 @@
       transition: background 0.18s ease, border-color 0.18s ease;
     }
 
-    .menu-item:hover,
-    .menu-item:focus-visible {
-      background: var(--accent-soft);
-      border-color: var(--line);
-      outline: none;
+    .menu-item-strong {
+      font-weight: 700;
     }
+
+    .menu-text-link {
+      width: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 0;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+    }
+
+    .menu-entry {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.78rem 0.82rem;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      background: trans
 
     .btn {
       border: 1px solid var(--line);
@@ -641,6 +692,7 @@
     }
 
     .surah-header {
+      position: relative;
       text-align: center;
       padding-bottom: 0.7rem;
       border-bottom: 1px solid var(--line);
@@ -763,8 +815,6 @@
       min-height: 44px;
       cursor: pointer;
     }
-
-    
 
     .loading,
     .empty,
@@ -903,16 +953,12 @@
 
       .topbar-left {
         width: 100%;
-        gap: 0.35rem;
       }
 
-      .topbar-bookmark-btn {
-        min-height: 42px;
-        padding: 0.52rem 0.82rem;
-      }
-
-      .topbar-left .status {
-        font-size: 0.84rem;
+      .surah-bookmark-btn {
+        min-height: 28px;
+        padding: 0.24rem 0.56rem;
+        font-size: 0.72rem;
       }
 
       .status {
@@ -994,8 +1040,8 @@
       }
 
       .page-inner {
-        border-radius: 14px;
         padding: 0.58rem 0.62rem;
+        border-radius: 14px;
       }
 
       .surah-header {
@@ -1172,10 +1218,6 @@
     <main class="main">
       <div class="topbar">
         <div class="topbar-left">
-          <button class="btn bookmark-save-btn topbar-bookmark-btn" id="topBookmarkBtn" type="button">
-            <span class="bookmark-icon" aria-hidden="true"></span>
-            <span>Save Bookmark</span>
-          </button>
           <div class="status" id="statusText">Loading surahs…</div>
         </div>
         <div class="menu-wrap">
@@ -1183,22 +1225,14 @@
             <span class="menu-dots" aria-hidden="true"><span></span><span></span><span></span></span>
           </button>
           <div class="menu-panel" id="menuPanel">
-            <button class="menu-item" id="openIndexBtn" type="button">Index</button>
-            <button class="menu-item bookmark-save-btn" id="menuBookmarkBtn" type="button"><span class="bookmark-icon" aria-hidden="true"></span><span>Bookmark</span></button>
+            <button class="menu-item menu-text-link" id="openIndexBtn" type="button">Index</button>
             <div class="menu-group">
-              <label class="menu-label">Bookmarks</label>
-              <div class="bookmark-menu-actions">
-                <button class="menu-item bookmark-menu-item bookmark-jump-btn" id="bookmarkTilawahBtn" type="button">
-                  <span class="bookmark-menu-title">Tilawah bookmark</span>
-                  <span class="bookmark-menu-meta" id="bookmarkTilawahMeta">No bookmark saved</span>
-                </button>
-                <button class="menu-item bookmark-menu-item bookmark-jump-btn" id="bookmarkStudyBtn" type="button">
-                  <span class="bookmark-menu-title">Study bookmark</span>
-                  <span class="bookmark-menu-meta" id="bookmarkStudyMeta">No bookmark saved</span>
-                </button>
-              </div>
+              <label class="menu-label" for="bookmarkSelect">Saved</label>
+              <select class="menu-select bookmark-select" id="bookmarkSelect" aria-label="Saved verses">
+                <option value="">Saved</option>
+              </select>
             </div>
-            <button class="menu-item" id="panelToggleBtn" type="button">Translations & Tafsir</button>
+            <button class="menu-item menu-text-link" id="panelToggleBtn" type="button">Translations & Tafsir</button>
             <div class="menu-group">
               <label class="menu-label" for="mushafSelect">Mushaf</label>
               <select class="menu-select" id="mushafSelect" aria-label="Mushaf selection">
@@ -1413,11 +1447,7 @@
       tafsirSelect: document.getElementById('tafsirSelect'),
       panelContent: document.getElementById('panelContent'),
       topBookmarkBtn: document.getElementById('topBookmarkBtn'),
-      menuBookmarkBtn: document.getElementById('menuBookmarkBtn'),
-      bookmarkTilawahBtn: document.getElementById('bookmarkTilawahBtn'),
-      bookmarkStudyBtn: document.getElementById('bookmarkStudyBtn'),
-      bookmarkTilawahMeta: document.getElementById('bookmarkTilawahMeta'),
-      bookmarkStudyMeta: document.getElementById('bookmarkStudyMeta'),
+      bookmarkSelect: document.getElementById('bookmarkSelect'),
       openIndexBtn: document.getElementById('openIndexBtn'),
       menuTrigger: document.getElementById('menuTrigger'),
       menuPanel: document.getElementById('menuPanel'),
@@ -1754,6 +1784,12 @@
     function buildReaderMarkup(surah, pageVerses, includeBismillah) {
       return `
         <header class="surah-header">
+          <div class="surah-header-bar">
+            <button class="btn bookmark-save-btn surah-bookmark-btn" id="topBookmarkBtn" type="button">
+              <span class="bookmark-icon" aria-hidden="true"></span>
+              <span>Save</span>
+            </button>
+          </div>
           <p class="arabic-name">${escapeHtml(surah.ar)}</p>
           <p class="english-name">${escapeHtml(surah.en)}</p>
           <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}</div>
@@ -1949,6 +1985,12 @@
               <button class="btn study-back-btn" type="button" data-study-reset="true"><span>Tilawah</span><span class="study-back-ar">تلاوة</span></button>
             </div>
             <header class="surah-header">
+              <div class="surah-header-bar">
+                <button class="btn bookmark-save-btn surah-bookmark-btn" id="topBookmarkBtn" type="button">
+                  <span class="bookmark-icon" aria-hidden="true"></span>
+                  <span>Save</span>
+                </button>
+              </div>
               <p class="arabic-name">${escapeHtml(surah.ar)}</p>
               <p class="english-name">${escapeHtml(surah.en)}</p>
               <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}</div>
@@ -1973,6 +2015,12 @@
         : `${surah.en} • Page ${state.currentPage + 1} of ${state.pages.length}`;
       if (!state.panel.studyMode) {
         renderPageSelect();
+      }
+      const activeTopBookmarkBtn = document.getElementById('topBookmarkBtn');
+      if (activeTopBookmarkBtn) {
+        activeTopBookmarkBtn.addEventListener('click', () => {
+          saveCurrentBookmark();
+        });
       }
       if (state.panel.open) {
         renderPanelContent();
@@ -2035,27 +2083,43 @@
       }
     }
 
+    function normalizeBookmarkEntries(entries, mode) {
+      if (!entries) return [];
+      const list = Array.isArray(entries) ? entries : [entries];
+      return list.filter(Boolean).map((entry) => ({
+        ...entry,
+        mode: entry.mode || mode,
+        savedAt: entry.savedAt || new Date().toISOString()
+      }));
+    }
+
     function loadBookmarks() {
       try {
         const saved = JSON.parse(localStorage.getItem(BOOKMARK_KEY));
-        return saved && typeof saved === 'object' ? saved : { tilawah: null, study: null };
+        if (!saved || typeof saved !== 'object') {
+          return { tilawah: [], study: [] };
+        }
+        return {
+          tilawah: normalizeBookmarkEntries(saved.tilawah, 'tilawah'),
+          study: normalizeBookmarkEntries(saved.study, 'study')
+        };
       } catch (error) {
         console.warn('Could not load bookmarks', error);
-        return { tilawah: null, study: null };
+        return { tilawah: [], study: [] };
       }
     }
 
     function getLatestBookmark() {
       const bookmarks = loadBookmarks();
-      const all = [bookmarks.tilawah, bookmarks.study].filter(Boolean);
+      const all = [...bookmarks.tilawah, ...bookmarks.study].filter(Boolean);
       if (!all.length) return null;
       all.sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
       return all[0];
     }
 
-    function getBookmark(mode) {
+    function getBookmarks(mode) {
       const bookmarks = loadBookmarks();
-      return bookmarks[mode] || null;
+      return bookmarks[mode] || [];
     }
 
     function getCurrentBookmarkVerse(mode) {
@@ -2087,16 +2151,28 @@
     }
 
     function renderBookmarkBar() {
-      const tilawah = getBookmark('tilawah');
-      const study = getBookmark('study');
+      const tilawah = getBookmarks('tilawah');
+      const study = getBookmarks('study');
 
-      els.bookmarkTilawahMeta.textContent = tilawah ? formatBookmarkMeta(tilawah) : 'No bookmark saved';
-      els.bookmarkStudyMeta.textContent = study ? formatBookmarkMeta(study) : 'No bookmark saved';
+      const tilawahOptions = tilawah.length ? `
+        <optgroup label="Tilawah">
+          ${tilawah.map((bookmark, index) => `<option value="tilawah:${index}">${escapeHtml(formatBookmarkMeta(bookmark))}</option>`).join('')}
+        </optgroup>
+      ` : '';
+
+      const studyOptions = study.length ? `
+        <optgroup label="Study">
+          ${study.map((bookmark, index) => `<option value="study:${index}">${escapeHtml(formatBookmarkMeta(bookmark))}</option>`).join('')}
+        </optgroup>
+      ` : '';
+
+      els.bookmarkSelect.innerHTML = `<option value="">Saved</option>${tilawahOptions}${studyOptions}`;
+      els.bookmarkSelect.disabled = !tilawah.length && !study.length;
     }
 
     function saveBookmark(mode) {
       const bookmarks = loadBookmarks();
-      bookmarks[mode] = {
+      const nextBookmark = {
         mode,
         surahId: state.selectedSurahId,
         verse: getCurrentBookmarkVerse(mode),
@@ -2104,14 +2180,17 @@
         translationId: state.panel.selectedTranslationId,
         tafsirId: state.panel.selectedTafsirId
       };
+
+      bookmarks[mode] = [nextBookmark, ...(bookmarks[mode] || [])].slice(0, 100);
       localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
       renderBookmarkBar();
       const label = mode === 'study' ? 'Study' : 'Tilawah';
-      els.statusText.textContent = `${label} bookmark saved at ${bookmarks[mode].surahId}:${bookmarks[mode].verse}`;
+      els.statusText.textContent = `${label} bookmark saved at ${nextBookmark.surahId}:${nextBookmark.verse}`;
     }
 
     function saveCurrentBookmark() {
       saveBookmark(state.panel.studyMode ? 'study' : 'tilawah');
+      renderReader();
     }
 
     function findPageIndexForVerse(verseNumber) {
@@ -2128,9 +2207,10 @@
       });
     }
 
-    async function resumeBookmark(mode) {
+    async function resumeBookmark(mode, index = 0) {
       const bookmarks = loadBookmarks();
-      const bookmark = bookmarks[mode];
+      const list = bookmarks[mode] || [];
+      const bookmark = list[index];
       if (!bookmark) {
         els.statusText.textContent = `No ${mode} bookmark saved yet`;
         return;
@@ -2229,21 +2309,13 @@
         saveSettings();
       });
 
-            els.topBookmarkBtn.addEventListener('click', () => {
-        saveCurrentBookmark();
-      });
-
-      els.menuBookmarkBtn.addEventListener('click', () => {
-        saveCurrentBookmark();
-        closeMenu();
-      });
-
-      els.bookmarkTilawahBtn.addEventListener('click', async () => {
-        await resumeBookmark('tilawah');
-      });
-
-      els.bookmarkStudyBtn.addEventListener('click', async () => {
-        await resumeBookmark('study');
+                  els.bookmarkSelect.addEventListener('change', async (event) => {
+        const value = event.target.value;
+        if (!value) return;
+        const [mode, indexText] = value.split(':');
+        const index = Number(indexText || 0);
+        await resumeBookmark(mode, Number.isNaN(index) ? 0 : index);
+        event.target.value = '';
       });
 
       els.openIndexBtn.addEventListener('click', () => {
@@ -2386,4 +2458,3 @@
   </script>
 </body>
 </html>
-
