@@ -210,12 +210,6 @@
       color: var(--muted);
     }
 
-    .panel-card-tafsir {
-      margin-top: 0.55rem;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-
     .sidebar-backdrop {
       position: fixed;
       inset: 0;
@@ -399,68 +393,9 @@
       white-space: nowrap;
     }
 
-    .surah-header-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      margin: 0;
-      z-index: 1;
-    }
-
-    .surah-bookmark-btn {
-      min-height: 30px;
-      padding: 0.28rem 0.62rem;
-      font-size: 0.76rem;
-      gap: 0.42rem;
-    }
-
-    .surah-bookmark-btn .bookmark-icon {
-      width: 9px;
-      height: 12px;
-    }
-
-    .surah-bookmark-btn .bookmark-icon::after {
-      left: -1px;
-      right: -1px;
-      bottom: -5px;
-      border-left-width: 5px;
-      border-right-width: 5px;
-      border-top-width: 5px;
-    }
-
-    .bookmark-select option[disabled] {
+    .status {
       color: var(--muted);
-    }
-
-    .bookmark-menu-item {
-      display: block;
-    }
-
-    .bookmark-menu-actions {
-      display: grid;
-      gap: 0.45rem;
-    }
-
-    .bookmark-jump-btn {
-      padding-top: 0.72rem;
-      padding-bottom: 0.72rem;
-    }
-
-    .bookmark-menu-title {
-      display: block;
-      font-size: 0.82rem;
-      color: var(--muted);
-      font-weight: 700;
-      margin-bottom: 0.12rem;
-    }
-
-    .bookmark-menu-meta {
-      display: block;
-      font-size: 0.88rem;
-      line-height: 1.35;
+      font-size: 0.95rem;
     }
 
     .bookmark-save-btn {
@@ -489,11 +424,6 @@
       border-left: 7px solid transparent;
       border-right: 7px solid transparent;
       border-top: 7px solid currentColor;
-    }
-
-    .status {
-      color: var(--muted);
-      font-size: 0.95rem;
     }
 
     .menu-wrap {
@@ -541,7 +471,7 @@
       position: absolute;
       top: calc(100% + 0.55rem);
       right: 0;
-      min-width: 220px;
+      min-width: 240px;
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -555,35 +485,6 @@
       display: block;
     }
 
-    .menu-item {
-      width: 100%;
-      text-align: left;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--text);
-      border-radius: 12px;
-      padding: 0.82rem 0.9rem;
-      cursor: pointer;
-      transition: background 0.18s ease, border-color 0.18s ease;
-    }
-
-    .menu-item-strong {
-      font-weight: 700;
-    }
-
-    .menu-text-link {
-      width: auto;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      border-radius: 0;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      cursor: pointer;
-    }
-
     .menu-entry {
       width: 100%;
       display: flex;
@@ -593,7 +494,102 @@
       padding: 0.78rem 0.82rem;
       border: 1px solid transparent;
       border-radius: 14px;
-      background: trans
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    }
+
+    .menu-entry:hover,
+    .menu-entry:focus-visible {
+      background: var(--accent-soft);
+      border-color: var(--line);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .menu-entry-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.72rem;
+      min-width: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .menu-entry-icon {
+      width: 1.9rem;
+      height: 1.9rem;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+      flex: 0 0 auto;
+    }
+
+    .menu-entry-icon svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .menu-entry-label {
+      display: inline-block;
+    }
+
+    .menu-entry-chevron {
+      color: var(--muted);
+      font-size: 0.92rem;
+      transition: transform 0.18s ease;
+      flex: 0 0 auto;
+    }
+
+    .menu-entry-toggle[aria-expanded="true"] .menu-entry-chevron {
+      transform: rotate(180deg);
+    }
+
+    .menu-group {
+      padding: 0.12rem 0;
+    }
+
+    .menu-section {
+      display: none;
+      padding: 0.4rem 0.2rem 0.2rem 3rem;
+    }
+
+    .menu-section.open {
+      display: block;
+    }
+
+    .menu-label {
+      display: block;
+      margin: 0 0 0.35rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .menu-select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 0.72rem 0.8rem;
+      min-height: 44px;
+      outline: none;
+    }
+
+    .bookmark-select option[disabled] {
+      color: var(--muted);
+    }
 
     .btn {
       border: 1px solid var(--line);
@@ -697,6 +693,38 @@
       padding-bottom: 0.7rem;
       border-bottom: 1px solid var(--line);
       margin-bottom: 0.85rem;
+    }
+
+    .surah-header-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin: 0;
+      z-index: 1;
+    }
+
+    .surah-bookmark-btn {
+      min-height: 30px;
+      padding: 0.28rem 0.62rem;
+      font-size: 0.76rem;
+      gap: 0.42rem;
+    }
+
+    .surah-bookmark-btn .bookmark-icon {
+      width: 9px;
+      height: 12px;
+    }
+
+    .surah-bookmark-btn .bookmark-icon::after {
+      left: -1px;
+      right: -1px;
+      bottom: -5px;
+      border-left-width: 5px;
+      border-right-width: 5px;
+      border-top-width: 5px;
     }
 
     .surah-header .arabic-name {
@@ -897,30 +925,6 @@
 
     body.mushaf-nastaliq .bismillah {
       line-height: 2;
-    }
-
-    .menu-group {
-      padding: 0.35rem 0.2rem 0.15rem;
-    }
-
-    .menu-label {
-      display: block;
-      margin: 0 0 0.35rem;
-      color: var(--muted);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-    }
-
-    .menu-select {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 0.72rem 0.8rem;
-      min-height: 44px;
-      outline: none;
     }
 
     @media (max-width: 980px) {
@@ -1225,39 +1229,98 @@
             <span class="menu-dots" aria-hidden="true"><span></span><span></span><span></span></span>
           </button>
           <div class="menu-panel" id="menuPanel">
-            <button class="menu-item menu-text-link" id="openIndexBtn" type="button">Index</button>
+            <button class="menu-entry" id="openIndexBtn" type="button">
+              <span class="menu-entry-main">
+                <span class="menu-entry-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M6 6.5h12"></path>
+                    <path d="M6 10.5h12"></path>
+                    <path d="M6 14.5h12"></path>
+                    <path d="M6 18.5h12"></path>
+                  </svg>
+                </span>
+                <span class="menu-entry-label">Index</span>
+              </span>
+            </button>
             <div class="menu-group">
-              <label class="menu-label" for="bookmarkSelect">Saved</label>
-              <select class="menu-select bookmark-select" id="bookmarkSelect" aria-label="Saved verses">
-                <option value="">Saved</option>
-              </select>
+              <button class="menu-entry menu-entry-toggle" id="savedToggleBtn" type="button" data-menu-section-toggle="saved" aria-expanded="false">
+                <span class="menu-entry-main">
+                  <span class="menu-entry-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M7 5.5h10a1 1 0 0 1 1 1V20l-6-3-6 3V6.5a1 1 0 0 1 1-1z"></path>
+                    </svg>
+                  </span>
+                  <span class="menu-entry-label">Saved</span>
+                </span>
+                <span class="menu-entry-chevron" aria-hidden="true">▾</span>
+              </button>
+              <div class="menu-section" id="menuSectionSaved">
+                <select class="menu-select bookmark-select" id="bookmarkSelect" aria-label="Saved verses">
+                  <option value="">Saved</option>
+                </select>
+              </div>
             </div>
-            <button class="menu-item menu-text-link" id="panelToggleBtn" type="button">Translations & Tafsir</button>
+            <button class="menu-entry" id="panelToggleBtn" type="button">
+              <span class="menu-entry-main">
+                <span class="menu-entry-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M4.5 6.5h6.5a2 2 0 0 1 2 2v9H6.5a2 2 0 0 0-2 2z"></path>
+                    <path d="M19.5 6.5H13a2 2 0 0 0-2 2"></path>
+                    <path d="M19.5 6.5v13a2 2 0 0 1-2-2H11"></path>
+                  </svg>
+                </span>
+                <span class="menu-entry-label">Translations & Tafsir</span>
+              </span>
+            </button>
             <div class="menu-group">
-              <label class="menu-label" for="mushafSelect">Mushaf</label>
-              <select class="menu-select" id="mushafSelect" aria-label="Mushaf selection">
-                <option value="normal">Normal (Original)</option>
-                <optgroup label="Mushaf / Text">
-                  <option value="amiri-quran">Amiri Quran</option>
-                  <option value="amiri">Amiri</option>
-                  <option value="scheherazade-new">Scheherazade New</option>
-                  <option value="noto-naskh">Noto Naskh Arabic</option>
-                  <option value="harmattan">Harmattan</option>
-                  <option value="lateef">Lateef</option>
-                  <option value="markazi-text">Markazi Text</option>
-                </optgroup>
-                <optgroup label="Display / Kufi">
-                  <option value="aref-ruqaa">Aref Ruqaa</option>
-                  <option value="reem-kufi">Reem Kufi</option>
-                  <option value="noto-kufi">Noto Kufi Arabic</option>
-                </optgroup>
-                <optgroup label="South Asian">
-                  <option value="indopak">Indo-Pak</option>
-                  <option value="noto-nastaliq">Noto Nastaliq Urdu</option>
-                </optgroup>
-              </select>
+              <button class="menu-entry menu-entry-toggle" id="mushafToggleBtn" type="button" data-menu-section-toggle="mushaf" aria-expanded="false">
+                <span class="menu-entry-main">
+                  <span class="menu-entry-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M6.5 5.5h8a2 2 0 0 1 2 2v11h-8a2 2 0 0 0-2 2z"></path>
+                      <path d="M16.5 18.5h1a2 2 0 0 0 2-2v-9"></path>
+                      <path d="M8.5 8.5h5"></path>
+                      <path d="M8.5 11.5h5"></path>
+                    </svg>
+                  </span>
+                  <span class="menu-entry-label">Mushaf</span>
+                </span>
+                <span class="menu-entry-chevron" aria-hidden="true">▾</span>
+              </button>
+              <div class="menu-section" id="menuSectionMushaf">
+                <select class="menu-select" id="mushafSelect" aria-label="Mushaf selection">
+                  <option value="normal">Normal (Original)</option>
+                  <optgroup label="Mushaf / Text">
+                    <option value="amiri-quran">Amiri Quran</option>
+                    <option value="amiri">Amiri</option>
+                    <option value="scheherazade-new">Scheherazade New</option>
+                    <option value="noto-naskh">Noto Naskh Arabic</option>
+                    <option value="harmattan">Harmattan</option>
+                    <option value="lateef">Lateef</option>
+                    <option value="markazi-text">Markazi Text</option>
+                  </optgroup>
+                  <optgroup label="Display / Kufi">
+                    <option value="aref-ruqaa">Aref Ruqaa</option>
+                    <option value="reem-kufi">Reem Kufi</option>
+                    <option value="noto-kufi">Noto Kufi Arabic</option>
+                  </optgroup>
+                  <optgroup label="South Asian">
+                    <option value="indopak">Indo-Pak</option>
+                    <option value="noto-nastaliq">Noto Nastaliq Urdu</option>
+                  </optgroup>
+                </select>
+              </div>
             </div>
-            <button class="menu-item" id="themeToggle" type="button">Dark mode</button>
+            <button class="menu-entry" id="themeToggle" type="button">
+              <span class="menu-entry-main">
+                <span class="menu-entry-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M20 14.5A7.5 7.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"></path>
+                  </svg>
+                </span>
+                <span class="menu-entry-label" id="themeToggleLabel">Dark mode</span>
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -1438,6 +1501,7 @@
       surahSearch: document.getElementById('surahSearch'),
       statusText: document.getElementById('statusText'),
       themeToggle: document.getElementById('themeToggle'),
+      themeToggleLabel: document.getElementById('themeToggleLabel'),
       mushafSelect: document.getElementById('mushafSelect'),
       panelToggleBtn: document.getElementById('panelToggleBtn'),
       sidepanel: document.getElementById('sidepanel'),
@@ -1448,6 +1512,8 @@
       panelContent: document.getElementById('panelContent'),
       topBookmarkBtn: document.getElementById('topBookmarkBtn'),
       bookmarkSelect: document.getElementById('bookmarkSelect'),
+      savedToggleBtn: document.getElementById('savedToggleBtn'),
+      mushafToggleBtn: document.getElementById('mushafToggleBtn'),
       openIndexBtn: document.getElementById('openIndexBtn'),
       menuTrigger: document.getElementById('menuTrigger'),
       menuPanel: document.getElementById('menuPanel'),
@@ -1493,8 +1559,11 @@
     }
 
     function applyTheme() {
-      document.body.classList.toggle('dark', state.settings.theme === 'dark');
-      els.themeToggle.textContent = state.settings.theme === 'dark' ? 'Light mode' : 'Dark mode';
+      const isDark = state.settings.theme === 'dark';
+      document.body.classList.toggle('dark', isDark);
+      if (els.themeToggleLabel) {
+        els.themeToggleLabel.textContent = isDark ? 'Light mode' : 'Dark mode';
+      }
     }
 
     function applyMushafStyle() {
@@ -2254,9 +2323,30 @@
       return { surahId, page };
     }
 
+    function setMenuSection(section, expanded) {
+      const configs = {
+        saved: {
+          button: els.savedToggleBtn,
+          panel: document.getElementById('menuSectionSaved')
+        },
+        mushaf: {
+          button: els.mushafToggleBtn,
+          panel: document.getElementById('menuSectionMushaf')
+        }
+      };
+
+      Object.entries(configs).forEach(([key, config]) => {
+        if (!config.button || !config.panel) return;
+        const isActive = key === section ? expanded : false;
+        config.button.setAttribute('aria-expanded', String(isActive));
+        config.panel.classList.toggle('open', isActive);
+      });
+    }
+
     function closeMenu() {
       els.menuPanel.classList.remove('open');
       els.menuTrigger.setAttribute('aria-expanded', 'false');
+      setMenuSection('saved', false);
     }
 
     function openMenu() {
@@ -2296,17 +2386,27 @@
         toggleMenu();
       });
 
-      els.themeToggle.addEventListener('click', () => {
+            els.themeToggle.addEventListener('click', () => {
         state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
         applyTheme();
         saveSettings();
         closeMenu();
       });
 
-      els.mushafSelect.addEventListener('change', (event) => {
+            els.mushafSelect.addEventListener('change', (event) => {
         state.settings.mushaf = event.target.value;
         applyMushafStyle();
         saveSettings();
+      });
+
+      els.savedToggleBtn.addEventListener('click', () => {
+        const expanded = els.savedToggleBtn.getAttribute('aria-expanded') === 'true';
+        setMenuSection('saved', !expanded);
+      });
+
+      els.mushafToggleBtn.addEventListener('click', () => {
+        const expanded = els.mushafToggleBtn.getAttribute('aria-expanded') === 'true';
+        setMenuSection('mushaf', !expanded);
       });
 
                   els.bookmarkSelect.addEventListener('change', async (event) => {
@@ -2318,7 +2418,7 @@
         event.target.value = '';
       });
 
-      els.openIndexBtn.addEventListener('click', () => {
+            els.openIndexBtn.addEventListener('click', () => {
         closeMenu();
         openIndexPanel();
       });
