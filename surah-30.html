@@ -897,9 +897,9 @@
     .page-inner.study-mode,
     .page-inner.madinah-page {
       overflow: auto;
-      user-select: text;
-      -webkit-user-select: text;
-      touch-action: auto;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: pan-x;
     }
 
     .page-inner.madinah-page {
@@ -1884,6 +1884,11 @@
     ];
 
     const API_BASE = 'https://api.quran.com/api/v4';
+    const AK_KHAN_TRANSLATION_ID = 'ak-khan-englishquran-uk';
+    const AK_KHAN_TRANSLATION_TITLE = 'A. K. Khan (The English Qur\'an)';
+    const AK_KHAN_BASE_URL = 'https://englishquran.uk';
+    const AK_KHAN_LOCAL_BASE_URL = '.';
+    const AK_KHAN_MAX_SURAH = 27;
     const QCF_FONT_CDN_BASE = 'https://verses.quran.foundation';
     const SETTINGS_KEY = 'open-quran-tilawah-settings';
     const BOOKMARK_KEY = 'open-quran-tilawah-bookmarks';
@@ -2227,6 +2232,97 @@
       }
     }
 
+    async function fetchTextWithTimeout(url, timeout = 15000) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: { Accept: 'text/html,text/plain' }
+        });
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+        return await response.text();
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    function cleanAkKhanVerseText(text, surahId, verseNumber) {
+      let cleaned = String(text || '');
+      cleaned = cleaned.split(String.fromCharCode(10)).join(' ');
+      cleaned = cleaned.split(String.fromCharCode(9)).join(' ');
+      while (cleaned.includes('  ')) {
+        cleaned = cleaned.replace('  ', ' ');
+      }
+      const prefixes = [`${surahId}:${verseNumber}`, `${verseNumber}:`, `${verseNumber}.`, `${verseNumber})`, `${verseNumber}-`];
+      prefixes.forEach((prefix) => {
+        if (cleaned.startsWith(prefix)) {
+          cleaned = cleaned.slice(prefix.length).trim();
+        }
+      });
+      return cleaned.trim();
+    }
+
+    async function fetchAkKhanTranslation(surahId) {
+      if (surahId > AK_KHAN_MAX_SURAH) return new Map();
+
+      try {
+        const ayahCount = SURAHS.find((surah) => surah.id === surahId)?.ayahs || 0;
+        const candidateUrls = [
+          `${AK_KHAN_LOCAL_BASE_URL}/surah-${surahId}.html?ayah=1#ayah-1`,
+          `${AK_KHAN_LOCAL_BASE_URL}/surah-${surahId}.html`,
+          `${AK_KHAN_BASE_URL}/surah-${surahId}.html?ayah=1#ayah-1`,
+          `${AK_KHAN_BASE_URL}/surah-${surahId}.html`
+        ];
+
+        let html = '';
+        for (const url of candidateUrls) {
+          try {
+            html = await fetchTextWithTimeout(url);
+            if (html) break;
+          } catch {
+            html = '';
+          }
+        }
+
+        if (!html) return new Map();
+
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const mapped = new Map();
+
+        for (let verseNumber = 1; verseNumber <= ayahCount; verseNumber += 1) {
+          const anchor = doc.getElementById(`ayah-${verseNumber}`);
+          if (!anchor) continue;
+
+          const candidates = [
+            anchor.closest('[data-ayah]'),
+            anchor.closest('article'),
+            anchor.closest('section'),
+            anchor.closest('li'),
+            anchor.parentElement
+          ].filter(Boolean);
+
+          let bestText = '';
+          for (const candidate of candidates) {
+            const text = cleanAkKhanVerseText(stripTags(candidate.innerHTML || candidate.textContent || ''), surahId, verseNumber);
+            if (text && text.length > bestText.length) {
+              bestText = text;
+            }
+          }
+
+          if (bestText) {
+            mapped.set(verseNumber, bestText);
+          }
+        }
+
+        return mapped;
+      } catch {
+        return new Map();
+      }
+    }
+
     function normalizePanelResource(resource, type) {
       const id = resource?.id;
       const languageCode = String(resource?.language_name || resource?.language || resource?.language_code || resource?.slug || '').trim();
@@ -2389,7 +2485,10 @@
       ]);
 
       state.panel.translationResources = dedupePanelResources(
-        (translationPayload.translations || translationPayload.data?.translations || [])
+        [
+          { id: AK_KHAN_TRANSLATION_ID, name: AK_KHAN_TRANSLATION_TITLE, language_name: 'English' },
+          ...(translationPayload.translations || translationPayload.data?.translations || [])
+        ]
           .map((resource) => normalizePanelResource(resource, 'translation'))
           .filter(Boolean)
       ).sort((a, b) => {
@@ -2418,6 +2517,12 @@
       const cache = type === 'translation' ? state.panel.translationCache : state.panel.tafsirCache;
       const cacheKey = `${type}:${resourceId}:${surahId}`;
       if (cache.has(cacheKey)) return cache.get(cacheKey);
+
+      if (type === 'translation' && String(resourceId) === AK_KHAN_TRANSLATION_ID) {
+        const mapped = await fetchAkKhanTranslation(surahId);
+        cache.set(cacheKey, mapped);
+        return mapped;
+      }
 
       const endpoint = type === 'translation'
         ? `${API_BASE}/quran/translations/${resourceId}?chapter_number=${surahId}`
@@ -3338,6 +3443,10 @@
       console.assert(typeof findPageIndexForVerse(1) === 'number', 'findPageIndexForVerse should return a number');
       console.assert(Boolean(els.englishTranslationSelect && els.otherTranslationSelect && els.tafsirSelect), 'resource select containers should exist');
       console.assert(Boolean(els.englishTranslationTrigger && els.otherTranslationTrigger && els.tafsirTrigger), 'resource select triggers should exist');
+      console.assert(AK_KHAN_TRANSLATION_ID === 'ak-khan-englishquran-uk', 'custom AK Khan translation id should remain stable');
+      console.assert(AK_KHAN_LOCAL_BASE_URL === '.', 'AK Khan local base url should point to the current repo root');
+      console.assert(cleanAkKhanVerseText('1:1 Sample text', 1, 1) === 'Sample text', 'AK Khan cleaner should strip verse prefixes');
+      console.assert(cleanAkKhanVerseText('1:1 Sample\ntext\t', 1, 1) === 'Sample text', 'AK Khan cleaner should normalize line breaks and tabs');
     }
 
     function bindEvents() {
@@ -3593,7 +3702,6 @@
       applyTheme();
       applyMushafStyle();
       updateZoomStatus();
-      fetchPanelResources().catch(() => {});
       renderSurahList();
       bindEvents();
       renderBookmarkBar();
