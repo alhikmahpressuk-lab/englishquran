@@ -606,6 +606,21 @@
       padding-top: clamp(1rem, 1.9vw, 1.2rem);
     }
 
+    .page-inner.qcf-page {
+      padding: clamp(0.76rem, 1.35vw, 0.96rem) clamp(0.86rem, 1.5vw, 1.06rem) clamp(0.72rem, 1.2vw, 0.9rem);
+      background: color-mix(in srgb, var(--surface) 96%, var(--surface-2));
+    }
+
+    .page-inner.qcf-page .surah-header {
+      margin-bottom: 0.48rem;
+      padding-bottom: 0.44rem;
+    }
+
+    .page-inner.qcf-page .bismillah {
+      margin-bottom: 0.32rem;
+      line-height: 1.62;
+    }
+
     .madinah-block {
       direction: rtl;
       display: flex;
@@ -739,31 +754,35 @@
     .qcf-lines {
       display: flex;
       flex-direction: column;
-      gap: 0.12rem;
+      gap: 0.01rem;
       direction: rtl;
       text-align: right;
-      margin-top: 0.3rem;
+      margin-top: 0.12rem;
+      padding-inline: 0.04rem;
     }
 
     .qcf-line {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
-      gap: 0.1rem 0.18rem;
-      min-height: 2.35rem;
-      line-height: 1.95;
+      gap: 0.01rem 0.06rem;
+      min-height: clamp(2.36rem, 3.34vw, 2.68rem);
+      line-height: 1.48;
+      padding-block: 0;
     }
 
     .qcf-word {
       display: inline-block;
       white-space: nowrap;
       color: var(--text);
+      letter-spacing: 0;
     }
 
     .qcf-word.qcf-glyph {
-      font-size: clamp(1.8rem, 2.35vw, 2.2rem);
+      font-size: clamp(1.82rem, 2.26vw, 2.14rem);
       line-height: 1;
+      transform: translateY(0.01em);
     }
 
     .qcf-word.qcf-fallback,
@@ -772,14 +791,15 @@
     }
 
     .qcf-word.qcf-fallback {
-      font-size: clamp(1.32rem, 1.9vw, 1.7rem);
-      line-height: 1.7;
+      font-size: clamp(1.34rem, 1.78vw, 1.62rem);
+      line-height: 1.42;
     }
 
     .qcf-word.qcf-end {
-      font-size: clamp(1.12rem, 1.5vw, 1.3rem);
-      opacity: 0.9;
-      margin-inline: 0.08rem;
+      font-size: clamp(1.05rem, 1.34vw, 1.22rem);
+      opacity: 0.94;
+      margin-inline: 0.03rem 0.06rem;
+      transform: translateY(0.01em);
     }
 
     .page-inner.tilawah-mode {
@@ -808,10 +828,33 @@
 
     .tilawah-flow[data-mushaf="madinah-qcf"] {
       font-family: "UthmanicHafs", "Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+      font-size: calc(var(--tilawah-font-size) * 0.88);
+      line-height: calc(var(--tilawah-line-height) * 0.97);
+      word-spacing: 0.01em;
+      font-feature-settings: "liga" 1, "rlig" 1, "ccmp" 1, "calt" 1;
+      font-variant-ligatures: common-ligatures contextual discretionary-ligatures;
+      text-rendering: optimizeLegibility;
     }
 
     .tilawah-flow .ayah-inline {
       white-space: normal;
+    }
+
+    .qcf-inline-word {
+      display: inline-block;
+      white-space: nowrap;
+      vertical-align: baseline;
+      margin-inline: 0.01em;
+      letter-spacing: 0;
+    }
+
+    .qcf-inline-word.qcf-inline-glyph {
+      line-height: 1;
+      transform: translateY(0.01em);
+    }
+
+    .qcf-inline-word.qcf-inline-fallback {
+      font-family: "UthmanicHafs", "Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
     }
 
     .tilawah-zoom-group {
@@ -1046,6 +1089,43 @@
         gap: 0.28rem;
         font-size: clamp(1.34rem, 4.8vw, 1.72rem);
         line-height: 1.88;
+      }
+
+      .page-inner.qcf-page {
+        padding: 0.52rem 0.58rem 0.5rem;
+      }
+
+      .page-inner.qcf-page .surah-header {
+        margin-bottom: 0.28rem;
+        padding-bottom: 0.28rem;
+      }
+
+      .page-inner.qcf-page .bismillah {
+        margin-bottom: 0.18rem;
+      }
+
+      .qcf-lines {
+        gap: 0.01rem;
+        margin-top: 0.08rem;
+        padding-inline: 0;
+      }
+
+      .qcf-line {
+        gap: 0.01rem 0.04rem;
+        min-height: 1.98rem;
+        line-height: 1.38;
+      }
+
+      .qcf-word.qcf-glyph {
+        font-size: clamp(1.56rem, 5.05vw, 1.84rem);
+      }
+
+      .qcf-word.qcf-fallback {
+        font-size: clamp(1.2rem, 4.1vw, 1.42rem);
+      }
+
+      .qcf-word.qcf-end {
+        font-size: clamp(0.94rem, 3vw, 1.08rem);
       }
 
       .surah-header {
@@ -1404,6 +1484,7 @@
     const MANUAL_ZOOM_STEP = 0.08;
     const MANUAL_ZOOM_MIN = 0.72;
     const MANUAL_ZOOM_MAX = 1.36;
+    const MADINAH_BLACK_DOT_RE = /[•●◦ۣ۟۠ۡۢۥۦ۪ۭۨ۫۬]/g;
 
     const state = {
       selectedSurahId: 1,
@@ -1611,6 +1692,9 @@
     async function repaginateAroundVerse(anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1) {
       if (!state.verses.length) return;
       state.pages = paginateVerses(state.verses);
+      if (!state.pages.length) {
+        state.pages = fallbackPaginateVerses(state.verses);
+      }
       state.currentPage = findPageIndexForVerse(anchorVerse);
       await renderReader();
       updateLocationHash();
@@ -1891,7 +1975,7 @@
       `).join('');
 
       const hasLoadedFonts = pageNumbers.some((pageNumber) => loadedQcfFonts.has(`p${pageNumber}-v2`));
-      const noteMarkup = hasLoadedFonts ? '' : '<div class="surah-subtitle" style="text-align:center; margin-top:0.5rem;">QCF font unavailable — showing stable Madinah text fallback</div>';
+      const noteMarkup = hasLoadedFonts ? '' : '<div class="surah-subtitle" style="text-align:center; margin-top:0.42rem;">Primary Mushaf font unavailable — showing stable Arabic fallback</div>'; 
 
       return `
         <header class="surah-header">
@@ -1903,7 +1987,7 @@
           </div>
           <p class="arabic-name">${escapeHtml(surah.ar)}</p>
           <p class="english-name">${escapeHtml(surah.en)}</p>
-          <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)} • Madinah Mushaf Page ${pageData.pageNumber}</div>
+          <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)}</div>
         </header>
         ${includeBismillah ? '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
         <div class="qcf-lines">${linesMarkup}</div>
@@ -1969,10 +2053,68 @@
         .trim();
     }
 
+    function cleanMadinahArabic(text) {
+      return String(text || '')
+        .normalize('NFC')
+        .replace(MADINAH_BLACK_DOT_RE, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function resolveVerseArabic(verse) {
+      const uthmani = String(verse?.textUthmani || verse?.rawArabic || verse?.arabic || '').normalize('NFC');
+      const uthmaniSimple = String(verse?.textUthmaniSimple || '').normalize('NFC');
+      return uthmani || uthmaniSimple;
+    }
+
+    function refreshVerseArabic() {
+      state.verses = state.verses.map((verse) => ({
+        ...verse,
+        arabic: resolveVerseArabic(verse)
+      }));
+    }
+
+    function buildQcfVerseWordMap(qcfPages) {
+      const verseWords = new Map();
+      (qcfPages || []).forEach((page) => {
+        (page.lines || []).forEach((line) => {
+          (line.words || []).forEach((word) => {
+            if (word.charType === 'end') return;
+            if (!verseWords.has(word.verseNumber)) {
+              verseWords.set(word.verseNumber, []);
+            }
+            verseWords.get(word.verseNumber).push(word);
+          });
+        });
+      });
+      return verseWords;
+    }
+
+    async function ensureQcfFontsForVerses(verses) {
+      const pageNumbers = [...new Set((verses || []).flatMap((verse) => (verse.qcfWords || []).map((word) => Number(word.pageNumber || 0))).filter(Boolean))];
+      if (!pageNumbers.length) return;
+      await Promise.all(pageNumbers.map((pageNumber) => loadQcfPageFont(pageNumber)));
+    }
+
+    function renderInlineQcfWords(verse) {
+      const words = verse.qcfWords || [];
+      if (!words.length) {
+        return escapeHtml(resolveVerseArabic(verse));
+      }
+      return words.map((word) => {
+        const fontName = `p${word.pageNumber}-v2`;
+        if (loadedQcfFonts.has(fontName) && word.code) {
+          return `<span class="qcf-inline-word qcf-inline-glyph" style="font-family:'${fontName}'">${word.code}</span>`;
+        }
+        return `<span class="qcf-inline-word qcf-inline-fallback">${escapeHtml(word.text || '')}</span>`;
+      }).join(' ');
+    }
+
     function buildTilawahText(pageVerses) {
       return pageVerses.map((verse) => {
         const marker = verse.showMarker === false ? '' : ` <span class="ayah-marker">${toArabicDigits(verse.number)}</span>`;
-        return `<span class="ayah-inline">${escapeHtml(verse.arabic)}${marker}</span>`;
+        const arabicMarkup = isQcfMushafMode() ? renderInlineQcfWords(verse) : escapeHtml(resolveVerseArabic(verse));
+        return `<span class="ayah-inline">${arabicMarkup}${marker}</span>`;
       }).join(' ');
     }
 
@@ -2110,13 +2252,29 @@
     async function fetchSurahVerses(surahId) {
       if (state.cache.has(surahId)) return state.cache.get(surahId);
 
+      let qcfWordMap = new Map();
+      try {
+        qcfWordMap = buildQcfVerseWordMap(await fetchQcfChapterPages(surahId));
+      } catch {
+        qcfWordMap = new Map();
+      }
+
       const normaliseQuranComVerses = (payload) => (payload.verses || payload.data?.verses || []).map((verse) => {
         const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
+        const rawUthmani = String(verse.text_uthmani || '').normalize('NFC');
+        const rawUthmaniSimple = String(verse.text_uthmani_simple || stripInlineVerseSymbols(rawUthmani)).normalize('NFC');
+        const textUthmani = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmani) || rawUthmani : rawUthmani;
+        const textUthmaniSimple = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmaniSimple) || rawUthmaniSimple : rawUthmaniSimple;
+        const rawArabic = textUthmani || textUthmaniSimple;
         return {
           number: verseNumber,
-          arabic: verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(verse.text_uthmani) || verse.text_uthmani : verse.text_uthmani
+          rawArabic,
+          textUthmani,
+          textUthmaniSimple,
+          arabic: rawArabic,
+          qcfWords: qcfWordMap.get(verseNumber) || []
         };
-      }).filter((verse) => verse.number && verse.arabic).sort((a, b) => a.number - b.number);
+      }).filter((verse) => verse.number && verse.rawArabic).sort((a, b) => a.number - b.number);
 
       try {
         const payload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
@@ -2129,7 +2287,7 @@
         const totalPages = Math.ceil(surah.ayahs / 50);
         const payloads = await Promise.all(Array.from({ length: totalPages }, (_, index) => {
           const page = index + 1;
-          return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani&per_page=50&page=${page}`);
+          return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani,text_uthmani_simple&per_page=50&page=${page}`);
         }));
         const verses = payloads.flatMap(normaliseQuranComVerses);
         state.cache.set(surahId, verses);
@@ -2171,6 +2329,9 @@
       els.readerContent.classList.toggle('madinah-page', false);
 
       if (!state.panel.studyMode) {
+        if (isQcfMushafMode()) {
+          await ensureQcfFontsForVerses(pageVerses);
+        }
         applyTilawahTypography(els.readerContent, pageData.fontSize || getTilawahTargetFontSize(surah, showBismillah, els.readerContent.clientHeight, els.readerContent.offsetWidth));
       }
 
@@ -2184,7 +2345,8 @@
 
           const studyMarkup = studyVerses.map((verse) => {
             const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
-            const arabic = shouldStripBismillah ? stripLeadingBismillah(verse.arabic) || verse.arabic : verse.arabic;
+            const visibleArabic = resolveVerseArabic(verse);
+            const arabic = shouldStripBismillah ? stripLeadingBismillah(visibleArabic) || visibleArabic : visibleArabic;
             const translationText = state.panel.selectedTranslationId ? translations.get(verse.number) : '';
             const tafsirText = state.panel.selectedTafsirId ? tafsir.get(verse.number) : '';
             return `
@@ -2284,6 +2446,10 @@
       try {
         const verses = await fetchSurahVerses(surahId);
         state.verses = verses;
+        refreshVerseArabic();
+        if (isQcfMushafMode()) {
+          await ensureQcfFontsForVerses(state.verses);
+        }
         await new Promise((resolve) => requestAnimationFrame(resolve));
         state.pages = paginateVerses(verses);
         if (!state.pages.length) {
@@ -2519,8 +2685,12 @@
 
       els.mushafSelect.addEventListener('change', async (event) => {
         state.settings.mushaf = event.target.value;
+        refreshVerseArabic();
         applyMushafStyle();
         saveSettings();
+        if (isQcfMushafMode()) {
+          await ensureQcfFontsForVerses(state.verses);
+        }
         await repaginateAroundVerse();
       });
 
