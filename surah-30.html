@@ -780,14 +780,23 @@
       letter-spacing: 0.02em;
       padding-left: 0.2rem;
       padding-right: 0.2rem;
-      min-height: 30px;
+      height: 34px;
+      min-height: 34px;
+      max-height: 34px;
     }
 
     .qbox-title-main {
+      position: absolute;
+      top: 50%;
+      left: 0.2rem;
+      transform: translateY(-50%);
       min-width: 0;
       max-width: calc(50% - 26px);
       font-weight: 700;
       display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .qbox-title-meta {
@@ -807,8 +816,9 @@
 
     .qbox-theme-btn {
       position: absolute;
-      top: 50%;
+      top: 0.04rem;
       left: 50%;
+      z-index: 2;
       inline-size: 30px !important;
       block-size: 30px !important;
       width: 30px !important;
@@ -831,9 +841,16 @@
       flex: 0 0 30px;
       line-height: 0;
       overflow: hidden;
-      transform: translate(-50%, -50%) translateZ(0);
+      transform: translate(-50%, 0) translateZ(0) !important;
+      transition: border-color 0.18s ease, background 0.18s ease;
       appearance: none;
       -webkit-appearance: none;
+    }
+
+    .qbox-theme-btn:hover,
+    .qbox-theme-btn:focus-visible,
+    .qbox-theme-btn:active {
+      transform: translate(-50%, 0) translateZ(0) !important;
     }
 
     .qbox-theme-icon {
@@ -1390,11 +1407,17 @@
         font-size: 0.84rem;
         padding-left: 0.08rem;
         padding-right: 0.08rem;
-        min-height: 28px;
+        height: 32px;
+        min-height: 32px;
+        max-height: 32px;
+      }
+
+      .qbox-title-main {
+        left: 0.08rem;
       }
 
       .qbox-theme-btn {
-        top: 50%;
+        top: 0.02rem;
         left: 50%;
         inline-size: 28px !important;
         block-size: 28px !important;
@@ -1415,9 +1438,16 @@
         flex: 0 0 28px;
         padding: 0 !important;
         overflow: hidden;
-        transform: translateZ(0);
+        transform: translate(-50%, 0) translateZ(0) !important;
+        transition: border-color 0.18s ease, background 0.18s ease;
         appearance: none;
         -webkit-appearance: none;
+      }
+
+      .qbox-theme-btn:hover,
+      .qbox-theme-btn:focus-visible,
+      .qbox-theme-btn:active {
+        transform: translate(-50%, 0) translateZ(0) !important;
       }
 
       .qbox-theme-icon {
