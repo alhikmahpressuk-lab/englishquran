@@ -1666,32 +1666,6 @@
             </button>
 
             <div class="menu-group">
-              <button class="menu-entry menu-entry-toggle" id="savedToggleBtn" type="button" aria-expanded="false">
-                <span class="menu-entry-main">
-                  <span class="menu-entry-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><path d="M7 5.5h10a1 1 0 0 1 1 1V20l-6-3-6 3V6.5a1 1 0 0 1 1-1z"></path></svg>
-                  </span>
-                  <span>Saved</span>
-                </span>
-                <span class="menu-entry-chevron" aria-hidden="true">▾</span>
-              </button>
-              <div class="menu-section" id="menuSectionSaved">
-                <select class="menu-select bookmark-select" id="bookmarkSelect" aria-label="Saved verses">
-                  <option value="">Saved</option>
-                </select>
-              </div>
-            </div>
-
-            <button class="menu-entry" id="panelToggleBtn" type="button">
-              <span class="menu-entry-main">
-                <span class="menu-entry-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M4.5 6.5h6.5a2 2 0 0 1 2 2v9H6.5a2 2 0 0 0-2 2z"></path><path d="M19.5 6.5H13a2 2 0 0 0-2 2"></path><path d="M19.5 6.5v13a2 2 0 0 1-2-2H11"></path></svg>
-                </span>
-                <span>Translations & Tafsir</span>
-              </span>
-            </button>
-
-            <div class="menu-group">
               <button class="menu-entry menu-entry-toggle" id="mushafToggleBtn" type="button" aria-expanded="false">
                 <span class="menu-entry-main">
                   <span class="menu-entry-icon" aria-hidden="true">
@@ -1732,6 +1706,41 @@
                 <div class="zoom-status" id="zoomStatus">Tilawah zoom: Auto</div>
               </div>
             </div>
+
+            <div class="menu-group">
+              <button class="menu-entry menu-entry-toggle" id="savedToggleBtn" type="button" aria-expanded="false">
+                <span class="menu-entry-main">
+                  <span class="menu-entry-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M7 5.5h10a1 1 0 0 1 1 1V20l-6-3-6 3V6.5a1 1 0 0 1 1-1z"></path></svg>
+                  </span>
+                  <span>Saved</span>
+                </span>
+                <span class="menu-entry-chevron" aria-hidden="true">▾</span>
+              </button>
+              <div class="menu-section" id="menuSectionSaved">
+                <select class="menu-select bookmark-select" id="bookmarkSelect" aria-label="Saved verses">
+                  <option value="">Saved</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="menu-entry" id="panelToggleBtn" type="button">
+              <span class="menu-entry-main">
+                <span class="menu-entry-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4.5 6.5h6.5a2 2 0 0 1 2 2v9H6.5a2 2 0 0 0-2 2z"></path><path d="M19.5 6.5H13a2 2 0 0 0-2 2"></path><path d="M19.5 6.5v13a2 2 0 0 1-2-2H11"></path></svg>
+                </span>
+                <span>Translations & Tafsir</span>
+              </span>
+            </button>
+
+            <button class="menu-entry" id="sharePageBtn" type="button">
+              <span class="menu-entry-main">
+                <span class="menu-entry-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="18" cy="5.5" r="2"></circle><circle cx="6" cy="12" r="2"></circle><circle cx="18" cy="18.5" r="2"></circle><path d="M8 11l8-4"></path><path d="M8 13l8 4"></path></svg>
+                </span>
+                <span>Share this page</span>
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -1936,6 +1945,7 @@
       statusText: document.getElementById('statusText'),
       mushafSelect: document.getElementById('mushafSelect'),
       panelToggleBtn: document.getElementById('panelToggleBtn'),
+      sharePageBtn: document.getElementById('sharePageBtn'),
       sidepanel: document.getElementById('sidepanel'),
       panelBackdrop: document.getElementById('panelBackdrop'),
       panelClose: document.getElementById('panelClose'),
@@ -2596,6 +2606,39 @@
       state.panel.open = false;
       els.sidepanel.classList.remove('open');
       els.panelBackdrop.classList.remove('open');
+    }
+
+    async function shareCurrentPage() {
+      const surah = getSelectedSurah();
+      const pageNumber = state.currentPage + 1;
+      const url = window.location.href;
+      const title = `The Open Quran — ${surah.en} — Page ${pageNumber}`;
+      const text = `${surah.en} • Page ${pageNumber}`;
+
+      try {
+        if (navigator.share) {
+          await navigator.share({ title, text, url });
+          els.statusText.textContent = 'Page shared';
+        } else if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(url);
+          els.statusText.textContent = 'Page link copied';
+        } else {
+          els.statusText.textContent = 'Share is not available on this device';
+        }
+      } catch {
+        if (navigator.clipboard?.writeText) {
+          try {
+            await navigator.clipboard.writeText(url);
+            els.statusText.textContent = 'Page link copied';
+          } catch {
+            els.statusText.textContent = 'Could not share this page';
+          }
+        } else {
+          els.statusText.textContent = 'Could not share this page';
+        }
+      }
+
+      closeMenu();
     }
 
     function disableStudyMode() {
@@ -3445,6 +3488,7 @@
       console.assert(Boolean(els.englishTranslationTrigger && els.otherTranslationTrigger && els.tafsirTrigger), 'resource select triggers should exist');
       console.assert(AK_KHAN_TRANSLATION_ID === 'ak-khan-englishquran-uk', 'custom AK Khan translation id should remain stable');
       console.assert(AK_KHAN_LOCAL_BASE_URL === '.', 'AK Khan local base url should point to the current repo root');
+      console.assert(Boolean(els.sharePageBtn), 'share button should exist');
       console.assert(cleanAkKhanVerseText('1:1 Sample text', 1, 1) === 'Sample text', 'AK Khan cleaner should strip verse prefixes');
       console.assert(cleanAkKhanVerseText('1:1 Sample\ntext\t', 1, 1) === 'Sample text', 'AK Khan cleaner should normalize line breaks and tabs');
     }
@@ -3540,6 +3584,10 @@
       els.panelToggleBtn.addEventListener('click', async () => {
         closeMenu();
         await openSidepanel();
+      });
+
+      els.sharePageBtn.addEventListener('click', async () => {
+        await shareCurrentPage();
       });
 
       els.panelClose.addEventListener('click', closeSidepanel);
