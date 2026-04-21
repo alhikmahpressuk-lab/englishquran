@@ -27,6 +27,12 @@
       --arabic-font: "Amiri", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif;
     }
 
+    @font-face {
+      font-family: 'UthmanicHafs';
+      src: url('https://verses.quran.foundation/fonts/quran/hafs/uthmanic_hafs/UthmanicHafs1Ver18.woff2') format('woff2');
+      font-display: swap;
+    }
+
     body.dark {
       --bg: #101214;
       --surface: #171b20;
@@ -724,6 +730,64 @@
       -webkit-user-select: none;
     }
 
+    .page-inner.qcf-page {
+      overflow: auto;
+      user-select: text;
+      -webkit-user-select: text;
+      touch-action: auto;
+      padding-top: clamp(1rem, 1.9vw, 1.2rem);
+    }
+
+    .qcf-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 0.12rem;
+      direction: rtl;
+      text-align: right;
+      margin-top: 0.3rem;
+    }
+
+    .qcf-line {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.1rem 0.18rem;
+      min-height: 2.35rem;
+      line-height: 1.95;
+    }
+
+    .qcf-word {
+      display: inline-block;
+      white-space: nowrap;
+      color: var(--text);
+    }
+
+    .qcf-word.qcf-glyph {
+      font-size: clamp(1.8rem, 2.35vw, 2.2rem);
+      line-height: 1;
+    }
+
+    .qcf-word.qcf-fallback {
+      font-family: 'UthmanicHafs', 'Noto Naskh Arabic', var(--arabic-font);
+      font-size: clamp(1.32rem, 1.9vw, 1.7rem);
+      line-height: 1.7;
+    }
+
+    .qcf-word.qcf-end {
+      font-family: 'UthmanicHafs', 'Noto Naskh Arabic', var(--arabic-font);
+      font-size: clamp(1.12rem, 1.5vw, 1.3rem);
+      opacity: 0.9;
+      margin-inline: 0.08rem;
+    }
+
+    .qcf-page-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 0.5rem;
+    }
+
     .page-measure {
       position: fixed;
       left: -99999px;
@@ -1353,6 +1417,7 @@
               <div class="menu-section" id="menuSectionMushaf">
                 <select class="menu-select" id="mushafSelect" aria-label="Mushaf selection">
                   <option value="normal">Normal (Original)</option>
+                  <option value="madinah-qcf">Madinah Mushaf (QCF V2)</option>
                   <optgroup label="Mushaf / Text">
                     <option value="amiri-quran">Amiri Quran</option>
                     <option value="amiri">Amiri</option>
@@ -1519,6 +1584,7 @@
     ];
 
     const API_BASE = 'https://api.quran.com/api/v4';
+    const QCF_FONT_CDN_BASE = 'https://verses.quran.foundation';
     const SETTINGS_KEY = 'open-quran-tilawah-settings';
     const BOOKMARK_KEY = 'open-quran-tilawah-bookmarks';
 
@@ -1530,6 +1596,7 @@
       query: '',
       loading: false,
       cache: new Map(),
+      qcfCache: new Map(),
       panel: {
         translationResources: [],
         tafsirResources: [],
@@ -1594,8 +1661,30 @@
       'reem-kufi': { font: '"Reem Kufi", "Noto Kufi Arabic", "Noto Naskh Arabic", serif' },
       'noto-kufi': { font: '"Noto Kufi Arabic", "Reem Kufi", "Noto Naskh Arabic", serif' },
       indopak: { font: '"Scheherazade New", "Amiri Quran", "Amiri", serif' },
-      'noto-nastaliq': { font: '"Noto Nastaliq Urdu", "Scheherazade New", "Amiri", serif' }
+      'noto-nastaliq': { font: '"Noto Nastaliq Urdu", "Scheherazade New", "Amiri", serif' },
+      'madinah-qcf': { font: '"UthmanicHafs", "Amiri Quran", "Amiri", serif', qcf: true }
     };
+
+    const loadedQcfFonts = new Set();
+
+    async function loadQcfPageFont(pageNumber) {
+      const fontName = `p${pageNumber}-v2`;
+      if (loadedQcfFonts.has(fontName)) return fontName;
+      try {
+        const fontFace = new FontFace(fontName, `url('${QCF_FONT_CDN_BASE}/fonts/quran/hafs/v2/woff2/p${pageNumber}.woff2')`);
+        fontFace.display = 'block';
+        await fontFace.load();
+        document.fonts.add(fontFace);
+        loadedQcfFonts.add(fontName);
+      } catch (error) {
+        console.error(`Failed to load QCF font for page ${pageNumber}`, error);
+      }
+      return fontName;
+    }
+
+    function isQcfMushafMode() {
+      return state.settings.mushaf === 'madinah-qcf';
+    }
 
     function loadSettings() {
       try {
@@ -1848,6 +1937,116 @@
       renderReader();
     }
 
+    async function fetchQcfChapterPages(surahId) {
+      const cacheKey = `qcf:${surahId}`;
+      if (state.qcfCache.has(cacheKey)) {
+        return state.qcfCache.get(cacheKey);
+      }
+
+      const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
+      const perPage = Math.min(Math.max(surah.ayahs, 10), 300);
+      const payload = await fetchJsonWithTimeout(
+        `${API_BASE}/verses/by_chapter/${surahId}?words=true&word_fields=code_v2,text_qpc_hafs,line_number,page_number,char_type_name&per_page=${perPage}&mushaf=1`,
+        6000
+      );
+
+      const verses = payload.verses || payload.data?.verses || [];
+      if (!verses.length) {
+        throw new Error('No QCF verses returned');
+      }
+
+      const pages = new Map();
+      verses.forEach((verse) => {
+        const words = (verse.words || []).filter(Boolean);
+        words.forEach((word) => {
+          const pageNumber = Number(word.page_number || verse.page_number || 0);
+          const lineNumber = Number(word.line_number || 1);
+          if (!pageNumber) return;
+
+          if (!pages.has(pageNumber)) {
+            pages.set(pageNumber, {
+              qcf: true,
+              pageNumber,
+              lines: new Map(),
+              verses: []
+            });
+          }
+
+          const page = pages.get(pageNumber);
+          if (!page.lines.has(lineNumber)) {
+            page.lines.set(lineNumber, []);
+          }
+
+          page.lines.get(lineNumber).push({
+            pageNumber,
+            lineNumber,
+            position: word.position,
+            charType: word.char_type_name || 'word',
+            code: word.code_v2 || '',
+            text: word.text_qpc_hafs || word.text_uthmani || '',
+            verseKey: verse.verse_key,
+            verseNumber: verse.verse_number
+          });
+
+          if (!page.verses.some((item) => item.number === verse.verse_number)) {
+            page.verses.push({ number: verse.verse_number, verseKey: verse.verse_key });
+          }
+        });
+      });
+
+      const normalizedPages = Array.from(pages.values())
+        .sort((a, b) => a.pageNumber - b.pageNumber)
+        .map((page) => ({
+          ...page,
+          lines: Array.from(page.lines.entries())
+            .sort((a, b) => a[0] - b[0])
+            .map(([lineNumber, words]) => ({ lineNumber, words }))
+        }));
+
+      state.qcfCache.set(cacheKey, normalizedPages);
+      return normalizedPages;
+    }
+
+    function renderQcfWord(word) {
+      if (word.charType === 'end') {
+        return `<span class="qcf-word qcf-end">${escapeHtml(word.text)}</span>`;
+      }
+
+      const fontName = `p${word.pageNumber}-v2`;
+      if (loadedQcfFonts.has(fontName) && word.code) {
+        return `<span class="qcf-word qcf-glyph" style="font-family: '${fontName}'">${word.code}</span>`;
+      }
+
+      return `<span class="qcf-word qcf-fallback">${escapeHtml(word.text)}</span>`;
+    }
+
+    async function buildQcfReaderMarkup(surah, pageData, includeBismillah) {
+      const pageNumbers = [...new Set((pageData.lines || []).flatMap((line) => line.words.map((word) => word.pageNumber)))];
+      await Promise.all(pageNumbers.map((pageNumber) => loadQcfPageFont(pageNumber)));
+
+      const linesMarkup = (pageData.lines || []).map((line) => `
+        <div class="qcf-line" data-qcf-line="${line.lineNumber}">
+          ${line.words.map((word) => renderQcfWord(word)).join('')}
+        </div>
+      `).join('');
+
+      return `
+        <header class="surah-header">
+          <div class="surah-header-bar">
+            <button class="btn bookmark-save-btn surah-bookmark-btn" id="topBookmarkBtn" type="button">
+              <span class="bookmark-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 5.5h10a1 1 0 0 1 1 1V20l-6-3-6 3V6.5a1 1 0 0 1 1-1z"></path></svg></span>
+              <span>Save</span>
+            </button>
+          </div>
+          <p class="arabic-name">${escapeHtml(surah.ar)}</p>
+          <p class="english-name">${escapeHtml(surah.en)}</p>
+          <div class="surah-subtitle">Surah ${surah.id}, ${escapeHtml(surah.place)} • Madinah Mushaf Page ${pageData.pageNumber}</div>
+        </header>
+        ${includeBismillah ? '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
+        <div class="qcf-lines">${linesMarkup}</div>
+      `;
+    }
+
     function fallbackPaginateVerses(verses) {
       const surah = getSelectedSurah();
       const targetUnits = window.innerWidth < 640 ? 22 : window.innerWidth < 900 ? 28 : 32;
@@ -2059,6 +2258,11 @@
 
     function renderPageSelect() {
       els.pageSelect.innerHTML = state.pages.map((page, index) => {
+        if (page.qcf) {
+          const first = page.verses[0]?.number ?? 1;
+          const last = page.verses[page.verses.length - 1]?.number ?? first;
+          return `<option value="${index}" ${index === state.currentPage ? 'selected' : ''}>Madinah ${page.pageNumber} • ${first}-${last}</option>`;
+        }
         const first = page.verses[0]?.number ?? 1;
         const last = page.verses[page.verses.length - 1]?.number ?? first;
         return `<option value="${index}" ${index === state.currentPage ? 'selected' : ''}>${index + 1} • ${first}-${last}</option>`;
@@ -2086,6 +2290,7 @@
       els.readerContent.classList.toggle('surah-one-page', surah.id === 1 && !state.panel.studyMode);
       els.readerContent.classList.toggle('dense-page', Boolean(pageData.dense) && !state.panel.studyMode);
       els.readerContent.classList.toggle('study-mode', state.panel.studyMode);
+      els.readerContent.classList.toggle('qcf-page', !state.panel.studyMode && Boolean(pageData.qcf) && isQcfMushafMode());
 
       if (state.panel.studyMode) {
         try {
@@ -2134,7 +2339,11 @@
         }
       } else {
         els.qboxMeta.textContent = '';
-        els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
+        if (pageData.qcf && isQcfMushafMode()) {
+          els.readerContent.innerHTML = await buildQcfReaderMarkup(surah, pageData, showBismillah);
+        } else {
+          els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
+        }
       }
 
       els.pagination.hidden = state.panel.studyMode;
@@ -2196,6 +2405,7 @@
         const verses = await fetchSurahVerses(surahId);
         state.verses = verses;
         await new Promise((resolve) => requestAnimationFrame(resolve));
+
         state.pages = paginateVerses(verses);
         if (!state.pages.length) {
           state.pages = fallbackPaginateVerses(verses);
@@ -2203,13 +2413,36 @@
         state.currentPage = Math.min(Math.max(preferredPage, 0), Math.max(state.pages.length - 1, 0));
         await renderReader();
         updateLocationHash();
+        state.loading = false;
+
+        if (isQcfMushafMode()) {
+          const currentVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
+          els.statusText.textContent = 'Loading Madinah Mushaf…';
+
+          fetchQcfChapterPages(surahId)
+            .then(async (qcfPages) => {
+              if (state.selectedSurahId !== surahId || !qcfPages.length) {
+                return;
+              }
+              state.pages = qcfPages;
+              const qcfPageIndex = findPageIndexForVerse(currentVerse);
+              state.currentPage = qcfPageIndex >= 0 ? qcfPageIndex : 0;
+              await renderReader();
+              updateLocationHash();
+            })
+            .catch((error) => {
+              console.error('QCF Mushaf unavailable, using text fallback', error);
+              if (state.selectedSurahId === surahId) {
+                els.statusText.textContent = `${getSelectedSurah().en} • Text fallback`;
+              }
+            });
+        }
       } catch (error) {
+        state.loading = false;
         console.error(error);
         els.statusText.textContent = 'Could not load the surah';
         els.readerContent.innerHTML = '<div class="error">The surah could not be loaded right now. Please try again.</div>';
         els.pagination.hidden = true;
-      } finally {
-        state.loading = false;
       }
     }
 
@@ -2458,17 +2691,20 @@
         toggleMenu();
       });
 
-            els.mushafSelect.addEventListener('change', (event) => {
+      els.mushafSelect.addEventListener('change', async (event) => {
         state.settings.mushaf = event.target.value;
         applyMushafStyle();
         saveSettings();
+        await selectSurah(state.selectedSurahId, state.currentPage);
       });
 
-      els.qboxThemeBtn.addEventListener('click', () => {
-        state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
-        applyTheme();
-        saveSettings();
-      });
+      if (els.qboxThemeBtn) {
+        els.qboxThemeBtn.addEventListener('click', () => {
+          state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
+          applyTheme();
+          saveSettings();
+        });
+      }
 
       els.savedToggleBtn.addEventListener('click', () => {
         const expanded = els.savedToggleBtn.getAttribute('aria-expanded') === 'true';
@@ -2480,7 +2716,7 @@
         setMenuSection('mushaf', !expanded);
       });
 
-                  els.bookmarkSelect.addEventListener('change', async (event) => {
+      els.bookmarkSelect.addEventListener('change', async (event) => {
         const value = event.target.value;
         if (!value) return;
         if (value === 'reset') {
@@ -2494,7 +2730,7 @@
         event.target.value = '';
       });
 
-            els.openIndexBtn.addEventListener('click', () => {
+      els.openIndexBtn.addEventListener('click', () => {
         closeMenu();
         openIndexPanel();
       });
@@ -2597,6 +2833,10 @@
         if (!state.verses.length) return;
         cancelAnimationFrame(resizeFrame);
         resizeFrame = requestAnimationFrame(async () => {
+          if (isQcfMushafMode() && state.pages.some((page) => page.qcf)) {
+            await renderReader();
+            return;
+          }
           const currentVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
           state.pages = paginateVerses(state.verses);
           const newPageIndex = state.pages.findIndex((page) => page.verses[0]?.number === currentVerse);
