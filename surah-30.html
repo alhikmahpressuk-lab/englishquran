@@ -804,14 +804,20 @@
     .qbox-theme-btn {
       width: 30px;
       min-width: 30px;
+      max-width: 30px;
       height: 30px;
       min-height: 30px;
+      max-height: 30px;
+      aspect-ratio: 1 / 1;
       padding: 0;
+      border-radius: 50%;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       justify-self: center;
+      flex: 0 0 auto;
       line-height: 0;
+      overflow: hidden;
     }
 
     .qbox-theme-icon {
@@ -1373,12 +1379,18 @@
       .qbox-theme-btn {
         width: 28px;
         min-width: 28px;
+        max-width: 28px;
         height: 28px;
         min-height: 28px;
+        max-height: 28px;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        flex: 0 0 auto;
         padding: 0;
+        overflow: hidden;
       }
 
       .qbox-theme-icon {
