@@ -4141,22 +4141,22 @@
       } else {
         scrollStudyModeToVerse(item.verseNumber);
       }
-      setActiveVerseHighlight(item.verseNumber);
+      const hitbox = els.wordOverlay.querySelector(`[data-word-verse="${item.verseNumber}"][data-word-index="${item.wordIndex}"]`);
+      setActiveWordHighlight(hitbox);
       setPlayStatus(`Reciting • Verse ${item.verseNumber}`);
       updatePlayUi();
     }
 
     async function syncRecitationHighlight() {
-      if ((state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') || !state.audio.playing || !(state.audio.verseQueue || state.audio.queue)?.length) return;
-      const activeQueue = state.audio.verseQueue || state.audio.queue;
+      if ((state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') || !state.audio.playing || !state.audio.queue.length) return;
       const currentTime = state.audio.player.currentTime;
-      while (state.audio.index < activeQueue.length - 1 && currentTime >= activeQueue[state.audio.index].endTime) {
+      while (state.audio.index < state.audio.queue.length - 1 && currentTime >= state.audio.queue[state.audio.index].endTime) {
         state.audio.index += 1;
       }
-      while (state.audio.index > 0 && currentTime < activeQueue[state.audio.index].startTime) {
+      while (state.audio.index > 0 && currentTime < state.audio.queue[state.audio.index].startTime) {
         state.audio.index -= 1;
       }
-      await highlightQueuedRecitationWord(activeQueue[state.audio.index]);
+      await highlightQueuedRecitationWord(state.audio.queue[state.audio.index]);
       state.audio.syncFrame = requestAnimationFrame(() => {
         syncRecitationHighlight();
       });
@@ -4181,7 +4181,6 @@
         const chapterDuration = await waitForAudioMetadata(state.audio.player);
         if (chapterDuration > 0) {
           state.audio.queue = scaleTimedQueueToDuration(state.audio.queue, chapterDuration);
-          state.audio.verseQueue = buildVerseTimingQueue(state.audio.queue);
         }
         await state.audio.player.play();
         state.audio.playing = true;
