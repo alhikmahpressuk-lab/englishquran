@@ -2116,7 +2116,8 @@
         chapterRecitationId: 7,
         wordAudioRecitationId: 7,
         wordCache: new Map(),
-        player: new Audio()
+        player: new Audio(),
+        trackerPlayer: new Audio()
       },
       settings: {
         theme: 'light',
@@ -3429,7 +3430,10 @@
         renderPanelContent();
       }
 
-              hideWordOverlay();
+      if (state.audio.mode === 'word' || state.audio.mode === 'tajweed') {
+        buildWordOverlay();
+      } else {
+        hideWordOverlay();
       }
     }
 
@@ -3726,6 +3730,12 @@
         state.audio.player.removeAttribute('src');
         state.audio.player.load();
       } catch {}
+      try {
+        state.audio.trackerPlayer.pause();
+        state.audio.trackerPlayer.currentTime = 0;
+        state.audio.trackerPlayer.removeAttribute('src');
+        state.audio.trackerPlayer.load();
+      } catch {}
       state.audio.queue = [];
       state.audio.index = 0;
       state.audio.playing = false;
@@ -3845,7 +3855,7 @@
         const verse = verseMap.get(verseNumber);
         if (!verse) return;
 
-        const audioWords  || [];
+        const audioWords = verse.audioWords || [];
         let wordIndex = 0;
         const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
           acceptNode(node) {
@@ -3869,7 +3879,15 @@
               const top = Math.min(...rects.map((rect) => rect.top)) - overlayRect.top;
               const right = Math.max(...rects.map((rect) => rect.right)) - overlayRect.left;
               const bottom = Math.max(...rects.map((rect) => rect.bottom)) - overlayRect.top;
-              if (right > left &   verseNumber,
+              if (right > left && bottom > top) {
+                hitboxes.push({
+                  left,
+                  top,
+                  width: right - left,
+                  height: bottom - top,
+                  audioUrl: audioWord.audioUrl || '',
+                  meaning: audioWord.meaning || '',
+                  verseNumber,
                   wordIndex
                 });
               }
@@ -3890,7 +3908,8 @@
         <button
           class="word-hitbox"
           type="button"
-          style="left:${box.left}px;t${escapeHtml(box.audioUrl || '')}"
+          style="left:${box.left}px;top:${box.top}px;width:${box.width}px;height:${box.height}px;"
+          data-word-audio="${escapeHtml(box.audioUrl || '')}"
           data-word-meaning="${escapeHtml(box.meaning || '')}"
           data-word-verse="${box.verseNumber}" data-word-index="${box.wordIndex}"
         ></button>
@@ -3904,7 +3923,7 @@
       }
       els.wordTooltip.textContent = meaning;
       els.wordTooltip.hidden = false;
-      const );
+      const rect = target.getBoundingClientRect();
       const tooltipRect = els.wordTooltip.getBoundingClientRect();
       const left = Math.min(window.innerWidth - tooltipRect.width - 8, Math.max(8, rect.left + (rect.width / 2) - (tooltipRect.width / 2)));
       const top = Math.max(8, rect.top - tooltipRect.height - 10);
@@ -3948,7 +3967,16 @@
       }).filter(Boolean));
     }
 
-    async functionif (!audioUrl) {
+    async function fetchChapterRecitationUrl(surahId) {
+      const payload = await fetchJsonWithTimeout(`${API_BASE}/chapter_recitations/${state.audio.chapterRecitationId}/${surahId}`);
+      const audioUrl = resolveAudioUrl(
+        payload.audio_file?.audio_url ||
+        payload.audio_files?.[0]?.audio_url ||
+        payload.chapter_recitation?.audio_url ||
+        payload.recitation?.audio_url ||
+        ''
+      );
+      if (!audioUrl) {
         throw new Error('No chapter recitation audio returned');
       }
       return audioUrl;
@@ -3967,17 +3995,46 @@
       }
       const hitbox = els.wordOverlay.querySelector(`[data-word-verse="${item.verseNumber}"][data-word-index="${item.wordIndex}"]`);
       setActiveWordHighlight(hitbox);
-      state.audio.player.src = item.audioUrl;
-      await state.audio.player.play();
-      state.audio.playing = true;
+      state.audio.trackerPlayer.src = item.audioUrl;
+      state.audio.trackerPlayer.muted = true;
+      await state.audio.trackerPlayer.play();
       setPlayStatus(`Reciting • Verse ${item.verseNumber}`);
       updatePlayUi();
     }
 
     async function startAudioPlayback() {
-      udio.loading) return;
+      if (state.audio.mode !== 'tajweed') return;
+      const surahId = state.selectedSurahId;
+      state.audio.loading = true;
+      state.audio.surahId = surahId;
+      setPlayStatus('Loading recitation…');
+      updatePlayUi();
+
+      try {
+        const chapterAudioUrl = await fetchChapterRecitationUrl(surahId);
+        state.audio.queue = await fetchWordByWordQueue(surahId);
+        state.audio.index = 0;
+        if (!state.audio.queue.length) {
+          throw new Error('No word queue found');
+        }
+        state.audio.player.src = chapterAudioUrl;
+        await state.audio.player.play();
+        state.audio.playing = true;
+        await playQueuedRecitationWord(state.audio.queue[0]);
+      } catch {
+        state.audio.playing = false;
+        setPlayStatus('Audio could not be loaded');
+      } finally {
+        state.audio.loading = false;
+        updatePlayUi();
+      }
+    }
+
+    async function toggleAudioPlayback() {
+      if (state.audio.mode !== 'tajweed' || state.audio.loading) return;
       if (state.audio.playing) {
         state.audio.player.pause();
+        state.audio.trackerPlayer.pause();
         state.audio.playing = false;
         setPlayStatus('Paused');
         updatePlayUi();
@@ -3986,6 +4043,9 @@
       if (state.audio.player.src && state.audio.surahId === state.selectedSurahId) {
         try {
           await state.audio.player.play();
+          if (state.audio.trackerPlayer.src) {
+            await state.audio.trackerPlayer.play();
+          }
           state.audio.playing = true;
           setPlayStatus('Recitation resumed');
         } catch {
@@ -4007,7 +4067,10 @@
       console.assert(AK_KHAN_TRANSLATION_ID === 'ak-khan-englishquran-uk', 'custom AK Khan translation id should remain stable');
       console.assert(AK_KHAN_LOCAL_BASE_URL === '.', 'AK Khan local base url should point to the current repo root');
       console.assert(Boolean(els.sharePageBtn), 'share button should exist');
-      console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn &&  'getWordRanges should handle spaces, newlines, and tabs');
+      console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn && els.recitationClearBtn), 'audio controls should exist');
+      console.assert(Boolean(els.wordTooltip), 'word tooltip should exist');
+      const wordRangeSample = `one two${String.fromCharCode(10)}three${String.fromCharCode(9)}four`;
+      console.assert(JSON.stringify(getWordRanges(wordRangeSample)) === JSON.stringify([[0, 3], [4, 7], [8, 13], [14, 18]]), 'getWordRanges should handle spaces, newlines, and tabs');
       console.assert(cleanAkKhanVerseText('1:1 Sample text', 1, 1) === 'Sample text', 'AK Khan cleaner should strip verse prefixes');
       console.assert(cleanAkKhanVerseText('1:1 Sample\ntext\t', 1, 1) === 'Sample text', 'AK Khan cleaner should normalize line breaks and tabs');
     }
@@ -4300,26 +4363,27 @@
         }
       }, { passive: true });
 
-      state.audio.player.addEventListener('ended', async () => {
+      state.audio.player.addEventListener('ended', () => {
         state.audio.playing = false;
-        if (state.audio.mode === 'tajweed' && state.audio.queue.length) {
-          state.audio.index += 1;
-          const nextItem = state.audio.queue[state.audio.index];
-          if (nextItem) {
-            try {
-              await playQueuedRecitationWord(nextItem);
-              return;
-            } catch {
-              setPlayStatus('Recitation could not continue');
-            }
-          } else {
-            setPlayStatus('Recitation finished');
-            clearActiveWordHighlight();
-          }
+        if (state.audio.mode === 'tajweed') {
+          setPlayStatus('Recitation finished');
+          clearActiveWordHighlight();
         } else if (state.audio.mode === 'word') {
           clearActiveWordHighlight();
         }
         updatePlayUi();
+      });
+
+      state.audio.trackerPlayer.addEventListener('ended', async () => {
+        if (state.audio.mode !== 'tajweed' || !state.audio.queue.length) return;
+        state.audio.index += 1;
+        const nextItem = state.audio.queue[state.audio.index];
+        if (!nextItem) return;
+        try {
+          await playQueuedRecitationWord(nextItem);
+        } catch {
+          setPlayStatus('Recitation highlight could not continue');
+        }
       });
 
       let resizeFrame = 0;
@@ -4340,6 +4404,7 @@
       applyTheme();
       applyMushafStyle();
       updateZoomStatus();
+      state.audio.trackerPlayer.muted = true;
       updatePlayUi();
       setPlayStatus('Ready');
       renderSurahList();
