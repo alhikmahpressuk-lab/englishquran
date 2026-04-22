@@ -3835,7 +3835,7 @@
     }
 
     function buildWordOverlay() {
-      if (state.audio.mode !== 'word') {
+      if (state.audio.mode !== 'word' && state.audio.mode !== 'tajweed') {
         hideWordOverlay();
         return;
       }
@@ -4343,7 +4343,7 @@
       });
 
       els.readerContent.addEventListener('scroll', () => {
-        if (state.audio.mode === 'word') {
+        if (state.audio.mode === 'word' || state.audio.mode === 'tajweed') {
           buildWordOverlay();
         }
         hideWordTooltip();
