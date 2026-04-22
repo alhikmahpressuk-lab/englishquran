@@ -7,6 +7,8 @@
   <meta name="description" content="Simple Arabic Qur'an reader with bookmarks, study mode, and a built-in Madinah Mushaf style." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.quran.com" crossorigin>
+  <link rel="preconnect" href="https://verses.quran.foundation" crossorigin>
   <link id="coreGoogleFonts" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -1193,9 +1195,12 @@
 
     .page-inner.surah-one-page .tilawah-flow {
       width: 100%;
+      max-width: min(100%, 32em);
+      margin-inline: auto;
       text-align: center;
       text-align-last: center;
       line-height: calc(var(--tilawah-line-height) * 0.94);
+      word-spacing: 0.01em;
     }
 
     .page-inner.centered-page .verses {
@@ -1603,8 +1608,9 @@
       }
 
       .page-inner.surah-one-page .tilawah-flow {
-        font-size: clamp(1.28rem, 4.4vw, 1.62rem);
-        line-height: 1.66;
+        font-size: var(--tilawah-font-size);
+        line-height: calc(var(--tilawah-line-height) * 0.92);
+        max-width: min(100%, 28em);
       }
 
       :root {
@@ -2221,6 +2227,9 @@
     const BOOKMARK_KEY = 'open-quran-tilawah-bookmarks';
     const AUDIO_CDN_BASE = 'https://verses.quran.foundation';
     const TAJWEED_RECITER_ID = 7;
+    const VERSE_CACHE_PREFIX = 'gm1x:verses:';
+    const WORD_AUDIO_CACHE_PREFIX = 'gm1x:word-audio:';
+    const RECITER_CACHE_KEY = 'gm1x:reciters';
     const MIN_TILAWAH_LINES = 10;
     const TILAWAH_LINE_HEIGHT = 1.82;
     const AUTO_FONT_MIN_PX = 18;
@@ -2365,6 +2374,29 @@
     let deferredFontsLoaded = false;
     let deferredBootstrapped = false;
     let pendingPageAnimation = '';
+
+    function readJsonCache(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function writeJsonCache(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch {}
+    }
+
+    function syncVerseDataIntoPages() {
+      const verseMap = new Map(state.verses.map((verse) => [Number(verse.number), verse]));
+      state.pages = state.pages.map((page) => ({
+        ...page,
+        verses: (page.verses || []).map((verse) => verseMap.get(Number(verse.number)) || verse)
+      }));
+    }
 
     function getThemeIconSvg(theme) {
       return theme === 'dark'
@@ -2533,6 +2565,25 @@
       measureRoot.classList.remove('surah-one-page');
       const safetyFactor = window.innerWidth <= 640 ? 0.96 : 0.985;
       return Number((best * safetyFactor).toFixed(2));
+    }
+
+    function getSurahOneReferenceFontSize(maxHeight, pageWidth) {
+      const surah = SURAHS.find((item) => item.id === 2) || getSelectedSurah();
+      const verseSeed = [
+        { number: 1, arabic: 'الم' },
+        { number: 2, arabic: 'ذَٰلِكَ الْكِتَابُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ' },
+        { number: 3, arabic: 'الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ وَيُقِيمُونَ الصَّلَاةَ وَمِمَّا رَزَقْنَاهُمْ يُنفِقُونَ' },
+        { number: 4, arabic: 'وَالَّذِينَ يُؤْمِنُونَ بِمَا أُنزِلَ إِلَيْكَ وَمَا أُنزِلَ مِن قَبْلِكَ وَبِالْآخِرَةِ هُمْ يُوقِنُونَ' },
+        { number: 5, arabic: 'أُولَٰئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُولَٰئِكَ هُمُ الْمُفْلِحُونَ' }
+      ].map((verse) => ({ ...verse, showMarker: true }));
+      return fitFixedPageFontSize(
+        surah,
+        verseSeed,
+        true,
+        maxHeight,
+        pageWidth,
+        getTilawahTargetFontSize(surah, true, maxHeight, pageWidth)
+      );
     }
 
     async function repaginateAroundVerse(anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1) {
@@ -3480,15 +3531,18 @@
       try {
         if (surah.id === 1) {
           const onePageHeight = Math.max(140, maxHeight - (window.innerWidth <= 640 ? 12 : 4));
-          const fontSize = fitFixedPageFontSize(
+          const preparedVerses = verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false }));
+          const fittedFontSize = fitFixedPageFontSize(
             surah,
-            verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false })),
+            preparedVerses,
             false,
             onePageHeight,
             pageWidth,
             getTilawahTargetFontSize(surah, false, onePageHeight, pageWidth)
           );
-          return [{ verses: verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false })), dense: false, fontSize, forceSinglePage: true, centered: true }];
+          const referenceFontSize = getSurahOneReferenceFontSize(onePageHeight, pageWidth);
+          const fontSize = Math.min(referenceFontSize, fittedFontSize);
+          return [{ verses: preparedVerses, dense: false, fontSize, forceSinglePage: true, centered: true }];
         }
 
         if (surah.id === 2 && verses.length >= 5) {
@@ -3519,6 +3573,12 @@
       if (state.cache.has(surahId)) return state.cache.get(surahId);
       if (pendingVerseRequests.has(surahId)) return pendingVerseRequests.get(surahId);
 
+      const cachedVerses = readJsonCache(`${VERSE_CACHE_PREFIX}${surahId}`);
+      if (Array.isArray(cachedVerses) && cachedVerses.length) {
+        state.cache.set(surahId, cachedVerses);
+        return cachedVerses;
+      }
+
       const request = (async () => {
         const normaliseQuranComVerses = (payload) => (payload.verses || payload.data?.verses || []).map((verse) => {
           const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
@@ -3542,6 +3602,7 @@
           const verses = normaliseQuranComVerses(payload);
           if (!verses.length) throw new Error('No verses returned');
           state.cache.set(surahId, verses);
+          writeJsonCache(`${VERSE_CACHE_PREFIX}${surahId}`, verses);
           return verses;
         } catch {
           const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
@@ -3552,6 +3613,7 @@
           }));
           const verses = payloads.flatMap(normaliseQuranComVerses);
           state.cache.set(surahId, verses);
+          writeJsonCache(`${VERSE_CACHE_PREFIX}${surahId}`, verses);
           return verses;
         }
       })();
@@ -3745,9 +3807,6 @@
 
       try {
         let verses = await fetchSurahVerses(surahId);
-        if (state.audio.mode === 'word') {
-          verses = await attachWordAudioToVerses(surahId, verses);
-        }
         state.verses = verses;
         refreshVerseArabic();
         await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -3768,6 +3827,13 @@
           scheduleNonCriticalTask(() => {
             hydrateQcfAfterInitialRender(surahId, anchorVerse);
           }, 1400);
+        }
+        if (state.audio.mode === 'word') {
+          scheduleNonCriticalTask(() => {
+            ensureWordAudioForCurrentSurah().catch(() => {
+              setPlayStatus('Word audio could not be loaded');
+            });
+          }, 120);
         }
       } catch {
         state.loading = false;
@@ -4092,6 +4158,14 @@
 
     async function fetchWordAudioMap(surahId) {
       if (state.audio.wordCache.has(surahId)) return state.audio.wordCache.get(surahId);
+
+      const cached = readJsonCache(`${WORD_AUDIO_CACHE_PREFIX}${surahId}:${state.audio.wordAudioRecitationId}`);
+      if (cached && typeof cached === 'object') {
+        const mapped = new Map(Object.entries(cached).map(([verseNumber, words]) => [Number(verseNumber), Array.isArray(words) ? words : []]));
+        state.audio.wordCache.set(surahId, mapped);
+        return mapped;
+      }
+
       const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
       const payload = await fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?words=true&audio=${state.audio.wordAudioRecitationId}&word_fields=audio_url,text_qpc_hafs,text_uthmani&per_page=${Math.min(Math.max(surah.ayahs, 10), 300)}`);
       const verses = payload.verses || payload.data?.verses || [];
@@ -4105,7 +4179,26 @@
         })));
       });
       state.audio.wordCache.set(surahId, mapped);
+      writeJsonCache(`${WORD_AUDIO_CACHE_PREFIX}${surahId}:${state.audio.wordAudioRecitationId}`, Object.fromEntries(mapped));
       return mapped;
+    }
+
+    async function ensureWordAudioForCurrentSurah() {
+      const alreadyReady = state.verses.length && state.verses.every((verse) => Array.isArray(verse.audioWords) && verse.audioWords.length);
+      if (alreadyReady) return;
+      const anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
+      state.audio.loading = true;
+      setPlayStatus('Loading word audio…');
+      updatePlayUi();
+      try {
+        state.verses = await attachWordAudioToVerses(state.selectedSurahId, state.verses);
+        syncVerseDataIntoPages();
+        state.currentPage = findPageIndexForVerse(anchorVerse);
+        await renderReader();
+      } finally {
+        state.audio.loading = false;
+        updatePlayUi();
+      }
     }
 
     async function attachWordAudioToVerses(surahId, verses) {
@@ -4282,7 +4375,7 @@
     async function playTappedWord(audioUrl, verseNumber, target = null) {
       if (!audioUrl) {
         setPlayStatus(`No word audio for verse ${verseNumber}`);
-        return;
+        return false;
       }
       try {
         state.audio.player.pause();
@@ -4290,14 +4383,39 @@
       } catch {}
       setActiveWordHighlight(target);
       state.audio.player.src = audioUrl;
+      state.audio.player.load();
       try {
         await state.audio.player.play();
         state.audio.playing = true;
         setPlayStatus(`Word by word • Verse ${verseNumber}`);
+        updatePlayUi();
+        return true;
       } catch {
         setPlayStatus('Word audio could not be played');
+        updatePlayUi();
+        return false;
       }
-      updatePlayUi();
+    }
+
+    async function handleWordOverlayActivation(hitbox) {
+      if (!hitbox || state.audio.mode !== 'word') return;
+      let audioUrl = hitbox.dataset.wordAudio || '';
+      const verseNumber = Number(hitbox.dataset.wordVerse || 0);
+      const wordIndex = Number(hitbox.dataset.wordIndex || 0);
+
+      if (!audioUrl) {
+        await ensureWordAudioForCurrentSurah();
+        const refreshedHitbox = els.wordOverlay.querySelector(`[data-word-verse="${verseNumber}"][data-word-index="${wordIndex}"]`);
+        if (refreshedHitbox) {
+          audioUrl = refreshedHitbox.dataset.wordAudio || '';
+          hitbox = refreshedHitbox;
+        }
+      }
+
+      const played = await playTappedWord(audioUrl, verseNumber, hitbox);
+      if (played) {
+        showWordTooltip(hitbox.dataset.wordMeaning || '', hitbox);
+      }
     }
 
     async function fetchWordByWordQueue(surahId) {
@@ -4843,11 +4961,17 @@
       }, { passive: false });
 
       els.wordOverlay.addEventListener('click', async (event) => {
-        const hitbox = event.target.closest('[data-word-audio]');
-        if (!hitbox || state.audio.mode !== 'word') return;
-        await playTappedWord(hitbox.dataset.wordAudio || '', Number(hitbox.dataset.wordVerse || 0), hitbox);
-        showWordTooltip(hitbox.dataset.wordMeaning || '', hitbox);
+        const hitbox = event.target.closest('[data-word-audio], [data-word-verse]');
+        if (!hitbox) return;
+        await handleWordOverlayActivation(hitbox);
       });
+
+      els.wordOverlay.addEventListener('touchend', async (event) => {
+        const hitbox = event.target.closest('[data-word-audio], [data-word-verse]');
+        if (!hitbox) return;
+        event.preventDefault();
+        await handleWordOverlayActivation(hitbox);
+      }, { passive: false });
 
       els.readerContent.addEventListener('scroll', () => {
         if (state.audio.mode === 'word' || state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
@@ -4929,7 +5053,13 @@
       updateZoomStatus();
       state.audio.trackerPlayer.muted = true;
       state.audio.trackerPlayer.preload = 'none';
+      state.audio.trackerPlayer.setAttribute('playsinline', '');
+      state.audio.trackerPlayer.setAttribute('webkit-playsinline', '');
       state.audio.player.preload = 'metadata';
+      state.audio.player.setAttribute('playsinline', '');
+      state.audio.player.setAttribute('webkit-playsinline', '');
+      state.audio.player.crossOrigin = 'anonymous';
+      state.audio.trackerPlayer.crossOrigin = 'anonymous';
       updatePlayUi();
       setPlayStatus('Ready');
       renderSurahList();
