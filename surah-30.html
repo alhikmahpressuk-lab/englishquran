@@ -902,6 +902,13 @@
       touch-action: pan-x;
     }
 
+    .page-inner.recitation-scroll {
+      overflow: auto;
+      touch-action: pan-y;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .page-inner.madinah-page {
       padding-top: clamp(1rem, 1.9vw, 1.2rem);
     }
@@ -3350,6 +3357,7 @@
       els.readerContent.classList.toggle('centered-page', Boolean(pageData.centered) && !state.panel.studyMode);
       els.readerContent.classList.toggle('study-mode', state.panel.studyMode);
       els.readerContent.classList.toggle('tilawah-mode', !state.panel.studyMode);
+      els.readerContent.classList.toggle('recitation-scroll', state.audio.mode === 'tajweed' && !state.panel.studyMode);
       els.readerContent.classList.toggle('qcf-page', false);
       els.readerContent.classList.toggle('madinah-page', false);
 
@@ -4028,6 +4036,41 @@
       return timedQueue;
     }
 
+    function scaleTimedQueueToDuration(queue, totalDuration) {
+      if (!queue.length || !totalDuration) return queue;
+      const lastEnd = queue[queue.length - 1]?.endTime || 0;
+      if (!lastEnd || !Number.isFinite(lastEnd)) return queue;
+      const scale = totalDuration / lastEnd;
+      return queue.map((item) => ({
+        ...item,
+        startTime: item.startTime * scale,
+        endTime: item.endTime * scale
+      }));
+    }
+
+    function waitForAudioMetadata(audio) {
+      return new Promise((resolve) => {
+        if (audio.readyState >= 1 && Number.isFinite(audio.duration) && audio.duration > 0) {
+          resolve(audio.duration);
+          return;
+        }
+        const handleLoaded = () => {
+          cleanup();
+          resolve(Number.isFinite(audio.duration) ? audio.duration : 0);
+        };
+        const handleError = () => {
+          cleanup();
+          resolve(0);
+        };
+        const cleanup = () => {
+          audio.removeEventListener('loadedmetadata', handleLoaded);
+          audio.removeEventListener('error', handleError);
+        };
+        audio.addEventListener('loadedmetadata', handleLoaded);
+        audio.addEventListener('error', handleError);
+      });
+    }
+
     async function highlightQueuedRecitationWord(item) {
       if (!item) return;
       if (!state.panel.studyMode) {
@@ -4076,6 +4119,10 @@
           throw new Error('No word queue found');
         }
         state.audio.player.src = chapterAudioUrl;
+        const chapterDuration = await waitForAudioMetadata(state.audio.player);
+        if (chapterDuration > 0) {
+          state.audio.queue = scaleTimedQueueToDuration(state.audio.queue, chapterDuration);
+        }
         await state.audio.player.play();
         state.audio.playing = true;
         cancelAnimationFrame(state.audio.syncFrame);
@@ -4134,7 +4181,10 @@
       const wordRangeSample = `one two${String.fromCharCode(10)}three${String.fromCharCode(9)}four`;
       console.assert(JSON.stringify(getWordRanges(wordRangeSample)) === JSON.stringify([[0, 3], [4, 7], [8, 13], [14, 18]]), 'getWordRanges should handle spaces, newlines, and tabs');
       console.assert(cleanAkKhanVerseText('1:1 Sample text', 1, 1) === 'Sample text', 'AK Khan cleaner should strip verse prefixes');
-      console.assert(cleanAkKhanVerseText('1:1 Sample\ntext\t', 1, 1) === 'Sample text', 'AK Khan cleaner should normalize line breaks and tabs');
+      const akKhanWhitespaceSample = `1:1 Sample${String.fromCharCode(10)}text${String.fromCharCode(9)}`;
+      console.assert(cleanAkKhanVerseText(akKhanWhitespaceSample, 1, 1) === 'Sample text', 'AK Khan cleaner should normalize line breaks and tabs');
+      const scaledSample = scaleTimedQueueToDuration([{ startTime: 0, endTime: 1 }, { startTime: 1, endTime: 2 }], 4);
+      console.assert(scaledSample[1].endTime === 4, 'timed queue should scale to recitation duration');
     }
 
     function bindEvents() {
