@@ -1247,6 +1247,11 @@
       padding: 0.42rem 0.78rem;
     }
 
+    .recitation-topbar .btn.active {
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+    }
+
     .recitation-topbar-status {
       color: var(--muted);
       font-size: 0.82rem;
@@ -1935,6 +1940,8 @@
         <div class="recitation-topbar" id="recitationTopbar" hidden>
           <button class="btn" id="recitationPlayPauseBtn" type="button">Play</button>
           <button class="btn" id="recitationBeginningBtn" type="button">Beginning</button>
+          <button class="btn" id="recitationRepeatBtn" type="button">Repeat</button>
+          <button class="btn" id="recitationContinueBtn" type="button">Continue</button>
           <button class="btn" id="recitationClearBtn" type="button">Clear</button>
           <div class="recitation-topbar-status" id="recitationTopbarStatus">Ready</div>
         </div>
@@ -2133,6 +2140,8 @@
         wordCache: new Map(),
         timingCache: new Map(),
         syncFrame: 0,
+        repeatEnabled: false,
+        continueEnabled: false,
         player: new Audio(),
         trackerPlayer: new Audio()
       },
@@ -2162,6 +2171,8 @@
       recitationTopbar: document.getElementById('recitationTopbar'),
       recitationPlayPauseBtn: document.getElementById('recitationPlayPauseBtn'),
       recitationBeginningBtn: document.getElementById('recitationBeginningBtn'),
+      recitationRepeatBtn: document.getElementById('recitationRepeatBtn'),
+      recitationContinueBtn: document.getElementById('recitationContinueBtn'),
       recitationClearBtn: document.getElementById('recitationClearBtn'),
       recitationTopbarStatus: document.getElementById('recitationTopbarStatus'),
       wordTooltip: document.getElementById('wordTooltip'),
@@ -2449,13 +2460,22 @@
         .join(' ');
     }
 
+    function getSelectedReciterName() {
+      const selectedId = Number(state.audio.chapterRecitationId || state.audio.wordAudioRecitationId || 0);
+      return state.audio.reciters.find((item) => Number(item.id) === selectedId)?.name || '';
+    }
+
     function updateQboxMeta() {
-      if (!state.panel.studyMode) {
-        els.qboxMeta.textContent = '';
+      if (state.panel.studyMode) {
+        const translation = state.panel.translationResources.find((item) => String(item.id) === state.panel.selectedTranslationId);
+        els.qboxMeta.textContent = translation ? (translation.displayLabel || translation.displayName || translation.name || '') : '';
         return;
       }
-      const translation = state.panel.translationResources.find((item) => String(item.id) === state.panel.selectedTranslationId);
-      els.qboxMeta.textContent = translation ? (translation.displayLabel || translation.displayName || translation.name || '') : '';
+      if (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter' || state.audio.mode === 'word') {
+        els.qboxMeta.textContent = getSelectedReciterName();
+        return;
+      }
+      els.qboxMeta.textContent = '';
     }
 
     function syncStudyMode() {
@@ -3540,7 +3560,7 @@
     async function selectSurah(surahId, preferredPage = 0) {
       state.selectedSurahId = surahId;
       clearActiveWordHighlight();
-      stopAudioPlayback(true, state.audio.mode === 'tajweed');
+      stopAudioPlayback(true, false);
       state.loading = true;
       renderSurahList();
       els.statusText.textContent = 'Loading surah…';
@@ -3817,6 +3837,10 @@
       els.recitationPlayPauseBtn.textContent = state.audio.loading ? 'Loading…' : (state.audio.playing ? 'Pause' : 'Play');
       els.recitationPlayPauseBtn.disabled = !isRecitingMode || state.audio.loading;
       els.recitationBeginningBtn.disabled = !isRecitingMode || state.audio.loading;
+      els.recitationRepeatBtn.disabled = !isRecitingMode;
+      els.recitationContinueBtn.disabled = !isRecitingMode;
+      els.recitationRepeatBtn.classList.toggle('active', state.audio.repeatEnabled);
+      els.recitationContinueBtn.classList.toggle('active', state.audio.continueEnabled);
       els.recitationClearBtn.disabled = !isRecitingMode && state.audio.mode !== 'word';
       els.reciterSelect.disabled = isTajweed;
       if (isTajweed) {
@@ -3825,6 +3849,40 @@
       if (!els.playStatus.textContent) {
         setPlayStatus('Ready');
       }
+      updateQboxMeta();
+    }
+
+    async function continueRecitationToNextSurah() {
+      const nextSurah = SURAHS.find((surah) => surah.id === state.selectedSurahId + 1);
+      if (!nextSurah) return false;
+      const activeMode = state.audio.mode;
+      await selectSurah(nextSurah.id, 0);
+      state.audio.mode = activeMode;
+      await renderReader();
+      await startAudioPlayback();
+      return true;
+    }
+
+    async function handleRecitationEnded() {
+      state.audio.playing = false;
+      cancelAnimationFrame(state.audio.syncFrame);
+      state.audio.syncFrame = 0;
+      clearActiveWordHighlight();
+
+      if ((state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') && state.audio.continueEnabled) {
+        const moved = await continueRecitationToNextSurah();
+        if (moved) return;
+      }
+
+      if ((state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') && state.audio.repeatEnabled) {
+        await startAudioPlayback();
+        return;
+      }
+
+      if (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
+        setPlayStatus('Recitation finished');
+      }
+      updatePlayUi();
     }
 
     function stopAudioPlayback(resetStatus = true, resetMode = false) {
@@ -4453,6 +4511,22 @@
         await startAudioPlayback();
       });
 
+      els.recitationRepeatBtn.addEventListener('click', () => {
+        state.audio.repeatEnabled = !state.audio.repeatEnabled;
+        if (state.audio.repeatEnabled) {
+          state.audio.continueEnabled = false;
+        }
+        updatePlayUi();
+      });
+
+      els.recitationContinueBtn.addEventListener('click', () => {
+        state.audio.continueEnabled = !state.audio.continueEnabled;
+        if (state.audio.continueEnabled) {
+          state.audio.repeatEnabled = false;
+        }
+        updatePlayUi();
+      });
+
       els.recitationClearBtn.addEventListener('click', async () => {
         stopAudioPlayback(true, true);
         await renderReader();
@@ -4618,16 +4692,11 @@
       }, { passive: true });
 
       state.audio.player.addEventListener('ended', () => {
-        state.audio.playing = false;
-        cancelAnimationFrame(state.audio.syncFrame);
-        state.audio.syncFrame = 0;
-        if (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
+        handleRecitationEnded().catch(() => {
+          state.audio.playing = false;
           setPlayStatus('Recitation finished');
-          clearActiveWordHighlight();
-        } else if (state.audio.mode === 'word') {
-          clearActiveWordHighlight();
-        }
-        updatePlayUi();
+          updatePlayUi();
+        });
       });
 
       state.audio.trackerPlayer.addEventListener('ended', () => {});
