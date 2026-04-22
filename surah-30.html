@@ -1873,6 +1873,10 @@
                   <button class="btn play-mode-btn" id="audioModeWordBtn" type="button">Word by Word</button>
                   <button class="btn play-mode-btn" id="audioModeTajweedBtn" type="button">Tajweed</button>
                 </div>
+                <label class="menu-label" for="reciterSelect" style="margin-top:0.65rem;">Reciter</label>
+                <select class="menu-select" id="reciterSelect" aria-label="Reciter selection">
+                  <option value="">Loading reciters…</option>
+                </select>
                 <div class="play-controls" role="group" aria-label="Audio controls">
                   <button class="btn play-control-btn" id="audioPlayBtn" type="button">Play</button>
                   <button class="btn play-control-btn" id="audioStopBtn" type="button">Stop</button>
@@ -2085,6 +2089,7 @@
     const SETTINGS_KEY = 'open-quran-tilawah-settings';
     const BOOKMARK_KEY = 'open-quran-tilawah-bookmarks';
     const AUDIO_CDN_BASE = 'https://verses.quran.foundation';
+    const TAJWEED_RECITER_ID = 7;
     const MIN_TILAWAH_LINES = 10;
     const TILAWAH_LINE_HEIGHT = 1.82;
     const AUTO_FONT_MIN_PX = 18;
@@ -2120,8 +2125,9 @@
         playing: false,
         loading: false,
         surahId: null,
-        chapterRecitationId: 7,
-        wordAudioRecitationId: 7,
+        chapterRecitationId: TAJWEED_RECITER_ID,
+        wordAudioRecitationId: TAJWEED_RECITER_ID,
+        reciters: [],
         wordCache: new Map(),
         timingCache: new Map(),
         syncFrame: 0,
@@ -2149,6 +2155,7 @@
       audioModeTajweedBtn: document.getElementById('audioModeTajweedBtn'),
       audioPlayBtn: document.getElementById('audioPlayBtn'),
       audioStopBtn: document.getElementById('audioStopBtn'),
+      reciterSelect: document.getElementById('reciterSelect'),
       playStatus: document.getElementById('playStatus'),
       recitationTopbar: document.getElementById('recitationTopbar'),
       recitationPlayPauseBtn: document.getElementById('recitationPlayPauseBtn'),
@@ -3708,6 +3715,26 @@
       els.sidebarBackdrop.classList.remove('open');
     }
 
+    async function fetchReciters() {
+      if (state.audio.reciters.length) return state.audio.reciters;
+      const payload = await fetchJsonWithTimeout(`${API_BASE}/resources/recitations?per_page=300`);
+      const raw = payload.recitations || payload.data?.recitations || [];
+      const reciters = raw.map((reciter) => {
+        const id = Number(reciter.id);
+        const name = stripTags(String(reciter.reciter_name || reciter.translated_name?.name || reciter.name || '').trim());
+        return id && name ? { id, name } : null;
+      }).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name));
+      state.audio.reciters = reciters;
+      return reciters;
+    }
+
+    function renderReciterOptions() {
+      const options = state.audio.reciters.length
+        ? state.audio.reciters.map((reciter) => `<option value="${reciter.id}" ${reciter.id === state.audio.wordAudioRecitationId ? 'selected' : ''}>${escapeHtml(reciter.name)}</option>`).join('')
+        : '<option value="">No reciters found</option>';
+      els.reciterSelect.innerHTML = options;
+    }
+
     function resolveAudioUrl(url) {
       if (!url) return '';
       if (/^https?:\/\//i.test(url)) return url;
@@ -3728,6 +3755,10 @@
       els.recitationPlayPauseBtn.textContent = state.audio.loading ? 'Loading…' : (state.audio.playing ? 'Pause' : 'Play');
       els.recitationPlayPauseBtn.disabled = !isTajweed || state.audio.loading;
       els.recitationClearBtn.disabled = !isTajweed && state.audio.mode !== 'word';
+      els.reciterSelect.disabled = isTajweed;
+      if (isTajweed) {
+        els.reciterSelect.value = String(TAJWEED_RECITER_ID);
+      }
       if (!els.playStatus.textContent) {
         setPlayStatus('Ready');
       }
@@ -4177,6 +4208,8 @@
       console.assert(AK_KHAN_LOCAL_BASE_URL === '.', 'AK Khan local base url should point to the current repo root');
       console.assert(Boolean(els.sharePageBtn), 'share button should exist');
       console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn && els.recitationClearBtn), 'audio controls should exist');
+      console.assert(Boolean(els.reciterSelect), 'reciter select should exist');
+      console.assert(TAJWEED_RECITER_ID === 7, 'tajweed reciter id should remain fixed');
       console.assert(Boolean(els.wordTooltip), 'word tooltip should exist');
       const wordRangeSample = `one two${String.fromCharCode(10)}three${String.fromCharCode(9)}four`;
       console.assert(JSON.stringify(getWordRanges(wordRangeSample)) === JSON.stringify([[0, 3], [4, 7], [8, 13], [14, 18]]), 'getWordRanges should handle spaces, newlines, and tabs');
@@ -4289,6 +4322,21 @@
         await shareCurrentPage();
       });
 
+      els.reciterSelect.addEventListener('change', async (event) => {
+        const reciterId = Number(event.target.value || 0);
+        if (!reciterId) return;
+        state.audio.wordAudioRecitationId = reciterId;
+        state.audio.wordCache.clear();
+        state.audio.timingCache.clear();
+        if (state.audio.mode === 'tajweed') {
+          event.target.value = String(TAJWEED_RECITER_ID);
+          return;
+        } else if (state.audio.mode === 'word' && state.verses.length) {
+          state.verses = await attachWordAudioToVerses(state.selectedSurahId, state.verses);
+          await renderReader();
+        }
+      });
+
       els.audioModeWordBtn.addEventListener('click', async () => {
         state.audio.mode = 'word';
         stopAudioPlayback(false, false);
@@ -4302,6 +4350,9 @@
 
       els.audioModeTajweedBtn.addEventListener('click', async () => {
         state.audio.mode = 'tajweed';
+        state.audio.chapterRecitationId = TAJWEED_RECITER_ID;
+        state.audio.wordAudioRecitationId = TAJWEED_RECITER_ID;
+        renderReciterOptions();
         stopAudioPlayback(false, false);
         await renderReader();
         await startAudioPlayback();
@@ -4507,6 +4558,12 @@
       loadSettings();
       applyTheme();
       applyMushafStyle();
+      try {
+        await fetchReciters();
+        renderReciterOptions();
+      } catch {
+        els.reciterSelect.innerHTML = '<option value="">Reciters unavailable</option>';
+      }
       updateZoomStatus();
       state.audio.trackerPlayer.muted = true;
       state.audio.player.preload = 'auto';
