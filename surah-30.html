@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Grand Mushaf 1x</title>
+  <title>gm1x</title>
   <meta name="description" content="Simple Arabic Qur'an reader with bookmarks, study mode, and a built-in Madinah Mushaf style." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Harmattan:wght@400;700&family=Lateef:wght@400;700&family=Markazi+Text:wght@400;700&family=Noto+Kufi+Arabic:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Reem+Kufi:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+  <link id="coreGoogleFonts" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #f4f1e8;
@@ -1786,7 +1786,7 @@
       <div class="brand">
         <div class="brand-copy">
           <div class="brand-kicker">The Open Quran</div>
-          <h1>Grand Mushaf 1x</h1>
+          <h1>gm1x</h1>
           <p>Simple Arabic Qur’an book reading with bookmarks and a built-in Madinah Mushaf style.</p>
         </div>
         <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close index">×</button>
@@ -2099,6 +2099,7 @@
     const MANUAL_ZOOM_MIN = 0.72;
     const MANUAL_ZOOM_MAX = 1.36;
     const MADINAH_BLACK_DOT_RE = /[•●◦ۣ۟۠ۡۢۥۦ۪ۭۨ۫۬]/g;
+    const DEFERRED_FONTS_STYLESHEET = 'https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Harmattan:wght@400;700&family=Lateef:wght@400;700&family=Markazi+Text:wght@400;700&family=Noto+Kufi+Arabic:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Reem+Kufi:wght@400;700&display=swap';
 
     const state = {
       selectedSurahId: 1,
@@ -2224,11 +2225,56 @@
     const failedQcfFonts = new Set();
     const pendingVerseRequests = new Map();
     const pendingQcfRequests = new Map();
+    let deferredFontsLoaded = false;
+    let deferredBootstrapped = false;
 
     function getThemeIconSvg(theme) {
       return theme === 'dark'
         ? `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2.5"></path><path d="M12 19v2.5"></path><path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path><path d="M2.5 12H5"></path><path d="M19 12h2.5"></path><path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path></svg>`
         : `<svg viewBox="0 0 24 24"><path d="M20 14.5A7.5 7.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"></path></svg>`;
+    }
+
+    function scheduleNonCriticalTask(task, timeout = 1200) {
+      if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(() => task(), { timeout });
+        return;
+      }
+      window.setTimeout(task, 32);
+    }
+
+    function loadDeferredFonts() {
+      if (deferredFontsLoaded) return;
+      deferredFontsLoaded = true;
+      const existing = document.getElementById('deferredGoogleFonts');
+      if (existing) return;
+      const link = document.createElement('link');
+      link.id = 'deferredGoogleFonts';
+      link.rel = 'stylesheet';
+      link.href = DEFERRED_FONTS_STYLESHEET;
+      link.media = 'print';
+      link.onload = () => {
+        link.media = 'all';
+      };
+      document.head.appendChild(link);
+    }
+
+    function bootstrapDeferredTasks() {
+      if (deferredBootstrapped) return;
+      deferredBootstrapped = true;
+      scheduleNonCriticalTask(() => {
+        loadDeferredFonts();
+      });
+      scheduleNonCriticalTask(async () => {
+        try {
+          await fetchReciters();
+          renderReciterOptions();
+        } catch {
+          els.reciterSelect.innerHTML = '<option value="">Reciters unavailable</option>';
+        }
+      });
+      scheduleNonCriticalTask(() => {
+        prefetchNearbySurahs(state.selectedSurahId);
+      }, 1800);
     }
 
     async function loadQcfPageFont(pageNumber) {
@@ -3088,6 +3134,23 @@
       }));
     }
 
+    async function hydrateQcfAfterInitialRender(surahId, anchorVerse = 1) {
+      if (!isQcfMushafMode()) return;
+      try {
+        const hydratedVerses = await attachQcfWordsToVerses(surahId, state.verses);
+        if (state.selectedSurahId !== surahId || !isQcfMushafMode()) return;
+        state.verses = hydratedVerses;
+        refreshVerseArabic();
+        state.pages = paginateVerses(hydratedVerses);
+        if (!state.pages.length) {
+          state.pages = fallbackPaginateVerses(hydratedVerses);
+        }
+        state.currentPage = findPageIndexForVerse(anchorVerse);
+        await ensureQcfFontsForVerses(state.pages[state.currentPage]?.verses || []);
+        await renderReader();
+      } catch {}
+    }
+
     function prefetchSurahIfNeeded(surahId) {
       if (!surahId || state.cache.has(surahId) || pendingVerseRequests.has(surahId)) return;
       fetchSurahVerses(surahId).catch(() => {});
@@ -3282,49 +3345,40 @@
       if (pendingVerseRequests.has(surahId)) return pendingVerseRequests.get(surahId);
 
       const request = (async () => {
-        let qcfWordMap = new Map();
-        if (isQcfMushafMode()) {
-          try {
-            qcfWordMap = buildQcfVerseWordMap(await fetchQcfChapterPages(surahId));
-          } catch {
-            qcfWordMap = new Map();
-          }
+        const normaliseQuranComVerses = (payload) => (payload.verses || payload.data?.verses || []).map((verse) => {
+          const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
+          const rawUthmani = String(verse.text_uthmani || '').normalize('NFC');
+          const rawUthmaniSimple = String(verse.text_uthmani_simple || stripInlineVerseSymbols(rawUthmani)).normalize('NFC');
+          const textUthmani = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmani) || rawUthmani : rawUthmani;
+          const textUthmaniSimple = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmaniSimple) || rawUthmaniSimple : rawUthmaniSimple;
+          const rawArabic = textUthmani || textUthmaniSimple;
+          return {
+            number: verseNumber,
+            rawArabic,
+            textUthmani,
+            textUthmaniSimple,
+            arabic: rawArabic,
+            qcfWords: []
+          };
+        }).filter((verse) => verse.number && verse.rawArabic).sort((a, b) => a.number - b.number);
+
+        try {
+          const payload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
+          const verses = normaliseQuranComVerses(payload);
+          if (!verses.length) throw new Error('No verses returned');
+          state.cache.set(surahId, verses);
+          return verses;
+        } catch {
+          const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
+          const totalPages = Math.ceil(surah.ayahs / 50);
+          const payloads = await Promise.all(Array.from({ length: totalPages }, (_, index) => {
+            const page = index + 1;
+            return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani,text_uthmani_simple&per_page=50&page=${page}`);
+          }));
+          const verses = payloads.flatMap(normaliseQuranComVerses);
+          state.cache.set(surahId, verses);
+          return verses;
         }
-
-      const normaliseQuranComVerses = (payload) => (payload.verses || payload.data?.verses || []).map((verse) => {
-        const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
-        const rawUthmani = String(verse.text_uthmani || '').normalize('NFC');
-        const rawUthmaniSimple = String(verse.text_uthmani_simple || stripInlineVerseSymbols(rawUthmani)).normalize('NFC');
-        const textUthmani = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmani) || rawUthmani : rawUthmani;
-        const textUthmaniSimple = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmaniSimple) || rawUthmaniSimple : rawUthmaniSimple;
-        const rawArabic = textUthmani || textUthmaniSimple;
-        return {
-          number: verseNumber,
-          rawArabic,
-          textUthmani,
-          textUthmaniSimple,
-          arabic: rawArabic,
-          qcfWords: qcfWordMap.get(verseNumber) || []
-        };
-      }).filter((verse) => verse.number && verse.rawArabic).sort((a, b) => a.number - b.number);
-
-      try {
-        const payload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
-        const verses = normaliseQuranComVerses(payload);
-        if (!verses.length) throw new Error('No verses returned');
-        state.cache.set(surahId, verses);
-        return verses;
-      } catch {
-        const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
-        const totalPages = Math.ceil(surah.ayahs / 50);
-        const payloads = await Promise.all(Array.from({ length: totalPages }, (_, index) => {
-          const page = index + 1;
-          return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani,text_uthmani_simple&per_page=50&page=${page}`);
-        }));
-        const verses = payloads.flatMap(normaliseQuranComVerses);
-        state.cache.set(surahId, verses);
-        return verses;
-      }
       })();
 
       pendingVerseRequests.set(surahId, request);
@@ -3496,10 +3550,6 @@
 
       try {
         let verses = await fetchSurahVerses(surahId);
-        if (isQcfMushafMode()) {
-          verses = await attachQcfWordsToVerses(surahId, verses);
-          await ensureQcfFontsForVerses(verses);
-        }
         if (state.audio.mode === 'word') {
           verses = await attachWordAudioToVerses(surahId, verses);
         }
@@ -3513,8 +3563,17 @@
         state.currentPage = Math.min(Math.max(preferredPage, 0), Math.max(state.pages.length - 1, 0));
         await renderReader();
         updateLocationHash();
-        prefetchNearbySurahs(surahId);
         state.loading = false;
+        bootstrapDeferredTasks();
+        scheduleNonCriticalTask(() => {
+          prefetchNearbySurahs(surahId);
+        }, 1800);
+        if (isQcfMushafMode()) {
+          const anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
+          scheduleNonCriticalTask(() => {
+            hydrateQcfAfterInitialRender(surahId, anchorVerse);
+          }, 1400);
+        }
       } catch {
         state.loading = false;
         els.statusText.textContent = 'Could not load the surah';
@@ -4586,19 +4645,18 @@
     }
 
     async function init() {
-      runSelfTests();
+      try {
+        runSelfTests();
+      } catch (error) {
+        console.warn('Self-tests skipped', error);
+      }
       loadSettings();
       applyTheme();
       applyMushafStyle();
-      try {
-        await fetchReciters();
-        renderReciterOptions();
-      } catch {
-        els.reciterSelect.innerHTML = '<option value="">Reciters unavailable</option>';
-      }
+      els.reciterSelect.innerHTML = '<option value="">Loading reciters…</option>';
       updateZoomStatus();
       state.audio.trackerPlayer.muted = true;
-      state.audio.player.preload = 'auto';
+      state.audio.player.preload = 'metadata';
       updatePlayUi();
       setPlayStatus('Ready');
       renderSurahList();
