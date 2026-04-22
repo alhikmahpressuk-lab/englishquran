@@ -3366,8 +3366,7 @@
       els.readerContent.classList.toggle('centered-page', Boolean(pageData.centered) && !state.panel.studyMode);
       els.readerContent.classList.toggle('study-mode', state.panel.studyMode);
       els.readerContent.classList.toggle('tilawah-mode', !state.panel.studyMode);
-      els.readerContent.classList.toggle('recitation-scroll', state.audio.mode === 'tajweed' && !state.panel.studyMode);
-      els.readerContent.classList.toggle('qcf-page', false);
+      els.readerContent.classList.toggle('r      els.readerContent.classList.toggle('qcf-page', false);
       els.readerContent.classList.toggle('madinah-page', false);
 
       if (!state.panel.studyMode) {
@@ -3857,11 +3856,12 @@
       });
     }
 
-    function setActiveWordHighlight(target) {
+    f
+    function setActiveVerseHighlight(verseNumber) {
       clearActiveWordHighlight();
-      if (target) {
-        target.classList.add('playing');
-      }
+      els.wordOverlay.querySelectorAll(`[data-word-verse="${verseNumber}"]`).forEach((button) => {
+        button.classList.add('playing');
+      });
     }
 
     function getOverlayVerses() {
@@ -4073,14 +4073,18 @@
 
     function scaleTimedQueueToDuration(queue, totalDuration) {
       if (!queue.length || !totalDuration) return queue;
-      const lastEnd = queue[queue.length - 1]?.endTime || 0;
-      if (!lastEnd || !Number.isFinite(lastEnd)) return queue;
-      const scale = totalDuration / lastEnd;
-      return queue.map((item) => ({
-        ...item,
-        startTime: item.startTime * scale,
-        endTime: item.endTime * scale
-      }));
+      const lastEnd = queue[queue.l];
+        if (!current || current.verseNumber !== item.verseNumber) {
+          verses.push({
+            verseNumber: item.verseNumber,
+            startTime: item.startTime,
+            endTime: item.endTime
+          });
+        } else {
+          current.endTime = item.endTime;
+        }
+      });
+      return verses;
     }
 
     function waitForAudioMetadata(audio) {
@@ -4117,22 +4121,13 @@
       } else {
         scrollStudyModeToVerse(item.verseNumber);
       }
-      const hitbox = els.wordOverlay.querySelector(`[data-word-verse="${item.verseNumber}"][data-word-index="${item.wordIndex}"]`);
-      setActiveWordHighlight(hitbox);
+      setActiveVerseHighlight(item.verseNumber);
       setPlayStatus(`Reciting • Verse ${item.verseNumber}`);
       updatePlayUi();
     }
 
     async function syncRecitationHighlight() {
-      if ((state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') || !state.audio.playing || !state.audio.queue.length) return;
-      const currentTime = state.audio.player.currentTime;
-      while (state.audio.index < state.audio.queue.length - 1 && currentTime >= state.audio.queue[state.audio.index].endTime) {
-        state.audio.index += 1;
-      }
-      while (state.audio.index > 0 && currentTime < state.audio.queue[state.audio.index].startTime) {
-        state.audio.index -= 1;
-      }
-      await highlightQueuedRecitationWord(state.audio.queue[state.audio.index]);
+      if ((stex]);
       state.audio.syncFrame = requestAnimationFrame(() => {
         syncRecitationHighlight();
       });
@@ -4149,19 +4144,7 @@
       try {
         const chapterAudioUrl = await fetchChapterRecitationUrl(surahId);
         state.audio.queue = await fetchTimedWordQueue(surahId);
-        state.audio.index = 0;
-        if (!state.audio.queue.length) {
-          throw new Error('No word queue found');
-        }
-        state.audio.player.src = chapterAudioUrl;
-        const chapterDuration = await waitForAudioMetadata(state.audio.player);
-        if (chapterDuration > 0) {
-          state.audio.queue = scaleTimedQueueToDuration(state.audio.queue, chapterDuration);
-        }
-        await state.audio.player.play();
-        state.audio.playing = true;
-        cancelAnimationFrame(state.audio.syncFrame);
-        state.audio.syncFrame = requestAnimationFrame(() => {
+  ame(() => {
           syncRecitationHighlight();
         });
       } catch {
@@ -4186,9 +4169,7 @@
       if (state.audio.player.src && state.audio.surahId === state.selectedSurahId) {
         try {
           await state.audio.player.play();
-          state.audio.playing = true;
-          cancelAnimationFrame(state.audio.syncFrame);
-          state.audio.syncFrame = requestAnimationFrame(() => {
+          state.audiostate.audio.syncFrame = requestAnimationFrame(() => {
             syncRecitationHighlight();
           });
           setPlayStatus('Recitation resumed');
