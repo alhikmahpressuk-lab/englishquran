@@ -1290,6 +1290,49 @@
       display: none;
     }
 
+    .word-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .word-overlay .word-hitbox {
+      pointer-events: none;
+    }
+
+    .word-overlay.interactive .word-hitbox {
+      pointer-events: auto;
+    }
+
+    .word-overlay[hidden] {
+      display: none;
+    }
+
+    .word-hitbox {
+      position: absolute;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .word-hitbox:focus-visible,
+    .word-hitbox:hover,
+    .word-hitbox:active {
+      outline: none;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .word-hitbox.playing {
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      border-radius: 0.28rem;
+    }
+
     .play-mode-btn,
     .play-control-btn {
       min-height: 38px;
@@ -1887,6 +1930,7 @@
         <div class="word-tooltip" id="wordTooltip" hidden></div>
 
         <div class="page">
+          <div class="word-overlay" id="wordOverlay" hidden></div>
           <div class="page-inner" id="readerContent">
             <div class="loading">Loading…</div>
           </div>
@@ -2101,6 +2145,7 @@
       recitationClearBtn: document.getElementById('recitationClearBtn'),
       recitationTopbarStatus: document.getElementById('recitationTopbarStatus'),
       wordTooltip: document.getElementById('wordTooltip'),
+      wordOverlay: document.getElementById('wordOverlay'),
       sharePageBtn: document.getElementById('sharePageBtn'),
       sidepanel: document.getElementById('sidepanel'),
       panelBackdrop: document.getElementById('panelBackdrop'),
@@ -3057,10 +3102,8 @@
     function buildTilawahText(pageVerses) {
       return pageVerses.map((verse) => {
         const marker = verse.showMarker === false ? '' : ` <span class="ayah-marker">${toArabicDigits(verse.number)}</span>`;
-        const arabicMarkup = state.audio.mode === 'word'
-          ? renderWordTokens(verse)
-          : (isQcfMushafMode() ? renderInlineQcfWords(verse) : escapeHtml(resolveVerseArabic(verse)));
-        return `<span class="ayah-inline">${arabicMarkup}${marker}</span>`;
+        const arabicMarkup = isQcfMushafMode() ? renderInlineQcfWords(verse) : escapeHtml(resolveVerseArabic(verse));
+        return `<span class="ayah-inline" data-verse-number="${verse.number}">${arabicMarkup}${marker}</span>`;
       }).join(' ');
     }
 
@@ -3085,6 +3128,7 @@
     function splitVerseForPage(verse, existingVerses, surah, includeBismillah, measureRoot, maxHeight, fontSize) {
       const words = String(verse.arabic).split(' ').filter(Boolean);
       const qcfWords = Array.isArray(verse.qcfWords) ? verse.qcfWords.filter(Boolean) : [];
+      const audioWords = Array.isArray(verse.audioWords) ? verse.audioWords.filter(Boolean) : [];
       if (words.length < 2) return null;
 
       let low = 1;
@@ -3098,6 +3142,7 @@
           ...verse,
           arabic: words.slice(0, mid).join(' '),
           qcfWords: qcfWords.length ? qcfWords.slice(0, mid) : verse.qcfWords,
+          audioWords: audioWords.length ? audioWords.slice(0, mid) : verse.audioWords,
           showMarker: false
         };
         measureRoot.innerHTML = buildReaderMarkup(surah, [...existingVerses, candidate], includeBismillah);
@@ -3115,12 +3160,14 @@
           ...verse,
           arabic: words.slice(0, bestFit).join(' '),
           qcfWords: qcfWords.length ? qcfWords.slice(0, bestFit) : verse.qcfWords,
+          audioWords: audioWords.length ? audioWords.slice(0, bestFit) : verse.audioWords,
           showMarker: false
         },
         rest: {
           ...verse,
           arabic: words.slice(bestFit).join(' '),
           qcfWords: qcfWords.length ? qcfWords.slice(bestFit) : verse.qcfWords,
+          audioWords: audioWords.length ? audioWords.slice(bestFit) : verse.audioWords,
           showMarker: verse.showMarker
         }
       };
@@ -3323,7 +3370,7 @@
             const translationText = resources.translation ? translations.get(verse.number) : '';
             return `
               <article class="study-ayah" data-study-verse="${verse.number}">
-                <div class="study-arabic" data-mushaf="${escapeHtml(state.settings.mushaf)}">${state.audio.mode === 'word' ? renderWordTokens(verse) : escapeHtml(arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></div>
+                <div class="study-arabic" data-mushaf="${escapeHtml(state.settings.mushaf)}" data-verse-number="${verse.number}">${escapeHtml(arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></div>
                 ${translationText ? `
                   <div class="study-section-label"><span>Translation</span></div>
                   <div class="study-translation"><span class="study-translation-number">${verse.number}.</span>${escapeHtml(translationText)}</div>
@@ -3381,6 +3428,9 @@
       if (state.panel.open) {
         renderPanelContent();
       }
+
+              hideWordOverlay();
+      }
     }
 
     async function goToPage(pageIndex) {
@@ -3412,6 +3462,7 @@
 
     async function selectSurah(surahId, preferredPage = 0) {
       state.selectedSurahId = surahId;
+      clearActiveWordHighlight();
       stopAudioPlayback(true, state.audio.mode === 'tajweed');
       state.loading = true;
       renderSurahList();
@@ -3736,6 +3787,116 @@
       els.wordTooltip.textContent = '';
     }
 
+    function hideWordOverlay() {
+      els.wordOverlay.hidden = true;
+      els.wordOverlay.innerHTML = '';
+    }
+
+    function clearActiveWordHighlight() {
+      els.wordOverlay.querySelectorAll('.word-hitbox.playing').forEach((button) => {
+        button.classList.remove('playing');
+      });
+    }
+
+    function setActiveWordHighlight(target) {
+      clearActiveWordHighlight();
+      if (target) {
+        target.classList.add('playing');
+      }
+    }
+
+    function getOverlayVerses() {
+      return state.panel.studyMode ? state.verses : (state.pages[state.currentPage]?.verses || []);
+    }
+
+    function getWordRanges(text) {
+      const ranges = [];
+      let start = -1;
+      for (let index = 0; index < text.length; index += 1) {
+        const code = text.charCodeAt(index);
+        const isGap = code === 32 || code === 10 || code === 9;
+        if (!isGap && start === -1) start = index;
+        if (start !== -1 && (isGap || index === text.length - 1)) {
+          ranges.push([start, isGap ? index : index + 1]);
+          start = -1;
+        }
+      }
+      return ranges;
+    }
+
+    function buildWordOverlay() {
+      if (state.audio.mode !== 'word') {
+        hideWordOverlay();
+        return;
+      }
+
+      const verseMap = new Map(getOverlayVerses().map((verse) => [Number(verse.number), verse]));
+      const containers = Array.from(els.readerContent.querySelectorAll('[data-verse-number]'));
+      if (!containers.length) {
+        hideWordOverlay();
+        return;
+      }
+
+      const overlayRect = els.wordOverlay.parentElement.getBoundingClientRect();
+      const hitboxes = [];
+
+      containers.forEach((container) => {
+        const verseNumber = Number(container.dataset.verseNumber || 0);
+        const verse = verseMap.get(verseNumber);
+        if (!verse) return;
+
+        const audioWords  || [];
+        let wordIndex = 0;
+        const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+          acceptNode(node) {
+            if (!node.textContent || !node.textContent.trim()) return NodeFilter.FILTER_REJECT;
+            if (node.parentElement?.closest('.ayah-marker')) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        });
+
+        let node;
+        while ((node = walker.nextNode())) {
+          const text = node.textContent || '';
+          getWordRanges(text).forEach(([start, end]) => {
+            const range = document.createRange();
+            range.setStart(node, start);
+            range.setEnd(node, end);
+            const rects = Array.from(range.getClientRects()).filter((rect) => rect.width > 2 && rect.height > 2);
+            const audioWord = audioWords[wordIndex] || {};
+            if (rects.length) {
+              const left = Math.min(...rects.map((rect) => rect.left)) - overlayRect.left;
+              const top = Math.min(...rects.map((rect) => rect.top)) - overlayRect.top;
+              const right = Math.max(...rects.map((rect) => rect.right)) - overlayRect.left;
+              const bottom = Math.max(...rects.map((rect) => rect.bottom)) - overlayRect.top;
+              if (right > left &   verseNumber,
+                  wordIndex
+                });
+              }
+            }
+            wordIndex += 1;
+          });
+        }
+      });
+
+      if (!hitboxes.length) {
+        hideWordOverlay();
+        return;
+      }
+
+      els.wordOverlay.hidden = false;
+      els.wordOverlay.classList.toggle('interactive', state.audio.mode === 'word');
+      els.wordOverlay.innerHTML = hitboxes.map((box) => `
+        <button
+          class="word-hitbox"
+          type="button"
+          style="left:${box.left}px;t${escapeHtml(box.audioUrl || '')}"
+          data-word-meaning="${escapeHtml(box.meaning || '')}"
+          data-word-verse="${box.verseNumber}" data-word-index="${box.wordIndex}"
+        ></button>
+      `).join('');
+    }
+
     function showWordTooltip(meaning, target) {
       if (!meaning || !target || !state.panel.studyMode) {
         hideWordTooltip();
@@ -3743,7 +3904,7 @@
       }
       els.wordTooltip.textContent = meaning;
       els.wordTooltip.hidden = false;
-      const rect = target.getBoundingClientRect();
+      const );
       const tooltipRect = els.wordTooltip.getBoundingClientRect();
       const left = Math.min(window.innerWidth - tooltipRect.width - 8, Math.max(8, rect.left + (rect.width / 2) - (tooltipRect.width / 2)));
       const top = Math.max(8, rect.top - tooltipRect.height - 10);
@@ -3751,7 +3912,7 @@
       els.wordTooltip.style.top = `${top}px`;
     }
 
-    async function playTappedWord(audioUrl, verseNumber) {
+    async function playTappedWord(audioUrl, verseNumber, target = null) {
       if (!audioUrl) {
         setPlayStatus(`No word audio for verse ${verseNumber}`);
         return;
@@ -3760,6 +3921,7 @@
         state.audio.player.pause();
         state.audio.player.currentTime = 0;
       } catch {}
+      setActiveWordHighlight(target);
       state.audio.player.src = audioUrl;
       try {
         await state.audio.player.play();
@@ -3775,54 +3937,45 @@
       const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
       const payload = await fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?words=true&audio=${state.audio.wordAudioRecitationId}&word_fields=audio_url,text_qpc_hafs,text_uthmani&per_page=${Math.min(Math.max(surah.ayahs, 10), 300)}`);
       const verses = payload.verses || payload.data?.verses || [];
-      return verses.flatMap((verse) => (verse.words || []).map((word) => {
-        const audioUrl = resolveAudioUrl(word.audio_url || word.audio?.url || word.audio?.audio_url || '');
-        return audioUrl ? { audioUrl, verseNumber: verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]) || 0, wordText: word.text_qpc_hafs || word.text_uthmani || word.text || '' } : null;
+      const audioMap = await fetchWordAudioMap(surahId);
+      return Array.from(audioMap.entries()).flatMap(([verseNumber, words]) => words.map((word, wordIndex) => {
+        return word.audioUrl ? {
+          audioUrl: word.audioUrl,
+          verseNumber: Number(verseNumber) || 0,
+          wordIndex,
+          wordText: word.text || ''
+        } : null;
       }).filter(Boolean));
     }
 
-    async function fetchChapterRecitationUrl(surahId) {
-      const payload = await fetchJsonWithTimeout(`${API_BASE}/chapter_recitations/${state.audio.chapterRecitationId}/${surahId}`);
-      const audioUrl = resolveAudioUrl(
-        payload.audio_file?.audio_url ||
-        payload.audio_files?.[0]?.audio_url ||
-        payload.chapter_recitation?.audio_url ||
-        payload.recitation?.audio_url ||
-        ''
-      );
-      if (!audioUrl) {
+    async functionif (!audioUrl) {
         throw new Error('No chapter recitation audio returned');
       }
       return audioUrl;
     }
 
-    async function startAudioPlayback() {
-      if (state.audio.mode !== 'tajweed') return;
-      const surahId = state.selectedSurahId;
-      state.audio.loading = true;
-      state.audio.surahId = surahId;
-      setPlayStatus('Loading tajweed recitation…');
-      updatePlayUi();
-
-      try {
-        const audioUrl = await fetchChapterRecitationUrl(surahId);
-        state.audio.queue = [];
-        state.audio.index = 0;
-        state.audio.player.src = audioUrl;
-        await state.audio.player.play();
-        state.audio.playing = true;
-        setPlayStatus('Playing tajweed recitation');
-      } catch {
-        state.audio.playing = false;
-        setPlayStatus('Audio could not be loaded');
-      } finally {
-        state.audio.loading = false;
-        updatePlayUi();
+    async function playQueuedRecitationWord(item) {
+      if (!item?.audioUrl) return;
+      if (!state.panel.studyMode) {
+        const targetPage = findPageIndexForVerse(item.verseNumber);
+        if (targetPage !== state.currentPage) {
+          state.currentPage = targetPage;
+          await renderReader();
+        }
+      } else {
+        scrollStudyModeToVerse(item.verseNumber);
       }
+      const hitbox = els.wordOverlay.querySelector(`[data-word-verse="${item.verseNumber}"][data-word-index="${item.wordIndex}"]`);
+      setActiveWordHighlight(hitbox);
+      state.audio.player.src = item.audioUrl;
+      await state.audio.player.play();
+      state.audio.playing = true;
+      setPlayStatus(`Reciting • Verse ${item.verseNumber}`);
+      updatePlayUi();
     }
 
-    async function toggleAudioPlayback() {
-      if (state.audio.mode !== 'tajweed' || state.audio.loading) return;
+    async function startAudioPlayback() {
+      udio.loading) return;
       if (state.audio.playing) {
         state.audio.player.pause();
         state.audio.playing = false;
@@ -3834,7 +3987,7 @@
         try {
           await state.audio.player.play();
           state.audio.playing = true;
-          setPlayStatus('Playing tajweed recitation');
+          setPlayStatus('Recitation resumed');
         } catch {
           setPlayStatus('Audio could not be resumed');
         }
@@ -3854,8 +4007,7 @@
       console.assert(AK_KHAN_TRANSLATION_ID === 'ak-khan-englishquran-uk', 'custom AK Khan translation id should remain stable');
       console.assert(AK_KHAN_LOCAL_BASE_URL === '.', 'AK Khan local base url should point to the current repo root');
       console.assert(Boolean(els.sharePageBtn), 'share button should exist');
-      console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn && els.recitationClearBtn), 'audio controls should exist');
-      console.assert(Boolean(els.wordTooltip), 'word tooltip should exist');
+      console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn &&  'getWordRanges should handle spaces, newlines, and tabs');
       console.assert(cleanAkKhanVerseText('1:1 Sample text', 1, 1) === 'Sample text', 'AK Khan cleaner should strip verse prefixes');
       console.assert(cleanAkKhanVerseText('1:1 Sample\ntext\t', 1, 1) === 'Sample text', 'AK Khan cleaner should normalize line breaks and tabs');
     }
@@ -4097,12 +4249,6 @@
           disableStudyMode();
           return;
         }
-        const wordButton = event.target.closest('[data-word-audio]');
-        if (wordButton && state.audio.mode === 'word') {
-          await playTappedWord(wordButton.dataset.wordAudio || '', Number(wordButton.dataset.wordVerse || 0));
-          showWordTooltip(wordButton.dataset.wordMeaning || '', wordButton);
-          return;
-        }
         hideWordTooltip();
       });
 
@@ -4126,6 +4272,20 @@
         }
       }, { passive: false });
 
+      els.wordOverlay.addEventListener('click', async (event) => {
+        const hitbox = event.target.closest('[data-word-audio]');
+        if (!hitbox || state.audio.mode !== 'word') return;
+        await playTappedWord(hitbox.dataset.wordAudio || '', Number(hitbox.dataset.wordVerse || 0), hitbox);
+        showWordTooltip(hitbox.dataset.wordMeaning || '', hitbox);
+      });
+
+      els.readerContent.addEventListener('scroll', () => {
+        if (state.audio.mode === 'word') {
+          buildWordOverlay();
+        }
+        hideWordTooltip();
+      }, { passive: true });
+
       els.readerContent.addEventListener('touchend', (event) => {
         if (state.panel.studyMode) return;
         const touch = event.changedTouches[0];
@@ -4140,10 +4300,24 @@
         }
       }, { passive: true });
 
-      state.audio.player.addEventListener('ended', () => {
+      state.audio.player.addEventListener('ended', async () => {
         state.audio.playing = false;
-        if (state.audio.mode === 'tajweed') {
-          setPlayStatus('Ready');
+        if (state.audio.mode === 'tajweed' && state.audio.queue.length) {
+          state.audio.index += 1;
+          const nextItem = state.audio.queue[state.audio.index];
+          if (nextItem) {
+            try {
+              await playQueuedRecitationWord(nextItem);
+              return;
+            } catch {
+              setPlayStatus('Recitation could not continue');
+            }
+          } else {
+            setPlayStatus('Recitation finished');
+            clearActiveWordHighlight();
+          }
+        } else if (state.audio.mode === 'word') {
+          clearActiveWordHighlight();
         }
         updatePlayUi();
       });
