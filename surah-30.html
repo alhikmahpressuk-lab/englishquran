@@ -51,6 +51,8 @@
       height: 100%;
       scroll-behavior: auto;
       overscroll-behavior: none;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
 
     body {
@@ -62,6 +64,8 @@
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       transition: background 0.25s ease, color 0.25s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     button,
@@ -86,7 +90,8 @@
       top: 0;
       left: 0;
       width: min(340px, 88vw);
-      height: 100vh;
+      height: 100dvh;
+      min-height: 100dvh;
       border-right: 1px solid var(--line);
       background: var(--surface-2);
       overflow: hidden;
@@ -96,6 +101,9 @@
       transition: transform 0.24s ease;
       z-index: 50;
       box-shadow: var(--shadow);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      overscroll-behavior: contain;
     }
 
     .sidebar.open {
@@ -413,7 +421,11 @@
 
     .panel-content,
     .surah-list {
+      flex: 1 1 auto;
+      min-height: 0;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
       padding: 0.5rem;
     }
 
@@ -542,7 +554,7 @@
     .main {
       min-width: 0;
       height: 100dvh;
-      padding: 0.85rem;
+      padding: calc(0.85rem + env(safe-area-inset-top)) max(0.85rem, env(safe-area-inset-right)) max(0.85rem, env(safe-area-inset-bottom)) max(0.85rem, env(safe-area-inset-left));
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -876,6 +888,36 @@
       overflow: hidden;
     }
 
+    .page.auto-swipe-right {
+      animation: autoSwipeRight 260ms ease;
+    }
+
+    .page.auto-swipe-left {
+      animation: autoSwipeLeft 260ms ease;
+    }
+
+    @keyframes autoSwipeRight {
+      0% {
+        transform: translateX(-18px);
+        opacity: 0.82;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes autoSwipeLeft {
+      0% {
+        transform: translateX(18px);
+        opacity: 0.82;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
     .page-inner {
       border: 1px solid var(--line);
       border-radius: 22px;
@@ -900,6 +942,8 @@
       user-select: none;
       -webkit-user-select: none;
       touch-action: pan-x;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
 
     .page-inner.recitation-scroll {
@@ -1124,6 +1168,34 @@
       -webkit-user-select: none;
       --tilawah-font-size: clamp(1.75rem, 2.9vw, 2.55rem);
       --tilawah-line-height: 1.82;
+    }
+
+    .page-inner.surah-one-page {
+      overflow: hidden;
+    }
+
+    .page-inner.surah-one-page .surah-header {
+      margin-bottom: 0.46rem;
+      padding-bottom: 0.38rem;
+    }
+
+    .page-inner.surah-one-page .bismillah {
+      margin-bottom: 0.2rem;
+    }
+
+    .page-inner.surah-one-page .verses {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .page-inner.surah-one-page .tilawah-flow {
+      width: 100%;
+      text-align: center;
+      text-align-last: center;
+      line-height: calc(var(--tilawah-line-height) * 0.94);
     }
 
     .page-inner.centered-page .verses {
@@ -1507,13 +1579,41 @@
     }
 
     @media (max-width: 640px) {
+      .page-inner.surah-one-page {
+        padding: 0.44rem 0.46rem;
+      }
+
+      .page-inner.surah-one-page .surah-header {
+        margin-bottom: 0.26rem;
+        padding-bottom: 0.24rem;
+      }
+
+      .page-inner.surah-one-page .surah-header .arabic-name {
+        font-size: clamp(1.14rem, 4.1vw, 1.38rem);
+      }
+
+      .page-inner.surah-one-page .surah-header .english-name {
+        margin-top: 0.16rem;
+        font-size: 0.84rem;
+      }
+
+      .page-inner.surah-one-page .surah-subtitle {
+        margin-top: 0.12rem;
+        font-size: 0.7rem;
+      }
+
+      .page-inner.surah-one-page .tilawah-flow {
+        font-size: clamp(1.28rem, 4.4vw, 1.62rem);
+        line-height: 1.66;
+      }
+
       :root {
         --page-width: 100%;
-        --arabic-size: clamp(1.62rem, 5.7vw, 2.02rem);
+        --arabic-size: clamp(1.54rem, 5.3vw, 1.92rem);
       }
 
       .main {
-        padding: 0.35rem;
+        padding: calc(0.3rem + env(safe-area-inset-top)) max(0.3rem, env(safe-area-inset-right)) max(0.3rem, env(safe-area-inset-bottom)) max(0.3rem, env(safe-area-inset-left));
       }
 
       .topbar,
@@ -1560,12 +1660,17 @@
       }
 
       .qbox-title {
-        font-size: 0.84rem;
+        font-size: 0.82rem;
         padding-left: 0.08rem;
         padding-right: 0.08rem;
         height: 32px;
         min-height: 32px;
         max-height: 32px;
+      }
+
+      .qbox-title-main,
+      .qbox-title-meta {
+        max-width: calc(50% - 22px);
       }
 
       .qbox-title-main {
@@ -1612,23 +1717,41 @@
       }
 
       .page {
-        border-radius: 20px;
-        padding: 0.42rem;
+        border-radius: 18px;
+        padding: 0.32rem;
       }
 
       .page-inner {
-        padding: 0.58rem 0.62rem;
+        padding: 0.5rem 0.52rem;
         border-radius: 14px;
       }
 
+      .page-inner.tilawah-mode,
+      .page-inner.study-mode,
+      .page-inner.madinah-page,
+      .page-inner.recitation-scroll {
+        -webkit-overflow-scrolling: touch;
+      }
+
       .madinah-block {
-        gap: 0.28rem;
-        font-size: clamp(1.34rem, 4.8vw, 1.72rem);
+        gap: 0.24rem;
+        font-size: clamp(1.26rem, 4.45vw, 1.62rem);
+        line-height: 1.82;
+      }
+
+      .mushaf-block,
+      .tilawah-flow {
+        font-size: clamp(1.46rem, 5vw, 1.88rem);
         line-height: 1.88;
       }
 
+      .study-arabic {
+        font-size: calc(var(--arabic-size) * 0.86);
+        line-height: 1.86;
+      }
+
       .page-inner.qcf-page {
-        padding: 0.52rem 0.58rem 0.5rem;
+        padding: 0.5rem 0.54rem 0.48rem;
       }
 
       .page-inner.qcf-page .surah-header {
@@ -1648,20 +1771,20 @@
 
       .qcf-line {
         gap: 0.01rem 0.04rem;
-        min-height: 1.98rem;
-        line-height: 1.38;
+        min-height: 1.92rem;
+        line-height: 1.34;
       }
 
       .qcf-word.qcf-glyph {
-        font-size: clamp(1.56rem, 5.05vw, 1.84rem);
+        font-size: clamp(1.48rem, 4.8vw, 1.76rem);
       }
 
       .qcf-word.qcf-fallback {
-        font-size: clamp(1.2rem, 4.1vw, 1.42rem);
+        font-size: clamp(1.14rem, 3.9vw, 1.34rem);
       }
 
       .qcf-word.qcf-end {
-        font-size: clamp(0.94rem, 3vw, 1.08rem);
+        font-size: clamp(0.9rem, 2.8vw, 1.04rem);
       }
 
       .surah-header {
@@ -1676,23 +1799,23 @@
       }
 
       .surah-header .arabic-name {
-        font-size: clamp(1.35rem, 5vw, 1.72rem);
+        font-size: clamp(1.28rem, 4.7vw, 1.62rem);
       }
 
       .surah-header .english-name {
         margin-top: 0.2rem;
-        font-size: 0.98rem;
+        font-size: 0.94rem;
       }
 
       .surah-subtitle {
         margin-top: 0.18rem;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
       }
 
       .bismillah {
-        margin-bottom: 0.26rem;
-        line-height: 1.68;
-        font-size: calc(var(--arabic-size) * 0.82);
+        margin-bottom: 0.24rem;
+        line-height: 1.62;
+        font-size: calc(var(--arabic-size) * 0.8);
       }
 
       .pagination {
@@ -2130,16 +2253,19 @@
       audio: {
         mode: 'none',
         queue: [],
+        verseQueue: [],
         index: 0,
         playing: false,
         loading: false,
         surahId: null,
-        chapterRecitationId: TAJWEED_RECITER_ID,
+        chapterRecitationId: null,
         wordAudioRecitationId: TAJWEED_RECITER_ID,
         reciters: [],
         wordCache: new Map(),
         timingCache: new Map(),
         syncFrame: 0,
+        approximateTiming: false,
+        activeVerseNumber: 0,
         repeatEnabled: false,
         continueEnabled: false,
         player: new Audio(),
@@ -2238,6 +2364,7 @@
     const pendingQcfRequests = new Map();
     let deferredFontsLoaded = false;
     let deferredBootstrapped = false;
+    let pendingPageAnimation = '';
 
     function getThemeIconSvg(theme) {
       return theme === 'dark'
@@ -2385,6 +2512,7 @@
       measureRoot.style.width = `${pageWidth}px`;
       measureRoot.classList.add('tilawah-mode');
       measureRoot.classList.add('centered-page');
+      measureRoot.classList.toggle('surah-one-page', surah.id === 1);
       let low = AUTO_FONT_MIN_PX * 0.7;
       let high = Math.max(low, (preferredFontSize || AUTO_FONT_MAX_PX) * 1.55, AUTO_FONT_MAX_PX * 1.2);
       let best = low;
@@ -2402,7 +2530,9 @@
       }
 
       measureRoot.classList.remove('centered-page');
-      return Number(best.toFixed(2));
+      measureRoot.classList.remove('surah-one-page');
+      const safetyFactor = window.innerWidth <= 640 ? 0.96 : 0.985;
+      return Number((best * safetyFactor).toFixed(2));
     }
 
     async function repaginateAroundVerse(anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1) {
@@ -3181,10 +3311,30 @@
       prefetchSurahIfNeeded(surahId + 1);
     }
 
+    function getQcfPageNumbersForVerses(verses) {
+      return [...new Set((verses || []).flatMap((verse) => (verse.qcfWords || []).map((word) => Number(word.pageNumber || 0))).filter(Boolean))];
+    }
+
+    function hasMissingQcfFontsForVerses(verses) {
+      return getQcfPageNumbersForVerses(verses).some((pageNumber) => {
+        const fontName = `p${pageNumber}-v2`;
+        return !loadedQcfFonts.has(fontName) && !failedQcfFonts.has(fontName);
+      });
+    }
+
     async function ensureQcfFontsForVerses(verses) {
-      const pageNumbers = [...new Set((verses || []).flatMap((verse) => (verse.qcfWords || []).map((word) => Number(word.pageNumber || 0))).filter(Boolean))];
+      const pageNumbers = getQcfPageNumbersForVerses(verses);
       if (!pageNumbers.length) return;
       await Promise.all(pageNumbers.map((pageNumber) => loadQcfPageFont(pageNumber)));
+    }
+
+    async function warmQcfFontsForCurrentPage(surahId, pageIndex, verses) {
+      if (!hasMissingQcfFontsForVerses(verses)) return;
+      await ensureQcfFontsForVerses(verses);
+      if (state.selectedSurahId !== surahId || state.currentPage !== pageIndex || state.panel.studyMode || !isQcfMushafMode()) {
+        return;
+      }
+      await renderReader();
     }
 
     function renderInlineQcfWords(verse) {
@@ -3201,11 +3351,15 @@
       }).join(' ');
     }
 
+    function buildAyahMarker(verseNumber, shouldShow = true) {
+      if (!shouldShow) return '';
+      return ` <span class="ayah-marker" data-verse-stamp="${verseNumber}" role="button" tabindex="0" aria-label="Go to verse ${verseNumber}">${toArabicDigits(verseNumber)}</span>`;
+    }
+
     function buildTilawahText(pageVerses) {
       return pageVerses.map((verse) => {
-        const marker = verse.showMarker === false ? '' : ` <span class="ayah-marker">${toArabicDigits(verse.number)}</span>`;
         const arabicMarkup = isQcfMushafMode() ? renderInlineQcfWords(verse) : escapeHtml(resolveVerseArabic(verse));
-        return `<span class="ayah-inline" data-verse-number="${verse.number}">${arabicMarkup}${marker}</span>`;
+        return `<span class="ayah-inline" data-verse-number="${verse.number}">${arabicMarkup}${buildAyahMarker(verse.number, verse.showMarker !== false)}</span>`;
       }).join(' ');
     }
 
@@ -3325,13 +3479,14 @@
 
       try {
         if (surah.id === 1) {
+          const onePageHeight = Math.max(140, maxHeight - (window.innerWidth <= 640 ? 12 : 4));
           const fontSize = fitFixedPageFontSize(
             surah,
             verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false })),
             false,
-            maxHeight,
+            onePageHeight,
             pageWidth,
-            getTilawahTargetFontSize(surah, false, maxHeight, pageWidth)
+            getTilawahTargetFontSize(surah, false, onePageHeight, pageWidth)
           );
           return [{ verses: verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false })), dense: false, fontSize, forceSinglePage: true, centered: true }];
         }
@@ -3445,9 +3600,6 @@
       els.readerContent.classList.toggle('madinah-page', false);
 
       if (!state.panel.studyMode) {
-        if (isQcfMushafMode()) {
-          await ensureQcfFontsForVerses(pageVerses);
-        }
         applyTilawahTypography(els.readerContent, pageData.fontSize || getTilawahTargetFontSize(surah, showBismillah, els.readerContent.clientHeight, els.readerContent.offsetWidth));
       }
 
@@ -3464,7 +3616,7 @@
             const translationText = resources.translation ? translations.get(verse.number) : '';
             return `
               <article class="study-ayah" data-study-verse="${verse.number}">
-                <div class="study-arabic" data-mushaf="${escapeHtml(state.settings.mushaf)}" data-verse-number="${verse.number}">${escapeHtml(arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></div>
+                <div class="study-arabic" data-mushaf="${escapeHtml(state.settings.mushaf)}" data-verse-number="${verse.number}">${escapeHtml(arabic)}${buildAyahMarker(verse.number, true)}</div>
                 ${translationText ? `
                   <div class="study-section-label"><span>Translation</span></div>
                   <div class="study-translation"><span class="study-translation-number">${verse.number}.</span>${escapeHtml(translationText)}</div>
@@ -3501,6 +3653,20 @@
         els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
       }
 
+      const pageShell = els.readerContent.closest('.page');
+      if (pageShell) {
+        pageShell.classList.remove('auto-swipe-right', 'auto-swipe-left');
+        if (pendingPageAnimation) {
+          const animationClass = pendingPageAnimation === 'left' ? 'auto-swipe-left' : 'auto-swipe-right';
+          pendingPageAnimation = '';
+          void pageShell.offsetWidth;
+          pageShell.classList.add(animationClass);
+          window.setTimeout(() => {
+            pageShell.classList.remove(animationClass);
+          }, 280);
+        }
+      }
+
       els.pagination.hidden = state.panel.studyMode;
       els.prevPageBtn.disabled = state.selectedSurahId === 114 && state.currentPage >= state.pages.length - 1;
       els.nextPageBtn.disabled = state.selectedSurahId === 1 && state.currentPage === 0;
@@ -3527,6 +3693,15 @@
         buildWordOverlay();
       } else {
         hideWordOverlay();
+      }
+
+      if (!state.panel.studyMode && isQcfMushafMode()) {
+        const renderSurahId = surah.id;
+        const renderPageIndex = state.currentPage;
+        const renderVerses = pageVerses.slice();
+        scheduleNonCriticalTask(() => {
+          warmQcfFontsForCurrentPage(renderSurahId, renderPageIndex, renderVerses).catch(() => {});
+        }, 90);
       }
     }
 
@@ -4252,6 +4427,7 @@
       if (!state.panel.studyMode) {
         const targetPage = findPageIndexForVerse(item.verseNumber);
         if (targetPage !== state.currentPage) {
+          pendingPageAnimation = targetPage > state.currentPage ? 'right' : 'left';
           state.currentPage = targetPage;
           await renderReader();
         }
@@ -4654,6 +4830,9 @@
 
       els.readerContent.addEventListener('touchmove', (event) => {
         if (state.panel.studyMode) return;
+        if (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
+          return;
+        }
         const touch = event.touches[0];
         if (!touch) return;
         const deltaX = Math.abs(touch.clientX - touchStartX);
@@ -4683,7 +4862,13 @@
         if (!touch) return;
         const deltaX = touch.clientX - touchStartX;
         const deltaY = touch.clientY - touchStartY;
-        if (Math.abs(deltaX) < 45 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        const reciting = state.audio.mode === 'tajweed' || state.audio.mode === 'reciter';
+        const swipeThreshold = reciting ? 28 : 45;
+        const horizontalEnough = Math.abs(deltaX) >= swipeThreshold;
+        const dominantHorizontal = reciting
+          ? Math.abs(deltaX) > Math.abs(deltaY) * 0.85
+          : Math.abs(deltaX) > Math.abs(deltaY);
+        if (!horizontalEnough || !dominantHorizontal) return;
         if (deltaX > 0) {
           goToNextPage();
         } else {
@@ -4702,15 +4887,33 @@
       state.audio.trackerPlayer.addEventListener('ended', () => {});
 
       let resizeFrame = 0;
+      let lastViewportWidth = window.innerWidth;
+      let lastViewportHeight = window.innerHeight;
+
       window.addEventListener('resize', () => {
         hideWordTooltip();
         if (!state.verses.length) return;
+
+        const nextWidth = window.innerWidth;
+        const nextHeight = window.innerHeight;
+        const widthDelta = Math.abs(nextWidth - lastViewportWidth);
+        const heightDelta = Math.abs(nextHeight - lastViewportHeight);
+        lastViewportWidth = nextWidth;
+        lastViewportHeight = nextHeight;
+
+        if (widthDelta < 24 && heightDelta < 120) {
+          if (state.audio.mode === 'word' || state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
+            buildWordOverlay();
+          }
+          return;
+        }
+
         cancelAnimationFrame(resizeFrame);
         resizeFrame = requestAnimationFrame(async () => {
           const currentVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
           await repaginateAroundVerse(currentVerse);
         });
-      });
+      }, { passive: true });
     }
 
     async function init() {
@@ -4725,6 +4928,7 @@
       els.reciterSelect.innerHTML = '<option value="">Loading reciters…</option>';
       updateZoomStatus();
       state.audio.trackerPlayer.muted = true;
+      state.audio.trackerPlayer.preload = 'none';
       state.audio.player.preload = 'metadata';
       updatePlayUi();
       setPlayStatus('Ready');
