@@ -1934,6 +1934,7 @@
 
         <div class="recitation-topbar" id="recitationTopbar" hidden>
           <button class="btn" id="recitationPlayPauseBtn" type="button">Play</button>
+          <button class="btn" id="recitationBeginningBtn" type="button">Beginning</button>
           <button class="btn" id="recitationClearBtn" type="button">Clear</button>
           <div class="recitation-topbar-status" id="recitationTopbarStatus">Ready</div>
         </div>
@@ -2159,6 +2160,7 @@
       playStatus: document.getElementById('playStatus'),
       recitationTopbar: document.getElementById('recitationTopbar'),
       recitationPlayPauseBtn: document.getElementById('recitationPlayPauseBtn'),
+      recitationBeginningBtn: document.getElementById('recitationBeginningBtn'),
       recitationClearBtn: document.getElementById('recitationClearBtn'),
       recitationTopbarStatus: document.getElementById('recitationTopbarStatus'),
       wordTooltip: document.getElementById('wordTooltip'),
@@ -3447,7 +3449,7 @@
         renderPanelContent();
       }
 
-      if (state.audio.mode === 'word' || state.audio.mode === 'tajweed') {
+      if (state.audio.mode === 'word' || state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
         buildWordOverlay();
       } else {
         hideWordOverlay();
@@ -3750,11 +3752,13 @@
     function updatePlayUi() {
       els.audioModeWordBtn.classList.toggle('active', state.audio.mode === 'word');
       els.audioModeTajweedBtn.classList.toggle('active', state.audio.mode === 'tajweed');
+      const isRecitingMode = state.audio.mode === 'tajweed' || state.audio.mode === 'reciter';
       const isTajweed = state.audio.mode === 'tajweed';
-      els.recitationTopbar.hidden = !isTajweed;
+      els.recitationTopbar.hidden = !isRecitingMode;
       els.recitationPlayPauseBtn.textContent = state.audio.loading ? 'Loading…' : (state.audio.playing ? 'Pause' : 'Play');
-      els.recitationPlayPauseBtn.disabled = !isTajweed || state.audio.loading;
-      els.recitationClearBtn.disabled = !isTajweed && state.audio.mode !== 'word';
+      els.recitationPlayPauseBtn.disabled = !isRecitingMode || state.audio.loading;
+      els.recitationBeginningBtn.disabled = !isRecitingMode || state.audio.loading;
+      els.recitationClearBtn.disabled = !isRecitingMode && state.audio.mode !== 'word';
       els.reciterSelect.disabled = isTajweed;
       if (isTajweed) {
         els.reciterSelect.value = String(TAJWEED_RECITER_ID);
@@ -3880,7 +3884,7 @@
     }
 
     function buildWordOverlay() {
-      if (state.audio.mode !== 'word' && state.audio.mode !== 'tajweed') {
+      if (state.audio.mode !== 'word' && state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') {
         hideWordOverlay();
         return;
       }
@@ -4120,7 +4124,7 @@
     }
 
     async function syncRecitationHighlight() {
-      if (state.audio.mode !== 'tajweed' || !state.audio.playing || !state.audio.queue.length) return;
+      if ((state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') || !state.audio.playing || !state.audio.queue.length) return;
       const currentTime = state.audio.player.currentTime;
       while (state.audio.index < state.audio.queue.length - 1 && currentTime >= state.audio.queue[state.audio.index].endTime) {
         state.audio.index += 1;
@@ -4135,7 +4139,7 @@
     }
 
     async function startAudioPlayback() {
-      if (state.audio.mode !== 'tajweed') return;
+      if (state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') return;
       const surahId = state.selectedSurahId;
       state.audio.loading = true;
       state.audio.surahId = surahId;
@@ -4170,7 +4174,7 @@
     }
 
     async function toggleAudioPlayback() {
-      if (state.audio.mode !== 'tajweed' || state.audio.loading) return;
+      if ((state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') || state.audio.loading) return;
       if (state.audio.playing) {
         state.audio.player.pause();
         state.audio.trackerPlayer.pause();
@@ -4207,7 +4211,7 @@
       console.assert(AK_KHAN_TRANSLATION_ID === 'ak-khan-englishquran-uk', 'custom AK Khan translation id should remain stable');
       console.assert(AK_KHAN_LOCAL_BASE_URL === '.', 'AK Khan local base url should point to the current repo root');
       console.assert(Boolean(els.sharePageBtn), 'share button should exist');
-      console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn && els.recitationClearBtn), 'audio controls should exist');
+      console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn && els.recitationBeginningBtn && els.recitationClearBtn), 'audio controls should exist');
       console.assert(Boolean(els.reciterSelect), 'reciter select should exist');
       console.assert(TAJWEED_RECITER_ID === 7, 'tajweed reciter id should remain fixed');
       console.assert(Boolean(els.wordTooltip), 'word tooltip should exist');
@@ -4325,16 +4329,14 @@
       els.reciterSelect.addEventListener('change', async (event) => {
         const reciterId = Number(event.target.value || 0);
         if (!reciterId) return;
+        state.audio.chapterRecitationId = reciterId;
         state.audio.wordAudioRecitationId = reciterId;
         state.audio.wordCache.clear();
         state.audio.timingCache.clear();
-        if (state.audio.mode === 'tajweed') {
-          event.target.value = String(TAJWEED_RECITER_ID);
-          return;
-        } else if (state.audio.mode === 'word' && state.verses.length) {
-          state.verses = await attachWordAudioToVerses(state.selectedSurahId, state.verses);
-          await renderReader();
-        }
+        state.audio.mode = 'reciter';
+        stopAudioPlayback(false, false);
+        await renderReader();
+        await startAudioPlayback();
       });
 
       els.audioModeWordBtn.addEventListener('click', async () => {
@@ -4360,6 +4362,12 @@
 
       els.recitationPlayPauseBtn.addEventListener('click', async () => {
         await toggleAudioPlayback();
+      });
+
+      els.recitationBeginningBtn.addEventListener('click', async () => {
+        if (state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') return;
+        stopAudioPlayback(false, false);
+        await startAudioPlayback();
       });
 
       els.recitationClearBtn.addEventListener('click', async () => {
@@ -4506,7 +4514,7 @@
       });
 
       els.readerContent.addEventListener('scroll', () => {
-        if (state.audio.mode === 'word' || state.audio.mode === 'tajweed') {
+        if (state.audio.mode === 'word' || state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
           buildWordOverlay();
         }
         hideWordTooltip();
@@ -4530,7 +4538,7 @@
         state.audio.playing = false;
         cancelAnimationFrame(state.audio.syncFrame);
         state.audio.syncFrame = 0;
-        if (state.audio.mode === 'tajweed') {
+        if (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
           setPlayStatus('Recitation finished');
           clearActiveWordHighlight();
         } else if (state.audio.mode === 'word') {
