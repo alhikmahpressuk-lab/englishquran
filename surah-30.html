@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Grand Mushaf 1x</title>
+  <title>gm1x</title>
   <meta name="description" content="Simple Arabic Qur'an reader with bookmarks, study mode, and a built-in Madinah Mushaf style." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Harmattan:wght@400;700&family=Lateef:wght@400;700&family=Markazi+Text:wght@400;700&family=Noto+Kufi+Arabic:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Reem+Kufi:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+  <link id="coreGoogleFonts" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #f4f1e8;
@@ -86,7 +86,8 @@
       top: 0;
       left: 0;
       width: min(340px, 88vw);
-      height: 100vh;
+      height: 100dvh;
+      min-height: 100dvh;
       border-right: 1px solid var(--line);
       background: var(--surface-2);
       overflow: hidden;
@@ -96,6 +97,9 @@
       transition: transform 0.24s ease;
       z-index: 50;
       box-shadow: var(--shadow);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      overscroll-behavior: contain;
     }
 
     .sidebar.open {
@@ -413,7 +417,11 @@
 
     .panel-content,
     .surah-list {
+      flex: 1 1 auto;
+      min-height: 0;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
       padding: 0.5rem;
     }
 
@@ -542,7 +550,7 @@
     .main {
       min-width: 0;
       height: 100dvh;
-      padding: 0.85rem;
+      padding: calc(0.85rem + env(safe-area-inset-top)) max(0.85rem, env(safe-area-inset-right)) max(0.85rem, env(safe-area-inset-bottom)) max(0.85rem, env(safe-area-inset-left));
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -876,6 +884,36 @@
       overflow: hidden;
     }
 
+    .page.auto-swipe-right {
+      animation: autoSwipeRight 260ms ease;
+    }
+
+    .page.auto-swipe-left {
+      animation: autoSwipeLeft 260ms ease;
+    }
+
+    @keyframes autoSwipeRight {
+      0% {
+        transform: translateX(-18px);
+        opacity: 0.82;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes autoSwipeLeft {
+      0% {
+        transform: translateX(18px);
+        opacity: 0.82;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
     .page-inner {
       border: 1px solid var(--line);
       border-radius: 22px;
@@ -900,6 +938,15 @@
       user-select: none;
       -webkit-user-select: none;
       touch-action: pan-x;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    .page-inner.recitation-scroll {
+      overflow: auto;
+      touch-action: pan-y;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
     }
 
     .page-inner.madinah-page {
@@ -1240,6 +1287,11 @@
       padding: 0.42rem 0.78rem;
     }
 
+    .recitation-topbar .btn.active {
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+    }
+
     .recitation-topbar-status {
       color: var(--muted);
       font-size: 0.82rem;
@@ -1252,20 +1304,85 @@
     }
 
     .word-audio-token {
+      all: unset;
       display: inline;
-      border: 0;
-      background: transparent;
       color: inherit;
       font: inherit;
-      padding: 0;
-      margin: 0;
+      line-height: inherit;
+      white-space: inherit;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .word-audio-token:focus-visible,
-    .word-audio-token:hover {
-      color: var(--accent);
+    .word-audio-token:hover,
+    .word-audio-token:active {
+      color: inherit;
       outline: none;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .word-tooltip {
+      position: fixed;
+      z-index: 80;
+      max-width: min(240px, calc(100vw - 1rem));
+      padding: 0.46rem 0.62rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-size: 0.82rem;
+      line-height: 1.4;
+      pointer-events: none;
+    }
+
+    .word-tooltip[hidden] {
+      display: none;
+    }
+
+    .word-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .word-overlay .word-hitbox {
+      pointer-events: none;
+    }
+
+    .word-overlay.interactive .word-hitbox {
+      pointer-events: auto;
+    }
+
+    .word-overlay[hidden] {
+      display: none;
+    }
+
+    .word-hitbox {
+      position: absolute;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .word-hitbox:focus-visible,
+    .word-hitbox:hover,
+    .word-hitbox:active {
+      outline: none;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .word-hitbox.playing {
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      border-radius: 0.28rem;
     }
 
     .play-mode-btn,
@@ -1432,11 +1549,11 @@
     @media (max-width: 640px) {
       :root {
         --page-width: 100%;
-        --arabic-size: clamp(1.62rem, 5.7vw, 2.02rem);
+        --arabic-size: clamp(1.54rem, 5.3vw, 1.92rem);
       }
 
       .main {
-        padding: 0.35rem;
+        padding: calc(0.3rem + env(safe-area-inset-top)) max(0.3rem, env(safe-area-inset-right)) max(0.3rem, env(safe-area-inset-bottom)) max(0.3rem, env(safe-area-inset-left));
       }
 
       .topbar,
@@ -1483,12 +1600,17 @@
       }
 
       .qbox-title {
-        font-size: 0.84rem;
+        font-size: 0.82rem;
         padding-left: 0.08rem;
         padding-right: 0.08rem;
         height: 32px;
         min-height: 32px;
         max-height: 32px;
+      }
+
+      .qbox-title-main,
+      .qbox-title-meta {
+        max-width: calc(50% - 22px);
       }
 
       .qbox-title-main {
@@ -1535,23 +1657,41 @@
       }
 
       .page {
-        border-radius: 20px;
-        padding: 0.42rem;
+        border-radius: 18px;
+        padding: 0.32rem;
       }
 
       .page-inner {
-        padding: 0.58rem 0.62rem;
+        padding: 0.5rem 0.52rem;
         border-radius: 14px;
       }
 
+      .page-inner.tilawah-mode,
+      .page-inner.study-mode,
+      .page-inner.madinah-page,
+      .page-inner.recitation-scroll {
+        -webkit-overflow-scrolling: touch;
+      }
+
       .madinah-block {
-        gap: 0.28rem;
-        font-size: clamp(1.34rem, 4.8vw, 1.72rem);
+        gap: 0.24rem;
+        font-size: clamp(1.26rem, 4.45vw, 1.62rem);
+        line-height: 1.82;
+      }
+
+      .mushaf-block,
+      .tilawah-flow {
+        font-size: clamp(1.46rem, 5vw, 1.88rem);
         line-height: 1.88;
       }
 
+      .study-arabic {
+        font-size: calc(var(--arabic-size) * 0.86);
+        line-height: 1.86;
+      }
+
       .page-inner.qcf-page {
-        padding: 0.52rem 0.58rem 0.5rem;
+        padding: 0.5rem 0.54rem 0.48rem;
       }
 
       .page-inner.qcf-page .surah-header {
@@ -1571,20 +1711,20 @@
 
       .qcf-line {
         gap: 0.01rem 0.04rem;
-        min-height: 1.98rem;
-        line-height: 1.38;
+        min-height: 1.92rem;
+        line-height: 1.34;
       }
 
       .qcf-word.qcf-glyph {
-        font-size: clamp(1.56rem, 5.05vw, 1.84rem);
+        font-size: clamp(1.48rem, 4.8vw, 1.76rem);
       }
 
       .qcf-word.qcf-fallback {
-        font-size: clamp(1.2rem, 4.1vw, 1.42rem);
+        font-size: clamp(1.14rem, 3.9vw, 1.34rem);
       }
 
       .qcf-word.qcf-end {
-        font-size: clamp(0.94rem, 3vw, 1.08rem);
+        font-size: clamp(0.9rem, 2.8vw, 1.04rem);
       }
 
       .surah-header {
@@ -1599,23 +1739,23 @@
       }
 
       .surah-header .arabic-name {
-        font-size: clamp(1.35rem, 5vw, 1.72rem);
+        font-size: clamp(1.28rem, 4.7vw, 1.62rem);
       }
 
       .surah-header .english-name {
         margin-top: 0.2rem;
-        font-size: 0.98rem;
+        font-size: 0.94rem;
       }
 
       .surah-subtitle {
         margin-top: 0.18rem;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
       }
 
       .bismillah {
-        margin-bottom: 0.26rem;
-        line-height: 1.68;
-        font-size: calc(var(--arabic-size) * 0.82);
+        margin-bottom: 0.24rem;
+        line-height: 1.62;
+        font-size: calc(var(--arabic-size) * 0.8);
       }
 
       .pagination {
@@ -1714,7 +1854,7 @@
       <div class="brand">
         <div class="brand-copy">
           <div class="brand-kicker">The Open Quran</div>
-          <h1>Grand Mushaf 1x</h1>
+          <h1>gm1x</h1>
           <p>Simple Arabic Qur’an book reading with bookmarks and a built-in Madinah Mushaf style.</p>
         </div>
         <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close index">×</button>
@@ -1801,6 +1941,10 @@
                   <button class="btn play-mode-btn" id="audioModeWordBtn" type="button">Word by Word</button>
                   <button class="btn play-mode-btn" id="audioModeTajweedBtn" type="button">Tajweed</button>
                 </div>
+                <label class="menu-label" for="reciterSelect" style="margin-top:0.65rem;">Reciter</label>
+                <select class="menu-select" id="reciterSelect" aria-label="Reciter selection">
+                  <option value="">Loading reciters…</option>
+                </select>
                 <div class="play-controls" role="group" aria-label="Audio controls">
                   <button class="btn play-control-btn" id="audioPlayBtn" type="button">Play</button>
                   <button class="btn play-control-btn" id="audioStopBtn" type="button">Stop</button>
@@ -1858,11 +2002,17 @@
 
         <div class="recitation-topbar" id="recitationTopbar" hidden>
           <button class="btn" id="recitationPlayPauseBtn" type="button">Play</button>
+          <button class="btn" id="recitationBeginningBtn" type="button">Beginning</button>
+          <button class="btn" id="recitationRepeatBtn" type="button">Repeat</button>
+          <button class="btn" id="recitationContinueBtn" type="button">Continue</button>
           <button class="btn" id="recitationClearBtn" type="button">Clear</button>
           <div class="recitation-topbar-status" id="recitationTopbarStatus">Ready</div>
         </div>
 
+        <div class="word-tooltip" id="wordTooltip" hidden></div>
+
         <div class="page">
+          <div class="word-overlay" id="wordOverlay" hidden></div>
           <div class="page-inner" id="readerContent">
             <div class="loading">Loading…</div>
           </div>
@@ -2010,6 +2160,7 @@
     const SETTINGS_KEY = 'open-quran-tilawah-settings';
     const BOOKMARK_KEY = 'open-quran-tilawah-bookmarks';
     const AUDIO_CDN_BASE = 'https://verses.quran.foundation';
+    const TAJWEED_RECITER_ID = 7;
     const MIN_TILAWAH_LINES = 10;
     const TILAWAH_LINE_HEIGHT = 1.82;
     const AUTO_FONT_MIN_PX = 18;
@@ -2018,6 +2169,7 @@
     const MANUAL_ZOOM_MIN = 0.72;
     const MANUAL_ZOOM_MAX = 1.36;
     const MADINAH_BLACK_DOT_RE = /[•●◦ۣ۟۠ۡۢۥۦ۪ۭۨ۫۬]/g;
+    const DEFERRED_FONTS_STYLESHEET = 'https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Harmattan:wght@400;700&family=Lateef:wght@400;700&family=Markazi+Text:wght@400;700&family=Noto+Kufi+Arabic:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Reem+Kufi:wght@400;700&display=swap';
 
     const state = {
       selectedSurahId: 1,
@@ -2041,14 +2193,23 @@
       audio: {
         mode: 'none',
         queue: [],
+        verseQueue: [],
         index: 0,
         playing: false,
         loading: false,
         surahId: null,
-        chapterRecitationId: 7,
-        wordAudioRecitationId: 7,
+        chapterRecitationId: null,
+        wordAudioRecitationId: TAJWEED_RECITER_ID,
+        reciters: [],
         wordCache: new Map(),
-        player: new Audio()
+        timingCache: new Map(),
+        syncFrame: 0,
+        approximateTiming: false,
+        activeVerseNumber: 0,
+        repeatEnabled: false,
+        continueEnabled: false,
+        player: new Audio(),
+        trackerPlayer: new Audio()
       },
       settings: {
         theme: 'light',
@@ -2071,11 +2232,17 @@
       audioModeTajweedBtn: document.getElementById('audioModeTajweedBtn'),
       audioPlayBtn: document.getElementById('audioPlayBtn'),
       audioStopBtn: document.getElementById('audioStopBtn'),
+      reciterSelect: document.getElementById('reciterSelect'),
       playStatus: document.getElementById('playStatus'),
       recitationTopbar: document.getElementById('recitationTopbar'),
       recitationPlayPauseBtn: document.getElementById('recitationPlayPauseBtn'),
+      recitationBeginningBtn: document.getElementById('recitationBeginningBtn'),
+      recitationRepeatBtn: document.getElementById('recitationRepeatBtn'),
+      recitationContinueBtn: document.getElementById('recitationContinueBtn'),
       recitationClearBtn: document.getElementById('recitationClearBtn'),
       recitationTopbarStatus: document.getElementById('recitationTopbarStatus'),
+      wordTooltip: document.getElementById('wordTooltip'),
+      wordOverlay: document.getElementById('wordOverlay'),
       sharePageBtn: document.getElementById('sharePageBtn'),
       sidepanel: document.getElementById('sidepanel'),
       panelBackdrop: document.getElementById('panelBackdrop'),
@@ -2135,11 +2302,57 @@
     const failedQcfFonts = new Set();
     const pendingVerseRequests = new Map();
     const pendingQcfRequests = new Map();
+    let deferredFontsLoaded = false;
+    let deferredBootstrapped = false;
+    let pendingPageAnimation = '';
 
     function getThemeIconSvg(theme) {
       return theme === 'dark'
         ? `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2.5"></path><path d="M12 19v2.5"></path><path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path><path d="M2.5 12H5"></path><path d="M19 12h2.5"></path><path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path></svg>`
         : `<svg viewBox="0 0 24 24"><path d="M20 14.5A7.5 7.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"></path></svg>`;
+    }
+
+    function scheduleNonCriticalTask(task, timeout = 1200) {
+      if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(() => task(), { timeout });
+        return;
+      }
+      window.setTimeout(task, 32);
+    }
+
+    function loadDeferredFonts() {
+      if (deferredFontsLoaded) return;
+      deferredFontsLoaded = true;
+      const existing = document.getElementById('deferredGoogleFonts');
+      if (existing) return;
+      const link = document.createElement('link');
+      link.id = 'deferredGoogleFonts';
+      link.rel = 'stylesheet';
+      link.href = DEFERRED_FONTS_STYLESHEET;
+      link.media = 'print';
+      link.onload = () => {
+        link.media = 'all';
+      };
+      document.head.appendChild(link);
+    }
+
+    function bootstrapDeferredTasks() {
+      if (deferredBootstrapped) return;
+      deferredBootstrapped = true;
+      scheduleNonCriticalTask(() => {
+        loadDeferredFonts();
+      });
+      scheduleNonCriticalTask(async () => {
+        try {
+          await fetchReciters();
+          renderReciterOptions();
+        } catch {
+          els.reciterSelect.innerHTML = '<option value="">Reciters unavailable</option>';
+        }
+      });
+      scheduleNonCriticalTask(() => {
+        prefetchNearbySurahs(state.selectedSurahId);
+      }, 1800);
     }
 
     async function loadQcfPageFont(pageNumber) {
@@ -2276,11 +2489,11 @@
 
     function escapeHtml(text) {
       return String(text ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
     function stripTags(text) {
@@ -2305,7 +2518,7 @@
     }
 
     function toTitleCaseLanguage(value) {
-      const text = String(value || '').trim().replaceAll('_', ' ').replaceAll('-', ' ');
+      const text = String(value || '').trim().replace(/_/g, ' ').replace(/-/g, ' ');
       if (!text) return 'Other';
       return text
         .split(' ')
@@ -2314,13 +2527,22 @@
         .join(' ');
     }
 
+    function getSelectedReciterName() {
+      const selectedId = Number(state.audio.chapterRecitationId || state.audio.wordAudioRecitationId || 0);
+      return state.audio.reciters.find((item) => Number(item.id) === selectedId)?.name || '';
+    }
+
     function updateQboxMeta() {
-      if (!state.panel.studyMode) {
-        els.qboxMeta.textContent = '';
+      if (state.panel.studyMode) {
+        const translation = state.panel.translationResources.find((item) => String(item.id) === state.panel.selectedTranslationId);
+        els.qboxMeta.textContent = translation ? (translation.displayLabel || translation.displayName || translation.name || '') : '';
         return;
       }
-      const translation = state.panel.translationResources.find((item) => String(item.id) === state.panel.selectedTranslationId);
-      els.qboxMeta.textContent = translation ? (translation.displayLabel || translation.displayName || translation.name || '') : '';
+      if (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter' || state.audio.mode === 'word') {
+        els.qboxMeta.textContent = getSelectedReciterName();
+        return;
+      }
+      els.qboxMeta.textContent = '';
     }
 
     function syncStudyMode() {
@@ -2999,6 +3221,23 @@
       }));
     }
 
+    async function hydrateQcfAfterInitialRender(surahId, anchorVerse = 1) {
+      if (!isQcfMushafMode()) return;
+      try {
+        const hydratedVerses = await attachQcfWordsToVerses(surahId, state.verses);
+        if (state.selectedSurahId !== surahId || !isQcfMushafMode()) return;
+        state.verses = hydratedVerses;
+        refreshVerseArabic();
+        state.pages = paginateVerses(hydratedVerses);
+        if (!state.pages.length) {
+          state.pages = fallbackPaginateVerses(hydratedVerses);
+        }
+        state.currentPage = findPageIndexForVerse(anchorVerse);
+        await ensureQcfFontsForVerses(state.pages[state.currentPage]?.verses || []);
+        await renderReader();
+      } catch {}
+    }
+
     function prefetchSurahIfNeeded(surahId) {
       if (!surahId || state.cache.has(surahId) || pendingVerseRequests.has(surahId)) return;
       fetchSurahVerses(surahId).catch(() => {});
@@ -3029,11 +3268,20 @@
       }).join(' ');
     }
 
+    function buildAyahMarker(verseNumber, shouldShow = true) {
+      if (!shouldShow) return '';
+      return ` <span class="ayah-marker" data-verse-stamp="${verseNumber}" role="button" tabindex="0" aria-label="Go to verse ${verseNumber}">${toArabicDigits(verseNumber)}</span>`;
+    }
+
+    function shouldShowTilawahVerseStamp() {
+      return state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter';
+    }
+
     function buildTilawahText(pageVerses) {
+      const showVerseStamp = shouldShowTilawahVerseStamp();
       return pageVerses.map((verse) => {
-        const marker = verse.showMarker === false ? '' : ` <span class="ayah-marker">${toArabicDigits(verse.number)}</span>`;
         const arabicMarkup = isQcfMushafMode() ? renderInlineQcfWords(verse) : escapeHtml(resolveVerseArabic(verse));
-        return `<span class="ayah-inline">${arabicMarkup}${marker}</span>`;
+        return `<span class="ayah-inline" data-verse-number="${verse.number}">${arabicMarkup}${buildAyahMarker(verse.number, showVerseStamp && verse.showMarker !== false)}</span>`;
       }).join(' ');
     }
 
@@ -3058,6 +3306,7 @@
     function splitVerseForPage(verse, existingVerses, surah, includeBismillah, measureRoot, maxHeight, fontSize) {
       const words = String(verse.arabic).split(' ').filter(Boolean);
       const qcfWords = Array.isArray(verse.qcfWords) ? verse.qcfWords.filter(Boolean) : [];
+      const audioWords = Array.isArray(verse.audioWords) ? verse.audioWords.filter(Boolean) : [];
       if (words.length < 2) return null;
 
       let low = 1;
@@ -3071,6 +3320,7 @@
           ...verse,
           arabic: words.slice(0, mid).join(' '),
           qcfWords: qcfWords.length ? qcfWords.slice(0, mid) : verse.qcfWords,
+          audioWords: audioWords.length ? audioWords.slice(0, mid) : verse.audioWords,
           showMarker: false
         };
         measureRoot.innerHTML = buildReaderMarkup(surah, [...existingVerses, candidate], includeBismillah);
@@ -3088,12 +3338,14 @@
           ...verse,
           arabic: words.slice(0, bestFit).join(' '),
           qcfWords: qcfWords.length ? qcfWords.slice(0, bestFit) : verse.qcfWords,
+          audioWords: audioWords.length ? audioWords.slice(0, bestFit) : verse.audioWords,
           showMarker: false
         },
         rest: {
           ...verse,
           arabic: words.slice(bestFit).join(' '),
           qcfWords: qcfWords.length ? qcfWords.slice(bestFit) : verse.qcfWords,
+          audioWords: audioWords.length ? audioWords.slice(bestFit) : verse.audioWords,
           showMarker: verse.showMarker
         }
       };
@@ -3189,49 +3441,40 @@
       if (pendingVerseRequests.has(surahId)) return pendingVerseRequests.get(surahId);
 
       const request = (async () => {
-        let qcfWordMap = new Map();
-        if (isQcfMushafMode()) {
-          try {
-            qcfWordMap = buildQcfVerseWordMap(await fetchQcfChapterPages(surahId));
-          } catch {
-            qcfWordMap = new Map();
-          }
+        const normaliseQuranComVerses = (payload) => (payload.verses || payload.data?.verses || []).map((verse) => {
+          const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
+          const rawUthmani = String(verse.text_uthmani || '').normalize('NFC');
+          const rawUthmaniSimple = String(verse.text_uthmani_simple || stripInlineVerseSymbols(rawUthmani)).normalize('NFC');
+          const textUthmani = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmani) || rawUthmani : rawUthmani;
+          const textUthmaniSimple = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmaniSimple) || rawUthmaniSimple : rawUthmaniSimple;
+          const rawArabic = textUthmani || textUthmaniSimple;
+          return {
+            number: verseNumber,
+            rawArabic,
+            textUthmani,
+            textUthmaniSimple,
+            arabic: rawArabic,
+            qcfWords: []
+          };
+        }).filter((verse) => verse.number && verse.rawArabic).sort((a, b) => a.number - b.number);
+
+        try {
+          const payload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
+          const verses = normaliseQuranComVerses(payload);
+          if (!verses.length) throw new Error('No verses returned');
+          state.cache.set(surahId, verses);
+          return verses;
+        } catch {
+          const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
+          const totalPages = Math.ceil(surah.ayahs / 50);
+          const payloads = await Promise.all(Array.from({ length: totalPages }, (_, index) => {
+            const page = index + 1;
+            return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani,text_uthmani_simple&per_page=50&page=${page}`);
+          }));
+          const verses = payloads.flatMap(normaliseQuranComVerses);
+          state.cache.set(surahId, verses);
+          return verses;
         }
-
-      const normaliseQuranComVerses = (payload) => (payload.verses || payload.data?.verses || []).map((verse) => {
-        const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]);
-        const rawUthmani = String(verse.text_uthmani || '').normalize('NFC');
-        const rawUthmaniSimple = String(verse.text_uthmani_simple || stripInlineVerseSymbols(rawUthmani)).normalize('NFC');
-        const textUthmani = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmani) || rawUthmani : rawUthmani;
-        const textUthmaniSimple = verseNumber === 1 && surahId !== 1 && surahId !== 9 ? stripLeadingBismillah(rawUthmaniSimple) || rawUthmaniSimple : rawUthmaniSimple;
-        const rawArabic = textUthmani || textUthmaniSimple;
-        return {
-          number: verseNumber,
-          rawArabic,
-          textUthmani,
-          textUthmaniSimple,
-          arabic: rawArabic,
-          qcfWords: qcfWordMap.get(verseNumber) || []
-        };
-      }).filter((verse) => verse.number && verse.rawArabic).sort((a, b) => a.number - b.number);
-
-      try {
-        const payload = await fetchJsonWithTimeout(`${API_BASE}/quran/verses/uthmani?chapter_number=${surahId}`);
-        const verses = normaliseQuranComVerses(payload);
-        if (!verses.length) throw new Error('No verses returned');
-        state.cache.set(surahId, verses);
-        return verses;
-      } catch {
-        const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
-        const totalPages = Math.ceil(surah.ayahs / 50);
-        const payloads = await Promise.all(Array.from({ length: totalPages }, (_, index) => {
-          const page = index + 1;
-          return fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?fields=text_uthmani,text_uthmani_simple&per_page=50&page=${page}`);
-        }));
-        const verses = payloads.flatMap(normaliseQuranComVerses);
-        state.cache.set(surahId, verses);
-        return verses;
-      }
       })();
 
       pendingVerseRequests.set(surahId, request);
@@ -3273,6 +3516,7 @@
       els.readerContent.classList.toggle('centered-page', Boolean(pageData.centered) && !state.panel.studyMode);
       els.readerContent.classList.toggle('study-mode', state.panel.studyMode);
       els.readerContent.classList.toggle('tilawah-mode', !state.panel.studyMode);
+      els.readerContent.classList.toggle('recitation-scroll', (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') && !state.panel.studyMode);
       els.readerContent.classList.toggle('qcf-page', false);
       els.readerContent.classList.toggle('madinah-page', false);
 
@@ -3296,7 +3540,7 @@
             const translationText = resources.translation ? translations.get(verse.number) : '';
             return `
               <article class="study-ayah" data-study-verse="${verse.number}">
-                <div class="study-arabic" data-mushaf="${escapeHtml(state.settings.mushaf)}">${escapeHtml(arabic)} <span class="ayah-marker">${toArabicDigits(verse.number)}</span></div>
+                <div class="study-arabic" data-mushaf="${escapeHtml(state.settings.mushaf)}" data-verse-number="${verse.number}">${escapeHtml(arabic)}${buildAyahMarker(verse.number, true)}</div>
                 ${translationText ? `
                   <div class="study-section-label"><span>Translation</span></div>
                   <div class="study-translation"><span class="study-translation-number">${verse.number}.</span>${escapeHtml(translationText)}</div>
@@ -3333,6 +3577,20 @@
         els.readerContent.innerHTML = buildReaderMarkup(surah, pageVerses, showBismillah);
       }
 
+      const pageShell = els.readerContent.closest('.page');
+      if (pageShell) {
+        pageShell.classList.remove('auto-swipe-right', 'auto-swipe-left');
+        if (pendingPageAnimation) {
+          const animationClass = pendingPageAnimation === 'left' ? 'auto-swipe-left' : 'auto-swipe-right';
+          pendingPageAnimation = '';
+          void pageShell.offsetWidth;
+          pageShell.classList.add(animationClass);
+          window.setTimeout(() => {
+            pageShell.classList.remove(animationClass);
+          }, 280);
+        }
+      }
+
       els.pagination.hidden = state.panel.studyMode;
       els.prevPageBtn.disabled = state.selectedSurahId === 114 && state.currentPage >= state.pages.length - 1;
       els.nextPageBtn.disabled = state.selectedSurahId === 1 && state.currentPage === 0;
@@ -3353,6 +3611,12 @@
 
       if (state.panel.open) {
         renderPanelContent();
+      }
+
+      if (state.audio.mode === 'word') {
+        buildWordOverlay();
+      } else {
+        hideWordOverlay();
       }
     }
 
@@ -3385,7 +3649,8 @@
 
     async function selectSurah(surahId, preferredPage = 0) {
       state.selectedSurahId = surahId;
-      stopAudioPlayback(true, state.audio.mode === 'tajweed');
+      clearActiveWordHighlight();
+      stopAudioPlayback(true, false);
       state.loading = true;
       renderSurahList();
       els.statusText.textContent = 'Loading surah…';
@@ -3395,10 +3660,6 @@
 
       try {
         let verses = await fetchSurahVerses(surahId);
-        if (isQcfMushafMode()) {
-          verses = await attachQcfWordsToVerses(surahId, verses);
-          await ensureQcfFontsForVerses(verses);
-        }
         if (state.audio.mode === 'word') {
           verses = await attachWordAudioToVerses(surahId, verses);
         }
@@ -3412,8 +3673,17 @@
         state.currentPage = Math.min(Math.max(preferredPage, 0), Math.max(state.pages.length - 1, 0));
         await renderReader();
         updateLocationHash();
-        prefetchNearbySurahs(surahId);
         state.loading = false;
+        bootstrapDeferredTasks();
+        scheduleNonCriticalTask(() => {
+          prefetchNearbySurahs(surahId);
+        }, 1800);
+        if (isQcfMushafMode()) {
+          const anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
+          scheduleNonCriticalTask(() => {
+            hydrateQcfAfterInitialRender(surahId, anchorVerse);
+          }, 1400);
+        }
       } catch {
         state.loading = false;
         els.statusText.textContent = 'Could not load the surah';
@@ -3616,6 +3886,26 @@
       els.sidebarBackdrop.classList.remove('open');
     }
 
+    async function fetchReciters() {
+      if (state.audio.reciters.length) return state.audio.reciters;
+      const payload = await fetchJsonWithTimeout(`${API_BASE}/resources/recitations?per_page=300`);
+      const raw = payload.recitations || payload.data?.recitations || [];
+      const reciters = raw.map((reciter) => {
+        const id = Number(reciter.id);
+        const name = stripTags(String(reciter.reciter_name || reciter.translated_name?.name || reciter.name || '').trim());
+        return id && name ? { id, name } : null;
+      }).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name));
+      state.audio.reciters = reciters;
+      return reciters;
+    }
+
+    function renderReciterOptions() {
+      const options = state.audio.reciters.length
+        ? state.audio.reciters.map((reciter) => `<option value="${reciter.id}" ${reciter.id === state.audio.wordAudioRecitationId ? 'selected' : ''}>${escapeHtml(reciter.name)}</option>`).join('')
+        : '<option value="">No reciters found</option>';
+      els.reciterSelect.innerHTML = options;
+    }
+
     function resolveAudioUrl(url) {
       if (!url) return '';
       if (/^https?:\/\//i.test(url)) return url;
@@ -3631,14 +3921,58 @@
     function updatePlayUi() {
       els.audioModeWordBtn.classList.toggle('active', state.audio.mode === 'word');
       els.audioModeTajweedBtn.classList.toggle('active', state.audio.mode === 'tajweed');
+      const isRecitingMode = state.audio.mode === 'tajweed' || state.audio.mode === 'reciter';
       const isTajweed = state.audio.mode === 'tajweed';
-      els.recitationTopbar.hidden = !isTajweed;
+      els.recitationTopbar.hidden = !isRecitingMode;
       els.recitationPlayPauseBtn.textContent = state.audio.loading ? 'Loading…' : (state.audio.playing ? 'Pause' : 'Play');
-      els.recitationPlayPauseBtn.disabled = !isTajweed || state.audio.loading;
-      els.recitationClearBtn.disabled = !isTajweed && state.audio.mode !== 'word';
+      els.recitationPlayPauseBtn.disabled = !isRecitingMode || state.audio.loading;
+      els.recitationBeginningBtn.disabled = !isRecitingMode || state.audio.loading;
+      els.recitationRepeatBtn.disabled = !isRecitingMode;
+      els.recitationContinueBtn.disabled = !isRecitingMode;
+      els.recitationRepeatBtn.classList.toggle('active', state.audio.repeatEnabled);
+      els.recitationContinueBtn.classList.toggle('active', state.audio.continueEnabled);
+      els.recitationClearBtn.disabled = !isRecitingMode && state.audio.mode !== 'word';
+      els.reciterSelect.disabled = isTajweed;
+      if (isTajweed) {
+        els.reciterSelect.value = String(TAJWEED_RECITER_ID);
+      }
       if (!els.playStatus.textContent) {
         setPlayStatus('Ready');
       }
+      updateQboxMeta();
+    }
+
+    async function continueRecitationToNextSurah() {
+      const nextSurah = SURAHS.find((surah) => surah.id === state.selectedSurahId + 1);
+      if (!nextSurah) return false;
+      const activeMode = state.audio.mode;
+      await selectSurah(nextSurah.id, 0);
+      state.audio.mode = activeMode;
+      await renderReader();
+      await startAudioPlayback();
+      return true;
+    }
+
+    async function handleRecitationEnded() {
+      state.audio.playing = false;
+      cancelAnimationFrame(state.audio.syncFrame);
+      state.audio.syncFrame = 0;
+      clearActiveWordHighlight();
+
+      if ((state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') && state.audio.continueEnabled) {
+        const moved = await continueRecitationToNextSurah();
+        if (moved) return;
+      }
+
+      if ((state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') && state.audio.repeatEnabled) {
+        await startAudioPlayback();
+        return;
+      }
+
+      if (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
+        setPlayStatus('Recitation finished');
+      }
+      updatePlayUi();
     }
 
     function stopAudioPlayback(resetStatus = true, resetMode = false) {
@@ -3648,6 +3982,16 @@
         state.audio.player.removeAttribute('src');
         state.audio.player.load();
       } catch {}
+      try {
+        state.audio.trackerPlayer.pause();
+        cancelAnimationFrame(state.audio.syncFrame);
+        state.audio.syncFrame = 0;
+        state.audio.trackerPlayer.currentTime = 0;
+        state.audio.trackerPlayer.removeAttribute('src');
+        state.audio.trackerPlayer.load();
+      } catch {}
+      cancelAnimationFrame(state.audio.syncFrame);
+      state.audio.syncFrame = 0;
       state.audio.queue = [];
       state.audio.index = 0;
       state.audio.playing = false;
@@ -3671,7 +4015,8 @@
         const verseNumber = verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]) || 0;
         mapped.set(verseNumber, (verse.words || []).map((word) => ({
           text: word.text_qpc_hafs || word.text_uthmani || word.text || '',
-          audioUrl: resolveAudioUrl(word.audio_url || word.audio?.url || word.audio?.audio_url || '')
+          audioUrl: resolveAudioUrl(word.audio_url || word.audio?.url || word.audio?.audio_url || ''),
+          meaning: stripTags(word.translation?.text || word.translation || word.translations?.[0]?.text || '')
         })));
       });
       state.audio.wordCache.set(surahId, mapped);
@@ -3690,12 +4035,166 @@
       const visibleWords = String(verse.arabic || resolveVerseArabic(verse)).split(' ').filter(Boolean);
       const audioWords = verse.audioWords || [];
       const words = visibleWords.length
-        ? visibleWords.map((text, index) => ({ text, audioUrl: audioWords[index]?.audioUrl || '' }))
-        : audioWords.map((word) => ({ text: word.text || '', audioUrl: word.audioUrl || '' }));
-      return words.map((word) => `<button class="word-audio-token" type="button" data-word-audio="${escapeHtml(word.audioUrl || '')}" data-word-verse="${verse.number}">${escapeHtml(word.text || '')}</button>`).join(' ');
+        ? visibleWords.map((text, index) => ({
+            text,
+            audioUrl: audioWords[index]?.audioUrl || '',
+            meaning: audioWords[index]?.meaning || ''
+          }))
+        : audioWords.map((word) => ({
+            text: word.text || '',
+            audioUrl: word.audioUrl || '',
+            meaning: word.meaning || ''
+          }));
+      return words.map((word) => `<button class="word-audio-token" type="button" data-word-audio="${escapeHtml(word.audioUrl || '')}" data-word-verse="${verse.number}" data-word-meaning="${escapeHtml(word.meaning || '')}">${escapeHtml(word.text || '')}</button>`).join(' ');
     }
 
-    async function playTappedWord(audioUrl, verseNumber) {
+    function hideWordTooltip() {
+      els.wordTooltip.hidden = true;
+      els.wordTooltip.textContent = '';
+    }
+
+    function hideWordOverlay() {
+      els.wordOverlay.hidden = true;
+      els.wordOverlay.innerHTML = '';
+    }
+
+    function clearActiveWordHighlight() {
+      els.wordOverlay.querySelectorAll('.word-hitbox.playing').forEach((button) => {
+        button.classList.remove('playing');
+      });
+    }
+
+    function setActiveWordHighlight(target) {
+      clearActiveWordHighlight();
+      if (target) {
+        target.classList.add('playing');
+      }
+    }
+
+    function setActiveVerseHighlight(verseNumber) {
+      clearActiveWordHighlight();
+      els.wordOverlay.querySelectorAll(`[data-word-verse="${verseNumber}"]`).forEach((button) => {
+        button.classList.add('playing');
+      });
+    }
+
+    function getOverlayVerses() {
+      return state.panel.studyMode ? state.verses : (state.pages[state.currentPage]?.verses || []);
+    }
+
+    function getWordRanges(text) {
+      const ranges = [];
+      let start = -1;
+      for (let index = 0; index < text.length; index += 1) {
+        const code = text.charCodeAt(index);
+        const isGap = code === 32 || code === 10 || code === 9;
+        if (!isGap && start === -1) start = index;
+        if (start !== -1 && (isGap || index === text.length - 1)) {
+          ranges.push([start, isGap ? index : index + 1]);
+          start = -1;
+        }
+      }
+      return ranges;
+    }
+
+    function buildWordOverlay() {
+      if (state.audio.mode !== 'word') {
+        hideWordOverlay();
+        return;
+      }
+
+      const verseMap = new Map(getOverlayVerses().map((verse) => [Number(verse.number), verse]));
+      const containers = Array.from(els.readerContent.querySelectorAll('[data-verse-number]'));
+      if (!containers.length) {
+        hideWordOverlay();
+        return;
+      }
+
+      const overlayRect = els.wordOverlay.parentElement.getBoundingClientRect();
+      const hitboxes = [];
+
+      containers.forEach((container) => {
+        const verseNumber = Number(container.dataset.verseNumber || 0);
+        const verse = verseMap.get(verseNumber);
+        if (!verse) return;
+
+        const audioWords = verse.audioWords || [];
+        let wordIndex = 0;
+        const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+          acceptNode(node) {
+            if (!node.textContent || !node.textContent.trim()) return NodeFilter.FILTER_REJECT;
+            if (node.parentElement?.closest('.ayah-marker')) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        });
+
+        let node;
+        while ((node = walker.nextNode())) {
+          const text = node.textContent || '';
+          getWordRanges(text).forEach(([start, end]) => {
+            const range = document.createRange();
+            range.setStart(node, start);
+            range.setEnd(node, end);
+            const rects = Array.from(range.getClientRects()).filter((rect) => rect.width > 2 && rect.height > 2);
+            const audioWord = audioWords[wordIndex] || {};
+            if (rects.length) {
+              const left = Math.min(...rects.map((rect) => rect.left)) - overlayRect.left;
+              const top = Math.min(...rects.map((rect) => rect.top)) - overlayRect.top;
+              const right = Math.max(...rects.map((rect) => rect.right)) - overlayRect.left;
+              const bottom = Math.max(...rects.map((rect) => rect.bottom)) - overlayRect.top;
+              if (right > left && bottom > top) {
+                hitboxes.push({
+                  left,
+                  top,
+                  width: right - left,
+                  height: bottom - top,
+                  audioUrl: audioWord.audioUrl || '',
+                  meaning: audioWord.meaning || '',
+                  verseNumber,
+                  wordIndex
+                });
+              }
+            }
+            wordIndex += 1;
+          });
+        }
+      });
+
+      if (!hitboxes.length) {
+        hideWordOverlay();
+        return;
+      }
+
+      els.wordOverlay.hidden = false;
+      els.wordOverlay.classList.toggle('interactive', state.audio.mode === 'word');
+      els.wordOverlay.innerHTML = hitboxes.map((box) => `
+        <button
+          class="word-hitbox"
+          type="button"
+          style="left:${box.left}px;top:${box.top}px;width:${box.width}px;height:${box.height}px;"
+          data-word-audio="${escapeHtml(box.audioUrl || '')}"
+          data-word-meaning="${escapeHtml(box.meaning || '')}"
+          data-word-verse="${box.verseNumber}" data-word-index="${box.wordIndex}"
+        ></button>
+      `).join('');
+    }
+
+    function showWordTooltip(meaning, target) {
+      if (!meaning || !target || !state.panel.studyMode) {
+        hideWordTooltip();
+        return;
+      }
+      els.wordTooltip.textContent = meaning;
+      els.wordTooltip.hidden = false;
+      const rect = target.getBoundingClientRect();
+      const tooltipRect = els.wordTooltip.getBoundingClientRect();
+      const left = Math.min(window.innerWidth - tooltipRect.width - 8, Math.max(8, rect.left + (rect.width / 2) - (tooltipRect.width / 2)));
+      const top = Math.max(8, rect.top - tooltipRect.height - 10);
+      els.wordTooltip.style.left = `${left}px`;
+      els.wordTooltip.style.top = `${top}px`;
+    }
+
+    async function playTappedWord(audioUrl, verseNumber, target = null) {
       if (!audioUrl) {
         setPlayStatus(`No word audio for verse ${verseNumber}`);
         return;
@@ -3704,6 +4203,7 @@
         state.audio.player.pause();
         state.audio.player.currentTime = 0;
       } catch {}
+      setActiveWordHighlight(target);
       state.audio.player.src = audioUrl;
       try {
         await state.audio.player.play();
@@ -3719,9 +4219,14 @@
       const surah = SURAHS.find((item) => item.id === surahId) || getSelectedSurah();
       const payload = await fetchJsonWithTimeout(`${API_BASE}/verses/by_chapter/${surahId}?words=true&audio=${state.audio.wordAudioRecitationId}&word_fields=audio_url,text_qpc_hafs,text_uthmani&per_page=${Math.min(Math.max(surah.ayahs, 10), 300)}`);
       const verses = payload.verses || payload.data?.verses || [];
-      return verses.flatMap((verse) => (verse.words || []).map((word) => {
-        const audioUrl = resolveAudioUrl(word.audio_url || word.audio?.url || word.audio?.audio_url || '');
-        return audioUrl ? { audioUrl, verseNumber: verse.verse_number || Number(String(verse.verse_key || '').split(':')[1]) || 0, wordText: word.text_qpc_hafs || word.text_uthmani || word.text || '' } : null;
+      const audioMap = await fetchWordAudioMap(surahId);
+      return Array.from(audioMap.entries()).flatMap(([verseNumber, words]) => words.map((word, wordIndex) => {
+        return word.audioUrl ? {
+          audioUrl: word.audioUrl,
+          verseNumber: Number(verseNumber) || 0,
+          wordIndex,
+          wordText: word.text || ''
+        } : null;
       }).filter(Boolean));
     }
 
@@ -3740,22 +4245,155 @@
       return audioUrl;
     }
 
+    function getAudioMetadataDuration(url) {
+      return new Promise((resolve) => {
+        const audio = new Audio();
+        const cleanup = () => {
+          audio.removeAttribute('src');
+          audio.load();
+        };
+        audio.preload = 'metadata';
+        audio.addEventListener('loadedmetadata', () => {
+          const duration = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 0.45;
+          cleanup();
+          resolve(duration);
+        }, { once: true });
+        audio.addEventListener('error', () => {
+          cleanup();
+          resolve(0.45);
+        }, { once: true });
+        audio.src = url;
+      });
+    }
+
+    async function fetchTimedWordQueue(surahId) {
+      if (state.audio.timingCache.has(surahId)) return state.audio.timingCache.get(surahId);
+      const queue = await fetchWordByWordQueue(surahId);
+      const durations = await Promise.all(queue.map((item) => getAudioMetadataDuration(item.audioUrl)));
+      const timedQueue = [];
+      let cursor = 0;
+      queue.forEach((item, index) => {
+        const duration = durations[index] || 0.45;
+        timedQueue.push({
+          ...item,
+          startTime: cursor,
+          endTime: cursor + duration
+        });
+        cursor += duration;
+      });
+      state.audio.timingCache.set(surahId, timedQueue);
+      return timedQueue;
+    }
+
+    function scaleTimedQueueToDuration(queue, totalDuration) {
+      if (!queue.length || !totalDuration) return queue;
+      const lastEnd = queue[queue.length - 1]?.endTime || 0;
+      if (!lastEnd || !Number.isFinite(lastEnd)) return queue;
+      const scale = totalDuration / lastEnd;
+      return queue.map((item) => ({
+        ...item,
+        startTime: item.startTime * scale,
+        endTime: item.endTime * scale
+      }));
+    }
+
+    function buildVerseTimingQueue(queue) {
+      const verses = [];
+      queue.forEach((item) => {
+        const current = verses[verses.length - 1];
+        if (!current || current.verseNumber !== item.verseNumber) {
+          verses.push({
+            verseNumber: item.verseNumber,
+            startTime: item.startTime,
+            endTime: item.endTime
+          });
+        } else {
+          current.endTime = item.endTime;
+        }
+      });
+      return verses;
+    }
+
+    function waitForAudioMetadata(audio) {
+      return new Promise((resolve) => {
+        if (audio.readyState >= 1 && Number.isFinite(audio.duration) && audio.duration > 0) {
+          resolve(audio.duration);
+          return;
+        }
+        const handleLoaded = () => {
+          cleanup();
+          resolve(Number.isFinite(audio.duration) ? audio.duration : 0);
+        };
+        const handleError = () => {
+          cleanup();
+          resolve(0);
+        };
+        const cleanup = () => {
+          audio.removeEventListener('loadedmetadata', handleLoaded);
+          audio.removeEventListener('error', handleError);
+        };
+        audio.addEventListener('loadedmetadata', handleLoaded);
+        audio.addEventListener('error', handleError);
+      });
+    }
+
+    async function highlightQueuedRecitationWord(item) {
+      if (!item) return;
+      if (!state.panel.studyMode) {
+        const targetPage = findPageIndexForVerse(item.verseNumber);
+        if (targetPage !== state.currentPage) {
+          pendingPageAnimation = targetPage > state.currentPage ? 'right' : 'left';
+          state.currentPage = targetPage;
+          await renderReader();
+        }
+      } else {
+        scrollStudyModeToVerse(item.verseNumber);
+      }
+      setPlayStatus(`Reciting • Verse ${item.verseNumber}`);
+      updatePlayUi();
+    }
+
+    async function syncRecitationHighlight() {
+      if ((state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') || !state.audio.playing || !state.audio.queue.length) return;
+      const currentTime = state.audio.player.currentTime;
+      while (state.audio.index < state.audio.queue.length - 1 && currentTime >= state.audio.queue[state.audio.index].endTime) {
+        state.audio.index += 1;
+      }
+      while (state.audio.index > 0 && currentTime < state.audio.queue[state.audio.index].startTime) {
+        state.audio.index -= 1;
+      }
+      await highlightQueuedRecitationWord(state.audio.queue[state.audio.index]);
+      state.audio.syncFrame = requestAnimationFrame(() => {
+        syncRecitationHighlight();
+      });
+    }
+
     async function startAudioPlayback() {
-      if (state.audio.mode !== 'tajweed') return;
+      if (state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') return;
       const surahId = state.selectedSurahId;
       state.audio.loading = true;
       state.audio.surahId = surahId;
-      setPlayStatus('Loading tajweed recitation…');
+      setPlayStatus('Loading recitation…');
       updatePlayUi();
 
       try {
-        const audioUrl = await fetchChapterRecitationUrl(surahId);
-        state.audio.queue = [];
+        const chapterAudioUrl = await fetchChapterRecitationUrl(surahId);
+        state.audio.queue = await fetchTimedWordQueue(surahId);
         state.audio.index = 0;
-        state.audio.player.src = audioUrl;
+        if (!state.audio.queue.length) {
+          throw new Error('No word queue found');
+        }
+        state.audio.player.src = chapterAudioUrl;
+        const chapterDuration = await waitForAudioMetadata(state.audio.player);
+        if (chapterDuration > 0) {
+          state.audio.queue = scaleTimedQueueToDuration(state.audio.queue, chapterDuration);
+        }
         await state.audio.player.play();
         state.audio.playing = true;
-        setPlayStatus('Playing tajweed recitation');
+        cancelAnimationFrame(state.audio.syncFrame);
+        state.audio.syncFrame = requestAnimationFrame(() => {
+          syncRecitationHighlight();
+        });
       } catch {
         state.audio.playing = false;
         setPlayStatus('Audio could not be loaded');
@@ -3766,9 +4404,10 @@
     }
 
     async function toggleAudioPlayback() {
-      if (state.audio.mode !== 'tajweed' || state.audio.loading) return;
+      if ((state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') || state.audio.loading) return;
       if (state.audio.playing) {
         state.audio.player.pause();
+        state.audio.trackerPlayer.pause();
         state.audio.playing = false;
         setPlayStatus('Paused');
         updatePlayUi();
@@ -3778,7 +4417,11 @@
         try {
           await state.audio.player.play();
           state.audio.playing = true;
-          setPlayStatus('Playing tajweed recitation');
+          cancelAnimationFrame(state.audio.syncFrame);
+          state.audio.syncFrame = requestAnimationFrame(() => {
+            syncRecitationHighlight();
+          });
+          setPlayStatus('Recitation resumed');
         } catch {
           setPlayStatus('Audio could not be resumed');
         }
@@ -3798,9 +4441,17 @@
       console.assert(AK_KHAN_TRANSLATION_ID === 'ak-khan-englishquran-uk', 'custom AK Khan translation id should remain stable');
       console.assert(AK_KHAN_LOCAL_BASE_URL === '.', 'AK Khan local base url should point to the current repo root');
       console.assert(Boolean(els.sharePageBtn), 'share button should exist');
-      console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn && els.recitationClearBtn), 'audio controls should exist');
+      console.assert(Boolean(els.playToggleBtn && els.audioModeWordBtn && els.audioModeTajweedBtn && els.recitationPlayPauseBtn && els.recitationBeginningBtn && els.recitationClearBtn), 'audio controls should exist');
+      console.assert(Boolean(els.reciterSelect), 'reciter select should exist');
+      console.assert(TAJWEED_RECITER_ID === 7, 'tajweed reciter id should remain fixed');
+      console.assert(Boolean(els.wordTooltip), 'word tooltip should exist');
+      const wordRangeSample = `one two${String.fromCharCode(10)}three${String.fromCharCode(9)}four`;
+      console.assert(JSON.stringify(getWordRanges(wordRangeSample)) === JSON.stringify([[0, 3], [4, 7], [8, 13], [14, 18]]), 'getWordRanges should handle spaces, newlines, and tabs');
       console.assert(cleanAkKhanVerseText('1:1 Sample text', 1, 1) === 'Sample text', 'AK Khan cleaner should strip verse prefixes');
-      console.assert(cleanAkKhanVerseText('1:1 Sample\ntext\t', 1, 1) === 'Sample text', 'AK Khan cleaner should normalize line breaks and tabs');
+      const akKhanWhitespaceSample = `1:1 Sample${String.fromCharCode(10)}text${String.fromCharCode(9)}`;
+      console.assert(cleanAkKhanVerseText(akKhanWhitespaceSample, 1, 1) === 'Sample text', 'AK Khan cleaner should normalize line breaks and tabs');
+      const scaledSample = scaleTimedQueueToDuration([{ startTime: 0, endTime: 1 }, { startTime: 1, endTime: 2 }], 4);
+      console.assert(scaledSample[1].endTime === 4, 'timed queue should scale to recitation duration');
     }
 
     function bindEvents() {
@@ -3905,6 +4556,19 @@
         await shareCurrentPage();
       });
 
+      els.reciterSelect.addEventListener('change', async (event) => {
+        const reciterId = Number(event.target.value || 0);
+        if (!reciterId) return;
+        state.audio.chapterRecitationId = reciterId;
+        state.audio.wordAudioRecitationId = reciterId;
+        state.audio.wordCache.clear();
+        state.audio.timingCache.clear();
+        state.audio.mode = 'reciter';
+        stopAudioPlayback(false, false);
+        await renderReader();
+        await startAudioPlayback();
+      });
+
       els.audioModeWordBtn.addEventListener('click', async () => {
         state.audio.mode = 'word';
         stopAudioPlayback(false, false);
@@ -3918,6 +4582,9 @@
 
       els.audioModeTajweedBtn.addEventListener('click', async () => {
         state.audio.mode = 'tajweed';
+        state.audio.chapterRecitationId = TAJWEED_RECITER_ID;
+        state.audio.wordAudioRecitationId = TAJWEED_RECITER_ID;
+        renderReciterOptions();
         stopAudioPlayback(false, false);
         await renderReader();
         await startAudioPlayback();
@@ -3925,6 +4592,28 @@
 
       els.recitationPlayPauseBtn.addEventListener('click', async () => {
         await toggleAudioPlayback();
+      });
+
+      els.recitationBeginningBtn.addEventListener('click', async () => {
+        if (state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter') return;
+        stopAudioPlayback(false, false);
+        await startAudioPlayback();
+      });
+
+      els.recitationRepeatBtn.addEventListener('click', () => {
+        state.audio.repeatEnabled = !state.audio.repeatEnabled;
+        if (state.audio.repeatEnabled) {
+          state.audio.continueEnabled = false;
+        }
+        updatePlayUi();
+      });
+
+      els.recitationContinueBtn.addEventListener('click', () => {
+        state.audio.continueEnabled = !state.audio.continueEnabled;
+        if (state.audio.continueEnabled) {
+          state.audio.repeatEnabled = false;
+        }
+        updatePlayUi();
       });
 
       els.recitationClearBtn.addEventListener('click', async () => {
@@ -4040,10 +4729,7 @@
           disableStudyMode();
           return;
         }
-        const wordButton = event.target.closest('[data-word-audio]');
-        if (wordButton && state.audio.mode === 'word') {
-          await playTappedWord(wordButton.dataset.wordAudio || '', Number(wordButton.dataset.wordVerse || 0));
-        }
+        hideWordTooltip();
       });
 
       let touchStartX = 0;
@@ -4057,6 +4743,9 @@
 
       els.readerContent.addEventListener('touchmove', (event) => {
         if (state.panel.studyMode) return;
+        if (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
+          return;
+        }
         const touch = event.touches[0];
         if (!touch) return;
         const deltaX = Math.abs(touch.clientX - touchStartX);
@@ -4066,13 +4755,33 @@
         }
       }, { passive: false });
 
+      els.wordOverlay.addEventListener('click', async (event) => {
+        const hitbox = event.target.closest('[data-word-audio]');
+        if (!hitbox || state.audio.mode !== 'word') return;
+        await playTappedWord(hitbox.dataset.wordAudio || '', Number(hitbox.dataset.wordVerse || 0), hitbox);
+        showWordTooltip(hitbox.dataset.wordMeaning || '', hitbox);
+      });
+
+      els.readerContent.addEventListener('scroll', () => {
+        if (state.audio.mode === 'word') {
+          buildWordOverlay();
+        }
+        hideWordTooltip();
+      }, { passive: true });
+
       els.readerContent.addEventListener('touchend', (event) => {
         if (state.panel.studyMode) return;
         const touch = event.changedTouches[0];
         if (!touch) return;
         const deltaX = touch.clientX - touchStartX;
         const deltaY = touch.clientY - touchStartY;
-        if (Math.abs(deltaX) < 45 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        const reciting = state.audio.mode === 'tajweed' || state.audio.mode === 'reciter';
+        const swipeThreshold = reciting ? 28 : 45;
+        const horizontalEnough = Math.abs(deltaX) >= swipeThreshold;
+        const dominantHorizontal = reciting
+          ? Math.abs(deltaX) > Math.abs(deltaY) * 0.85
+          : Math.abs(deltaX) > Math.abs(deltaY);
+        if (!horizontalEnough || !dominantHorizontal) return;
         if (deltaX > 0) {
           goToNextPage();
         } else {
@@ -4081,30 +4790,58 @@
       }, { passive: true });
 
       state.audio.player.addEventListener('ended', () => {
-        state.audio.playing = false;
-        if (state.audio.mode === 'tajweed') {
-          setPlayStatus('Ready');
-        }
-        updatePlayUi();
+        handleRecitationEnded().catch(() => {
+          state.audio.playing = false;
+          setPlayStatus('Recitation finished');
+          updatePlayUi();
+        });
       });
 
+      state.audio.trackerPlayer.addEventListener('ended', () => {});
+
       let resizeFrame = 0;
+      let lastViewportWidth = window.innerWidth;
+      let lastViewportHeight = window.innerHeight;
+
       window.addEventListener('resize', () => {
+        hideWordTooltip();
         if (!state.verses.length) return;
+
+        const nextWidth = window.innerWidth;
+        const nextHeight = window.innerHeight;
+        const widthDelta = Math.abs(nextWidth - lastViewportWidth);
+        const heightDelta = Math.abs(nextHeight - lastViewportHeight);
+        lastViewportWidth = nextWidth;
+        lastViewportHeight = nextHeight;
+
+        if (widthDelta < 24 && heightDelta < 120) {
+          if (state.audio.mode === 'word') {
+          buildWordOverlay();
+        }
+          return;
+        }
+
         cancelAnimationFrame(resizeFrame);
         resizeFrame = requestAnimationFrame(async () => {
           const currentVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
           await repaginateAroundVerse(currentVerse);
         });
-      });
+      }, { passive: true });
     }
 
     async function init() {
-      runSelfTests();
+      try {
+        runSelfTests();
+      } catch (error) {
+        console.warn('Self-tests skipped', error);
+      }
       loadSettings();
       applyTheme();
       applyMushafStyle();
+      els.reciterSelect.innerHTML = '<option value="">Loading reciters…</option>';
       updateZoomStatus();
+      state.audio.trackerPlayer.muted = true;
+      state.audio.player.preload = 'metadata';
       updatePlayUi();
       setPlayStatus('Ready');
       renderSurahList();
@@ -4124,7 +4861,15 @@
       await selectSurah(1, 0);
     }
 
-    init();
+    init().catch((error) => {
+      console.error('App failed to initialize', error);
+      if (els.statusText) {
+        els.statusText.textContent = 'Could not load the reader';
+      }
+      if (els.readerContent) {
+        els.readerContent.innerHTML = '<div class="error">The page could not load properly. Please refresh and try again.</div>';
+      }
+    });
   </script>
 </body>
 </html>
