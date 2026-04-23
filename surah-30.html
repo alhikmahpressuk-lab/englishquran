@@ -2246,6 +2246,8 @@
         lastWordActivationKey: '',
         lastWordActivationTs: 0,
         lastWordAudioUrl: '',
+        primedWordAudioUrl: '',
+        lastWordTouchTs: 0,
         wordCache: new Map(),
         syncFrame: 0,
         repeatEnabled: false,
@@ -2463,9 +2465,59 @@
       audio.playsInline = true;
       audio.crossOrigin = 'anonymous';
       try {
+        audio.disableRemotePlayback = true;
+      } catch {}
+      try {
         audio.setAttribute('playsinline', '');
         audio.setAttribute('webkit-playsinline', '');
+        audio.setAttribute('x-webkit-airplay', 'deny');
       } catch {}
+    }
+
+    function normalizeAudioUrlForCompare(url) {
+      return String(url || '').trim();
+    }
+
+    function pauseAudioSafely(player) {
+      if (!player) return;
+      try {
+        player.pause();
+      } catch {}
+    }
+
+    function resetAudioTimeSafely(player) {
+      if (!player) return;
+      try {
+        player.currentTime = 0;
+      } catch {}
+    }
+
+    function setWordPlayerSource(audioUrl, forceReload = false) {
+      const player = state.audio.wordPlayer || state.audio.player;
+      if (!player || !audioUrl) return false;
+      const targetUrl = normalizeAudioUrlForCompare(audioUrl);
+      const currentUrl = normalizeAudioUrlForCompare(player.currentSrc || player.src || '');
+      if (!forceReload && currentUrl === targetUrl) {
+        return false;
+      }
+      player.src = audioUrl;
+      player.load();
+      state.audio.lastWordAudioUrl = audioUrl;
+      return true;
+    }
+
+    function primeWordAudioForIos(audioUrl) {
+      if (!IS_IOS_DEVICE || !audioUrl) return;
+      const player = state.audio.wordPlayer || state.audio.player;
+      if (!player) return;
+      configureInlineAudioPlayback(player);
+      const targetUrl = normalizeAudioUrlForCompare(audioUrl);
+      const currentUrl = normalizeAudioUrlForCompare(player.currentSrc || player.src || '');
+      if (targetUrl !== currentUrl) {
+        player.src = audioUrl;
+        player.load();
+      }
+      state.audio.primedWordAudioUrl = audioUrl;
     }
 
     async function playAudioElement(audio) {
@@ -3442,8 +3494,16 @@
       return String(text || '')
         .normalize('NFC')
         .replace(MADINAH_BLACK_DOT_RE, '')
+        .replace(/◌/g, '')
         .replace(/\s+/g, ' ')
         .trim();
+    }
+
+    function getDisplayArabicForVerse(verse) {
+      const baseText = resolveVerseArabic(verse);
+      if (!isQcfMushafMode()) return baseText;
+      const hasQcfWords = Array.isArray(verse && verse.qcfWords) && verse.qcfWords.length > 0;
+      return hasQcfWords ? baseText : cleanMadinahArabic(baseText);
     }
 
     function resolveVerseArabic(verse) {
@@ -3522,7 +3582,7 @@
     function renderInlineQcfWords(verse) {
       const words = verse.qcfWords || [];
       if (!words.length) {
-        return escapeHtml(resolveVerseArabic(verse));
+        return escapeHtml(getDisplayArabicForVerse(verse));
       }
       return words.map((word) => {
         const fontName = `p${word.pageNumber}-v2`;
@@ -3801,7 +3861,7 @@
           const translationLang = getResourceLocale(resources.translation);
           const studyMarkup = studyVerses.map((verse) => {
             const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
-            const visibleArabic = resolveVerseArabic(verse);
+            const visibleArabic = getDisplayArabicForVerse(verse);
             const arabic = shouldStripBismillah ? stripLeadingBismillah(visibleArabic) || visibleArabic : visibleArabic;
             const translationText = resources.translation ? translations.get(verse.number) : '';
             return `
@@ -4466,36 +4526,37 @@
       }
 
       const player = state.audio.wordPlayer || state.audio.player;
+      if (!player) {
+        setPlayStatus('Word audio player unavailable');
+        return;
+      }
       configureInlineAudioPlayback(player);
       cancelAnimationFrame(state.audio.syncFrame);
       state.audio.syncFrame = 0;
 
-      try {
-        state.audio.player?.pause();
-      } catch {}
-      try {
-        player.pause();
-      } catch {}
-
+      pauseAudioSafely(state.audio.player);
+      pauseAudioSafely(player);
       setActiveWordHighlight(target);
       state.audio.playing = false;
 
-      const currentSrc = player.currentSrc || player.src || '';
-      const needsSourceSwap = state.audio.lastWordAudioUrl !== audioUrl || currentSrc !== audioUrl;
-      if (needsSourceSwap) {
-        state.audio.lastWordAudioUrl = audioUrl;
-        player.src = audioUrl;
-        player.load();
+      const targetUrl = normalizeAudioUrlForCompare(audioUrl);
+      const currentUrl = normalizeAudioUrlForCompare(player.currentSrc || player.src || '');
+      const primedUrl = normalizeAudioUrlForCompare(state.audio.primedWordAudioUrl);
+      const needsSourceSwap = currentUrl !== targetUrl;
+      const needsReload = needsSourceSwap || (IS_IOS_DEVICE && primedUrl !== targetUrl);
+
+      if (needsReload) {
+        setWordPlayerSource(audioUrl, true);
       }
 
+      resetAudioTimeSafely(player);
+      player.muted = false;
+
       try {
-        try {
-          player.currentTime = 0;
-        } catch {}
-        player.muted = false;
         await playAudioElement(player);
         state.audio.audioUnlocked = true;
         state.audio.playing = true;
+        state.audio.primedWordAudioUrl = audioUrl;
         setPlayStatus(`Word by word • Verse ${verseNumber}`);
       } catch {
         const unlocked = await unlockAudioPlayback();
@@ -4505,16 +4566,12 @@
           return;
         }
         try {
-          if (needsSourceSwap || (player.currentSrc || player.src || '') !== audioUrl) {
-            player.src = audioUrl;
-            player.load();
-          }
-          try {
-            player.currentTime = 0;
-          } catch {}
+          setWordPlayerSource(audioUrl, needsReload || normalizeAudioUrlForCompare(player.currentSrc || player.src || '') !== targetUrl);
+          resetAudioTimeSafely(player);
           player.muted = false;
           await playAudioElement(player);
           state.audio.playing = true;
+          state.audio.primedWordAudioUrl = audioUrl;
           setPlayStatus(`Word by word • Verse ${verseNumber}`);
         } catch {
           setPlayStatus('Word audio could not be played');
@@ -5032,9 +5089,23 @@
         }
       }, { passive: false });
 
+      const handleWordOverlayPrime = (event) => {
+        const hitbox = event.target.closest('[data-word-audio]');
+        if (!hitbox || state.audio.mode !== 'word') return;
+        if (event.type === 'touchstart') {
+          state.audio.lastWordTouchTs = Date.now();
+        }
+        primeWordAudioForIos(hitbox.dataset.wordAudio || '');
+      };
+
       const handleWordOverlayActivation = async (event) => {
         const hitbox = event.target.closest('[data-word-audio]');
         if (!hitbox || state.audio.mode !== 'word') return;
+        if (event.type === 'click' && IS_IOS_DEVICE && Date.now() - state.audio.lastWordTouchTs < 900) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
         event.preventDefault();
         event.stopPropagation();
         const activationKey = `${hitbox.dataset.wordVerse || ''}:${hitbox.dataset.wordIndex || ''}`;
@@ -5049,8 +5120,10 @@
       };
 
       if (window.PointerEvent) {
+        els.wordOverlay.addEventListener('pointerdown', handleWordOverlayPrime, { passive: true });
         els.wordOverlay.addEventListener('pointerup', handleWordOverlayActivation, { passive: false });
       }
+      els.wordOverlay.addEventListener('touchstart', handleWordOverlayPrime, { passive: true });
       els.wordOverlay.addEventListener('touchend', handleWordOverlayActivation, { passive: false });
       els.wordOverlay.addEventListener('click', handleWordOverlayActivation, { passive: false });
 
@@ -5149,7 +5222,7 @@
       configureInlineAudioPlayback(state.audio.player);
       configureInlineAudioPlayback(state.audio.wordPlayer);
       state.audio.player.preload = 'metadata';
-      state.audio.wordPlayer.preload = 'auto';
+      state.audio.wordPlayer.preload = IS_IOS_DEVICE ? 'metadata' : 'auto';
       bindGlobalAudioUnlock();
       syncAppHeight();
       if (document.fonts?.ready) {
