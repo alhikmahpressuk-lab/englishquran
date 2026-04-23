@@ -515,6 +515,16 @@
       font-size: 0.88rem;
     }
 
+    .panel-card-translation[dir="rtl"],
+    .panel-card-tafsir[dir="rtl"] {
+      text-align: right;
+    }
+
+    .panel-card-translation[dir="ltr"],
+    .panel-card-tafsir[dir="ltr"] {
+      text-align: left;
+    }
+
     .panel-section-label,
     .study-section-label {
       display: inline-flex;
@@ -3073,9 +3083,8 @@
       if (!state.panel.open) return;
       await fetchPanelResources();
       const surah = getSelectedSurah();
-      const pageData = state.pages[state.currentPage] || { verses: [] };
-      const pageVerses = pageData.verses || [];
       const resources = getActivePanelResources();
+      const panelVerses = state.verses || [];
 
       if (!resources.translation) {
         els.panelContent.innerHTML = '<div class="empty">Select a translation to display it in the Q-box.</div>';
@@ -3084,20 +3093,23 @@
 
       try {
         const translations = await fetchPanelText('translation', state.panel.selectedTranslationId, surah.id);
+        const translationDir = getResourceDirection(resources.translation);
+        const translationLang = getResourceLocale(resources.translation);
 
-        const cards = pageVerses.map((verse) => {
+        const cards = panelVerses.map((verse) => {
           const translationText = resources.translation ? translations.get(verse.number) : '';
           if (!translationText) return '';
           return `
-            <article class="panel-card">
-              <div class="panel-card-header">${surah.id}:${verse.number}</div>
+            <article class="panel-card" data-panel-verse="${verse.number}">
+              <div class="panel-card-header">${escapeHtml(formatVerseNumberForResource(verse.number, resources.translation))}</div>
               <div class="panel-section-label"><span>Translation</span></div>
-              <div class="panel-card-translation">${escapeHtml(translationText)}</div>
+              <div class="panel-card-translation" lang="${escapeHtml(translationLang)}" dir="${translationDir}">${escapeHtml(translationText)}</div>
             </article>
           `;
         }).filter(Boolean);
 
-        els.panelContent.innerHTML = cards.length ? cards.join('') : '<div class="empty">No displayable translation was available for this page.</div>';
+        els.panelContent.innerHTML = cards.length ? cards.join('') : '<div class="empty">No displayable translation was available for this surah.</div>';
+        els.panelContent.scrollTop = 0;
       } catch {
         els.panelContent.innerHTML = '<div class="error">Could not load the translation right now.</div>';
       }
@@ -3107,6 +3119,7 @@
       state.panel.open = true;
       els.sidepanel.classList.add('open');
       els.panelBackdrop.classList.add('open');
+      els.panelContent.scrollTop = 0;
       await fetchPanelResources();
       renderPanelContent();
     }
@@ -3154,7 +3167,9 @@
       state.panel.studyMode = false;
       closeSidepanel();
       updateQboxMeta();
-      renderReader();
+      renderReader().then(() => {
+        els.readerContent.scrollTop = 0;
+      });
     }
 
     async function fetchQcfChapterPages(surahId) {
@@ -4812,6 +4827,7 @@
         renderPanelResourcePickers();
         await renderPanelContent();
         await renderReader();
+        els.readerContent.scrollTop = 0;
       });
 
       els.otherTranslationPanel.addEventListener('click', async (event) => {
@@ -4822,6 +4838,7 @@
         renderPanelResourcePickers();
         await renderPanelContent();
         await renderReader();
+        els.readerContent.scrollTop = 0;
       });
 
       els.tafsirPanel.addEventListener('click', (event) => {
