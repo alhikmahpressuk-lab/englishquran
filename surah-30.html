@@ -2212,6 +2212,7 @@
         audioUnlocked: false,
         lastWordActivationKey: '',
         lastWordActivationTs: 0,
+        lastWordAudioUrl: '',
         wordCache: new Map(),
         syncFrame: 0,
         repeatEnabled: false,
@@ -2384,6 +2385,7 @@
         player.muted = true;
         player.preload = 'auto';
         player.src = SILENT_AUDIO_DATA_URI;
+        player.load();
         await player.play();
         player.pause();
         player.currentTime = 0;
@@ -2397,6 +2399,7 @@
         player.preload = previousPreload || 'metadata';
         if (previousSrc) {
           player.src = previousSrc;
+          player.load();
           try {
             player.currentTime = previousCurrentTime;
           } catch {}
@@ -2404,6 +2407,24 @@
           player.removeAttribute('src');
           player.load();
         }
+      }
+    }
+
+    function configureInlineAudioPlayback(audio) {
+      if (!audio) return;
+      audio.preload = 'auto';
+      audio.playsInline = true;
+      audio.crossOrigin = 'anonymous';
+      try {
+        audio.setAttribute('playsinline', '');
+        audio.setAttribute('webkit-playsinline', '');
+      } catch {}
+    }
+
+    async function playAudioElement(audio) {
+      const playPromise = audio.play();
+      if (playPromise && typeof playPromise.then === 'function') {
+        await playPromise;
       }
     }
 
@@ -3731,17 +3752,33 @@
 
       try {
         let verses = await fetchSurahVerses(surahId);
+        if (isQcfMushafMode()) {
+          verses = await attachQcfWordsToVerses(surahId, verses);
+        }
         if (state.audio.mode === 'word') {
           verses = await attachWordAudioToVerses(surahId, verses);
         }
+
         state.verses = verses;
         refreshVerseArabic();
         await new Promise((resolve) => requestAnimationFrame(resolve));
-        state.pages = paginateVerses(verses);
+
+        state.pages = paginateVerses(state.verses);
         if (!state.pages.length) {
-          state.pages = fallbackPaginateVerses(verses);
+          state.pages = fallbackPaginateVerses(state.verses);
         }
         state.currentPage = Math.min(Math.max(preferredPage, 0), Math.max(state.pages.length - 1, 0));
+
+        if (isQcfMushafMode()) {
+          const anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || state.verses[0]?.number || 1;
+          await ensureQcfFontsForVerses(state.pages[state.currentPage]?.verses || []);
+          state.pages = paginateVerses(state.verses);
+          if (!state.pages.length) {
+            state.pages = fallbackPaginateVerses(state.verses);
+          }
+          state.currentPage = findPageIndexForVerse(anchorVerse);
+        }
+
         await renderReader();
         updateLocationHash();
         state.loading = false;
@@ -3749,12 +3786,6 @@
         scheduleNonCriticalTask(() => {
           prefetchNearbySurahs(surahId);
         }, 1800);
-        if (isQcfMushafMode()) {
-          const anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || 1;
-          scheduleNonCriticalTask(() => {
-            hydrateQcfAfterInitialRender(surahId, anchorVerse);
-          }, 1400);
-        }
       } catch {
         state.loading = false;
         els.statusText.textContent = 'Could not load the surah';
@@ -4246,19 +4277,57 @@
         setPlayStatus(`No word audio for verse ${verseNumber}`);
         return;
       }
-      await unlockAudioPlayback();
+
+      const player = state.audio.player;
+      configureInlineAudioPlayback(player);
+      cancelAnimationFrame(state.audio.syncFrame);
+      state.audio.syncFrame = 0;
+
       try {
-        state.audio.player.pause();
-        state.audio.player.currentTime = 0;
+        player.pause();
       } catch {}
+
       setActiveWordHighlight(target);
-      state.audio.player.src = audioUrl;
+      state.audio.playing = false;
+
+      const needsSourceSwap = state.audio.lastWordAudioUrl !== audioUrl || player.src !== audioUrl;
+      if (needsSourceSwap) {
+        state.audio.lastWordAudioUrl = audioUrl;
+        player.src = audioUrl;
+        player.load();
+      }
+
       try {
-        await state.audio.player.play();
+        try {
+          player.currentTime = 0;
+        } catch {}
+        player.muted = false;
+        await playAudioElement(player);
+        state.audio.audioUnlocked = true;
         state.audio.playing = true;
         setPlayStatus(`Word by word • Verse ${verseNumber}`);
       } catch {
-        setPlayStatus('Word audio could not be played');
+        const unlocked = await unlockAudioPlayback();
+        if (!unlocked) {
+          setPlayStatus('Tap the word again to start audio on this device');
+          updatePlayUi();
+          return;
+        }
+        try {
+          if (needsSourceSwap || player.src !== audioUrl) {
+            player.src = audioUrl;
+            player.load();
+          }
+          try {
+            player.currentTime = 0;
+          } catch {}
+          player.muted = false;
+          await playAudioElement(player);
+          state.audio.playing = true;
+          setPlayStatus(`Word by word • Verse ${verseNumber}`);
+        } catch {
+          setPlayStatus('Word audio could not be played');
+        }
       }
       updatePlayUi();
     }
@@ -4748,10 +4817,11 @@
       const handleWordOverlayActivation = async (event) => {
         const hitbox = event.target.closest('[data-word-audio]');
         if (!hitbox || state.audio.mode !== 'word') return;
+        event.preventDefault();
+        event.stopPropagation();
         const activationKey = `${hitbox.dataset.wordVerse || ''}:${hitbox.dataset.wordIndex || ''}`;
         const now = Date.now();
         if (activationKey === state.audio.lastWordActivationKey && now - state.audio.lastWordActivationTs < 350) {
-          event.preventDefault();
           return;
         }
         state.audio.lastWordActivationKey = activationKey;
@@ -4763,6 +4833,7 @@
       if (window.PointerEvent) {
         els.wordOverlay.addEventListener('pointerup', handleWordOverlayActivation, { passive: false });
       }
+      els.wordOverlay.addEventListener('touchend', handleWordOverlayActivation, { passive: false });
       els.wordOverlay.addEventListener('click', handleWordOverlayActivation, { passive: false });
 
       els.readerContent.addEventListener('scroll', () => {
@@ -4849,7 +4920,7 @@
       els.reciterSelect.innerHTML = '<option value="">Loading reciters…</option>';
       updateZoomStatus();
       state.audio.player.preload = 'metadata';
-      state.audio.player.playsInline = true;
+      configureInlineAudioPlayback(state.audio.player);
       syncAppHeight();
       if (document.fonts?.ready) {
         document.fonts.ready.then(() => {
@@ -4866,13 +4937,8 @@
       renderBookmarkBar();
 
       const hashState = parseHash();
-      const latestBookmark = getLatestBookmark();
       if (hashState) {
         await selectSurah(hashState.surahId, hashState.page);
-        return;
-      }
-      if (latestBookmark) {
-        await resumeBookmark(latestBookmark.mode);
         return;
       }
       await selectSurah(1, 0);
