@@ -948,11 +948,11 @@
       overscroll-behavior: contain;
     }
 
-    .page-inner.recitation-scroll {
-      overflow: auto;
-      touch-action: pan-y;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
+    .page-inner.recitation-mode {
+      overflow: hidden;
+      touch-action: pan-x;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: auto;
     }
 
     .page-inner.madinah-page {
@@ -1680,7 +1680,7 @@
       .page-inner.tilawah-mode,
       .page-inner.study-mode,
       .page-inner.madinah-page,
-      .page-inner.recitation-scroll {
+      .page-inner.recitation-mode {
         -webkit-overflow-scrolling: touch;
       }
 
@@ -2217,6 +2217,7 @@
         syncFrame: 0,
         repeatEnabled: false,
         continueEnabled: false,
+        activeVerseNumber: 0,
         player: new Audio(),
       },
       settings: {
@@ -3608,7 +3609,7 @@
       els.readerContent.classList.toggle('centered-page', Boolean(pageData.centered) && !state.panel.studyMode);
       els.readerContent.classList.toggle('study-mode', state.panel.studyMode);
       els.readerContent.classList.toggle('tilawah-mode', !state.panel.studyMode);
-      els.readerContent.classList.toggle('recitation-scroll', (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') && !state.panel.studyMode);
+      els.readerContent.classList.toggle('recitation-mode', (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') && !state.panel.studyMode);
       els.readerContent.classList.toggle('qcf-page', false);
       els.readerContent.classList.toggle('madinah-page', false);
 
@@ -4088,6 +4089,7 @@
       state.audio.syncFrame = 0;
       state.audio.queue = [];
       state.audio.index = 0;
+      state.audio.activeVerseNumber = 0;
       state.audio.playing = false;
       state.audio.loading = false;
       if (resetMode) {
@@ -4400,18 +4402,35 @@
 
     async function highlightQueuedRecitationWord(item) {
       if (!item) return;
+      const verseNumber = Number(item.verseNumber || 0);
+      if (!verseNumber) return;
+
       if (!state.panel.studyMode) {
-        const targetPage = findPageIndexForVerse(item.verseNumber);
-        if (targetPage !== state.currentPage) {
+        const targetPage = findPageIndexForVerse(verseNumber);
+        const pageChanged = targetPage !== state.currentPage;
+        const verseChanged = state.audio.activeVerseNumber !== verseNumber;
+        if (pageChanged) {
           pendingPageAnimation = targetPage > state.currentPage ? 'right' : 'left';
           state.currentPage = targetPage;
+          state.audio.activeVerseNumber = verseNumber;
           await renderReader();
+        } else if (els.readerContent.scrollTop > 0 && verseChanged) {
+          els.readerContent.scrollTo({ top: 0, behavior: 'auto' });
+          state.audio.activeVerseNumber = verseNumber;
+        } else {
+          state.audio.activeVerseNumber = verseNumber;
         }
       } else {
-        scrollStudyModeToVerse(item.verseNumber);
+        if (state.audio.activeVerseNumber !== verseNumber) {
+          state.audio.activeVerseNumber = verseNumber;
+          scrollStudyModeToVerse(verseNumber);
+        }
       }
-      setPlayStatus(`Reciting • Verse ${item.verseNumber}`);
-      updatePlayUi();
+
+      if (els.recitationTopbarStatus.textContent !== `Reciting • Verse ${verseNumber}`) {
+        setPlayStatus(`Reciting • Verse ${verseNumber}`);
+        updatePlayUi();
+      }
     }
 
     async function syncRecitationHighlight() {
@@ -4443,11 +4462,13 @@
         const chapterDuration = await waitForAudioMetadata(state.audio.player);
         state.audio.queue = buildApproximateVerseQueue(state.verses, chapterDuration || 0);
         state.audio.index = 0;
+        state.audio.activeVerseNumber = 0;
         if (!state.audio.queue.length) {
           throw new Error('No verse timing queue found');
         }
         await state.audio.player.play();
         state.audio.playing = true;
+        await highlightQueuedRecitationWord(state.audio.queue[0]);
         cancelAnimationFrame(state.audio.syncFrame);
         state.audio.syncFrame = requestAnimationFrame(() => {
           syncRecitationHighlight();
