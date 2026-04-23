@@ -1478,10 +1478,20 @@
       margin-bottom: 0.55rem;
     }
 
+    .study-translation[dir="rtl"] {
+      text-align: right;
+    }
+
+    .study-translation[dir="ltr"] {
+      text-align: left;
+    }
+
     .study-translation-number {
       color: var(--muted);
       font-weight: 700;
-      margin-right: 0.45rem;
+      display: inline-block;
+      unicode-bidi: isolate;
+      margin-inline-end: 0.45rem;
     }
 
     .study-tafsir {
@@ -3006,6 +3016,59 @@
       };
     }
 
+    function getResourceLocale(resource) {
+      const raw = String(resource?.languageCode || '').trim().toLowerCase();
+      if (!raw) return 'en';
+      if (raw.includes('-')) return raw;
+      const localeMap = {
+        en: 'en',
+        english: 'en',
+        ar: 'ar',
+        arabic: 'ar',
+        ur: 'ur',
+        urdu: 'ur',
+        fa: 'fa',
+        persian: 'fa',
+        farsi: 'fa',
+        bn: 'bn',
+        bengali: 'bn',
+        hi: 'hi',
+        hindi: 'hi',
+        tr: 'tr',
+        turkish: 'tr',
+        fr: 'fr',
+        french: 'fr',
+        de: 'de',
+        german: 'de',
+        es: 'es',
+        spanish: 'es',
+        pt: 'pt',
+        portuguese: 'pt',
+        ru: 'ru',
+        russian: 'ru',
+        id: 'id',
+        indonesian: 'id',
+        ms: 'ms',
+        malay: 'ms'
+      };
+      return localeMap[raw] || raw || 'en';
+    }
+
+    function getResourceDirection(resource) {
+      const locale = getResourceLocale(resource);
+      return /^(ar|fa|ur)/i.test(locale) ? 'rtl' : 'ltr';
+    }
+
+    function formatVerseNumberForResource(value, resource) {
+      const numericValue = Number(value);
+      if (!Number.isFinite(numericValue)) return String(value || '');
+      try {
+        return new Intl.NumberFormat(getResourceLocale(resource), { useGrouping: false }).format(numericValue);
+      } catch {
+        return String(numericValue);
+      }
+    }
+
     async function renderPanelContent() {
       if (!state.panel.open) return;
       await fetchPanelResources();
@@ -3367,7 +3430,7 @@
     }
 
     function shouldShowTilawahVerseStamp() {
-      return state.audio.mode !== 'tajweed' && state.audio.mode !== 'reciter';
+      return true;
     }
 
     function buildTilawahText(pageVerses) {
@@ -3626,6 +3689,8 @@
           const translations = await fetchPanelText('translation', state.panel.selectedTranslationId, surah.id);
 
           const resources = getActivePanelResources();
+          const translationDir = getResourceDirection(resources.translation);
+          const translationLang = getResourceLocale(resources.translation);
           const studyMarkup = studyVerses.map((verse) => {
             const shouldStripBismillah = surah.id !== 1 && surah.id !== 9 && verse.number === 1;
             const visibleArabic = resolveVerseArabic(verse);
@@ -3636,7 +3701,7 @@
                 <div class="study-arabic" data-mushaf="${escapeHtml(state.settings.mushaf)}" data-verse-number="${verse.number}">${escapeHtml(arabic)}${buildAyahMarker(verse.number, true)}</div>
                 ${translationText ? `
                   <div class="study-section-label"><span>Translation</span></div>
-                  <div class="study-translation"><span class="study-translation-number">${verse.number}.</span>${escapeHtml(translationText)}</div>
+                  <div class="study-translation" lang="${escapeHtml(translationLang)}" dir="${translationDir}"><span class="study-translation-number">${escapeHtml(formatVerseNumberForResource(verse.number, resources.translation))}.</span>${escapeHtml(translationText)}</div>
                 ` : ''}
                 
               </article>
