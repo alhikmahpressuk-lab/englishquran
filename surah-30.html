@@ -1122,7 +1122,39 @@
     }
 
     .page-inner.surah-one-page {
-      --tilawah-line-height: 1.76;
+      --tilawah-line-height: 1.68;
+      padding-top: clamp(0.76rem, 1.7vw, 1rem);
+      padding-right: clamp(0.74rem, 1.8vw, 0.98rem);
+      padding-bottom: clamp(0.78rem, 1.7vw, 1rem);
+      padding-left: clamp(0.74rem, 1.8vw, 0.98rem);
+    }
+
+    .page-inner.surah-one-page .verses {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .page-inner.surah-one-page .tilawah-flow {
+      width: 100%;
+      max-width: calc(100% - 0.8rem);
+      margin-inline: auto;
+      text-align: center;
+      text-align-last: center;
+      word-spacing: 0.005em;
+      padding-top: 0;
+    }
+
+    .page-inner.surah-one-page .surah-header {
+      margin-bottom: 0.52rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .page-inner.surah-one-page .bismillah {
+      margin-bottom: 0.28rem;
+      line-height: 1.6;
     }
 
     .page-inner.centered-page .verses {
@@ -1597,6 +1629,41 @@
     }
 
     @media (max-width: 640px) {
+      .page-inner.surah-one-page {
+        padding: 0.56rem 0.66rem 0.62rem;
+        --tilawah-line-height: 1.6;
+      }
+
+      .page-inner.surah-one-page .surah-header {
+        margin-bottom: 0.34rem;
+        padding-bottom: 0.3rem;
+      }
+
+      .page-inner.surah-one-page .surah-header .arabic-name {
+        font-size: clamp(1.18rem, 4.2vw, 1.38rem);
+      }
+
+      .page-inner.surah-one-page .surah-header .english-name {
+        margin-top: 0.14rem;
+        font-size: 0.88rem;
+      }
+
+      .page-inner.surah-one-page .surah-subtitle {
+        margin-top: 0.12rem;
+        font-size: 0.72rem;
+      }
+
+      .page-inner.surah-one-page .bismillah {
+        margin-bottom: 0.18rem;
+        font-size: calc(var(--arabic-size) * 0.72);
+        line-height: 1.5;
+      }
+
+      .page-inner.surah-one-page .tilawah-flow {
+        max-width: calc(100% - 0.45rem);
+        font-size: calc(var(--tilawah-font-size) * 0.91);
+      }
+
       .ayah-marker {
         inline-size: 1.22em;
         block-size: 1.22em;
@@ -2080,6 +2147,7 @@
         queueIndex: 0,
         player: null,
         wordPlayer: null,
+        lastInteractionTs: 0,
       },
       settings: {
         theme: 'light',
@@ -2275,6 +2343,7 @@
     }
 
     async function unlockAudioPlayback() {
+      state.audio.lastInteractionTs = Date.now();
       if (state.audio.audioUnlocked) return true;
       const results = await Promise.allSettled([
         unlockSingleAudioPlayer(state.audio.player),
@@ -2332,6 +2401,7 @@
     }
 
     function primeWordAudioForIos(audioUrl) {
+      state.audio.lastInteractionTs = Date.now();
       if (!IS_IOS_DEVICE || !audioUrl) return;
       const player = state.audio.wordPlayer || state.audio.player;
       if (!player) return;
@@ -2343,6 +2413,10 @@
         player.load();
       }
       state.audio.primedWordAudioUrl = audioUrl;
+    }
+
+    function hasRecentUserAudioGesture(maxAgeMs = 5000) {
+      return Date.now() - Number(state.audio.lastInteractionTs || 0) <= maxAgeMs;
     }
 
     async function playAudioElement(audio) {
@@ -3559,15 +3633,21 @@
 
       try {
         if (surah.id === 1) {
+          const surahOneVerses = verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false }));
+          const widthInset = window.innerWidth < 640 ? 30 : window.innerWidth < 900 ? 24 : 20;
+          const heightInset = window.innerWidth < 640 ? 28 : 22;
+          const safePageWidth = Math.max(260, pageWidth - widthInset);
+          const safeMaxHeight = Math.max(240, maxHeight - heightInset);
+          const compactScale = window.innerWidth < 640 ? 0.74 : window.innerWidth < 900 ? 0.84 : 0.9;
           const fontSize = fitFixedPageFontSize(
             surah,
-            verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false })),
+            surahOneVerses,
             false,
-            maxHeight,
-            pageWidth,
-            getTilawahTargetFontSize(surah, false, maxHeight, pageWidth) * 0.93
+            safeMaxHeight,
+            safePageWidth,
+            getTilawahTargetFontSize(surah, false, safeMaxHeight, safePageWidth) * compactScale
           );
-          return [{ verses: verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false })), dense: false, fontSize, forceSinglePage: true, centered: true }];
+          return [{ verses: surahOneVerses, dense: false, fontSize, forceSinglePage: true, centered: true }];
         }
 
         if (surah.id === 2 && verses.length >= 5) {
@@ -4186,13 +4266,16 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
     }
 
     function stopAudioPlayback(resetStatus = true, resetMode = false) {
+      const preservePrimedSources = IS_IOS_DEVICE && state.audio.audioUnlocked;
       [state.audio.player, state.audio.wordPlayer].forEach((player) => {
         if (!player) return;
         try {
           player.pause();
           player.currentTime = 0;
-          player.removeAttribute('src');
-          player.load();
+          if (!preservePrimedSources) {
+            player.removeAttribute('src');
+            player.load();
+          }
         } catch {}
       });
       cancelAnimationFrame(state.audio.syncFrame);
@@ -4209,7 +4292,10 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
       state.audio.pendingVerse = 1;
       state.audio.playing = false;
       state.audio.loading = false;
-      state.audio.lastWordAudioUrl = '';
+      if (!preservePrimedSources) {
+        state.audio.lastWordAudioUrl = '';
+        state.audio.primedWordAudioUrl = '';
+      }
       if (resetMode) {
         state.audio.mode = 'none';
       }
@@ -4554,8 +4640,11 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
 
     function waitForAudioReady(audio, desiredUrl) {
       return new Promise((resolve, reject) => {
+        let timeoutId = 0;
         const cleanup = () => {
+          clearTimeout(timeoutId);
           audio.removeEventListener('loadedmetadata', handleReady);
+          audio.removeEventListener('loadeddata', handleReady);
           audio.removeEventListener('canplay', handleReady);
           audio.removeEventListener('error', handleError);
         };
@@ -4568,7 +4657,13 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
           reject(new Error('Audio could not be loaded.'));
         };
 
+        timeoutId = window.setTimeout(() => {
+          cleanup();
+          reject(new Error('Audio loading timed out.'));
+        }, 15000);
+
         audio.addEventListener('loadedmetadata', handleReady);
+        audio.addEventListener('loadeddata', handleReady);
         audio.addEventListener('canplay', handleReady);
         audio.addEventListener('error', handleError);
 
@@ -4580,10 +4675,21 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
 
     async function loadAudioAt(audio, url, startSeconds = 0) {
       configureInlineAudioPlayback(audio);
-      if ((audio.currentSrc || audio.src) !== url) {
+      const currentUrl = normalizeAudioUrlForCompare(audio.currentSrc || audio.src || '');
+      const nextUrl = normalizeAudioUrlForCompare(url);
+      if (currentUrl !== nextUrl) {
         audio.src = url;
         audio.load();
       }
+
+      if (IS_IOS_DEVICE && hasRecentUserAudioGesture()) {
+        try {
+          audio.muted = false;
+          await playAudioElement(audio);
+          state.audio.audioUnlocked = true;
+        } catch {}
+      }
+
       await waitForAudioReady(audio, url);
       try {
         audio.currentTime = Math.max(0, startSeconds);
