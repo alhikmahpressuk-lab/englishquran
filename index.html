@@ -191,6 +191,34 @@
       border-color: var(--accent-deep);
     }
 
+    .nav .qbox-link {
+      background: #fff7bf;
+      color: #6b5600;
+      border-color: #ecd86d;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      gap: 8px;
+    }
+
+    .nav .qbox-icon {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.55);
+      font-size: 0.9rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .nav .qbox-link:hover {
+      background: #ffef99;
+      color: #5a4800;
+      border-color: #e0c74e;
+    }
+
     .theme-toggle {
       background: var(--surface);
       border-color: var(--line);
@@ -1236,6 +1264,7 @@
         <a href="#book">Book</a>
         <a href="#contact">Contact</a>
         <a class="cta" href="surah-1.html">Start Reading</a>
+        <a class="qbox-link" href="mushaf.html"><span class="qbox-icon" aria-hidden="true">۞</span><span>Q-Box</span></a>
         <button class="theme-toggle" type="button" id="themeToggle">Dark</button>
       </nav>
     </div>
