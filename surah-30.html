@@ -606,10 +606,6 @@
     }
 
     .main-page-btn {
-      position: fixed;
-      top: calc(env(safe-area-inset-top) + 0.2rem);
-      left: 50%;
-      z-index: 70;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -625,12 +621,11 @@
       line-height: 1;
       white-space: nowrap;
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-      transform: translateX(-50%);
     }
 
     .main-page-btn:hover,
     .main-page-btn:focus-visible {
-      transform: translateX(-50%) translateY(-1px);
+      transform: translateY(-1px);
       outline: none;
       border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
     }
@@ -1818,6 +1813,7 @@
     <main class="main">
       <div class="topbar">
         <div class="topbar-left">
+          <a class="main-page-btn" href="index.html" aria-label="Go back to main page">Main</a>
           <div class="status" id="statusText">Loading surahs…</div>
         </div>
         <div class="menu-wrap">
@@ -1937,7 +1933,6 @@
         </div>
       </div>
 
-      <a class="main-page-btn" href="index.html" aria-label="Go back to main page">Main</a>
       <section class="reader-shell">
         <div class="qbox-title">
           <span class="qbox-title-main">The Open Quran</span>
