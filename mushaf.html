@@ -602,6 +602,32 @@
       align-items: center;
       min-width: 0;
       flex: 1 1 auto;
+      gap: 0.55rem;
+    }
+
+    .main-page-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .main-page-btn:hover,
+    .main-page-btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+      border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
     }
 
     .status {
@@ -1787,6 +1813,7 @@
     <main class="main">
       <div class="topbar">
         <div class="topbar-left">
+          <a class="main-page-btn" href="index.html" aria-label="Go back to main page">Main</a>
           <div class="status" id="statusText">Loading surahs…</div>
         </div>
         <div class="menu-wrap">
