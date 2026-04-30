@@ -545,6 +545,71 @@
       font-size: 0.97rem;
     }
 
+    .qbox-panel {
+      background: linear-gradient(180deg, #fff8cf 0%, #f7e7a7 100%);
+      border-color: #e2c55d;
+      color: #4f3c00;
+      box-shadow: var(--shadow);
+    }
+
+    .qbox-panel h3,
+    .qbox-panel p {
+      color: inherit;
+    }
+
+    .qbox-panel-copy {
+      display: grid;
+      gap: 12px;
+    }
+
+    .qbox-panel-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .qbox-panel-icon {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(92, 71, 0, 0.16);
+      flex-shrink: 0;
+      box-shadow: 0 10px 24px rgba(92, 71, 0, 0.08);
+    }
+
+    .qbox-panel-icon svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .qbox-panel-title {
+      margin: 0;
+      font-size: 1.8rem;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: #4a3700;
+    }
+
+    .qbox-panel-button {
+      background: #ffffff;
+      border-color: rgba(92, 71, 0, 0.18);
+      color: #5c4700;
+      margin-top: 2px;
+      align-self: flex-start;
+    }
+
+    .qbox-panel-button:hover {
+      background: #fff7d1;
+      border-color: #d4b447;
+      color: #4f3c00;
+    }
+
     .section {
       padding: 18px 0 10px;
     }
@@ -1381,6 +1446,24 @@
           </div>
 
           <aside class="info-card">
+            <div class="info-block qbox-panel">
+              <div class="qbox-panel-copy">
+                <div class="qbox-panel-head">
+                  <span class="qbox-panel-icon" aria-hidden="true">
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                      <path d="M32 12 48 20 32 28 16 20 32 12Z" fill="#111111" />
+                      <path d="M16 20 32 28 32 47 16 39 16 20Z" fill="#2a2a2a" />
+                      <path d="M48 20 32 28 32 47 48 39 48 20Z" fill="#111111" />
+                      <path d="M32 17 41 21.5 32 26 23 21.5 32 17Z" fill="#ffffff" opacity="0.95" />
+                    </svg>
+                  </span>
+                  <h3 class="qbox-panel-title">Q-Box</h3>
+                </div>
+                <p>From Q-Box, you can open the Mushaf view, do Tilāwah, explore more features, and select available Mushaf language options in one dedicated space.</p>
+                <a class="mini-button qbox-panel-button" href="mushaf.html">Enter</a>
+              </div>
+            </div>
+
             <div class="info-block">
               <h3>Go straight to a surah</h3>
               <p>Every surah is listed with its English name, Arabic title, verse count, and direct reading link.</p>
