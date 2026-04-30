@@ -152,6 +152,7 @@
     }
 
     .nav a,
+    .nav button,
     .theme-toggle {
       min-height: 42px;
       padding: 0 16px;
@@ -171,6 +172,7 @@
     }
 
     .nav a:hover,
+    .nav button:hover,
     .theme-toggle:hover {
       background: var(--surface);
       color: var(--text);
@@ -1359,7 +1361,7 @@
         <a href="#book">Book</a>
         <a href="#contact">Contact</a>
         <a class="cta" href="surah-1.html">Start Reading</a>
-        <a class="listen-cta" href="#listen">Start Listening</a>
+        <button class="listen-cta" type="button" id="topStartListeningButton">Start Listening</button>
         <a class="qbox-link" href="mushaf.html" aria-label="Open Q-Box"><span class="qbox-icon" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" focusable="false"><path d="M32 12 48 20 32 28 16 20 32 12Z" fill="#111111" /><path d="M16 20 32 28 32 47 16 39 16 20Z" fill="#2a2a2a" /><path d="M48 20 32 28 32 47 48 39 48 20Z" fill="#111111" /><path d="M32 17 41 21.5 32 26 23 21.5 32 17Z" fill="#ffffff" opacity="0.95" /></svg></span><span class="qbox-text">Q-Box</span></a>
         <button class="theme-toggle" type="button" id="themeToggle">Dark</button>
       </nav>
@@ -2014,6 +2016,7 @@
     const emptyState = document.getElementById("emptyState");
     const filterPills = document.querySelectorAll(".pill");
     const themeToggle = document.getElementById("themeToggle");
+    const topStartListeningButton = document.getElementById("topStartListeningButton");
 
     const continueReadingSection = document.getElementById("continueReadingSection");
     const continueReadingCard = document.getElementById("continueReadingCard");
@@ -2546,6 +2549,12 @@
     function bindListeningPanel() {
       renderListenSurahList();
       renderReadSurahList();
+
+      topStartListeningButton.addEventListener("click", () => {
+        closeReadingPanelFn();
+        openListeningPanel();
+        startListeningToggle.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
 
       startListeningToggle.addEventListener("click", () => {
         if (listenSurahPanel.hidden) {
