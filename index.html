@@ -151,8 +151,8 @@
       flex-wrap: wrap;
     }
 
-    .nav a,
-    .nav button,
+    .nav > a,
+    .nav > .panel-picker-wrap > button,
     .theme-toggle {
       min-height: 42px;
       padding: 0 16px;
@@ -171,8 +171,8 @@
       white-space: nowrap;
     }
 
-    .nav a:hover,
-    .nav button:hover,
+    .nav > a:hover,
+    .nav > .panel-picker-wrap > button:hover,
     .theme-toggle:hover {
       background: var(--surface);
       color: var(--text);
@@ -193,18 +193,22 @@
       border-color: var(--accent-deep);
     }
 
-    .nav .listen-cta {
-      background: linear-gradient(180deg, #dff4ff 0%, #bfe8ff 100%);
-      color: #15506b;
-      border-color: #91d7fb;
+    .nav .listen-cta,
+    .nav > .panel-picker-wrap > .listen-cta {
+      background: #d9f2ff !important;
+      background-color: #d9f2ff !important;
+      color: #1c5d78 !important;
+      border: 1px solid #b7e3f7 !important;
       font-weight: 700;
       box-shadow: var(--shadow);
     }
 
-    .nav .listen-cta:hover {
-      background: linear-gradient(180deg, #cfeeff 0%, #a8e0ff 100%);
-      color: #103f56;
-      border-color: #6fc8f6;
+    .nav .listen-cta:hover,
+    .nav > .panel-picker-wrap > .listen-cta:hover {
+      background: #c7ebff !important;
+      background-color: #c7ebff !important;
+      color: #134c63 !important;
+      border-color: #98d5f3 !important;
       transform: translateY(-1px);
     }
 
@@ -389,21 +393,21 @@
       position: relative;
     }
 
-    .nav .panel-picker-wrap {
-      display: inline-flex;
+    .nav > .panel-picker-wrap {
+      flex: 0 0 auto;
     }
 
-    .nav .panel-picker-wrap .surah-panel {
-      left: auto;
-      right: 0;
-      transform: none;
+    .nav > .panel-picker-wrap .surah-panel {
+      top: calc(100% + 12px);
+      left: 0;
+      width: min(420px, calc(100vw - 48px));
     }
 
     .surah-panel {
       position: absolute;
       top: calc(100% + 12px);
       left: 0;
-      width: min(460px, calc(100vw - 48px));
+      width: min(420px, calc(100vw - 48px));
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -481,17 +485,16 @@
       padding: 14px;
       overflow-y: auto;
       display: grid;
-      gap: 10px;
+      gap: 8px;
       -webkit-overflow-scrolling: touch;
     }
 
     .surah-panel-link {
       display: flex;
       align-items: center;
-      gap: 14px;
-      width: 100%;
-      padding: 15px 16px;
-      border-radius: 18px;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
       background: var(--surface-soft);
       border: 1px solid var(--line);
       transition: 0.2s ease;
@@ -504,9 +507,9 @@
     }
 
     .surah-panel-number {
-      width: 50px;
-      height: 50px;
-      border-radius: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       background: var(--surface);
       border: 1px solid var(--line);
       color: var(--accent-deep);
@@ -516,25 +519,10 @@
       flex-shrink: 0;
     }
 
-    .surah-panel-main {
-      min-width: 0;
-      flex: 1 1 auto;
-    }
-
     .surah-panel-name {
-      font-weight: 700;
-      font-size: 1.02rem;
+      font-weight: 600;
       letter-spacing: -0.01em;
       color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: block;
-    }
-
-    .surah-panel-sub,
-    .surah-panel-arabic {
-      display: none;
     }
 
     .surah-panel-empty {
@@ -1261,15 +1249,6 @@
     }
 
     @media (max-width: 820px) {
-      .nav .panel-picker-wrap .surah-panel {
-        position: absolute;
-        right: 0;
-        left: auto;
-        width: min(460px, calc(100vw - 20px));
-        margin-top: 0;
-        box-shadow: 0 24px 60px rgba(16, 24, 40, 0.16);
-      }
-
       .hero-grid,
       .search-grid,
       .quick-grid,
@@ -1310,14 +1289,17 @@
         box-shadow: var(--shadow);
       }
 
+      .nav > .panel-picker-wrap .surah-panel {
+        position: absolute;
+        top: calc(100% + 12px);
+        left: 0;
+        width: min(420px, calc(100vw - 24px));
+        margin-top: 0;
+        box-shadow: 0 24px 60px rgba(16, 24, 40, 0.16);
+      }
+
       .search-clear-field {
         grid-column: auto;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .surah-panel-link {
-        padding: 12px;
       }
     }
 
@@ -1340,7 +1322,8 @@
         gap: 8px;
       }
 
-      .nav a,
+      .nav > a,
+      .nav > .panel-picker-wrap > button,
       .theme-toggle {
         min-height: 38px;
         padding: 0 12px;
@@ -1378,8 +1361,16 @@
         width: 100%;
       }
 
+      .nav > .panel-picker-wrap {
+        width: auto;
+      }
+
       .surah-panel {
         width: 100%;
+      }
+
+      .nav > .panel-picker-wrap .surah-panel {
+        width: min(420px, calc(100vw - 20px));
       }
     }
   </style>
@@ -1405,8 +1396,8 @@
         <div class="panel-picker-wrap">
           <button
             class="listen-cta"
+            id="topStartListeningToggle"
             type="button"
-            id="topStartListeningButton"
             aria-expanded="false"
             aria-controls="topListenSurahPanel"
           >
@@ -1417,7 +1408,7 @@
             <div class="surah-panel-inner">
               <div class="surah-panel-head">
                 <h3>Select a Surah</h3>
-                <button id="closeTopListeningPanel" class="surah-close-btn" type="button" aria-label="Close listening surah list">×</button>
+                <button id="closeTopListeningPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
               </div>
 
               <div class="surah-panel-search">
@@ -2087,7 +2078,11 @@
     const emptyState = document.getElementById("emptyState");
     const filterPills = document.querySelectorAll(".pill");
     const themeToggle = document.getElementById("themeToggle");
-    const topStartListeningButton = document.getElementById("topStartListeningButton");
+    const topStartListeningToggle = document.getElementById("topStartListeningToggle");
+    const topListenSurahPanel = document.getElementById("topListenSurahPanel");
+    const closeTopListeningPanel = document.getElementById("closeTopListeningPanel");
+    const topListenSurahList = document.getElementById("topListenSurahList");
+    const topListenSurahSearch = document.getElementById("topListenSurahSearch");
 
     const continueReadingSection = document.getElementById("continueReadingSection");
     const continueReadingCard = document.getElementById("continueReadingCard");
@@ -2101,10 +2096,6 @@
     const messageHelp = document.getElementById("messageHelp");
 
     const startListeningToggle = document.getElementById("startListeningToggle");
-    const topListenSurahPanel = document.getElementById("topListenSurahPanel");
-    const closeTopListeningPanel = document.getElementById("closeTopListeningPanel");
-    const topListenSurahList = document.getElementById("topListenSurahList");
-    const topListenSurahSearch = document.getElementById("topListenSurahSearch");
     const listenSurahPanel = document.getElementById("listenSurahPanel");
     const closeListeningPanel = document.getElementById("closeListeningPanel");
     const listenSurahList = document.getElementById("listenSurahList");
@@ -2570,18 +2561,18 @@
         return `
           <a class="surah-panel-link" href="${getListeningLink(surah.number)}">
             <span class="surah-panel-number">${surah.number}</span>
-            <span class="surah-panel-main">
-              <span class="surah-panel-name">${surah.english}</span>
-            </span>
+            <span class="surah-panel-name">${surah.english}</span>
           </a>
         `;
       }).join("");
     }
 
     function renderListenSurahList(filteredSurahs = surahs) {
-      const markup = buildListeningSurahListMarkup(filteredSurahs);
-      listenSurahList.innerHTML = markup;
-      topListenSurahList.innerHTML = markup;
+      listenSurahList.innerHTML = buildListeningSurahListMarkup(filteredSurahs);
+    }
+
+    function renderTopListenSurahList(filteredSurahs = surahs) {
+      topListenSurahList.innerHTML = buildListeningSurahListMarkup(filteredSurahs);
     }
 
     function renderReadSurahList(filteredSurahs = surahs) {
@@ -2594,9 +2585,7 @@
         return `
           <a class="surah-panel-link" href="${getSurahLink(surah.number)}">
             <span class="surah-panel-number">${surah.number}</span>
-            <span class="surah-panel-main">
-              <span class="surah-panel-name">${surah.english}</span>
-            </span>
+            <span class="surah-panel-name">${surah.english}</span>
           </a>
         `;
       }).join("");
@@ -2618,16 +2607,16 @@
 
     function openTopListeningPanel() {
       topListenSurahPanel.hidden = false;
-      topStartListeningButton.setAttribute("aria-expanded", "true");
-      renderListenSurahList();
+      topStartListeningToggle.setAttribute("aria-expanded", "true");
+      renderTopListenSurahList();
       requestAnimationFrame(() => topListenSurahSearch.focus());
     }
 
     function closeTopListeningPanelFn() {
       topListenSurahPanel.hidden = true;
-      topStartListeningButton.setAttribute("aria-expanded", "false");
+      topStartListeningToggle.setAttribute("aria-expanded", "false");
       topListenSurahSearch.value = "";
-      renderListenSurahList();
+      renderTopListenSurahList();
     }
 
     function openReadingPanel() {
@@ -2646,22 +2635,43 @@
 
     function bindListeningPanel() {
       renderListenSurahList();
+      renderTopListenSurahList();
       renderReadSurahList();
 
-      topStartListeningButton.addEventListener("click", () => {
+      topStartListeningToggle.addEventListener("click", () => {
         if (topListenSurahPanel.hidden) {
-          closeReadingPanelFn();
           closeListeningPanelFn();
+          closeReadingPanelFn();
           openTopListeningPanel();
         } else {
           closeTopListeningPanelFn();
         }
       });
 
+      closeTopListeningPanel.addEventListener("click", closeTopListeningPanelFn);
+
+      topListenSurahSearch.addEventListener("input", () => {
+        const query = normaliseText(topListenSurahSearch.value);
+        if (!query) {
+          renderTopListenSurahList();
+          return;
+        }
+
+        const filtered = surahs.filter((surah) => {
+          return (
+            surah.number.toString().includes(query) ||
+            normaliseText(surah.english).includes(query) ||
+            surah.arabic.includes(topListenSurahSearch.value.trim())
+          );
+        });
+
+        renderTopListenSurahList(filtered);
+      });
+
       startListeningToggle.addEventListener("click", () => {
         if (listenSurahPanel.hidden) {
-          closeReadingPanelFn();
           closeTopListeningPanelFn();
+          closeReadingPanelFn();
           openListeningPanel();
         } else {
           closeListeningPanelFn();
@@ -2669,7 +2679,6 @@
       });
 
       closeListeningPanel.addEventListener("click", closeListeningPanelFn);
-      closeTopListeningPanel.addEventListener("click", closeTopListeningPanelFn);
 
       listenSurahSearch.addEventListener("input", () => {
         const query = normaliseText(listenSurahSearch.value);
@@ -2689,28 +2698,10 @@
         renderListenSurahList(filtered);
       });
 
-      topListenSurahSearch.addEventListener("input", () => {
-        const query = normaliseText(topListenSurahSearch.value);
-        if (!query) {
-          renderListenSurahList();
-          return;
-        }
-
-        const filtered = surahs.filter((surah) => {
-          return (
-            surah.number.toString().includes(query) ||
-            normaliseText(surah.english).includes(query) ||
-            surah.arabic.includes(topListenSurahSearch.value.trim())
-          );
-        });
-
-        renderListenSurahList(filtered);
-      });
-
       startReadingToggleMiddle.addEventListener("click", () => {
         if (readSurahPanel.hidden) {
-          closeListeningPanelFn();
           closeTopListeningPanelFn();
+          closeListeningPanelFn();
           openReadingPanel();
         } else {
           closeReadingPanelFn();
@@ -2738,19 +2729,19 @@
       });
 
       document.addEventListener("click", (event) => {
+        const withinTopListenPanel = topListenSurahPanel.contains(event.target);
+        const withinTopListenToggle = topStartListeningToggle.contains(event.target);
         const withinListenPanel = listenSurahPanel.contains(event.target);
         const withinListenToggle = startListeningToggle.contains(event.target);
-        const withinTopListenPanel = topListenSurahPanel.contains(event.target);
-        const withinTopListenToggle = topStartListeningButton.contains(event.target);
         const withinReadPanel = readSurahPanel.contains(event.target);
         const withinReadToggle = startReadingToggleMiddle.contains(event.target);
 
-        if (!listenSurahPanel.hidden && !withinListenPanel && !withinListenToggle) {
-          closeListeningPanelFn();
-        }
-
         if (!topListenSurahPanel.hidden && !withinTopListenPanel && !withinTopListenToggle) {
           closeTopListeningPanelFn();
+        }
+
+        if (!listenSurahPanel.hidden && !withinListenPanel && !withinListenToggle) {
+          closeListeningPanelFn();
         }
 
         if (!readSurahPanel.hidden && !withinReadPanel && !withinReadToggle) {
@@ -2760,11 +2751,11 @@
 
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
-          if (!listenSurahPanel.hidden) {
-            closeListeningPanelFn();
-          }
           if (!topListenSurahPanel.hidden) {
             closeTopListeningPanelFn();
+          }
+          if (!listenSurahPanel.hidden) {
+            closeListeningPanelFn();
           }
           if (!readSurahPanel.hidden) {
             closeReadingPanelFn();
