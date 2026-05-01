@@ -179,7 +179,8 @@
       border-color: var(--line);
     }
 
-    .nav .cta {
+    .nav .cta,
+    .nav > .panel-picker-wrap > .cta {
       background: var(--accent);
       color: #fff;
       font-weight: 600;
@@ -187,7 +188,8 @@
       border-color: var(--accent);
     }
 
-    .nav .cta:hover {
+    .nav .cta:hover,
+    .nav > .panel-picker-wrap > .cta:hover {
       background: var(--accent-deep);
       color: #fff;
       border-color: var(--accent-deep);
@@ -1392,7 +1394,37 @@
         <a href="#about">About</a>
         <a href="#book">Book</a>
         <a href="#contact">Contact</a>
-        <a class="cta" href="surah-1.html">Start Reading</a>
+        <div class="panel-picker-wrap">
+          <button
+            class="cta"
+            id="topStartReadingToggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="topReadSurahPanel"
+          >
+            Start Reading
+          </button>
+
+          <div id="topReadSurahPanel" class="surah-panel" hidden>
+            <div class="surah-panel-inner">
+              <div class="surah-panel-head">
+                <h3>Select a Surah</h3>
+                <button id="closeTopReadingPanel" class="surah-close-btn" type="button" aria-label="Close surah list">×</button>
+              </div>
+
+              <div class="surah-panel-search">
+                <input
+                  id="topReadSurahSearch"
+                  type="text"
+                  placeholder="Search by surah name or number"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div id="topReadSurahList" class="surah-panel-list"></div>
+            </div>
+          </div>
+        </div>
         <div class="panel-picker-wrap">
           <button
             class="listen-cta"
@@ -2078,6 +2110,11 @@
     const emptyState = document.getElementById("emptyState");
     const filterPills = document.querySelectorAll(".pill");
     const themeToggle = document.getElementById("themeToggle");
+    const topStartReadingToggle = document.getElementById("topStartReadingToggle");
+    const topReadSurahPanel = document.getElementById("topReadSurahPanel");
+    const closeTopReadingPanel = document.getElementById("closeTopReadingPanel");
+    const topReadSurahList = document.getElementById("topReadSurahList");
+    const topReadSurahSearch = document.getElementById("topReadSurahSearch");
     const topStartListeningToggle = document.getElementById("topStartListeningToggle");
     const topListenSurahPanel = document.getElementById("topListenSurahPanel");
     const closeTopListeningPanel = document.getElementById("closeTopListeningPanel");
@@ -2575,13 +2612,12 @@
       topListenSurahList.innerHTML = buildListeningSurahListMarkup(filteredSurahs);
     }
 
-    function renderReadSurahList(filteredSurahs = surahs) {
+    function buildReadSurahListMarkup(filteredSurahs = surahs) {
       if (!filteredSurahs.length) {
-        readSurahList.innerHTML = `<div class="surah-panel-empty">No surahs matched your search.</div>`;
-        return;
+        return `<div class="surah-panel-empty">No surahs matched your search.</div>`;
       }
 
-      readSurahList.innerHTML = filteredSurahs.map((surah) => {
+      return filteredSurahs.map((surah) => {
         return `
           <a class="surah-panel-link" href="${getSurahLink(surah.number)}">
             <span class="surah-panel-number">${surah.number}</span>
@@ -2589,6 +2625,14 @@
           </a>
         `;
       }).join("");
+    }
+
+    function renderReadSurahList(filteredSurahs = surahs) {
+      readSurahList.innerHTML = buildReadSurahListMarkup(filteredSurahs);
+    }
+
+    function renderTopReadSurahList(filteredSurahs = surahs) {
+      topReadSurahList.innerHTML = buildReadSurahListMarkup(filteredSurahs);
     }
 
     function openListeningPanel() {
@@ -2633,13 +2677,60 @@
       renderReadSurahList();
     }
 
+    function openTopReadingPanel() {
+      topReadSurahPanel.hidden = false;
+      topStartReadingToggle.setAttribute("aria-expanded", "true");
+      renderTopReadSurahList();
+      requestAnimationFrame(() => topReadSurahSearch.focus());
+    }
+
+    function closeTopReadingPanelFn() {
+      topReadSurahPanel.hidden = true;
+      topStartReadingToggle.setAttribute("aria-expanded", "false");
+      topReadSurahSearch.value = "";
+      renderTopReadSurahList();
+    }
+
     function bindListeningPanel() {
       renderListenSurahList();
       renderTopListenSurahList();
       renderReadSurahList();
+      renderTopReadSurahList();
+
+      topStartReadingToggle.addEventListener("click", () => {
+        if (topReadSurahPanel.hidden) {
+          closeTopListeningPanelFn();
+          closeListeningPanelFn();
+          closeReadingPanelFn();
+          openTopReadingPanel();
+        } else {
+          closeTopReadingPanelFn();
+        }
+      });
+
+      closeTopReadingPanel.addEventListener("click", closeTopReadingPanelFn);
+
+      topReadSurahSearch.addEventListener("input", () => {
+        const query = normaliseText(topReadSurahSearch.value);
+        if (!query) {
+          renderTopReadSurahList();
+          return;
+        }
+
+        const filtered = surahs.filter((surah) => {
+          return (
+            surah.number.toString().includes(query) ||
+            normaliseText(surah.english).includes(query) ||
+            surah.arabic.includes(topReadSurahSearch.value.trim())
+          );
+        });
+
+        renderTopReadSurahList(filtered);
+      });
 
       topStartListeningToggle.addEventListener("click", () => {
         if (topListenSurahPanel.hidden) {
+          closeTopReadingPanelFn();
           closeListeningPanelFn();
           closeReadingPanelFn();
           openTopListeningPanel();
@@ -2670,6 +2761,7 @@
 
       startListeningToggle.addEventListener("click", () => {
         if (listenSurahPanel.hidden) {
+          closeTopReadingPanelFn();
           closeTopListeningPanelFn();
           closeReadingPanelFn();
           openListeningPanel();
@@ -2700,6 +2792,7 @@
 
       startReadingToggleMiddle.addEventListener("click", () => {
         if (readSurahPanel.hidden) {
+          closeTopReadingPanelFn();
           closeTopListeningPanelFn();
           closeListeningPanelFn();
           openReadingPanel();
@@ -2729,12 +2822,18 @@
       });
 
       document.addEventListener("click", (event) => {
+        const withinTopReadPanel = topReadSurahPanel.contains(event.target);
+        const withinTopReadToggle = topStartReadingToggle.contains(event.target);
         const withinTopListenPanel = topListenSurahPanel.contains(event.target);
         const withinTopListenToggle = topStartListeningToggle.contains(event.target);
         const withinListenPanel = listenSurahPanel.contains(event.target);
         const withinListenToggle = startListeningToggle.contains(event.target);
         const withinReadPanel = readSurahPanel.contains(event.target);
         const withinReadToggle = startReadingToggleMiddle.contains(event.target);
+
+        if (!topReadSurahPanel.hidden && !withinTopReadPanel && !withinTopReadToggle) {
+          closeTopReadingPanelFn();
+        }
 
         if (!topListenSurahPanel.hidden && !withinTopListenPanel && !withinTopListenToggle) {
           closeTopListeningPanelFn();
@@ -2751,6 +2850,9 @@
 
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
+          if (!topReadSurahPanel.hidden) {
+            closeTopReadingPanelFn();
+          }
           if (!topListenSurahPanel.hidden) {
             closeTopListeningPanelFn();
           }
