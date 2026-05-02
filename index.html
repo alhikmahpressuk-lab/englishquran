@@ -1300,6 +1300,22 @@
         box-shadow: 0 24px 60px rgba(16, 24, 40, 0.16);
       }
 
+      #topListenSurahPanel {
+        position: fixed;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%);
+        top: var(--top-listen-panel-top, 112px);
+        width: min(420px, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+        margin-top: 0;
+        z-index: 160;
+      }
+
+      #topListenSurahPanel .surah-panel-inner {
+        max-height: min(520px, calc(100dvh - var(--top-listen-panel-top, 112px) - 12px));
+      }
+
       .search-clear-field {
         grid-column: auto;
       }
@@ -1373,6 +1389,38 @@
 
       .nav > .panel-picker-wrap .surah-panel {
         width: min(420px, calc(100vw - 20px));
+      }
+
+      #topReadSurahPanel {
+        position: fixed;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%);
+        top: var(--top-read-panel-top, 112px);
+        width: min(420px, calc(100vw - 20px));
+        max-width: calc(100vw - 20px);
+        margin-top: 0;
+        z-index: 160;
+      }
+
+      #topReadSurahPanel .surah-panel-inner {
+        max-height: min(520px, calc(100dvh - var(--top-read-panel-top, 112px) - 12px));
+      }
+
+      #topListenSurahPanel {
+        position: fixed;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%);
+        top: var(--top-listen-panel-top, 112px);
+        width: min(420px, calc(100vw - 20px));
+        max-width: calc(100vw - 20px);
+        margin-top: 0;
+        z-index: 160;
+      }
+
+      #topListenSurahPanel .surah-panel-inner {
+        max-height: min(520px, calc(100dvh - var(--top-listen-panel-top, 112px) - 12px));
       }
     }
   </style>
@@ -2635,6 +2683,28 @@
       topReadSurahList.innerHTML = buildReadSurahListMarkup(filteredSurahs);
     }
 
+    function positionTopPanelForMobile(panel, toggle, topVariableName) {
+      if (window.innerWidth > 560) {
+        document.documentElement.style.removeProperty(topVariableName);
+        return;
+      }
+
+      const rect = toggle.getBoundingClientRect();
+      const nextTop = Math.max(Math.round(rect.bottom + 8), 76);
+      document.documentElement.style.setProperty(topVariableName, `${nextTop}px`);
+    }
+
+    function positionTopListeningPanelForMobile() {
+      if (window.innerWidth > 820) {
+        document.documentElement.style.removeProperty("--top-listen-panel-top");
+        return;
+      }
+
+      const rect = topStartListeningToggle.getBoundingClientRect();
+      const nextTop = Math.max(Math.round(rect.bottom + 8), 76);
+      document.documentElement.style.setProperty("--top-listen-panel-top", `${nextTop}px`);
+    }
+
     function openListeningPanel() {
       listenSurahPanel.hidden = false;
       startListeningToggle.setAttribute("aria-expanded", "true");
@@ -2650,6 +2720,7 @@
     }
 
     function openTopListeningPanel() {
+      positionTopListeningPanelForMobile();
       topListenSurahPanel.hidden = false;
       topStartListeningToggle.setAttribute("aria-expanded", "true");
       renderTopListenSurahList();
@@ -2661,6 +2732,7 @@
       topStartListeningToggle.setAttribute("aria-expanded", "false");
       topListenSurahSearch.value = "";
       renderTopListenSurahList();
+      document.documentElement.style.removeProperty("--top-listen-panel-top");
     }
 
     function openReadingPanel() {
@@ -2678,6 +2750,7 @@
     }
 
     function openTopReadingPanel() {
+      positionTopPanelForMobile(topReadSurahPanel, topStartReadingToggle, "--top-read-panel-top");
       topReadSurahPanel.hidden = false;
       topStartReadingToggle.setAttribute("aria-expanded", "true");
       renderTopReadSurahList();
@@ -2689,6 +2762,7 @@
       topStartReadingToggle.setAttribute("aria-expanded", "false");
       topReadSurahSearch.value = "";
       renderTopReadSurahList();
+      document.documentElement.style.removeProperty("--top-read-panel-top");
     }
 
     function bindListeningPanel() {
@@ -2864,6 +2938,23 @@
           }
         }
       });
+
+      const syncTopReadingPanelPosition = () => {
+        if (!topReadSurahPanel.hidden) {
+          positionTopPanelForMobile(topReadSurahPanel, topStartReadingToggle, "--top-read-panel-top");
+        }
+      };
+
+      const syncTopListeningPanelPosition = () => {
+        if (!topListenSurahPanel.hidden) {
+          positionTopListeningPanelForMobile();
+        }
+      };
+
+      window.addEventListener("resize", syncTopReadingPanelPosition);
+      window.addEventListener("orientationchange", syncTopReadingPanelPosition);
+      window.addEventListener("resize", syncTopListeningPanelPosition);
+      window.addEventListener("orientationchange", syncTopListeningPanelPosition);
     }
 
     function clearSearchAndFilters() {
