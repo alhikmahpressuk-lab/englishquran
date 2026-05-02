@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
-  <title>gm1x</title>
+  <title>Q-Box (Recitation) OpenQuran</title>
   <meta name="description" content="Simple Arabic Qur'an reader with bookmarks, study mode, and a built-in Madinah Mushaf style." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1799,7 +1799,7 @@
       <div class="brand">
         <div class="brand-copy">
           <div class="brand-kicker">The Open Quran</div>
-          <h1>gm1x</h1>
+          <h1>Q-Box (Recitation) OpenQuran</h1>
           <p>Simple Arabic Qur’an book reading with bookmarks and a built-in Madinah Mushaf style.</p>
         </div>
         <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close index">×</button>
@@ -2131,6 +2131,7 @@
       loadTicket: 0,
       cache: new Map(),
       qcfCache: new Map(),
+      paginationCache: new Map(),
       panel: {
         translationResources: [],
         tafsirResources: [],
@@ -2147,6 +2148,7 @@
         index: 0,
         playing: false,
         loading: false,
+        wordLoading: false,
         surahId: null,
         chapterRecitationId: null,
         wordAudioRecitationId: TAJWEED_RECITER_ID,
@@ -2317,7 +2319,7 @@
       cancelAnimationFrame(viewportFrame);
       viewportFrame = requestAnimationFrame(() => {
         syncAppHeight();
-        if (state.audio.mode === 'word' || state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
+        if (shouldBuildWordOverlay()) {
           scheduleWordOverlayBuild(true);
         }
       });
@@ -2331,6 +2333,48 @@
           buildWordOverlay();
         });
       });
+    }
+
+    function shouldBuildWordOverlay() {
+      if (state.audio.mode === 'word') return true;
+      return (state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') && Boolean(state.audio.exactSyncActive || state.audio.activeWordKey);
+    }
+
+    function clonePaginatedPages(pages) {
+      return (pages || []).map((page) => ({
+        ...page,
+        verses: [...(page.verses || [])]
+      }));
+    }
+
+    function getPaginationCacheKey(verses) {
+      const width = Math.max(0, Math.round((els.readerContent?.offsetWidth || 0) / 24) * 24);
+      const height = Math.max(0, Math.round((els.readerContent?.clientHeight || 0) / 24) * 24);
+      if (!width || !height || !Array.isArray(verses) || !verses.length) return '';
+      const zoomKey = isTilawahAutoZoom() ? 'auto' : getTilawahZoomMultiplier().toFixed(2);
+      const qcfKey = isQcfMushafMode()
+        ? (verses.some((verse) => (verse.qcfWords || []).length) ? 'hydrated' : 'plain')
+        : 'text';
+      return [state.selectedSurahId, state.settings.mushaf, zoomKey, qcfKey, `${width}x${height}`, verses.length].join('|');
+    }
+
+    function getCachedPagination(verses) {
+      const cacheKey = getPaginationCacheKey(verses);
+      if (!cacheKey || !state.paginationCache.has(cacheKey)) return null;
+      const cached = state.paginationCache.get(cacheKey);
+      state.paginationCache.delete(cacheKey);
+      state.paginationCache.set(cacheKey, cached);
+      return clonePaginatedPages(cached);
+    }
+
+    function setCachedPagination(verses, pages) {
+      const cacheKey = getPaginationCacheKey(verses);
+      if (!cacheKey || !Array.isArray(pages) || !pages.length) return;
+      state.paginationCache.set(cacheKey, clonePaginatedPages(pages));
+      while (state.paginationCache.size > 24) {
+        const firstKey = state.paginationCache.keys().next().value;
+        state.paginationCache.delete(firstKey);
+      }
     }
 
     async function unlockSingleAudioPlayer(player) {
@@ -2763,38 +2807,56 @@
       return Math.max(1, Math.ceil((verse.arabic || '').length / 34));
     }
 
-    async function fetchJsonWithTimeout(url, timeout = 12000) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-      try {
-        const response = await fetch(url, {
-          signal: controller.signal,
-          headers: { Accept: 'application/json' }
-        });
-        if (!response.ok) {
-          throw new Error(`Request failed: ${response.status}`);
+    async function withNetworkRetry(task, attempts = 2) {
+      let lastError = null;
+      for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+          return await task();
+        } catch (error) {
+          lastError = error;
+          if (attempt >= attempts) break;
+          await new Promise((resolve) => setTimeout(resolve, 180 * attempt));
         }
-        return await response.json();
-      } finally {
-        clearTimeout(timeoutId);
       }
+      throw lastError;
+    }
+
+    async function fetchJsonWithTimeout(url, timeout = 12000) {
+      return withNetworkRetry(async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        try {
+          const response = await fetch(url, {
+            signal: controller.signal,
+            headers: { Accept: 'application/json' }
+          });
+          if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
+          }
+          return await response.json();
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      });
     }
 
     async function fetchTextWithTimeout(url, timeout = 15000) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-      try {
-        const response = await fetch(url, {
-          signal: controller.signal,
-          headers: { Accept: 'text/html,text/plain' }
-        });
-        if (!response.ok) {
-          throw new Error(`Request failed: ${response.status}`);
+      return withNetworkRetry(async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        try {
+          const response = await fetch(url, {
+            signal: controller.signal,
+            headers: { Accept: 'text/html,text/plain' }
+          });
+          if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
+          }
+          return await response.text();
+        } finally {
+          clearTimeout(timeoutId);
         }
-        return await response.text();
-      } finally {
-        clearTimeout(timeoutId);
-      }
+      });
     }
 
     function cleanAkKhanVerseText(text, surahId, verseNumber) {
@@ -3210,7 +3272,7 @@
       const surah = getSelectedSurah();
       const pageNumber = state.currentPage + 1;
       const url = window.location.href;
-      const title = `The Open Quran — ${surah.en} — Page ${pageNumber}`;
+      const title = `Q-Box (Recitation) OpenQuran — ${surah.en} — Page ${pageNumber}`;
       const text = `${surah.en} • Page ${pageNumber}`;
 
       try {
@@ -3658,11 +3720,17 @@
       if (!verses.length) return [];
       if (!maxHeight || !pageWidth) return fallbackPaginateVerses(verses);
 
+      const cachedPages = getCachedPagination(verses);
+      if (cachedPages) {
+        return cachedPages;
+      }
+
+      let pages = [];
       try {
         if (surah.id === 1) {
           const surahOneVerses = verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false }));
           const widthInset = window.innerWidth < 640 ? 30 : window.innerWidth < 900 ? 24 : 20;
-          const heightInset = window.innerWidth < 640 ? 28 : 22;
+          const heightInset = window.innerHeight < 700 ? 34 : 22;
           const safePageWidth = Math.max(260, pageWidth - widthInset);
           const safeMaxHeight = Math.max(240, maxHeight - heightInset);
           const compactScale = window.innerWidth < 640 ? 0.74 : window.innerWidth < 900 ? 0.84 : 0.9;
@@ -3674,7 +3742,9 @@
             safePageWidth,
             getTilawahTargetFontSize(surah, false, safeMaxHeight, safePageWidth) * compactScale
           );
-          return [{ verses: surahOneVerses, dense: false, fontSize, forceSinglePage: true, centered: true }];
+          pages = [{ verses: surahOneVerses, dense: false, fontSize, forceSinglePage: true, centered: true }];
+          setCachedPagination(verses, pages);
+          return clonePaginatedPages(pages);
         }
 
         if (surah.id === 2 && verses.length >= 5) {
@@ -3688,17 +3758,22 @@
             pageWidth,
             getTilawahTargetFontSize(surah, true, maxHeight, pageWidth)
           );
-          return [
+          pages = [
             { verses: firstPageVerses, dense: false, fontSize: firstPageFontSize, fixedRange: '1-5', centered: true },
             ...paginateChunk(remainingQueue, surah, maxHeight, pageWidth, 1)
           ];
+          setCachedPagination(verses, pages);
+          return clonePaginatedPages(pages);
         }
 
         const queue = verses.map((verse) => ({ ...verse, showMarker: verse.showMarker !== false }));
-        return paginateChunk(queue, surah, maxHeight, pageWidth, 0);
+        pages = paginateChunk(queue, surah, maxHeight, pageWidth, 0);
       } catch {
-        return fallbackPaginateVerses(verses);
+        pages = fallbackPaginateVerses(verses);
       }
+
+      setCachedPagination(verses, pages);
+      return clonePaginatedPages(pages);
     }
 
     async function fetchSurahVerses(surahId) {
@@ -3881,7 +3956,7 @@
 
       bindVerseStampHandlers();
 
-const recitationOverlayMode = state.audio.mode === 'word' || state.audio.mode === 'tajweed' || state.audio.mode === 'reciter';
+const recitationOverlayMode = shouldBuildWordOverlay();
 if (recitationOverlayMode) {
   scheduleWordOverlayBuild(true);
 } else {
@@ -3950,10 +4025,7 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
           if (loadTicket !== state.loadTicket || state.selectedSurahId !== surahId) return;
         }
 
-        if (state.audio.mode === 'word') {
-          verses = await attachWordAudioToVerses(surahId, verses);
-          if (loadTicket !== state.loadTicket || state.selectedSurahId !== surahId) return;
-        }
+        
 
         state.verses = verses;
         refreshVerseArabic();
@@ -3973,6 +4045,12 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
         scheduleNonCriticalTask(() => {
           prefetchNearbySurahs(surahId);
         }, 1800);
+
+        if (state.audio.mode === 'word') {
+          scheduleNonCriticalTask(() => {
+            ensureWordAudioForCurrentSurah(surahId, loadTicket, true);
+          }, 80);
+        }
 
         if (fastInitialRender) {
           const anchorVerse = state.pages[state.currentPage]?.verses?.[0]?.number || state.verses[0]?.number || 1;
@@ -4361,7 +4439,48 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
       }));
     }
 
-    
+    async function ensureWordAudioForCurrentSurah(surahId = state.selectedSurahId, loadTicket = state.loadTicket, rerender = true) {
+      if (state.verses.some((verse) => Array.isArray(verse.audioWords) && verse.audioWords.length)) {
+        if (state.audio.mode === 'word') {
+          setPlayStatus('Tap any word to hear it');
+          updatePlayUi();
+        }
+        return state.verses;
+      }
+      if (state.audio.wordLoading) {
+        return state.verses;
+      }
+
+      state.audio.wordLoading = true;
+      if (state.audio.mode === 'word') {
+        setPlayStatus('Preparing word audio…');
+        updatePlayUi();
+      }
+
+      try {
+        const nextVerses = await attachWordAudioToVerses(surahId, state.verses);
+        if (surahId !== state.selectedSurahId || loadTicket !== state.loadTicket) {
+          return state.verses;
+        }
+        state.verses = nextVerses;
+        if (rerender && state.audio.mode === 'word') {
+          await renderReader();
+        }
+        if (state.audio.mode === 'word') {
+          setPlayStatus('Tap any word to hear it');
+          updatePlayUi();
+        }
+        return nextVerses;
+      } catch {
+        if (state.audio.mode === 'word' && surahId === state.selectedSurahId) {
+          setPlayStatus('Word audio unavailable right now');
+          updatePlayUi();
+        }
+        return state.verses;
+      } finally {
+        state.audio.wordLoading = false;
+      }
+    }
 
     function hideWordTooltip() {
       els.wordTooltip.hidden = true;
@@ -4496,13 +4615,15 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
     }
 
     function buildWordOverlay() {
-      const wantsOverlay = state.audio.mode === 'word' || state.audio.mode === 'tajweed' || state.audio.mode === 'reciter';
+      const wantsOverlay = shouldBuildWordOverlay();
       if (!wantsOverlay) {
         hideWordOverlay();
         return;
       }
 
-      const verseMap = new Map(getOverlayVerses().map((verse) => [Number(verse.number), verse]));
+      const overlayVerses = getOverlayVerses();
+      const hasInteractiveWordAudio = state.audio.mode !== 'word' || overlayVerses.some((verse) => (verse.audioWords || []).some((word) => word.audioUrl));
+      const verseMap = new Map(overlayVerses.map((verse) => [Number(verse.number), verse]));
       const containers = Array.from(els.readerContent.querySelectorAll('[data-verse-number]'));
       if (!containers.length || !els.wordOverlay.parentElement) {
         hideWordOverlay();
@@ -4569,7 +4690,7 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
       }
 
       els.wordOverlay.hidden = false;
-      els.wordOverlay.classList.toggle('interactive', state.audio.mode === 'word');
+      els.wordOverlay.classList.toggle('interactive', state.audio.mode === 'word' && hasInteractiveWordAudio);
       els.wordOverlay.innerHTML = hitboxes.map((box) => `
         <button
           class="word-hitbox"
@@ -4604,7 +4725,8 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
 
     async function playTappedWord(audioUrl, verseNumber, target = null) {
       if (!audioUrl) {
-        setPlayStatus(`No word audio for verse ${verseNumber}`);
+        setPlayStatus(state.audio.wordLoading ? 'Preparing word audio…' : `No word audio for verse ${verseNumber}`);
+        updatePlayUi();
         return;
       }
 
@@ -5036,11 +5158,6 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
       updatePlayUi();
 
       try {
-        if (!state.verses.some((verse) => Array.isArray(verse.audioWords) && verse.audioWords.length)) {
-          state.verses = await attachWordAudioToVerses(surahId, state.verses);
-          await renderReader();
-        }
-
         try {
           await fetchSyncData(surahId, state.audio.chapterRecitationId);
           await startSyncedFromBeginning();
@@ -5290,12 +5407,15 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
         await unlockAudioPlayback();
         state.audio.mode = 'word';
         stopAudioPlayback(false, false);
-        if (state.verses.length) {
-          state.verses = await attachWordAudioToVerses(state.selectedSurahId, state.verses);
-          await renderReader();
-        }
-        setPlayStatus('Tap any word to hear it');
+        await renderReader();
+        const hasWordAudio = state.verses.some((verse) => Array.isArray(verse.audioWords) && verse.audioWords.length);
+        setPlayStatus(hasWordAudio ? 'Tap any word to hear it' : 'Preparing word audio…');
         updatePlayUi();
+        if (!hasWordAudio) {
+          scheduleNonCriticalTask(() => {
+            ensureWordAudioForCurrentSurah(state.selectedSurahId, state.loadTicket, true);
+          }, 60);
+        }
       });
 
       els.audioModeTajweedBtn.addEventListener('click', async () => {
@@ -5517,7 +5637,7 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
       els.wordOverlay.addEventListener('click', handleWordOverlayActivation, { passive: false });
 
       els.readerContent.addEventListener('scroll', () => {
-        if (state.audio.mode === 'word' || state.audio.mode === 'tajweed' || state.audio.mode === 'reciter') {
+        if (shouldBuildWordOverlay()) {
           scheduleWordOverlayBuild(true);
         }
         hideWordTooltip();
@@ -5576,7 +5696,7 @@ if (!state.panel.studyMode && isQcfMushafMode()) {
         lastViewportHeight = nextHeight;
 
         if (widthDelta < 24 && heightDelta < 120) {
-          if (state.audio.mode === 'word') {
+          if (shouldBuildWordOverlay()) {
             scheduleWordOverlayBuild(true);
           }
           return;
